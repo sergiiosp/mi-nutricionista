@@ -1,0 +1,13 @@
+{
+  "name": "nutricionista-mercadona",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Nutricionista personal con menús y lista de la compra de Mercadona",
+  "scripts": {
+    "precios": "node scripts/actualizar-precios.mjs",
+    "catalogo": "node scripts/descargar-catalogo.mjs",
+    "test": "node scripts/probar-motor.mjs",
+    "start": "python -m http.server 8080"
+  }
+}
