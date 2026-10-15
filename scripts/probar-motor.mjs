@@ -45,3 +45,26 @@ for (const [nombre, perfil] of Object.entries(perfiles)) {
 }
 console.log(fallos ? `\n${fallos} días fuera de margen` : '\nTodo dentro de margen');
 process.exitCode = fallos ? 1 : 0;
+
+// ── Plan HYROX ─────────────────────────────────────────────────────────────
+const { generarPlanHyrox } = await import('../src/lib/hyrox/plan.js');
+const { estimarCarrera } = await import('../src/lib/hyrox/carrera.js');
+const { hms } = await import('../src/lib/hyrox/ritmos.js');
+const perfilH = { sexo: 'h', peso: 82.5, horaEntreno: '18:30' };
+const configH = { inicio: '2026-10-12', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5, 6], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1500 } };
+let fallosH = 0;
+const comprobar = (cond, texto) => { console.log(`${cond ? '✓' : '✗'} ${texto}`); if (!cond) fallosH++; };
+const ph = generarPlanHyrox({ config: configH }, perfilH, '2026-10-12');
+console.log(`\n== HYROX: ${ph.N} semanas hasta ${ph.carrera}`);
+comprobar(ph.sesiones.at(-1).tipo === 'carrera' && ph.sesiones.at(-1).fecha === '2027-02-20', 'La última sesión es la carrera, en su fecha');
+comprobar(ph.sesiones.some((s) => s.tipo === 'activacion' && s.fecha === '2027-02-19'), 'Activación la víspera');
+comprobar(ph.semanas.some((s) => s.deload), 'Hay semanas de descarga');
+comprobar(ph.sesiones.filter((s) => s.tipo === 'simulacro').length >= 2, 'Hay al menos 2 simulacros');
+comprobar(ph.diasCarga.join() === '2027-02-18,2027-02-19', 'Carga de hidratos los dos días previos');
+// Ajuste: semana 0 muy dura → semana 1 baja el volumen
+const regs = Object.fromEntries(ph.semanas[0].sesiones.map((s) => [s.id, { estado: 'completa', rpe: Math.min(10, s.rpe + 2), sensacion: 'mal' }]));
+const ph2 = generarPlanHyrox({ config: configH, registros: regs }, perfilH, '2026-10-20');
+comprobar(ph2.semanas[1].ajuste.factor < 1, 'Si la semana fue muy dura, la siguiente baja la carga');
+const est = estimarCarrera(configH, perfilH);
+comprobar(est.total > 3600 && est.total < 7200, `Estimación razonable: ${hms(est.total)}`);
+if (fallosH) process.exitCode = 1;

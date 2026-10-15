@@ -9,7 +9,7 @@ function resumenDia(e, objetivos, fecha) {
   if (!regs.length) return null;
   const m = sumarMacros(regs.map((r) => r.macros));
   const dia = e.plan?.dias.find((d) => d.fecha === fecha);
-  const od = objetivosDia(objetivos, dia ? dia.entreno : esDiaEntreno(e.perfil, fecha));
+  const od = dia?.objetivo || objetivosDia(objetivos, dia ? dia.entreno : esDiaEntreno(e.perfil, fecha));
   return {
     fecha, m, od,
     proteinaOk: m.p >= od.proteina * 0.9,

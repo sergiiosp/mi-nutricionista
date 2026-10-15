@@ -5,6 +5,7 @@ import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos } from './nutricion.js';
 import { generarPlan, sustituir, reescalarPlan, hoyISO } from './planificador.js';
 import { estadoDia } from './dia.js';
+import { proveedorDe } from './hyrox/index.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 
@@ -37,7 +38,7 @@ export function alternarSaltada(fecha, franja) {
 
 export function crearPlan(inicio = hoyISO()) {
   actualizar((x) => {
-    x.plan = generarPlan(x.perfil, calcularObjetivos(x.perfil), { inicio, semilla: Math.floor(Math.random() * 1e9) });
+    x.plan = generarPlan(x.perfil, calcularObjetivos(x.perfil), { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: proveedorDe(x) });
     x.compra.marcados = {};
   });
 }
@@ -49,6 +50,42 @@ export function sustituirComida(diaIdx, franja, comida) {
 /** Tras cambiar perfil o peso: mismas recetas, nuevas cantidades y horario. */
 export function reajustarPlan() {
   actualizar((x) => {
-    if (x.plan) reescalarPlan(x.plan, x.perfil, calcularObjetivos(x.perfil));
+    if (x.plan) reescalarPlan(x.plan, x.perfil, calcularObjetivos(x.perfil), proveedorDe(x));
   });
+}
+
+// ── HYROX ─────────────────────────────────────────────────────────────────
+
+/** Guarda la configuración HYROX, sincroniza el perfil de entreno y adapta el menú. */
+export function guardarHyrox(config) {
+  actualizar((x) => {
+    const previo = x.hyrox || {};
+    x.hyrox = { registros: {}, movidas: {}, ...previo, config: { ...config, inicio: previo.config?.inicio || config.inicio || hoyISO() } };
+    const deportes = new Set([...(x.perfil.deportes || []), 'carrera', 'hiit']);
+    x.perfil = { ...x.perfil, entrena: true, deportes: [...deportes], diasEntreno: config.dias, horaEntreno: config.hora, duracionEntreno: 60, intensidad: 'moderada', compite: true, fechaCompeticion: config.fechaCarrera || '' };
+  });
+  reajustarPlan();
+}
+
+export function registrarSesion(id, datos) {
+  actualizar((x) => { x.hyrox.registros[id] = { ...datos, fechaRegistro: hoyISO() }; });
+  reajustarPlan();
+}
+
+export function borrarRegistroSesion(id) {
+  actualizar((x) => { delete x.hyrox.registros[id]; });
+  reajustarPlan();
+}
+
+export function moverSesion(id, fecha, fechaOriginal) {
+  actualizar((x) => {
+    if (fecha === fechaOriginal) delete x.hyrox.movidas[id];
+    else x.hyrox.movidas[id] = fecha;
+  });
+  reajustarPlan();
+}
+
+export function reiniciarHyrox() {
+  actualizar((x) => { x.hyrox = null; });
+  reajustarPlan();
 }

@@ -231,3 +231,42 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Bocadillo_Chorizo_-_Madrid.JPG"
  }
 };
+
+// Fotos de estaciones HYROX (Wikimedia Commons)
+export const FOTOS_ESTACIONES = {
+ "ski": {
+  "autor": "Kiet Le (photos · photo sets)",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:CrossFit_workout_on_SkiErg_DSC1807.jpg"
+ },
+ "push": {
+  "autor": "U.S. Army 173IBCT-A by Staff Sgt. Alexander Henninger",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Sled_Push_(4517338).jpg"
+ },
+ "bbj": {
+  "autor": "Marine Corps photo by Sgt. Ryan Young",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Airborne_Burpee.jpg"
+ },
+ "row": {
+  "autor": "Autor desconocido",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Concept_2_Indoor_Rowers.JPG"
+ },
+ "farmers": {
+  "autor": "Johann van den Bergh",
+  "licencia": "CC BY 3.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Farmer%27s_Walk_small.jpg"
+ },
+ "lunges": {
+  "autor": "U.S. Air Force photo by Senior Airman Myles Stepp",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Airman_performing_lunge.jpg"
+ },
+ "wallballs": {
+  "autor": "U.S. Air Force photo by Senior Airman Arielle Vasquez",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Fitness_center_showcases_new_functional_fitness_box_(4384845).jpg"
+ }
+};

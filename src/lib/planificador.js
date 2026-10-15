@@ -2,7 +2,7 @@
 
 import { RECETAS } from '../data/recetas.js';
 import { ALIMENTOS } from '../data/alimentos.js';
-import { escalarReceta, recetaPermitida, costeComida, macrosComida, objetivosDia } from './nutricion.js';
+import { escalarReceta, recetaPermitida, costeComida, macrosComida, objetivosDia, metaDia } from './nutricion.js';
 import { REPARTOS, horarioDia, objetivoFranja, esDiaEntreno } from './horario.js';
 import { preferenciasAlimentos } from './salud.js';
 
@@ -82,7 +82,17 @@ function errorComida(ingredientes, obj) {
 }
 
 /** Datos de un día: si se entrena, su horario y su objetivo. */
-export function contextoDia(perfil, objetivos, fecha) {
+/**
+ * @param proveedor opcional (fecha) => sesiones del plan HYROX ese día; si existe, manda sobre los días fijos de entreno
+ */
+export function contextoDia(perfil, objetivos, fecha, proveedor = null) {
+  const sesiones = proveedor ? proveedor(fecha) : null;
+  if (sesiones) {
+    const principal = sesiones.filter((s) => !s.carga && s.tipo !== 'recuperacion').sort((a, b) => b.duracion - a.duracion)[0];
+    const entreno = !!principal;
+    const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion } : null);
+    return { entreno, horario, objDia: metaDia(objetivos, sesiones), sesiones };
+  }
   const entreno = esDiaEntreno(perfil, fecha);
   const horario = horarioDia(perfil, entreno);
   return { entreno, horario, objDia: objetivosDia(objetivos, entreno) };
@@ -92,7 +102,7 @@ export function contextoDia(perfil, objetivos, fecha) {
  * Genera un plan de N días empezando en `inicio` (fecha ISO yyyy-mm-dd).
  * perfil.sobras = true → la comida se cocina para dos días seguidos (táper).
  */
-export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now() } = {}) {
+export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null } = {}) {
   const aleatorio = rng(semilla);
   const usos = {};
   const prefs = preferenciasAlimentos(perfil);
@@ -117,8 +127,8 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   const resultado = [];
   for (let d = 0; d < dias; d++) {
     const fecha = sumarDias(inicio, d);
-    const { entreno, horario, objDia } = contextoDia(perfil, objetivos, fecha);
-    const tipoDia = entreno ? 'entreno' : 'descanso';
+    const { entreno, horario, objDia } = contextoDia(perfil, objetivos, fecha, proveedor);
+    const tipoDia = `${objDia.kcal}-${objDia.hidratos}`;
     const proteinasDia = [];
     const comidas = [];
     for (const franja of horario.franjas) {
@@ -141,20 +151,20 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       for (const i of receta.ingredientes) enUso.add(i.a);
       comidas.push(structuredClone(comidaEscalada(receta, franja, objDia, tipoDia).comida));
     }
-    resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, comidas });
+    resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, objetivo: objDia, comidas });
   }
   return { version: 2, creado: new Date().toISOString(), inicio, semilla, comidasDia: perfil.comidas, dias: resultado };
 }
 
-function franjaDelDia(perfil, objetivos, dia, franjaId) {
-  const ctx = contextoDia(perfil, objetivos, dia.fecha);
+function franjaDelDia(perfil, objetivos, dia, franjaId, proveedor) {
+  const ctx = contextoDia(perfil, objetivos, dia.fecha, proveedor);
   return { ...ctx, franja: ctx.horario.franjas.find((f) => f.id === franjaId) };
 }
 
 /** Alternativas para sustituir una comida concreta del plan, ordenadas por encaje. */
-export function alternativas(plan, diaIdx, franjaId, perfil, objetivos) {
+export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null) {
   const dia = plan.dias[diaIdx];
-  const { franja, objDia } = franjaDelDia(perfil, objetivos, dia, franjaId);
+  const { franja, objDia } = franjaDelDia(perfil, objetivos, dia, franjaId, proveedor);
   if (!franja) return [];
   const actual = dia.comidas.find((c) => c.franja === franjaId)?.recetaId;
   const usos = {};
@@ -178,10 +188,11 @@ export function sustituir(plan, diaIdx, franjaId, comida) {
 }
 
 /** Recalcula horario y cantidades de todo el plan (mismas recetas) tras cambiar el perfil. */
-export function reescalarPlan(plan, perfil, objetivos) {
+export function reescalarPlan(plan, perfil, objetivos, proveedor = null) {
   for (const dia of plan.dias) {
-    const { entreno, horario, objDia } = contextoDia(perfil, objetivos, dia.fecha);
+    const { entreno, horario, objDia } = contextoDia(perfil, objetivos, dia.fecha, proveedor);
     dia.entreno = entreno;
+    dia.objetivo = objDia;
     dia.sesion = horario.entreno;
     dia.consejos = horario.consejos;
     dia.comidas = dia.comidas

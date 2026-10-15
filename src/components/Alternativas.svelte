@@ -6,12 +6,13 @@
   import { cerrarHoja, avisar } from '../stores/ui.js';
   import { alternativas, recetaPorId } from '../lib/planificador.js';
   import { objetivosActuales, sustituirComida } from '../lib/acciones.js';
+  import { proveedorDe } from '../lib/hyrox/index.js';
 
   let { diaIdx, franja } = $props();
   const e = get(estado);
   const actual = e.plan.dias[diaIdx]?.comidas.find((c) => c.franja === franja);
   let filtro = $state('todas');
-  const lista = alternativas(e.plan, diaIdx, franja, e.perfil, objetivosActuales());
+  const lista = alternativas(e.plan, diaIdx, franja, e.perfil, objetivosActuales(), proveedorDe(e));
   const visibles = $derived(lista.filter((a) => filtro === 'todas' || (filtro === 'rapidas' ? recetaPorId[a.comida.recetaId].tiempo <= 15 : !a.usos)).slice(0, 12));
 
   function elegir(alt) {

@@ -1,6 +1,6 @@
 # Mi Nutricionista
 
-Nutricionista (y pronto entrenador de HYROX) personal en una app web instalable en el móvil. Publicada en **https://sergiiosp.github.io/mi-nutricionista/**
+Nutricionista y entrenador personal para HYROX en una app web instalable en el móvil. Publicada en **https://sergiiosp.github.io/mi-nutricionista/**
 
 ## Qué hace
 
@@ -9,6 +9,8 @@ Nutricionista (y pronto entrenador de HYROX) personal en una app web instalable 
 - **Menú semanal** con recetas reales (con foto) ajustadas a tus macros y colocadas según tu horario, con comida pre y post-entreno.
 - **Día dinámico**: registras lo que comes y ves en vivo lo que te queda; si comes algo fuera del plan, las comidas que quedan se reajustan solas y te sugiere qué comer para completar.
 - **Registro sin IA**: escáner de código de barras (Open Food Facts), buscador de alimentos, recetas y productos, raciones visuales (puño, palma, cuchara…), comidas propias, platos típicos de comer fuera y foto del plato como diario.
+- **Entrenador HYROX**: plan por fases (base, construcción, específico y puesta a punto) hasta tu carrera, con descargas, sesiones detalladas (carrera, estaciones, fuerza, *compromised running* y simulacros), tus ritmos y los pesos de tu categoría, sustitutos si te falta material y alternativas si tienes lesiones. Registras cada sesión (RPE, sensaciones, tiempos) y el plan se ajusta solo; puedes mover entrenos de día. Incluye estimación de tiempo de carrera, estrategia por estación, nutrición del día de carrera y de la semana previa, y fichas de técnica de las 8 estaciones.
+- **Comida según el entreno**: cada día del menú se calcula con la sesión que toca (más hidratos en tiradas largas, series y simulacros, carga de hidratos antes de la carrera).
 - **Comida**: menú de la semana, recetario, lista de la compra de Mercadona (con «lo tengo en casa» y compartir por WhatsApp) y plan de batch cooking.
 - **Progreso**: resumen semanal, peso con tendencia y ajuste de calorías, medidas, fotos de progreso privadas, rachas y logros.
 - **Mi plan**: horario de comidas, suplementos con evidencia (dosis y precauciones), adaptaciones por salud y hábitos.
@@ -58,6 +60,8 @@ src/lib/planificador.js   → generador de menús y alternativas
 src/lib/horario.js        → horario de comidas y reparto según el entreno
 src/lib/dia.js            → día dinámico: lo que llevas, lo que falta, reajuste y sugerencias
 src/lib/salud.js          → salud, hábitos y suplementación
+src/lib/hyrox/            → plan HYROX, sesiones, ritmos, estimación y nutrición de carrera, estadísticas
+src/data/hyrox.js         → estaciones, pesos oficiales, ejercicios
 src/lib/compra.js, batch.js, logros.js, off.js, raciones.js, registro.js, fotos.js
 src/data/                 → alimentos, recetas, precios, platos de fuera, créditos de fotos
 scripts/                  → precios, catálogo, iconos, service worker y prueba del motor

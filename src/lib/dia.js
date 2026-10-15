@@ -21,7 +21,7 @@ export function objetivoMacros(od) {
 export function estadoDia(e, objetivos, fecha, ahora = null) {
   const dia = e.plan?.dias.find((d) => d.fecha === fecha) || null;
   const entreno = dia?.entreno ?? false;
-  const od = objetivosDia(objetivos, entreno);
+  const od = dia?.objetivo || objetivosDia(objetivos, entreno);
   const objetivo = objetivoMacros(od);
   const registros = (e.registros[fecha] || []).slice().sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
   const consumido = sumarMacros(registros.map((r) => r.macros));

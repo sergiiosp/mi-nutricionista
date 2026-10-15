@@ -71,7 +71,7 @@ export function kcalSesion(perfil) {
   return Math.round((met - 1) * perfil.peso * ((perfil.duracionEntreno || 60) / 60));
 }
 
-function repartoMacros(kcal, proteina, grasaBase, pesoRef, minHidratos = 0) {
+export function repartoMacros(kcal, proteina, grasaBase, pesoRef, minHidratos = 0) {
   let grasa = grasaBase;
   let hidratos = (kcal - proteina * 4 - grasa * 9) / 4;
   const minimo = Math.max(80, minHidratos);
@@ -157,7 +157,29 @@ export function calcularObjetivos(perfil) {
     cambioSemanalKg: Math.round((((kcalMedia - getMedio) * 7) / KCAL_POR_KG) * 100) / 100,
     limitado,
     porTipo: { entreno, descanso },
+    // Para calcular días con sesiones concretas (plan HYROX)
+    base: { getDescanso, ritmo, ajuste, minimo, proteina, grasaBase, pesoRef, peso, objetivo },
   };
+}
+
+/**
+ * Objetivo de un día con sesiones concretas (plan HYROX): el gasto de cada sesión se suma
+ * y los hidratos mínimos dependen del tipo de sesión. En carga y carrera no hay déficit.
+ * @param sesiones [{ kcal, carbos (g/kg), carga?, tipo }]
+ */
+export function metaDia(objetivos, sesiones) {
+  if (!sesiones?.length) return objetivos.porTipo.descanso;
+  const b = objetivos.base;
+  const extra = sesiones.reduce((s, x) => s + (x.kcal || 0), 0);
+  const sinDeficit = sesiones.some((x) => x.carga || x.tipo === 'carrera');
+  const ritmo = sinDeficit ? Math.max(b.ritmo, 0) : b.ritmo;
+  // Perdiendo grasa se priorizan los hidratos alrededor del entreno, pero sin forzar superávit
+  const recorte = !sinDeficit && ['perder', 'recomposicion'].includes(b.objetivo) ? 0.75 : 1;
+  const minCarbos = Math.max(0, ...sesiones.map((x) => x.carbos || 0)) * b.peso * recorte;
+  let kcal = Math.max((b.getDescanso + extra) * (1 + ritmo) + (sinDeficit ? 0 : b.ajuste), b.minimo);
+  if (minCarbos) kcal = Math.max(kcal, b.proteina * 4 + 0.6 * b.pesoRef * 9 + minCarbos * 4);
+  kcal = Math.round(kcal / 10) * 10;
+  return { ...repartoMacros(kcal, b.proteina, b.grasaBase, b.pesoRef, minCarbos), get: Math.round(b.getDescanso + extra) };
 }
 
 /** Objetivos de un día concreto (entreno o descanso). */

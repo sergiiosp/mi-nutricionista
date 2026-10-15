@@ -5,6 +5,9 @@
   import Confeti from './components/Confeti.svelte';
   import DetalleReceta from './components/DetalleReceta.svelte';
   import Alternativas from './components/Alternativas.svelte';
+  import DetalleSesion from './components/DetalleSesion.svelte';
+  import RegistrarSesion from './components/RegistrarSesion.svelte';
+  import FichaEstacion from './components/FichaEstacion.svelte';
   import Registrar from './registro/Registrar.svelte';
   import Cuestionario from './pages/Cuestionario.svelte';
   import Hoy from './pages/Hoy.svelte';
@@ -62,7 +65,7 @@
     { id: 'comida', nombre: 'Comida', emoji: '🥗' },
     { id: 'progreso', nombre: 'Progreso', emoji: '📈' },
   ];
-  const TITULOS = { receta: '', alternativas: 'Cambiar plato', registrar: 'Registrar comida' };
+  const TITULOS = { receta: '', alternativas: 'Cambiar plato', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
 
 {#if !$estado.perfil || editando}
@@ -76,7 +79,7 @@
   <main class="contenido">
     {#key $ruta.pagina}
       <div in:fly={{ y: 10, duration: 220 }}>
-        {#if $ruta.pagina === 'entreno'}<Entreno />
+        {#if $ruta.pagina === 'entreno'}<Entreno sub={$ruta.sub} />
         {:else if $ruta.pagina === 'comida'}<Comida sub={$ruta.sub} />
         {:else if $ruta.pagina === 'progreso'}<Progreso sub={$ruta.sub} />
         {:else if $ruta.pagina === 'ajustes'}<Ajustes oneditar={() => (editando = true)} />
@@ -105,7 +108,10 @@
       <Hoja titulo={TITULOS[$hoja.tipo] ?? ''} onclose={cerrarHoja}>
         {#if $hoja.tipo === 'registrar'}<Registrar {...$hoja.props} />
         {:else if $hoja.tipo === 'receta'}<DetalleReceta {...$hoja.props} />
-        {:else if $hoja.tipo === 'alternativas'}<Alternativas {...$hoja.props} />{/if}
+        {:else if $hoja.tipo === 'alternativas'}<Alternativas {...$hoja.props} />
+        {:else if $hoja.tipo === 'sesion'}<DetalleSesion {...$hoja.props} />
+        {:else if $hoja.tipo === 'registrarSesion'}<RegistrarSesion {...$hoja.props} />
+        {:else if $hoja.tipo === 'estacion'}<FichaEstacion {...$hoja.props} />{/if}
       </Hoja>
     {/key}
   {/if}

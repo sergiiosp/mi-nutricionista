@@ -3,6 +3,8 @@
   import Anillo from '../components/Anillo.svelte';
   import Emoji from '../components/Emoji.svelte';
   import TarjetaComida from '../components/TarjetaComida.svelte';
+  import TarjetaSesion from '../components/TarjetaSesion.svelte';
+  import { planDe, sesionesDia } from '../lib/hyrox/index.js';
   import { estado, añadirRegistro, borrarRegistro, horaActual } from '../stores/estado.js';
   import { abrirHoja, avisar } from '../stores/ui.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto } from '../lib/nutricion.js';
@@ -24,6 +26,8 @@
   const entreno = $derived(d.dia ? d.entreno : esDiaEntreno($estado.perfil, hoy));
   const sesion = $derived(d.dia?.sesion || (entreno ? horarioDia($estado.perfil, true).entreno : null));
   const deportes = $derived(($estado.perfil.deportes || []).map((x) => DEPORTES[x]).filter(Boolean));
+  const hyroxActivo = $derived(!!planDe($estado));
+  const sesionesHoy = $derived(sesionesDia($estado, hoy));
   const recs = $derived(recomendaciones($estado.perfil, objetivos));
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const r = $derived(rachas($estado, objetivos, hoy));
@@ -32,11 +36,12 @@
 
   const linea = $derived.by(() => {
     const items = d.comidas.map((c) => ({ tipo: 'comida', hora: c.hora || '', c }));
-    if (entreno && sesion) items.push({ tipo: 'entreno', hora: sesion.inicio });
+    if (hyroxActivo) for (const s of sesionesHoy) items.push({ tipo: 'hyrox', hora: s.hora, s });
+    else if (entreno && sesion) items.push({ tipo: 'entreno', hora: sesion.inicio });
     const franjas = d.comidas.map((c) => ({ id: c.franja, horaTexto: c.hora || '' }));
     for (const x of recordatoriosDia(recs, franjas, sesion)) items.push({ tipo: 'sup', hora: x.hora, x });
     for (const x of d.extras) items.push({ tipo: 'extra', hora: x.hora || '', x });
-    const orden = { sup: 0, entreno: 1, extra: 2, comida: 3 };
+    const orden = { sup: 0, entreno: 1, hyrox: 1, extra: 2, comida: 3 };
     return items.sort((a, b) => a.hora.localeCompare(b.hora) || orden[a.tipo] - orden[b.tipo]);
   });
 
@@ -67,7 +72,7 @@
 
   <div class="hero" in:fly={{ y: 16, duration: 300 }}>
     <div class="hero-top">
-      <span class="badge">{#if entreno}💪 Día de entreno{#if sesion}{' · '}{sesion.inicio}{/if}{:else}😌 Día de descanso{/if}</span>
+      <span class="badge">{#if hyroxActivo && sesionesHoy.length}{sesionesHoy[0].emoji} {sesionesHoy[0].titulo}{:else if entreno}💪 Día de entreno{#if sesion}{' · '}{sesion.inicio}{/if}{:else}😌 Día de descanso{/if}</span>
       {#if r.registro > 1}<span class="badge">🔥 {r.registro} días seguidos</span>{/if}
     </div>
     <div class="hero-cuerpo">
@@ -122,13 +127,15 @@
   {#if linea.length}
     <h2 class="seccion">Tu día</h2>
     <ol class="timeline">
-      {#each linea as it, i (it.tipo + (it.c?.franja || it.x?.id || it.x?.texto || i))}
+      {#each linea as it, i (it.tipo + (it.c?.franja || it.s?.id || it.x?.id || it.x?.texto || i))}
         <li class="tl tl-{it.tipo}">
           <div class="tl-hora">{it.tipo === 'sup' ? '' : it.hora}</div>
           <div class="tl-linea"><span></span></div>
           <div class="tl-contenido">
             {#if it.tipo === 'comida'}
               <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} />
+            {:else if it.tipo === 'hyrox'}
+              <TarjetaSesion sesion={it.s} registro={$estado.hyrox?.registros?.[it.s.id]} />
             {:else if it.tipo === 'entreno'}
               <div class="bloque-entreno">
                 <Emoji e={deportes[0]?.emoji || '🏋️'} tam={34} />

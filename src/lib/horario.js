@@ -44,7 +44,8 @@ const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
  * Franjas del día con hora, etiqueta (pre/post entreno) y reparto de macros.
  * @returns {{ franjas: Array, entreno: {inicio, fin}|null, consejos: string[] }}
  */
-export function horarioDia(perfil, entreno) {
+/** @param sesionDia opcional { hora, duracion } de la sesión concreta del día (plan HYROX) */
+export function horarioDia(perfil, entreno, sesionDia = null) {
   const base = (REPARTOS[perfil.comidas] || REPARTOS[4]).map((f) => ({ ...f, pctM: { p: f.pct, c: f.pct, g: f.pct } }));
   const consejos = [];
 
@@ -69,10 +70,11 @@ export function horarioDia(perfil, entreno) {
   const franjas = base.map((f) => ({ ...f, hora: horas[f.id], etiqueta: null }));
   let sesion = null;
 
-  if (entreno && perfil.horaEntreno) {
-    let ini = aMin(perfil.horaEntreno);
+  const horaSesion = sesionDia?.hora || perfil.horaEntreno;
+  if (entreno && horaSesion) {
+    let ini = aMin(horaSesion);
     if (ini < despertar - 60) ini += 1440;
-    const fin = ini + (perfil.duracionEntreno || 60);
+    const fin = ini + (sesionDia?.duracion || perfil.duracionEntreno || 60);
     sesion = { inicio: ini, fin };
     const snacks = franjas.filter((f) => f.tipo === 'snack');
 

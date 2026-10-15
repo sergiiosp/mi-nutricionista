@@ -20,6 +20,7 @@ export const VACIO = () => ({
   recientes: [], // últimas cosas registradas (para repetir con un toque)
   productos: {}, // productos escaneados (Open Food Facts) para usarlos sin conexión
   tema: 'auto',
+  hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
 });
 
 /** Convierte datos de la versión 1 (hechas: fecha|franja → true) al formato de registros. */
