@@ -61,6 +61,29 @@ self.addEventListener('fetch', (ev) => {
     ev.respondWith(caches.match(req).then((r) => r || fetch(req).then((x) => guardar(req, x))));
   }
 });
+
+// Recordatorios (Web Push desde el servidor)
+self.addEventListener('push', (ev) => {
+  let d = {};
+  try { d = ev.data.json(); } catch { d = { cuerpo: ev.data ? ev.data.text() : '' }; }
+  ev.waitUntil(self.registration.showNotification(d.titulo || 'Mi Nutricionista', {
+    body: d.cuerpo || '',
+    icon: 'icons/icon-192.png',
+    badge: 'icons/icon-192.png',
+    tag: d.etiqueta || undefined,
+    data: { url: d.url || '#hoy' },
+  }));
+});
+
+self.addEventListener('notificationclick', (ev) => {
+  ev.notification.close();
+  const destino = new URL(ev.notification.data?.url || '#hoy', self.registration.scope).href;
+  ev.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((ventanas) => {
+    const v = ventanas.find((w) => w.url.startsWith(self.registration.scope));
+    if (v) { v.postMessage({ tipo: 'ir', url: destino }); return v.focus(); }
+    return self.clients.openWindow(destino);
+  }));
+});
 `;
 writeFileSync(path.join(DIST, 'sw.js'), sw);
 console.log(`sw.js generado (${precarga.length} archivos precargados, versión ${version})`);

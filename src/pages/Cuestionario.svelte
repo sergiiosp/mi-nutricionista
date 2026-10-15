@@ -2,9 +2,15 @@
   // Envoltorio Svelte del cuestionario (lib/cuestionario.js genera cada paso)
   import { tick } from 'svelte';
   import { iniciarCuestionario, vistaCuestionario, enviarPaso, pasoAtras, actualizarVisibles } from '../lib/cuestionario.js';
+  import Hoja from '../components/Hoja.svelte';
+  import Vincular from '../components/nube/Vincular.svelte';
 
   let { perfil = null, onterminar, oncancelar } = $props();
   iniciarCuestionario(perfil);
+  // ¿Ya usas la app en otro dispositivo? (también al llegar desde el enlace del QR)
+  const claveEnlace = !perfil ? sessionStorage.getItem('vincular') : null;
+  if (claveEnlace) sessionStorage.removeItem('vincular');
+  let vinculando = $state(!!claveEnlace);
   let version = $state(0);
   let raiz;
   const html = $derived((version, vistaCuestionario()));
@@ -39,6 +45,21 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+{#if !perfil}
+  <div class="contenido ya-uso">
+    <button class="boton-texto" onclick={() => (vinculando = true)}>🔗 ¿Ya usas la app en otro dispositivo? <b>Vincúlalo</b></button>
+  </div>
+{/if}
+{#if vinculando}
+  <Hoja titulo="Vincular este dispositivo" onclose={() => (vinculando = false)}>
+    <Vincular clave={claveEnlace} onhecho={() => (vinculando = false)} />
+  </Hoja>
+{/if}
 <div class="contenido" bind:this={raiz} onsubmit={alEnviar} onclick={alClic} onchange={alCambiar}>
   {@html html}
 </div>
+
+<style>
+  .ya-uso { padding-top: 12px; padding-bottom: 0; text-align: center; }
+  .ya-uso button { font-size: 0.9rem; }
+</style>

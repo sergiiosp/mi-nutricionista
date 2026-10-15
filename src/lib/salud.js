@@ -201,6 +201,7 @@ export function recordatoriosDia(recs, franjas, sesion) {
     if (!r) continue;
     if (r.franja) {
       const f = franjas.find((x) => x.id === r.franja) || franjas[0];
+      if (!f) continue; // día sin menú
       lista.push({ hora: f.horaTexto, texto: r.texto, emoji: s.emoji });
     } else if (r.preEntreno && sesion) {
       lista.push({ hora: aHora(aMin(sesion.inicio) - 45), texto: r.texto, emoji: s.emoji });

@@ -1,6 +1,10 @@
 // Día dinámico: lo que llevas comido, lo que te falta y el reajuste de las comidas que quedan.
 import { macrosComida, sumarMacros, escalarReceta, objetivosDia, macrosDe, alimentoPermitido, alimento } from './nutricion.js';
 import { recetaPorId } from './planificador.js';
+import { extrasDia } from './hyrox/strava.js';
+
+// Del gasto de un entreno extra se recupera una parte según el objetivo
+const RECUPERAR = { perder: 0.5, recomposicion: 0.7 };
 
 const CERO = { kcal: 0, p: 0, c: 0, g: 0, f: 0 };
 
@@ -23,6 +27,14 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
   const entreno = dia?.entreno ?? false;
   const od = dia?.objetivo || objetivosDia(objetivos, entreno);
   const objetivo = objetivoMacros(od);
+  // Entrenos de Strava que no estaban previstos: más hidratos (y algo de grasa) ese día
+  const strava = extrasDia(e, fecha, entreno);
+  const extraKcal = Math.round(strava.kcal * (RECUPERAR[e.perfil?.objetivo] ?? 1));
+  if (extraKcal > 0) {
+    objetivo.kcal += extraKcal;
+    objetivo.c += (extraKcal * 0.7) / 4;
+    objetivo.g += (extraKcal * 0.3) / 9;
+  }
   const registros = (e.registros[fecha] || []).slice().sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
   const consumido = sumarMacros(registros.map((r) => r.macros));
 
@@ -40,7 +52,7 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
 
   const pendientes = comidas.filter((c) => c.situacion === 'pendiente');
   const porVenir = pendientes.filter((c) => !c.pasada);
-  const desviado = registros.some((r) => r.tipo !== 'plan') || comidas.some((c) => c.situacion === 'saltada');
+  const desviado = extraKcal > 0 || registros.some((r) => r.tipo !== 'plan') || comidas.some((c) => c.situacion === 'saltada');
 
   // Reajuste: lo que falta se reparte entre las pendientes según su peso en el plan original
   if (desviado && porVenir.length) {
@@ -78,7 +90,7 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
 
   return {
     dia, entreno, od, objetivo, registros, consumido, comidas, pendientes, desviado,
-    faltan, proyectado, huecoFinal,
+    faltan, proyectado, huecoFinal, strava: { ...strava, extraKcal },
     pasado: consumido.kcal > objetivo.kcal * 1.05,
     extras: registros.filter((r) => r.tipo !== 'plan' && !comidas.some((c) => c.franja === r.franja)),
   };

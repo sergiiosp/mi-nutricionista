@@ -5,7 +5,8 @@
   import { planDe } from '../../lib/hyrox/index.js';
   import { semanaDe, FASES } from '../../lib/hyrox/plan.js';
   import { hoyISO, sumarDias } from '../../lib/planificador.js';
-  import { diaSemana, fechaCorta, capital } from '../../lib/formato.js';
+  import { diaSemana, fechaCorta, capital, num } from '../../lib/formato.js';
+  import { familia, EMOJI_FAMILIA } from '../../lib/hyrox/strava.js';
 
   const hoy = hoyISO();
   const plan = $derived(planDe($estado));
@@ -14,6 +15,7 @@
   const w = $derived(sel ?? actual);
   const semana = $derived(plan?.semanas[w]);
   const registros = $derived($estado.hyrox?.registros || {});
+  const extrasStrava = $derived(Object.values($estado.strava || {}).filter((a) => !a.sesion && !a.ignorada));
   const diasSemana = $derived(semana ? Array.from({ length: 7 }, (_, i) => sumarDias(semana.lunes, i)) : []);
   const hechas = $derived(semana ? semana.sesiones.filter((s) => registros[s.id]?.estado === 'completa').length : 0);
   const diasCarrera = $derived(plan?.carrera ? Math.round((new Date(`${plan.carrera}T12:00`) - new Date(`${hoy}T12:00`)) / 86400000) : null);
@@ -53,6 +55,9 @@
         {:else}
           <div class="descanso">😌 Descanso{f < hoy ? '' : ': camina, estira y duerme bien'}</div>
         {/each}
+        {#each extrasStrava.filter((a) => a.inicio.startsWith(f)) as a (a.id)}
+          <div class="extra"><Emoji e={EMOJI_FAMILIA[familia(a.tipo)]} tam={24} /><span><b>{a.nombre}</b><small>Extra de Strava · {a.inicio.slice(11, 16)} · {Math.round(a.duracion / 60)} min{a.distancia > 0 ? ` · ${num(a.distancia / 1000, 1)} km` : ''}</small></span></div>
+        {/each}
       </div>
     {/each}
   </div>
@@ -77,5 +82,8 @@
   .dia.hoy { padding: 10px; margin: 0 -10px; border-radius: 22px; background: color-mix(in srgb, var(--primario-claro) 55%, transparent); }
   .dia-cab { display: flex; align-items: baseline; gap: 8px; }
   .dia-cab small { color: var(--texto-2); font-weight: 700; }
+  .extra { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 16px; background: color-mix(in srgb, #fc4c02 12%, var(--superficie)); font-size: 0.9rem; }
+  .extra span { display: grid; }
+  .extra small { color: var(--texto-2); font-weight: 700; font-size: 0.78rem; }
   .descanso { padding: 12px 14px; border-radius: 16px; border: 2px dashed var(--borde); color: var(--texto-2); font-weight: 700; font-size: 0.88rem; }
 </style>

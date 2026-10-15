@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "barcode-detector": "^3.2.2",
-    "idb-keyval": "^6.3.0"
+    "idb-keyval": "^6.3.0",
+    "qrcode-generator": "2.0.4"
   }
 }

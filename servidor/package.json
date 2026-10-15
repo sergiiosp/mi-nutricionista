@@ -1,0 +1,14 @@
+{
+  "name": "mi-nutricionista-servidor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --test-scheduled",
+    "deploy": "wrangler deploy",
+    "tablas": "wrangler d1 execute mi-nutricionista --remote --file=schema.sql",
+    "tablas-local": "wrangler d1 execute mi-nutricionista --local --file=schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.0"
+  }
+}

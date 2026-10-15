@@ -82,7 +82,7 @@
         {#if $ruta.pagina === 'entreno'}<Entreno sub={$ruta.sub} />
         {:else if $ruta.pagina === 'comida'}<Comida sub={$ruta.sub} />
         {:else if $ruta.pagina === 'progreso'}<Progreso sub={$ruta.sub} />
-        {:else if $ruta.pagina === 'ajustes'}<Ajustes oneditar={() => (editando = true)} />
+        {:else if $ruta.pagina === 'ajustes'}<Ajustes sub={$ruta.sub} oneditar={() => (editando = true)} />
         {:else}<Hoy />{/if}
       </div>
     {/key}

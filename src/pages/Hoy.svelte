@@ -107,6 +107,9 @@
   {#if d.desviado && d.comidas.some((c) => c.ajustada && c.situacion === 'pendiente')}
     <div class="aviso aviso-lila">🔄 <span>He <b>reajustado tus próximas comidas</b> para que el día siga cuadrando con lo que ya has comido.</span></div>
   {/if}
+  {#if d.strava.extraKcal > 0}
+    <div class="aviso aviso-strava">⌚ <span>Entreno extra en Strava ({d.strava.extras.map((a) => a.nombre).join(', ')}): te sumo <b>{entero(d.strava.extraKcal)} kcal</b> a hoy, sobre todo en hidratos, repartidas en lo que te queda.</span></div>
+  {/if}
   {#if d.pasado}
     <div class="aviso aviso-amarillo">🙌 <span>Hoy te has pasado un poco. No pasa nada: <b>no compenses mañana</b>, sigue el menú normal.</span></div>
   {/if}
@@ -180,6 +183,7 @@
   .hero .b-c .barra-relleno { background: #ffe7a8; }
   .hero .b-g .barra-relleno { background: #cfe0ff; }
   .hero-pie { position: relative; margin: 12px 0 0; font-size: 0.8rem; font-weight: 700; opacity: 0.88; }
+  .aviso-strava { background: color-mix(in srgb, #fc4c02 14%, var(--superficie)); }
   .aviso { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 18px; margin: 12px 0; font-weight: 600; font-size: 0.9rem; }
   .aviso-lila { background: var(--lila-claro); }
   .aviso-amarillo { background: var(--amarillo-claro); }

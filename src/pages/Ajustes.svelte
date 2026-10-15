@@ -1,6 +1,8 @@
 <script>
   import Emoji from '../components/Emoji.svelte';
   import Segmentos from '../components/Segmentos.svelte';
+  import Conectar from './ajustes/Conectar.svelte';
+  import { ir } from '../stores/ruta.js';
   import { estado, actualizar, exportar, importar, reiniciar } from '../stores/estado.js';
   import { avisar } from '../stores/ui.js';
   import { calcularObjetivos, OBJETIVOS, DIETAS, TRABAJO, DEPORTES } from '../lib/nutricion.js';
@@ -13,8 +15,10 @@
   import { ALERGENOS } from '../data/alimentos.js';
   import { num } from '../lib/formato.js';
 
-  let { oneditar } = $props();
-  let pestaña = $state('plan');
+  let { oneditar, sub = '' } = $props();
+  const PESTAÑAS = [{ id: 'plan', nombre: 'Plan', emoji: '🎯' }, { id: 'salud', nombre: 'Salud', emoji: '💊' }, { id: 'conectar', nombre: 'Conectar', emoji: '🔗' }, { id: 'ajustes', nombre: 'Ajustes', emoji: '⚙️' }];
+  let pestaña = $state(PESTAÑAS.some((x) => x.id === sub) ? sub : 'plan');
+  $effect(() => { if (PESTAÑAS.some((x) => x.id === sub)) pestaña = sub; });
   const p = $derived($estado.perfil);
   const o = $derived(calcularObjetivos(p));
   const recs = $derived(recomendaciones(p, o));
@@ -48,7 +52,7 @@
 </script>
 
 <h1 class="titulo">Mi plan</h1>
-<Segmentos opciones={[{ id: 'plan', nombre: 'Plan', emoji: '🎯' }, { id: 'salud', nombre: 'Salud', emoji: '💊' }, { id: 'ajustes', nombre: 'Ajustes', emoji: '⚙️' }]} bind:valor={pestaña} />
+<Segmentos opciones={PESTAÑAS} bind:valor={pestaña} onchange={(id) => ir('ajustes', id)} />
 
 {#if pestaña === 'plan'}
   {#if !p.trabajo}
@@ -89,6 +93,8 @@
   {/if}
   <h2 class="seccion">🌿 Hábitos</h2>
   {#each recs.habitos as a (a.titulo)}<div class="tarjeta consejo-item"><Emoji e={a.emoji} tam={32} /><div><b>{a.titulo}</b><p>{a.texto}</p></div></div>{/each}
+{:else if pestaña === 'conectar'}
+  <Conectar />
 {:else}
   <h2 class="seccion">👤 Tus datos</h2>
   <div class="tarjeta">
@@ -110,7 +116,7 @@
 
   <h2 class="seccion">💾 Copia de seguridad</h2>
   <div class="tarjeta">
-    <p class="pie-nota">Tus datos se guardan en este dispositivo. Descarga una copia para pasarlos a otro móvil o navegador (las fotos no se incluyen).</p>
+    <p class="pie-nota">Tus datos se guardan en este dispositivo (y, si activas la sincronización en Conectar, cifrados en tu servidor con copia diaria). También puedes descargar una copia en un archivo (las fotos no se incluyen).</p>
     <div class="acciones-fila">
       <button class="boton boton-sec boton-peq" onclick={descargar}>Descargar copia</button>
       <label class="boton boton-sec boton-peq">Restaurar copia<input type="file" accept="application/json" hidden onchange={restaurar} /></label>

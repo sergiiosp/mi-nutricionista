@@ -14,6 +14,7 @@ Nutricionista y entrenador personal para HYROX en una app web instalable en el m
 - **Comida**: menú de la semana, recetario, lista de la compra de Mercadona (con «lo tengo en casa» y compartir por WhatsApp) y plan de batch cooking.
 - **Progreso**: resumen semanal, peso con tendencia y ajuste de calorías, medidas, fotos de progreso privadas, rachas y logros.
 - **Mi plan**: horario de comidas, suplementos con evidencia (dosis y precauciones), adaptaciones por salud y hábitos.
+- **Conectar** (Mi plan → Conectar): sincroniza móvil y ordenador vinculándolos con un QR o un código de 8 letras (datos cifrados de extremo a extremo), copias de seguridad diarias en el servidor, **Strava** (y el Apple Watch a través de Strava: los entrenos se importan solos, marcan como hecha la sesión del plan y, si son extra, suman calorías a ese día) y **recordatorios** en el móvil para comer, entrenar, pesarte y tomar los suplementos.
 - Funciona sin conexión y se instala en el móvil («Añadir a pantalla de inicio»).
 
 > Los cálculos son orientativos y no sustituyen a un dietista-nutricionista o médico.
@@ -46,7 +47,11 @@ Cada `git push` a `main` publica automáticamente en GitHub Pages, y los lunes G
 - **Fotos de recetas**: Wikimedia Commons (licencias libres; créditos en Mi plan → Ajustes → Créditos).
 - **Iconos 3D**: Fluent Emoji de Microsoft (MIT). Si usas emojis nuevos en el código, ejecuta `node scripts/copiar-emojis.mjs <carpeta assets del paquete @lobehub/fluent-emoji-3d>`.
 
-Tus datos se guardan en el dispositivo (localStorage y, las fotos, IndexedDB). Usa Mi plan → Ajustes → Copia de seguridad para pasarlos a otro dispositivo.
+Tus datos se guardan en el dispositivo (localStorage y, las fotos, IndexedDB). Si activas la sincronización, también en tu servidor, cifrados con una clave que solo tienen tus dispositivos. Las fotos nunca salen del dispositivo.
+
+## Servidor
+
+La sincronización, las copias, Strava y los recordatorios usan un Cloudflare Worker gratuito: está en [`servidor/`](servidor/README.md) con sus instrucciones de puesta en marcha.
 
 ## Estructura
 
@@ -62,6 +67,9 @@ src/lib/dia.js            → día dinámico: lo que llevas, lo que falta, reaju
 src/lib/salud.js          → salud, hábitos y suplementación
 src/lib/hyrox/            → plan HYROX, sesiones, ritmos, estimación y nutrición de carrera, estadísticas
 src/data/hyrox.js         → estaciones, pesos oficiales, ejercicios
+src/lib/nube/             → sincronización cifrada, Strava y recordatorios (cliente del servidor)
+src/lib/hyrox/strava.js   → emparejar entrenos de Strava con sesiones y calorías extra
+servidor/                 → Cloudflare Worker: datos cifrados, copias, Strava y Web Push
 src/lib/compra.js, batch.js, logros.js, off.js, raciones.js, registro.js, fotos.js
 src/data/                 → alimentos, recetas, precios, platos de fuera, créditos de fotos
 scripts/                  → precios, catálogo, iconos, service worker y prueba del motor

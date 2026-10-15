@@ -1,0 +1,19 @@
+# Servidor de Mi Nutricionista (Cloudflare Workers, plan gratuito)
+name = "mi-nutricionista"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Cada 5 minutos: envía los recordatorios que tocan y limpia lo caducado
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+APP_URL = "https://sergiiosp.github.io/mi-nutricionista/"
+MAX_CUENTAS = "3"
+# ID público de tu aplicación de Strava (el secreto va aparte: npx wrangler secret put STRAVA_SECRET)
+STRAVA_CLIENT_ID = ""
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mi-nutricionista"
+database_id = "bed1a187-2374-486a-b541-54cabbe9dc98"
