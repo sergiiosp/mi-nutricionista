@@ -1,5 +1,5 @@
 // Generado por scripts/actualizar-precios.mjs — no editar a mano.
-export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-15T12:33:22.045Z"};
+export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-15T12:56:33.054Z"};
 export const PRECIOS = {
  "2787": {
   "nombre": "Filetes pechuga de pollo",

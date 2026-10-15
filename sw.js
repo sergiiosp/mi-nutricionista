@@ -1,6 +1,6 @@
 // Service worker: la app funciona sin conexión (por ejemplo, dentro del súper).
 // Sube VERSION cada vez que cambies archivos para que los móviles descarguen la nueva versión.
-const VERSION = 'v2';
+const VERSION = 'p20261015';
 const CACHE = `nutricionista-${VERSION}`;
 const ARCHIVOS = [
   './',
