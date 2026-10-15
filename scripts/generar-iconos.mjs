@@ -75,6 +75,6 @@ function png(tam, maskable) {
   ]);
 }
 
-writeFileSync(path.join(RAIZ, 'icons', 'icon-192.png'), png(192, true));
-writeFileSync(path.join(RAIZ, 'icons', 'icon-512.png'), png(512, true));
+writeFileSync(path.join(RAIZ, 'public', 'icons', 'icon-192.png'), png(192, true));
+writeFileSync(path.join(RAIZ, 'public', 'icons', 'icon-512.png'), png(512, true));
 console.log('Iconos generados en icons/');

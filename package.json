@@ -5,9 +5,20 @@
   "type": "module",
   "description": "Nutricionista personal con menús y lista de la compra de Mercadona",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/generar-sw.mjs",
+    "preview": "vite preview --port 8080",
     "precios": "node scripts/actualizar-precios.mjs",
     "catalogo": "node scripts/descargar-catalogo.mjs",
-    "test": "node scripts/probar-motor.mjs",
-    "start": "python -m http.server 8080"
+    "test": "node scripts/probar-motor.mjs"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.2",
+    "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "barcode-detector": "^3.2.2",
+    "idb-keyval": "^6.3.0"
   }
 }

@@ -9,7 +9,7 @@ import path from 'node:path';
 
 const ALMACEN = process.argv[2] || 'mad1';
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const { ALIMENTOS, ESPECIAS } = await import(pathToFileURL(path.join(RAIZ, 'data', 'alimentos.js')).href);
+const { ALIMENTOS, ESPECIAS } = await import(pathToFileURL(path.join(RAIZ, 'src', 'data', 'alimentos.js')).href);
 
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -73,7 +73,7 @@ const salida = `// Generado por scripts/actualizar-precios.mjs — no editar a m
 export const PRECIOS_INFO = ${JSON.stringify({ almacen: ALMACEN, actualizado: new Date().toISOString() })};
 export const PRECIOS = ${JSON.stringify(precios, null, 1)};
 `;
-await writeFile(path.join(RAIZ, 'data', 'precios.js'), salida);
+await writeFile(path.join(RAIZ, 'src', 'data', 'precios.js'), salida);
 console.log(`\n${Object.keys(precios).length} productos actualizados.`);
 if (fallidos.length) {
   console.log(`No encontrados (revisa el id en data/alimentos.js): ${fallidos.join(', ')}`);

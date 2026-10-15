@@ -1,11 +1,11 @@
 // Comprueba que el motor genera menús que cumplen los objetivos con varios perfiles.
 // Uso: node scripts/probar-motor.mjs
-import { calcularObjetivos, macrosComida, recetaPermitida, objetivosDia } from '../js/nutricion.js';
-import { generarPlan } from '../js/planificador.js';
-import { listaCompra } from '../js/compra.js';
-import { recomendaciones } from '../js/salud.js';
-import { RECETAS } from '../data/recetas.js';
-import { ALIMENTOS } from '../data/alimentos.js';
+import { calcularObjetivos, macrosComida, recetaPermitida, objetivosDia } from '../src/lib/nutricion.js';
+import { generarPlan } from '../src/lib/planificador.js';
+import { listaCompra } from '../src/lib/compra.js';
+import { recomendaciones } from '../src/lib/salud.js';
+import { RECETAS } from '../src/data/recetas.js';
+import { ALIMENTOS } from '../src/data/alimentos.js';
 
 for (const r of RECETAS) for (const i of r.ingredientes) if (!ALIMENTOS[i.a]) throw new Error(`${r.id}: ingrediente ${i.a} no existe`);
 

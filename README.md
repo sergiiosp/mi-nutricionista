@@ -1,65 +1,72 @@
 # Mi Nutricionista
 
-App web (PWA) que actúa como nutricionista personal:
+Nutricionista (y pronto entrenador de HYROX) personal en una app web instalable en el móvil. Publicada en **https://sergiiosp.github.io/mi-nutricionista/**
 
-- **Primera consulta**: cuestionario con tus datos, actividad, objetivo, preferencias, alergias y alimentos que no te gustan.
-- **Cálculo de objetivos**: metabolismo basal (Mifflin-St Jeor), gasto por trabajo, pasos y entrenamiento (MET), y calorías y macros distintas para días de entreno y de descanso.
-- **Horario de comidas**: se colocan según tu hora de levantarte, de trabajo, de entreno y de dormir, con comida pre y post-entreno y más hidratos alrededor del entreno.
-- **Salud y suplementos**: adapta los alimentos (anemia, tensión, colesterol, diabetes…) y recomienda solo suplementos con evidencia (creatina, cafeína, vitamina D, omega-3…), con dosis, momento y precauciones.
-- **Menú semanal** con recetas reales cuyas cantidades se ajustan a tus macros (cada comida se escala por grupos: proteína, hidratos y grasa).
-- **Cambiar platos**: alternativas ya ajustadas a tus macros.
-- **Lista de la compra de Mercadona**: agrupada por secciones, con nº de envases, precio, foto, enlace al producto y opción de copiarla o compartirla.
-- **Progreso**: registro de peso, gráfica con tendencia y recomendación de ajuste de calorías cada dos semanas.
-- Funciona sin conexión y se puede instalar en el móvil como una app.
+## Qué hace
+
+- **Primera consulta**: cuestionario con tus datos, horario y trabajo, entrenamiento, objetivo, salud y hábitos, preferencias y lo que no te gusta.
+- **Objetivos**: metabolismo basal (Mifflin-St Jeor), gasto por trabajo, pasos y entreno (MET), calorías y macros distintas para días de entreno y de descanso.
+- **Menú semanal** con recetas reales (con foto) ajustadas a tus macros y colocadas según tu horario, con comida pre y post-entreno.
+- **Día dinámico**: registras lo que comes y ves en vivo lo que te queda; si comes algo fuera del plan, las comidas que quedan se reajustan solas y te sugiere qué comer para completar.
+- **Registro sin IA**: escáner de código de barras (Open Food Facts), buscador de alimentos, recetas y productos, raciones visuales (puño, palma, cuchara…), comidas propias, platos típicos de comer fuera y foto del plato como diario.
+- **Comida**: menú de la semana, recetario, lista de la compra de Mercadona (con «lo tengo en casa» y compartir por WhatsApp) y plan de batch cooking.
+- **Progreso**: resumen semanal, peso con tendencia y ajuste de calorías, medidas, fotos de progreso privadas, rachas y logros.
+- **Mi plan**: horario de comidas, suplementos con evidencia (dosis y precauciones), adaptaciones por salud y hábitos.
+- Funciona sin conexión y se instala en el móvil («Añadir a pantalla de inicio»).
 
 > Los cálculos son orientativos y no sustituyen a un dietista-nutricionista o médico.
 
-## Arrancar en el ordenador
+## Desarrollo
 
-Hace falta un servidor local (los módulos JS no funcionan abriendo el `index.html` con doble clic):
-
-```bash
-python -m http.server 8080
-```
-
-Y abre http://localhost:8080
-
-## Usarla en el móvil
-
-La app es estática (HTML + JS), así que basta con publicar la carpeta en cualquier hosting con HTTPS: GitHub Pages, Netlify o Cloudflare Pages. Después ábrela en el móvil y elige **«Añadir a pantalla de inicio»**.
-
-Los datos (perfil, menús, pesos) se guardan **en cada dispositivo**. Para pasarlos del ordenador al móvil, usa *Perfil → Descargar copia* y luego *Restaurar copia*.
-
-## Actualizar precios de Mercadona
-
-Mercadona no tiene API oficial. Los precios se descargan de la API pública de su tienda online (`tienda.mercadona.es`), que **no da los valores nutricionales**. Por eso los macros vienen de una base revisada (`data/alimentos.js`) y los precios y envases, de la API.
+Hecha con [Svelte 5](https://svelte.dev) + [Vite](https://vite.dev).
 
 ```bash
-node scripts/actualizar-precios.mjs
+npm install
 ```
 
-Por defecto usa el almacén `mad1` (Madrid). Para otra zona, pasa su código: `node scripts/actualizar-precios.mjs bcn1`. Después sube `VERSION` en `sw.js` para que el móvil descargue los precios nuevos.
+```bash
+npm run dev
+```
 
-## Añadir alimentos y recetas
+Abre http://localhost:8080. Para generar la versión de producción (carpeta `dist/`, con service worker):
 
-1. Busca el producto en el catálogo: `node scripts/descargar-catalogo.mjs` genera `data/catalogo-mercadona.json` con unos 2.000 productos de alimentación (id, nombre, formato y precio).
-2. Añade el alimento a `data/alimentos.js` con sus macros por 100 g y el `mercadona: 'id'` del producto.
-3. Añade la receta a `data/recetas.js`. Los ingredientes con `rol: 'P' | 'C' | 'G'` se escalan; el resto (verduras, condimentos) mantiene su cantidad.
-4. Ejecuta `node scripts/actualizar-precios.mjs` y `node scripts/probar-motor.mjs`. La prueba comprueba que los menús de varios perfiles cuadran con sus objetivos.
+```bash
+npm run build
+```
+
+Cada `git push` a `main` publica automáticamente en GitHub Pages, y los lunes GitHub Actions actualiza los precios de Mercadona (`.github/workflows/publicar.yml`).
+
+## Datos
+
+- **Macros**: base revisada en `src/data/alimentos.js` (la API de Mercadona no da valores nutricionales).
+- **Precios y envases**: API pública de la tienda online de Mercadona → `npm run precios` (escribe `src/data/precios.js`).
+- **Productos envasados**: [Open Food Facts](https://world.openfoodfacts.org), en tiempo real desde la app.
+- **Fotos de recetas**: Wikimedia Commons (licencias libres; créditos en Mi plan → Ajustes → Créditos).
+- **Iconos 3D**: Fluent Emoji de Microsoft (MIT). Si usas emojis nuevos en el código, ejecuta `node scripts/copiar-emojis.mjs <carpeta assets del paquete @lobehub/fluent-emoji-3d>`.
+
+Tus datos se guardan en el dispositivo (localStorage y, las fotos, IndexedDB). Usa Mi plan → Ajustes → Copia de seguridad para pasarlos a otro dispositivo.
 
 ## Estructura
 
 ```
-index.html, css/, icons/, manifest.webmanifest, sw.js   → interfaz y PWA
-js/nutricion.js     → cálculos, macros, escalado de recetas
-js/planificador.js  → generador de menús y alternativas
-js/compra.js        → lista de la compra (envases, coste, pasillos)
-js/progreso.js      → tendencia de peso y recomendaciones
-js/horario.js       → horario de comidas y reparto según el entreno
-js/salud.js         → salud, hábitos y suplementación
-js/vistas/          → pantallas
-data/alimentos.js   → alimentos con macros y producto de Mercadona
-data/recetas.js     → recetario
-data/precios.js     → precios (generado por el script)
-scripts/            → actualizar precios, descargar catálogo, iconos y pruebas
+src/App.svelte            → navegación, hojas y avisos
+src/pages/                → Hoy, Entreno, Comida (semana, recetas, compra, batch), Progreso, Mi plan, cuestionario
+src/registro/             → registrar comida: escáner, buscador, cantidad, comer fuera, mis comidas
+src/components/           → tarjetas de comida, receta, anillo, hojas…
+src/lib/nutricion.js      → gasto energético, objetivos, macros, escalado de recetas
+src/lib/planificador.js   → generador de menús y alternativas
+src/lib/horario.js        → horario de comidas y reparto según el entreno
+src/lib/dia.js            → día dinámico: lo que llevas, lo que falta, reajuste y sugerencias
+src/lib/salud.js          → salud, hábitos y suplementación
+src/lib/compra.js, batch.js, logros.js, off.js, raciones.js, registro.js, fotos.js
+src/data/                 → alimentos, recetas, precios, platos de fuera, créditos de fotos
+scripts/                  → precios, catálogo, iconos, service worker y prueba del motor
 ```
+
+## Comprobar el motor
+
+```bash
+npm test
+```
+
+Genera menús para varios perfiles (oficinista que entrena por la tarde, corredora que compite, entreno en ayunas, anemia e hipertensión…) y comprueba que cuadran con sus objetivos.

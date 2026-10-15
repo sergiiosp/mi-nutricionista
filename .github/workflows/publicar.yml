@@ -31,26 +31,30 @@ jobs:
         with:
           node-version: 22
 
+      - name: Instalar dependencias
+        run: npm ci
+
       - name: Actualizar precios de Mercadona
         if: github.event_name != 'push'
         run: |
           node scripts/actualizar-precios.mjs
-          # Nueva versión del service worker para que el móvil descargue los precios nuevos
-          sed -i "s/^const VERSION = '.*';/const VERSION = 'p$(date +%Y%m%d)';/" sw.js
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/precios.js sw.js
+          git add src/data/precios.js
           git commit -m "Actualizar precios de Mercadona" || echo "Sin cambios"
           git push
 
       - name: Comprobar el motor de menús
         run: node scripts/probar-motor.mjs || echo "::warning::Algún perfil de prueba se sale de margen"
 
+      - name: Compilar la app
+        run: npm run build
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: dist
 
       - id: despliegue
         uses: actions/deploy-pages@v4
