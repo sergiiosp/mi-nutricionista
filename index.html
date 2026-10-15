@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#1d6b45" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#101814" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f3f6f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1613" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Tu nutricionista personal: objetivos, menús semanales y lista de la compra con productos de Mercadona.">
   <title>Mi Nutricionista</title>
   <link rel="manifest" href="manifest.webmanifest">
@@ -13,14 +13,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nutricionista">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <header class="cabecera">
     <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="28" height="28"> Mi Nutricionista</a>
-    <a href="#perfil" id="boton-perfil" class="boton-icono" aria-label="Mi perfil" hidden>
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-    </a>
+    <a href="#perfil" id="boton-perfil" class="boton-plan" hidden><span aria-hidden="true">📋</span> Mi plan</a>
   </header>
 
   <main id="app" class="contenido">

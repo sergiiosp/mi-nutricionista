@@ -49,6 +49,7 @@ const RUTAS = {
   copiar: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
   dados: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"/>',
   taper: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M2 8h20M7 4h10l1 4H6z"/>',
+  buscar: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   basura: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
 };
 export const icono = (n, clase = '') =>
@@ -111,11 +112,11 @@ export function barra(etiqueta, actual, objetivo, clase, unidad = 'g') {
   </div>`;
 }
 
-export function anillo(actual, objetivo, { tam = 132, grosor = 12, texto, subtexto } = {}) {
+export function anillo(actual, objetivo, { tam = 132, grosor = 12, texto, subtexto, clase = '' } = {}) {
   const r = (tam - grosor) / 2;
   const c = 2 * Math.PI * r;
   const pct = objetivo ? Math.min(1, actual / objetivo) : 0;
-  return `<svg class="anillo" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" role="img" aria-label="${Math.round(actual)} de ${Math.round(objetivo)} kcal">
+  return `<svg class="anillo ${clase}" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" role="img" aria-label="${Math.round(actual)} de ${Math.round(objetivo)} kcal">
     <circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" class="anillo-pista" stroke-width="${grosor}" fill="none"/>
     <circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" class="anillo-valor" stroke-width="${grosor}" fill="none"
       stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}" stroke-linecap="round" transform="rotate(-90 ${tam / 2} ${tam / 2})"/>
@@ -135,29 +136,31 @@ export function listaIngredientes(ingredientes, { enlaces = false } = {}) {
     .join('')}</ul>`;
 }
 
+export const ETIQUETAS = { pre: '⚡ Pre-entreno', post: '💪 Post-entreno' };
+
 /**
  * Tarjeta de una comida del plan.
- * opciones: { diaIdx, franjaNombre, hecho, editable, abierta, nota }
+ * opciones: { diaIdx, fecha, franjaNombre, hecho, editable, nota }
  */
 export function tarjetaComida(comida, o = {}) {
   const receta = recetaPorId[comida.recetaId];
   if (!receta) return '';
   const m = macrosComida(comida.ingredientes);
   const clave = `${o.diaIdx}|${comida.franja}`;
-  return `<article class="tarjeta comida ${o.hecho ? 'hecha' : ''}">
-    <header class="comida-cab">
-      <div>
-        <div class="franja">${esc(o.franjaNombre || comida.franja)}${o.nota ? ` · <span class="nota">${esc(o.nota)}</span>` : ''}</div>
-        <h3 class="comida-titulo"><button class="enlace-receta" data-accion="ver-comida" data-clave="${clave}">${esc(receta.nombre)}</button></h3>
-        <div class="meta">${icono('reloj')} ${receta.tiempo} min · ${euros(costeComida(comida.ingredientes))}${receta.batch ? ` · ${icono('taper')} táper` : ''}</div>
-      </div>
-      ${o.editable !== false && o.fecha ? `<button class="check-hecho ${o.hecho ? 'activo' : ''}" data-accion="marcar-hecha" data-fecha="${o.fecha}" data-franja="${comida.franja}" aria-pressed="${!!o.hecho}" aria-label="Marcar como comida">${icono('check')}</button>` : ''}
-    </header>
-    ${chipsMacros(m)}
-    <details ${o.abierta ? 'open' : ''}><summary>Ingredientes</summary>${listaIngredientes(comida.ingredientes)}</details>
+  const tipo = o.tipo || 'comida';
+  return `<article class="comida t-${tipo} ${o.hecho ? 'hecha' : ''}">
+    <button class="comida-emoji" data-accion="ver-comida" data-clave="${clave}" aria-label="Ver receta de ${esc(receta.nombre)}">${receta.emoji || '🍽️'}</button>
+    <div class="comida-cuerpo">
+      <div class="comida-franja">${esc(o.franjaNombre || comida.franja)}${comida.etiqueta ? ` <span class="etq etq-${comida.etiqueta}">${ETIQUETAS[comida.etiqueta]}</span>` : ''}${o.nota ? ` <span class="etq etq-nota">🥡 ${esc(o.nota)}</span>` : ''}</div>
+      <h3 class="comida-titulo"><button class="enlace-receta" data-accion="ver-comida" data-clave="${clave}">${esc(receta.nombre)}</button></h3>
+      <div class="meta">${icono('reloj')} ${receta.tiempo} min <span class="punto">·</span> ${euros(costeComida(comida.ingredientes))}</div>
+      ${chipsMacros(m)}
+    </div>
+    ${o.editable !== false && o.fecha ? `<button class="check-hecho ${o.hecho ? 'activo' : ''}" data-accion="marcar-hecha" data-fecha="${o.fecha}" data-franja="${comida.franja}" aria-pressed="${!!o.hecho}" aria-label="${o.hecho ? 'Desmarcar' : 'Marcar como comida'}">${icono('check')}</button>` : ''}
+    <details class="comida-ing"><summary>Ingredientes</summary>${listaIngredientes(comida.ingredientes)}</details>
     ${o.editable !== false ? `<footer class="comida-pie">
-      <button class="boton boton-sec boton-peq" data-accion="ver-comida" data-clave="${clave}">Ver receta</button>
-      <button class="boton boton-sec boton-peq" data-accion="cambiar-comida" data-clave="${clave}">${icono('cambiar')} Cambiar</button>
+      <button class="boton-texto" data-accion="ver-comida" data-clave="${clave}">${icono('recetas')} Receta</button>
+      <button class="boton-texto" data-accion="cambiar-comida" data-clave="${clave}">${icono('cambiar')} Cambiar</button>
     </footer>` : ''}
   </article>`;
 }
@@ -165,16 +168,26 @@ export function tarjetaComida(comida, o = {}) {
 export function detalleReceta(receta, ingredientes, { titulo } = {}) {
   const m = macrosComida(ingredientes);
   return `<div class="detalle-receta">
-    <p class="franja">${esc(titulo || receta.tipos.join(' · '))}</p>
-    <h2>${esc(receta.nombre)}</h2>
-    <div class="meta">${icono('reloj')} ${receta.tiempo} min · ${euros(costeComida(ingredientes))} por ración${receta.batch ? ` · ${icono('taper')} aguanta en táper` : ''}</div>
-    ${chipsMacros(m)}
-    <h3>Ingredientes <small>(tu ración)</small></h3>
+    <div class="receta-cabecera">
+      <div class="receta-emoji-grande" aria-hidden="true">${receta.emoji || '🍽️'}</div>
+      <div>
+        <p class="sobre-etiqueta">${esc(titulo || receta.tipos.join(' · '))}</p>
+        <h2>${esc(receta.nombre)}</h2>
+        <div class="meta">${icono('reloj')} ${receta.tiempo} min <span class="punto">·</span> ${euros(costeComida(ingredientes))} por ración${receta.batch ? ` <span class="punto">·</span> 🥡 aguanta en táper` : ''}</div>
+      </div>
+    </div>
+    <div class="macros-grandes">
+      <div><b>${Math.round(m.kcal)}</b><span>kcal</span></div>
+      <div class="t-p"><b>${Math.round(m.p)} g</b><span>proteína</span></div>
+      <div class="t-c"><b>${Math.round(m.c)} g</b><span>hidratos</span></div>
+      <div class="t-g"><b>${Math.round(m.g)} g</b><span>grasa</span></div>
+    </div>
+    <h3>🛒 Ingredientes <small>(tu ración)</small></h3>
     ${listaIngredientes(ingredientes, { enlaces: true })}
-    ${receta.especias?.length ? `<p class="especias"><b>Para condimentar:</b> ${esc(receta.especias.map(nombreEspecia).join(', '))}</p>` : ''}
-    <h3>Preparación</h3>
+    ${receta.especias?.length ? `<p class="especias">🧂 <b>Para condimentar:</b> ${esc(receta.especias.map(nombreEspecia).join(', '))}</p>` : ''}
+    <h3>👨‍🍳 Preparación</h3>
     <ol class="pasos">${receta.pasos.map((p) => `<li>${esc(p)}</li>`).join('')}</ol>
-    ${receta.consejo ? `<p class="consejo"><b>Consejo:</b> ${esc(receta.consejo)}</p>` : ''}
+    ${receta.consejo ? `<p class="consejo">💡 ${esc(receta.consejo)}</p>` : ''}
     <p class="pie-nota">Fibra: ${Math.round(m.f)} g. Pesos en crudo; legumbres y conservas, escurridas.</p>
   </div>`;
 }

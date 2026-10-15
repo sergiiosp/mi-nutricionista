@@ -1,6 +1,6 @@
 // Service worker: la app funciona sin conexión (por ejemplo, dentro del súper).
 // Sube VERSION cada vez que cambies archivos para que los móviles descarguen la nueva versión.
-const VERSION = 'p20261015';
+const VERSION = 'v3';
 const CACHE = `nutricionista-${VERSION}`;
 const ARCHIVOS = [
   './',
@@ -17,6 +17,8 @@ const ARCHIVOS = [
   'js/planificador.js',
   'js/compra.js',
   'js/progreso.js',
+  'js/horario.js',
+  'js/salud.js',
   'js/vistas/bienvenida.js',
   'js/vistas/principal.js',
   'data/alimentos.js',
@@ -52,8 +54,8 @@ self.addEventListener('fetch', (ev) => {
         })
         .catch(() => caches.match(request, { ignoreSearch: true }).then((r) => r || caches.match('index.html'))),
     );
-  } else if (url.hostname.endsWith('imgix.net')) {
-    // Fotos de productos de Mercadona: caché primero
+  } else if (url.hostname.endsWith('imgix.net') || url.hostname.startsWith('fonts.g')) {
+    // Fotos de productos de Mercadona y la fuente Nunito: caché primero
     ev.respondWith(
       caches.match(request).then((r) => r || fetch(request).then((res) => {
         const copia = res.clone();

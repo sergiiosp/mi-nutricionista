@@ -11,6 +11,7 @@ export const RECETAS = [
   // ── Desayunos ────────────────────────────────────────────────────────────
   {
     id: 'porridge-proteico',
+    emoji: '🥣',
     nombre: 'Porridge proteico de avena y plátano',
     tipos: ['desayuno'],
     tiempo: 8,
@@ -31,6 +32,7 @@ export const RECETAS = [
   },
   {
     id: 'tostadas-aguacate-huevo',
+    emoji: '🥑',
     nombre: 'Tostadas de aguacate con huevos revueltos',
     tipos: ['desayuno'],
     tiempo: 10,
@@ -50,6 +52,7 @@ export const RECETAS = [
   },
   {
     id: 'tostadas-tomate-jamon',
+    emoji: '🍅',
     nombre: 'Tostadas con tomate, AOVE y jamón serrano',
     tipos: ['desayuno'],
     tiempo: 5,
@@ -68,6 +71,7 @@ export const RECETAS = [
   },
   {
     id: 'bol-queso-batido-frutos-rojos',
+    emoji: '🫐',
     nombre: 'Bol de queso batido con avena, arándanos y nueces',
     tipos: ['desayuno', 'snack'],
     tiempo: 3,
@@ -86,6 +90,7 @@ export const RECETAS = [
   },
   {
     id: 'tortitas-avena-claras',
+    emoji: '🥞',
     nombre: 'Tortitas (pancakes) de avena y claras',
     tipos: ['desayuno'],
     tiempo: 15,
@@ -106,6 +111,7 @@ export const RECETAS = [
   },
   {
     id: 'tortilla-pavo-pan',
+    emoji: '🍳',
     nombre: 'Tortilla francesa de pavo con tostada',
     tipos: ['desayuno', 'cena'],
     tiempo: 8,
@@ -125,6 +131,7 @@ export const RECETAS = [
   },
   {
     id: 'yogur-proteinas-kiwi-tortitas',
+    emoji: '🥝',
     nombre: 'Yogur +Proteínas con kiwi, almendras y tortitas de arroz',
     tipos: ['desayuno', 'snack'],
     tiempo: 3,
@@ -141,6 +148,7 @@ export const RECETAS = [
   },
   {
     id: 'wrap-desayuno',
+    emoji: '🌯',
     nombre: 'Wrap de huevo, espinacas y queso',
     tipos: ['desayuno', 'cena'],
     tiempo: 10,
@@ -160,6 +168,7 @@ export const RECETAS = [
   },
   {
     id: 'batido-proteico',
+    emoji: '🥤',
     nombre: 'Batido de plátano, avena y cacahuete',
     tipos: ['desayuno', 'snack'],
     tiempo: 3,
@@ -175,6 +184,7 @@ export const RECETAS = [
   },
   {
     id: 'tostada-burgos-tomate',
+    emoji: '🧀',
     nombre: 'Tostadas de queso fresco, tomate y orégano',
     tipos: ['desayuno', 'snack'],
     tiempo: 5,
@@ -195,6 +205,7 @@ export const RECETAS = [
   // ── Snacks (media mañana / merienda) ─────────────────────────────────────
   {
     id: 'yogur-nueces-manzana',
+    emoji: '🍎',
     nombre: 'Yogur +Proteínas con manzana y nueces',
     tipos: ['snack'],
     tiempo: 2,
@@ -208,6 +219,7 @@ export const RECETAS = [
   },
   {
     id: 'tortitas-pavo-queso',
+    emoji: '🍘',
     nombre: 'Tortitas de arroz con queso fresco y pavo',
     tipos: ['snack'],
     tiempo: 3,
@@ -221,6 +233,7 @@ export const RECETAS = [
   },
   {
     id: 'sandwich-atun',
+    emoji: '🥪',
     nombre: 'Sándwich de atún y tomate',
     tipos: ['snack', 'desayuno'],
     tiempo: 5,
@@ -235,6 +248,7 @@ export const RECETAS = [
   },
   {
     id: 'crudites-hummus-huevo',
+    emoji: '🥕',
     nombre: 'Crudités con hummus y huevo cocido',
     tipos: ['snack', 'cena'],
     tiempo: 12,
@@ -253,6 +267,7 @@ export const RECETAS = [
   },
   {
     id: 'queso-batido-pera-almendras',
+    emoji: '🍐',
     nombre: 'Queso batido con pera, canela y almendras',
     tipos: ['snack'],
     tiempo: 2,
@@ -266,6 +281,7 @@ export const RECETAS = [
   },
   {
     id: 'fruta-jamon',
+    emoji: '🍊',
     nombre: 'Picoteo de jamón, queso fresco y fruta',
     tipos: ['snack'],
     tiempo: 2,
@@ -280,6 +296,7 @@ export const RECETAS = [
   // ── Comidas y cenas ──────────────────────────────────────────────────────
   {
     id: 'pollo-arroz-brocoli',
+    emoji: '🍗',
     nombre: 'Pollo al ajillo con arroz y brócoli',
     tipos: ['comida', 'cena'],
     tiempo: 25,
@@ -300,6 +317,7 @@ export const RECETAS = [
   },
   {
     id: 'lentejas-verduras',
+    emoji: '🍲',
     nombre: 'Lentejas estofadas con verduras y jamón',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -326,6 +344,7 @@ export const RECETAS = [
   },
   {
     id: 'garbanzos-espinacas-huevo',
+    emoji: '🥘',
     nombre: 'Garbanzos salteados con espinacas y huevo',
     tipos: ['comida', 'cena'],
     tiempo: 15,
@@ -346,6 +365,7 @@ export const RECETAS = [
   },
   {
     id: 'salmon-patata-judias',
+    emoji: '🐟',
     nombre: 'Salmón al horno con patata y judías verdes',
     tipos: ['comida', 'cena'],
     tiempo: 30,
@@ -364,6 +384,7 @@ export const RECETAS = [
   },
   {
     id: 'merluza-calabacin-arroz',
+    emoji: '🐟',
     nombre: 'Merluza a la plancha con calabacín salteado y arroz',
     tipos: ['comida', 'cena'],
     prefiere: 'cena',
@@ -385,6 +406,7 @@ export const RECETAS = [
   },
   {
     id: 'espaguetis-bolonesa',
+    emoji: '🍝',
     nombre: 'Espaguetis a la boloñesa',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -408,6 +430,7 @@ export const RECETAS = [
   },
   {
     id: 'macarrones-atun',
+    emoji: '🍝',
     nombre: 'Macarrones con atún y tomate',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -429,6 +452,7 @@ export const RECETAS = [
   },
   {
     id: 'wok-pollo-verduras',
+    emoji: '🥡',
     nombre: 'Wok de pollo con verduras y arroz',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -447,6 +471,7 @@ export const RECETAS = [
   },
   {
     id: 'ensalada-garbanzos-atun',
+    emoji: '🥗',
     nombre: 'Ensalada completa de garbanzos y atún',
     tipos: ['comida', 'cena'],
     tiempo: 10,
@@ -471,6 +496,7 @@ export const RECETAS = [
   },
   {
     id: 'tortilla-patata-calabacin',
+    emoji: '🥔',
     nombre: 'Tortilla de patata y calabacín (poco aceite)',
     tipos: ['comida', 'cena'],
     tiempo: 30,
@@ -492,6 +518,7 @@ export const RECETAS = [
   },
   {
     id: 'revuelto-gambas-champis',
+    emoji: '🍤',
     nombre: 'Revuelto de langostinos y champiñones con pan',
     tipos: ['cena'],
     prefiere: 'cena',
@@ -513,6 +540,7 @@ export const RECETAS = [
   },
   {
     id: 'pavo-curry-arroz',
+    emoji: '🍛',
     nombre: 'Pavo al curry suave con arroz',
     tipos: ['comida', 'cena'],
     tiempo: 25,
@@ -534,6 +562,7 @@ export const RECETAS = [
   },
   {
     id: 'lomo-patatas-pimientos',
+    emoji: '🥩',
     nombre: 'Lomo de cerdo con patatas y pimientos al horno',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -553,6 +582,7 @@ export const RECETAS = [
   },
   {
     id: 'fajitas-pollo',
+    emoji: '🌮',
     nombre: 'Fajitas de pollo con pimiento y cebolla',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -574,6 +604,7 @@ export const RECETAS = [
   },
   {
     id: 'burger-ternera-batata',
+    emoji: '🍔',
     nombre: 'Hamburguesa casera con batata al horno y ensalada',
     tipos: ['comida', 'cena'],
     tiempo: 35,
@@ -594,6 +625,7 @@ export const RECETAS = [
   },
   {
     id: 'crema-calabacin-huevo',
+    emoji: '🥒',
     nombre: 'Crema de calabacín con huevo y picatostes',
     tipos: ['cena'],
     prefiere: 'cena',
@@ -617,6 +649,7 @@ export const RECETAS = [
   },
   {
     id: 'merluza-pisto',
+    emoji: '🐠',
     nombre: 'Merluza con pisto y patata cocida',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -635,6 +668,7 @@ export const RECETAS = [
   },
   {
     id: 'ensalada-cuscus-pollo',
+    emoji: '🥗',
     nombre: 'Ensalada templada de cuscús con pollo y aguacate',
     tipos: ['comida', 'cena'],
     tiempo: 15,
@@ -656,6 +690,7 @@ export const RECETAS = [
   },
   {
     id: 'alubias-langostinos',
+    emoji: '🦐',
     nombre: 'Alubias salteadas con langostinos y pimentón',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -678,6 +713,7 @@ export const RECETAS = [
   },
   {
     id: 'tofu-wok-arroz',
+    emoji: '🥢',
     nombre: 'Tofu crujiente salteado con verduras y arroz',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -696,6 +732,7 @@ export const RECETAS = [
   },
   {
     id: 'pasta-pollo-espinacas',
+    emoji: '🍝',
     nombre: 'Pasta integral cremosa con pollo y espinacas',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -718,6 +755,7 @@ export const RECETAS = [
   },
   {
     id: 'arroz-tres-delicias',
+    emoji: '🍚',
     nombre: 'Arroz tres delicias casero',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -739,6 +777,7 @@ export const RECETAS = [
   },
   {
     id: 'pizza-tortilla',
+    emoji: '🍕',
     nombre: 'Pizza rápida de tortilla de trigo',
     tipos: ['cena'],
     prefiere: 'cena',
@@ -759,6 +798,7 @@ export const RECETAS = [
   },
   {
     id: 'pollo-horno-verduras',
+    emoji: '🍗',
     nombre: 'Contramuslos al horno con patata y verduras',
     tipos: ['comida', 'cena'],
     tiempo: 40,
@@ -780,6 +820,7 @@ export const RECETAS = [
   },
   {
     id: 'albondigas-pollo-tomate',
+    emoji: '🧆',
     nombre: 'Albóndigas de pollo en salsa de tomate con arroz',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -802,6 +843,7 @@ export const RECETAS = [
   },
   {
     id: 'salmon-esparragos-cuscus',
+    emoji: '🐟',
     nombre: 'Salmón a la plancha con espárragos y cuscús',
     tipos: ['comida', 'cena'],
     tiempo: 15,
@@ -820,6 +862,7 @@ export const RECETAS = [
   },
   {
     id: 'ternera-ensalada-patata',
+    emoji: '🥩',
     nombre: 'Filete de ternera con patata cocida y ensalada',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -840,6 +883,7 @@ export const RECETAS = [
   },
   {
     id: 'ensalada-lentejas',
+    emoji: '🥗',
     nombre: 'Ensalada fría de lentejas con huevo y atún',
     tipos: ['comida', 'cena'],
     tiempo: 12,
@@ -863,6 +907,7 @@ export const RECETAS = [
   },
   {
     id: 'curry-garbanzos-tofu',
+    emoji: '🍛',
     nombre: 'Curry de garbanzos, espinacas y tofu',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -885,6 +930,7 @@ export const RECETAS = [
   },
   {
     id: 'crema-verduras-pavo',
+    emoji: '🥣',
     nombre: 'Crema de verduras con pavo a la plancha',
     tipos: ['cena'],
     prefiere: 'cena',
@@ -906,6 +952,7 @@ export const RECETAS = [
   },
   {
     id: 'solomillo-champis-arroz',
+    emoji: '🍄',
     nombre: 'Solomillo de cerdo con champiñones y arroz integral',
     tipos: ['comida', 'cena'],
     tiempo: 35,
@@ -926,6 +973,7 @@ export const RECETAS = [
   },
   {
     id: 'burrito-bowl-pavo',
+    emoji: '🌯',
     nombre: 'Burrito bowl de pavo, alubias y maíz',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -948,6 +996,7 @@ export const RECETAS = [
   },
   {
     id: 'huevos-rotos-light',
+    emoji: '🍳',
     nombre: 'Huevos rotos al horno con jamón',
     tipos: ['comida', 'cena'],
     tiempo: 30,
@@ -967,6 +1016,7 @@ export const RECETAS = [
   },
   {
     id: 'berenjena-rellena',
+    emoji: '🍆',
     nombre: 'Berenjena rellena de carne gratinada',
     tipos: ['comida', 'cena'],
     tiempo: 40,
@@ -987,6 +1037,7 @@ export const RECETAS = [
   },
   {
     id: 'dal-lentejas',
+    emoji: '🍛',
     nombre: 'Dal de lentejas al curry con arroz',
     tipos: ['comida', 'cena'],
     tiempo: 20,
@@ -1009,6 +1060,7 @@ export const RECETAS = [
   },
   {
     id: 'revuelto-tofu',
+    emoji: '🍄',
     nombre: 'Revuelto de tofu con champiñones y espinacas',
     tipos: ['desayuno', 'cena'],
     tiempo: 12,
@@ -1028,6 +1080,7 @@ export const RECETAS = [
   },
   {
     id: 'bolonesa-lentejas',
+    emoji: '🍝',
     nombre: 'Macarrones con boloñesa de lentejas',
     tipos: ['comida'],
     prefiere: 'comida',
@@ -1050,6 +1103,7 @@ export const RECETAS = [
   },
   {
     id: 'tortilla-espinacas',
+    emoji: '🥬',
     nombre: 'Tortilla de espinacas con ensalada y pan',
     tipos: ['comida', 'cena'],
     tiempo: 15,
@@ -1071,6 +1125,7 @@ export const RECETAS = [
   },
   {
     id: 'ensalada-alubias-huevo',
+    emoji: '🥗',
     nombre: 'Ensalada de alubias con huevo, tomate y pimiento',
     tipos: ['comida', 'cena'],
     tiempo: 12,
@@ -1093,6 +1148,7 @@ export const RECETAS = [
   },
   {
     id: 'tostada-cacahuete-platano',
+    emoji: '🍌',
     nombre: 'Tostada de crema de cacahuete y plátano con bebida de soja',
     tipos: ['desayuno', 'snack'],
     tiempo: 4,
@@ -1107,6 +1163,7 @@ export const RECETAS = [
   },
   {
     id: 'tortitas-aguacate-huevo',
+    emoji: '🥑',
     nombre: 'Tortitas de arroz con aguacate y huevo cocido',
     tipos: ['snack'],
     tiempo: 12,
@@ -1120,6 +1177,7 @@ export const RECETAS = [
   },
   {
     id: 'bocadillo-pavo',
+    emoji: '🥖',
     nombre: 'Bocadillo de pavo con tomate',
     tipos: ['snack', 'desayuno'],
     tiempo: 3,

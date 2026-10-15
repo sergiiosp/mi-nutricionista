@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const VERDE = [0x1d, 0x6b, 0x45];
+const VERDE = [0x12, 0xa8, 0x6b];
 const BLANCO = [255, 255, 255];
 const MENTA = [0x9b, 0xe2, 0xb8];
 

@@ -3,7 +3,9 @@
 App web (PWA) que actúa como nutricionista personal:
 
 - **Primera consulta**: cuestionario con tus datos, actividad, objetivo, preferencias, alergias y alimentos que no te gustan.
-- **Cálculo de objetivos**: metabolismo basal (Mifflin-St Jeor), gasto diario, calorías según objetivo y ritmo, y proteína, hidratos y grasa.
+- **Cálculo de objetivos**: metabolismo basal (Mifflin-St Jeor), gasto por trabajo, pasos y entrenamiento (MET), y calorías y macros distintas para días de entreno y de descanso.
+- **Horario de comidas**: se colocan según tu hora de levantarte, de trabajo, de entreno y de dormir, con comida pre y post-entreno y más hidratos alrededor del entreno.
+- **Salud y suplementos**: adapta los alimentos (anemia, tensión, colesterol, diabetes…) y recomienda solo suplementos con evidencia (creatina, cafeína, vitamina D, omega-3…), con dosis, momento y precauciones.
 - **Menú semanal** con recetas reales cuyas cantidades se ajustan a tus macros (cada comida se escala por grupos: proteína, hidratos y grasa).
 - **Cambiar platos**: alternativas ya ajustadas a tus macros.
 - **Lista de la compra de Mercadona**: agrupada por secciones, con nº de envases, precio, foto, enlace al producto y opción de copiarla o compartirla.
@@ -53,6 +55,8 @@ js/nutricion.js     → cálculos, macros, escalado de recetas
 js/planificador.js  → generador de menús y alternativas
 js/compra.js        → lista de la compra (envases, coste, pasillos)
 js/progreso.js      → tendencia de peso y recomendaciones
+js/horario.js       → horario de comidas y reparto según el entreno
+js/salud.js         → salud, hábitos y suplementación
 js/vistas/          → pantallas
 data/alimentos.js   → alimentos con macros y producto de Mercadona
 data/recetas.js     → recetario

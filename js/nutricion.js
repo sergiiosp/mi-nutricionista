@@ -4,6 +4,7 @@
 import { ALIMENTOS } from '../data/alimentos.js';
 import { PRECIOS } from '../data/precios.js';
 
+// Perfil antiguo (antes del cuestionario ampliado): factor de actividad único
 export const ACTIVIDAD = {
   sedentario: { f: 1.2, nombre: 'Sedentario', desc: 'Trabajo sentado y apenas hago ejercicio' },
   ligero: { f: 1.375, nombre: 'Ligero', desc: 'Camino a diario o entreno 1-2 días por semana' },
@@ -12,60 +13,156 @@ export const ACTIVIDAD = {
   muy_alto: { f: 1.9, nombre: 'Muy alto', desc: 'Entreno a diario intenso y trabajo físico' },
 };
 
+// Actividad diaria sin contar el entreno (NEAT). El factor incluye la digestión (~10 %).
+export const TRABAJO = {
+  sentado: { f: 1.25, nombre: 'Sentado', desc: 'Oficina, ordenador, conducir', emoji: '💻' },
+  de_pie: { f: 1.35, nombre: 'De pie / en movimiento', desc: 'Comercio, hostelería, docencia, sanidad', emoji: '🚶' },
+  fisico: { f: 1.5, nombre: 'Físico', desc: 'Obra, almacén, reparto, campo', emoji: '🏗️' },
+  no: { f: 1.25, nombre: 'No trabajo ahora', desc: 'Estudio, en paro, jubilado…', emoji: '🏠' },
+};
+
+export const PASOS = {
+  pocos: { extra: -0.05, nombre: 'Menos de 5.000' },
+  normal: { extra: 0, nombre: '5.000 – 8.000' },
+  bastantes: { extra: 0.08, nombre: '8.000 – 12.000' },
+  muchos: { extra: 0.15, nombre: 'Más de 12.000' },
+};
+
+// MET por intensidad [suave, moderada, intensa] (Compendio de Actividades Físicas)
+export const DEPORTES = {
+  fuerza: { nombre: 'Fuerza / gimnasio', emoji: '🏋️', met: [3.5, 5, 6], clase: 'fuerza' },
+  hiit: { nombre: 'CrossFit / HIIT / funcional', emoji: '🔥', met: [6, 8, 10], clase: 'mixto' },
+  carrera: { nombre: 'Correr', emoji: '🏃', met: [7, 9.5, 11.5], clase: 'resistencia' },
+  ciclismo: { nombre: 'Ciclismo / spinning', emoji: '🚴', met: [5.5, 8, 10.5], clase: 'resistencia' },
+  natacion: { nombre: 'Natación', emoji: '🏊', met: [5.5, 8, 10], clase: 'resistencia' },
+  equipo: { nombre: 'Fútbol, pádel, baloncesto…', emoji: '⚽', met: [5, 7, 9], clase: 'mixto' },
+  otro: { nombre: 'Yoga, pilates, baile…', emoji: '🧘', met: [3, 4.5, 6], clase: 'ligero' },
+};
+export const INTENSIDAD = { suave: 0, moderada: 1, intensa: 2 };
+
 export const OBJETIVOS = {
-  perder: { nombre: 'Perder grasa', proteinaKg: 2.0, ritmos: { suave: -0.15, moderado: -0.2, rapido: -0.25 } },
-  recomposicion: { nombre: 'Recomposición', desc: 'Perder grasa y ganar músculo a la vez', proteinaKg: 2.0, ritmos: { unico: -0.08 } },
-  mantener: { nombre: 'Mantener peso', proteinaKg: 1.6, ritmos: { unico: 0 } },
-  ganar: { nombre: 'Ganar músculo', proteinaKg: 1.8, ritmos: { suave: 0.05, moderado: 0.1, rapido: 0.15 } },
+  perder: { nombre: 'Perder grasa', emoji: '🔥', proteinaKg: 2.0, ritmos: { suave: -0.15, moderado: -0.2, rapido: -0.25 } },
+  recomposicion: { nombre: 'Recomposición', emoji: '⚖️', desc: 'Perder grasa y ganar músculo a la vez', proteinaKg: 2.0, ritmos: { unico: -0.08 } },
+  mantener: { nombre: 'Mantener peso', emoji: '🎯', proteinaKg: 1.6, ritmos: { unico: 0 } },
+  ganar: { nombre: 'Ganar músculo', emoji: '💪', proteinaKg: 1.8, ritmos: { suave: 0.05, moderado: 0.1, rapido: 0.15 } },
 };
 
 export const RITMOS = { suave: 'Suave', moderado: 'Moderado', rapido: 'Rápido' };
 
 const KCAL_POR_KG = 7700;
 
+/** Clase dominante del entreno: 'fuerza', 'resistencia', 'mixto' o null si no entrena. */
+export function claseEntreno(perfil) {
+  if (!perfil.entrena || !perfil.deportes?.length) return null;
+  const clases = new Set(perfil.deportes.map((d) => DEPORTES[d]?.clase).filter(Boolean));
+  if (clases.has('fuerza')) return 'fuerza';
+  if (clases.has('mixto')) return 'mixto';
+  if (clases.has('resistencia')) return 'resistencia';
+  return 'ligero';
+}
+
+/** kcal netas (por encima del reposo) de una sesión de entreno. */
+export function kcalSesion(perfil) {
+  if (!perfil.entrena || !perfil.deportes?.length) return 0;
+  const i = INTENSIDAD[perfil.intensidad] ?? 1;
+  const mets = perfil.deportes.map((d) => DEPORTES[d]?.met[i]).filter(Boolean);
+  if (!mets.length) return 0;
+  const met = mets.reduce((a, b) => a + b, 0) / mets.length;
+  return Math.round((met - 1) * perfil.peso * ((perfil.duracionEntreno || 60) / 60));
+}
+
+function repartoMacros(kcal, proteina, grasaBase, pesoRef, minHidratos = 0) {
+  let grasa = grasaBase;
+  let hidratos = (kcal - proteina * 4 - grasa * 9) / 4;
+  const minimo = Math.max(80, minHidratos);
+  if (hidratos < minimo) {
+    // Primero se recorta grasa (hasta un mínimo saludable) para no dejar los hidratos demasiado bajos
+    grasa = Math.max(0.6 * pesoRef, (kcal - proteina * 4 - minimo * 4) / 9);
+    hidratos = (kcal - proteina * 4 - grasa * 9) / 4;
+  }
+  return { kcal: Math.round(kcal), proteina, grasa: Math.round(grasa), hidratos: Math.max(0, Math.round(hidratos)) };
+}
+
 export function calcularObjetivos(perfil) {
-  const { sexo, edad, altura, peso, actividad, objetivo } = perfil;
+  const { sexo, edad, altura, peso, objetivo } = perfil;
   const h = altura / 100;
   const imc = peso / (h * h);
   const tmb = 10 * peso + 6.25 * altura - 5 * edad + (sexo === 'h' ? 5 : -161);
-  const get = tmb * ACTIVIDAD[actividad].f;
+  const condiciones = perfil.condiciones || [];
+
+  // Gasto en días de descanso (actividad diaria) y de entreno (+ la sesión)
+  const ampliado = !!perfil.trabajo;
+  const factor = ampliado
+    ? (TRABAJO[perfil.trabajo]?.f ?? 1.25) + (PASOS[perfil.pasos]?.extra ?? 0)
+    : ACTIVIDAD[perfil.actividad]?.f ?? 1.375;
+  const getDescanso = tmb * factor;
+  const sesion = ampliado ? kcalSesion(perfil) : 0;
+  const diasEntreno = ampliado && perfil.entrena ? (perfil.diasEntreno || []).length : 0;
+  const getEntreno = getDescanso + sesion;
+  const getMedio = getDescanso + (sesion * diasEntreno) / 7;
 
   const obj = OBJETIVOS[objetivo];
-  const ritmo = obj.ritmos[perfil.ritmo] ?? Object.values(obj.ritmos)[0];
+  let ritmo = obj.ritmos[perfil.ritmo] ?? Object.values(obj.ritmos)[0];
+  // Seguridad: sin déficit en embarazo/lactancia y déficit muy suave si hay historial de TCA
+  if (condiciones.includes('embarazo')) ritmo = Math.max(ritmo, 0);
+  if (condiciones.includes('tca')) ritmo = Math.max(ritmo, -0.1);
+  const ajuste = perfil.ajusteKcal || 0;
   const minimo = sexo === 'h' ? 1500 : 1200;
-  let kcal = get * (1 + ritmo) + (perfil.ajusteKcal || 0);
-  const limitado = kcal < minimo;
-  kcal = Math.round(Math.max(kcal, minimo) / 10) * 10;
+  const limitado = getDescanso * (1 + ritmo) + ajuste < minimo;
+  const kcalDe = (get) => Math.round(Math.max(get * (1 + ritmo) + ajuste, minimo) / 10) * 10;
+  const kcalEntreno = kcalDe(getEntreno);
+  const kcalDescanso = kcalDe(getDescanso);
+  const kcalMedia = Math.round((kcalEntreno * diasEntreno + kcalDescanso * (7 - diasEntreno)) / 7 / 10) * 10;
 
-  // Con IMC alto, la proteína se calcula sobre un peso de referencia (no sobre la masa grasa)
+  // Proteína: según objetivo y tipo de entreno; con IMC alto, sobre un peso de referencia
   const pesoImc25 = 25 * h * h;
   const pesoRef = imc > 30 ? pesoImc25 + 0.25 * (peso - pesoImc25) : peso;
-  // Sin entrenamiento de fuerza regular no hace falta tanta proteína
-  const pocoActivo = actividad === 'sedentario' || actividad === 'ligero';
-  const gKg = obj.proteinaKg - (pocoActivo ? 0.3 : 0);
-  const proteina = Math.round(Math.min(pesoRef * gKg, (kcal * 0.35) / 4));
-
-  let grasa = Math.max(0.8 * pesoRef, (kcal * 0.27) / 9);
-  let hidratos = (kcal - proteina * 4 - grasa * 9) / 4;
-  if (hidratos < 80) {
-    // Dietas muy bajas en calorías: se reduce la grasa hasta un mínimo antes que los hidratos
-    grasa = Math.max(0.6 * pesoRef, (kcal - proteina * 4 - 80 * 4) / 9);
-    hidratos = (kcal - proteina * 4 - grasa * 9) / 4;
+  const clase = ampliado ? claseEntreno(perfil) : null;
+  let gKg = obj.proteinaKg;
+  if (ampliado) {
+    if (!clase) gKg -= 0.4;
+    else if (clase === 'ligero') gKg -= 0.3;
+    else if (clase === 'resistencia') gKg -= 0.2;
+  } else if (perfil.actividad === 'sedentario' || perfil.actividad === 'ligero') {
+    gKg -= 0.3;
   }
+  gKg = Math.max(gKg, 1.2);
+  const proteina = Math.round(Math.min(pesoRef * gKg, (kcalMedia * 0.35) / 4));
+  const grasaBase = Math.max(0.8 * pesoRef, (kcalMedia * 0.27) / 9);
+
+  // Deportes de resistencia con sesiones largas: mínimo de hidratos para rendir
+  const largas = clase === 'resistencia' && (perfil.duracionEntreno || 0) >= 60;
+  const minHidratosEntreno = largas ? (perfil.intensidad === 'intensa' ? 5 : 4) * peso : 0;
+
+  const entreno = { ...repartoMacros(kcalEntreno, proteina, grasaBase, pesoRef, minHidratosEntreno), get: Math.round(getEntreno) };
+  const descanso = { ...repartoMacros(kcalDescanso, proteina, grasaBase, pesoRef), get: Math.round(getDescanso) };
+  const media = (k) => Math.round((entreno[k] * diasEntreno + descanso[k] * (7 - diasEntreno)) / 7);
+  const horasEntreno = (perfil.duracionEntreno || 0) / 60;
 
   return {
     imc: Math.round(imc * 10) / 10,
     tmb: Math.round(tmb),
-    get: Math.round(get),
-    kcal,
+    get: Math.round(getMedio),
+    kcal: kcalMedia,
     proteina,
-    grasa: Math.round(grasa),
-    hidratos: Math.max(0, Math.round(hidratos)),
-    fibra: Math.round((kcal / 1000) * 14),
-    agua: Math.round((peso * 35) / 100) / 10, // litros
-    cambioSemanalKg: Math.round((((kcal - get) * 7) / KCAL_POR_KG) * 100) / 100,
+    gKg: Math.round((proteina / peso) * 10) / 10,
+    grasa: media('grasa'),
+    hidratos: media('hidratos'),
+    fibra: Math.round((kcalMedia / 1000) * 14),
+    agua: Math.round((peso * 35) / 100) / 10, // litros en día de descanso
+    aguaEntreno: Math.round((peso * 35 + horasEntreno * 600) / 100) / 10,
+    kcalSesion: sesion,
+    diasEntreno,
+    clase,
+    cambioSemanalKg: Math.round((((kcalMedia - getMedio) * 7) / KCAL_POR_KG) * 100) / 100,
     limitado,
+    porTipo: { entreno, descanso },
   };
+}
+
+/** Objetivos de un día concreto (entreno o descanso). */
+export function objetivosDia(objetivos, entreno) {
+  return objetivos.porTipo[entreno ? 'entreno' : 'descanso'];
 }
 
 // ── Alimentos ───────────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 import { estado, guardar, reiniciar, exportar, importar } from './estado.js';
 import { calcularObjetivos, macrosComida } from './nutricion.js';
-import { generarPlan, alternativas, sustituir, reescalarPlan, recetaPorId, hoyISO, REPARTOS } from './planificador.js';
+import { generarPlan, alternativas, sustituir, reescalarPlan, recetaPorId, hoyISO } from './planificador.js';
 import { textoCompartir } from './compra.js';
 import { $, $$, esc, icono, abrirModal, cerrarModal, aviso, chipsMacros, detalleReceta, euros } from './ui.js';
 import { iniciarCuestionario, vistaCuestionario, enviarPaso, pasoAtras, actualizarVisibles } from './vistas/bienvenida.js';
@@ -41,6 +41,7 @@ function render() {
   const r = ruta();
   main.innerHTML = VISTAS[r]();
   for (const a of $$('#nav a')) a.classList.toggle('activo', a.dataset.ruta === r);
+  $('#boton-perfil').classList.toggle('activo', r === 'perfil');
   if (r !== rutaAnterior) window.scrollTo(0, 0);
   rutaAnterior = r;
 }
@@ -79,8 +80,8 @@ function abrirCambio(clave) {
 function verComida(clave) {
   const [d, franja] = clave.split('|');
   const comida = estado.plan.dias[d].comidas.find((c) => c.franja === franja);
-  const nombreFranja = (REPARTOS[estado.plan.comidasDia] || []).find((f) => f.id === franja)?.nombre || franja;
-  abrirModal(detalleReceta(recetaPorId[comida.recetaId], comida.ingredientes, { titulo: nombreFranja })
+  const titulo = [comida.hora, comida.etiqueta === 'pre' ? 'Pre-entreno' : comida.etiqueta === 'post' ? 'Post-entreno' : franja].filter(Boolean).join(' · ');
+  abrirModal(detalleReceta(recetaPorId[comida.recetaId], comida.ingredientes, { titulo })
     + `<div class="acciones-fila"><button class="boton boton-sec" data-accion="cambiar-comida" data-clave="${clave}">${icono('cambiar')} Cambiar este plato</button></div>`);
 }
 
@@ -88,7 +89,7 @@ function verComida(clave) {
 function reajustarPlanSiCambia(kcalAntes, mensaje) {
   const o = objetivos();
   if (estado.plan && Math.abs(o.kcal - kcalAntes) >= 30) {
-    reescalarPlan(estado.plan, o);
+    reescalarPlan(estado.plan, estado.perfil, o);
     return mensaje || `Raciones actualizadas a ${o.kcal} kcal/día`;
   }
   return null;
@@ -205,7 +206,7 @@ document.addEventListener('click', (ev) => {
 document.addEventListener('change', (ev) => {
   const el = ev.target;
   if (el.dataset?.accion && accionesCambio[el.dataset.accion]) accionesCambio[el.dataset.accion](el);
-  if (el.name === 'objetivo') actualizarVisibles(el.form);
+  if (el.form?.id === 'form-paso') actualizarVisibles(el.form);
 });
 
 document.addEventListener('input', (ev) => {
@@ -242,7 +243,7 @@ document.addEventListener('submit', (ev) => {
   }
 });
 
-const CLAVES_MENU = ['comidas', 'dieta', 'alergias', 'noMeGusta', 'tiempoMax', 'sobras', 'presupuesto'];
+const CLAVES_MENU = ['comidas', 'dieta', 'alergias', 'noMeGusta', 'tiempoMax', 'sobras', 'presupuesto', 'condiciones'];
 
 function terminarCuestionario(perfil, editando) {
   const anterior = estado.perfil;
@@ -259,8 +260,9 @@ function terminarCuestionario(perfil, editando) {
     crearPlan();
     return guardarYRender('Perfil guardado y menú nuevo creado');
   }
-  const antes = calcularObjetivos(anterior).kcal;
-  guardarYRender(reajustarPlanSiCambia(antes) || 'Perfil guardado');
+  // Mismas recetas, pero horario y cantidades recalculados (puede cambiar el entreno o el horario)
+  reescalarPlan(estado.plan, estado.perfil, objetivos());
+  guardarYRender('Perfil guardado: horario y raciones actualizados');
 }
 
 window.addEventListener('hashchange', () => {
@@ -274,6 +276,17 @@ let diaRender = hoyISO();
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && hoyISO() !== diaRender) { diaRender = hoyISO(); render(); }
 });
+
+// Menús creados con la versión anterior: se les añade horario y objetivos por tipo de día
+if (estado.perfil && estado.plan && estado.plan.version !== 2) {
+  try {
+    reescalarPlan(estado.plan, estado.perfil, objetivos());
+    estado.plan.version = 2;
+    guardar();
+  } catch {
+    estado.plan = null; // si no se puede adaptar, se creará uno nuevo
+  }
+}
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
