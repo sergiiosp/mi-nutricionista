@@ -3,7 +3,6 @@ import './app.css';
 import App from './App.svelte';
 import { iniciarNube } from './lib/nube/sincro.js';
 import { iniciarAvisos } from './lib/nube/avisos.js';
-import { importarStrava } from './lib/nube/strava.js';
 
 // Enlace del QR para vincular este dispositivo (#vincular=CLAVE): se guarda y se quita de la barra
 const vincular = location.hash.match(/^#vincular=([\w-]{32})$/);
@@ -22,11 +21,8 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   });
 }
 
-// Sincronización con tus otros dispositivos, recordatorios y entrenos de Strava
+// Sincronización con tus otros dispositivos y recordatorios
 iniciarNube();
 iniciarAvisos();
-const traerStrava = () => importarStrava().catch(() => {});
-setTimeout(traerStrava, 2000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') traerStrava(); });
 
 export default app;

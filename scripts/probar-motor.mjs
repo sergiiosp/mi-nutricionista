@@ -68,22 +68,6 @@ comprobar(ph2.semanas[1].ajuste.factor < 1, 'Si la semana fue muy dura, la sigui
 const est = estimarCarrera(configH, perfilH);
 comprobar(est.total > 3600 && est.total < 7200, `Estimación razonable: ${hms(est.total)}`);
 
-// ── Strava: emparejar entrenos con sesiones y calorías extra ───────────────
-const { emparejar, extrasDia } = await import('../src/lib/hyrox/strava.js');
-const [sSeries, sFuerza] = ph.semanas[0].sesiones;
-const acts = [
-  { id: 'r1', nombre: 'Series', tipo: 'Run', inicio: `${sSeries.fecha}T18:35`, duracion: 3000, total: 3300, distancia: 9000, fc: 160 },
-  { id: 'g1', nombre: 'Fuerza', tipo: 'WeightTraining', inicio: `${sFuerza.fecha}T18:40`, duracion: 3600 },
-  { id: 'b1', nombre: 'Bici con amigos', tipo: 'Ride', inicio: `${sSeries.fecha}T10:00`, duracion: 5400, distancia: 40000 },
-];
-const emp = emparejar(acts, ph, {}, {});
-comprobar(emp.asignadas.r1 === sSeries.id && emp.asignadas.g1 === sFuerza.id, 'Strava: carrera → series y gimnasio → fuerza');
-comprobar(emp.asignadas.b1 === null, 'Strava: la bici queda como entreno extra');
-comprobar(emp.registros[sSeries.id]?.estado === 'completa' && emp.registros[sSeries.id].fuente === 'strava', 'Strava: la sesión se da por hecha');
-comprobar(emparejar([acts[0]], ph, { [sSeries.id]: { estado: 'parcial' } }, {}).asignadas.r1 === null, 'Strava: respeta lo que registraste a mano');
-const ex = extrasDia({ perfil: { peso: 80 }, hyrox: { config: configH }, strava: { b1: { ...acts[2], sesion: null } } }, sSeries.fecha);
-comprobar(ex.kcal > 300 && ex.kcal < 1200, `Strava: el extra suma ${ex.kcal} kcal ese día`);
-
 // ── Sincronización: juntar versiones de dos dispositivos ───────────────────
 const { fusionar, aplanar, desaplanar } = await import('../src/lib/nube/sincro.js');
 const ahora = Date.now();
@@ -95,7 +79,7 @@ const m = fusionar(
 comprobar(m.p.tema === 'oscuro', 'Sincro: gana el cambio más reciente');
 comprobar(m.p['registros/2026-10-13'] && !m.p['registros/2026-10-14'], 'Sincro: se juntan los días y los borrados recientes ganan');
 comprobar(m.cambiaLocal && m.cambiaRemoto, 'Sincro: hay que aplicar y subir');
-const estadoH = { perfil: { peso: 80 }, registros: { d: [1] }, hyrox: { config: { a: 1 }, registros: { s1: { estado: 'completa' } }, movidas: {} }, strava: { x: { id: 'x' } }, fotosProgreso: [{ id: 'f' }] };
+const estadoH = { perfil: { peso: 80 }, registros: { d: [1] }, hyrox: { config: { a: 1 }, registros: { s1: { estado: 'completa' } }, movidas: {} }, fotosProgreso: [{ id: 'f' }] };
 const ida = desaplanar(aplanar(estadoH));
-comprobar(ida.hyrox.registros.s1.estado === 'completa' && ida.strava.x && ida.registros.d && !ida.fotosProgreso.length, 'Sincro: aplanar y reconstruir conserva los datos (las fotos se quedan en local)');
+comprobar(ida.hyrox.registros.s1.estado === 'completa' && ida.registros.d && !ida.fotosProgreso.length, 'Sincro: aplanar y reconstruir conserva los datos (las fotos se quedan en local)');
 if (fallosH) process.exitCode = 1;

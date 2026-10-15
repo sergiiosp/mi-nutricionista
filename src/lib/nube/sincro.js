@@ -7,7 +7,7 @@ import { SERVIDOR } from './config.js';
 import { derivar, cifrar, descifrar, nuevaClave, claveValida, nuevoCodigo, sobreDeCodigo, abrirSobre, idDeCodigo, limpiarCodigo } from './cripto.js';
 
 const META = 'mi-nutricionista:nube';
-const MAPAS = ['registros', 'saltadas', 'productos', 'strava']; // se sincronizan clave a clave
+const MAPAS = ['registros', 'saltadas', 'productos']; // se sincronizan clave a clave
 const MAPAS_HYROX = ['registros', 'movidas'];
 const LOCALES = ['fotosProgreso', 'version']; // las fotos viven solo en cada dispositivo
 const DIA = 86400000;
@@ -287,7 +287,7 @@ export function desvincular() {
   ponerNube({ activa: false, estado: 'ok', ultima: null, error: '' });
 }
 
-/** Borra todo del servidor (datos, copias, Strava y avisos) y desvincula este dispositivo. */
+/** Borra todo del servidor (datos, copias y avisos) y desvincula este dispositivo. */
 export async function borrarCuenta() {
   await apiJSON('/cuenta', { method: 'DELETE' });
   desvincular();

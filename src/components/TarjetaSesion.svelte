@@ -14,7 +14,7 @@
     <span class="ic"><Emoji e={sesion.emoji} tam={compacta ? 30 : 36} /></span>
     <span class="txt">
       <b>{sesion.titulo}</b>
-      <small>{sesion.hora} · {sesion.duracion} min{sesion.distancia ? ` · ${String(sesion.distancia).replace('.', ',')} km` : ''} · RPE {sesion.rpe}{sesion.fecha !== sesion.fechaOriginal ? ' · 🔀 movida' : ''}{registro?.fuente === 'strava' ? ' · ⌚ Strava' : ''}</small>
+      <small>{sesion.hora} · {sesion.duracion} min{sesion.distancia ? ` · ${String(sesion.distancia).replace('.', ',')} km` : ''} · RPE {sesion.rpe}{sesion.fecha !== sesion.fechaOriginal ? ' · 🔀 movida' : ''}</small>
     </span>
     {#if ETQ[estado]}<span class="etq-estado">{ETQ[estado]}</span>{/if}
   </button>

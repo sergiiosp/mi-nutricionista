@@ -21,14 +21,13 @@ export const VACIO = () => ({
   productos: {}, // productos escaneados (Open Food Facts) para usarlos sin conexión
   tema: 'auto',
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
-  strava: {}, // idActividad → { id, nombre, tipo, inicio, duracion, distancia, fc, sesion }
 });
 
 /** Convierte datos de la versión 1 (hechas: fecha|franja → true) al formato de registros. */
 function migrar(datos) {
   const e = { ...VACIO(), ...datos };
   e.compra = { ...VACIO().compra, ...(datos.compra || {}) };
-  e.strava ||= {};
+  delete e.strava; // de cuando hubo conexión con Strava
   if (datos.hechas && e.plan) {
     for (const clave of Object.keys(datos.hechas)) {
       const [fecha, franja] = clave.split('|');

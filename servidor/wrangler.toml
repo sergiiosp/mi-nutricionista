@@ -10,8 +10,6 @@ crons = ["*/5 * * * *"]
 [vars]
 APP_URL = "https://sergiiosp.github.io/mi-nutricionista/"
 MAX_CUENTAS = "3"
-# ID público de tu aplicación de Strava (el secreto va aparte: npx wrangler secret put STRAVA_SECRET)
-STRAVA_CLIENT_ID = ""
 
 [[d1_databases]]
 binding = "DB"

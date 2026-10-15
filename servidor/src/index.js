@@ -1,8 +1,7 @@
 // Servidor de Mi Nutricionista: sincronización cifrada entre dispositivos, copias diarias,
-// conexión con Strava y recordatorios (Web Push). Cloudflare Workers + D1, plan gratuito.
+// y recordatorios (Web Push). Cloudflare Workers + D1, plan gratuito.
 import { clavesVapid, enviarPush } from './push.js';
 import { CORS, json } from './util.js';
-import { iniciarStrava, vueltaStrava, estadoStrava, actividadesStrava, desconectarStrava } from './strava.js';
 
 const MAX_DATOS = 1_800_000; // bytes (D1 admite filas de hasta 2 MB)
 const DIAS_COPIAS = 30;
@@ -33,7 +32,6 @@ async function rutas(req, env, url) {
 
   // ── Sin cuenta ─────────────────────────────────────────────────────────
   if (p === '/' && m === 'GET') return json({ ok: true, app: 'Mi Nutricionista' });
-  if (p === '/strava/vuelta' && m === 'GET') return vueltaStrava(url, env);
   if (p === '/avisos/clave' && m === 'GET') return json({ clave: (await clavesVapid(env.DB)).publica });
   if (p === '/emparejar/canjear' && m === 'POST') {
     const { codigo } = await req.json();
@@ -59,7 +57,6 @@ async function rutas(req, env, url) {
 
   if (p === '/cuenta' && m === 'DELETE') {
     const subs = await env.DB.prepare('SELECT endpoint FROM suscripciones WHERE cuenta = ?').bind(cuenta.id).all();
-    await desconectarStrava(cuenta.id, env).catch(() => {});
     await env.DB.batch([
       ...subs.results.map((s) => env.DB.prepare('DELETE FROM avisos WHERE endpoint = ?').bind(s.endpoint)),
       env.DB.prepare('DELETE FROM suscripciones WHERE cuenta = ?').bind(cuenta.id),
@@ -112,12 +109,6 @@ async function rutas(req, env, url) {
     await env.DB.prepare('INSERT OR REPLACE INTO emparejamientos (codigo, sobre, expira) VALUES (?, ?, ?)').bind(codigo, sobre, ahora + 10 * MIN).run();
     return json({ ok: true, expira: ahora + 10 * MIN });
   }
-
-  // Strava
-  if (p === '/strava/inicio' && m === 'POST') return iniciarStrava(cuenta.id, env, url);
-  if (p === '/strava/estado' && m === 'GET') return estadoStrava(cuenta.id, env);
-  if (p === '/strava/actividades' && m === 'GET') return actividadesStrava(cuenta.id, env, url);
-  if (p === '/strava/desconectar' && m === 'POST') { await desconectarStrava(cuenta.id, env); return json({ ok: true }); }
 
   // Recordatorios: cada dispositivo guarda su suscripción push y su lista de avisos
   if (p === '/avisos' && m === 'PUT') {
@@ -177,10 +168,7 @@ async function enviarPendientes(env) {
       ]),
     ]);
   }
-  await env.DB.batch([
-    env.DB.prepare('DELETE FROM emparejamientos WHERE expira < ?').bind(ahora),
-    env.DB.prepare('DELETE FROM strava_estados WHERE expira < ?').bind(ahora),
-  ]);
+  await env.DB.prepare('DELETE FROM emparejamientos WHERE expira < ?').bind(ahora).run();
 }
 
 export default {
