@@ -27,6 +27,8 @@
   let hora = $state(previa.hora || e.perfil.horaEntreno || '19:00');
   let material = $state({ ski: true, row: true, sled: true, wallball: true, kettlebell: true, sandbag: true, ...(previa.material || {}) });
   let lesiones = $state(previa.lesiones || []);
+  let enfoque = $state(previa.enfoque || 'equilibrado');
+  let exigencia = $state(previa.exigencia || 'muy');
   let error = $state('');
 
   const semanas = $derived(fechaCarrera ? Math.ceil((new Date(`${fechaCarrera}T12:00`) - new Date(`${hoyISO()}T12:00`)) / 604800000) : null);
@@ -49,7 +51,7 @@
       inicio: previa.inicio || hoyISO(),
       fechaCarrera: sinFecha ? null : fechaCarrera,
       horaCarrera,
-      categoria, nivel, dias, hora, material, lesiones,
+      categoria, nivel, dias, hora, material, lesiones, enfoque, exigencia,
       marcas: { ...(previa.marcas || {}), t5k: marca(t5k, 900, 3600), ski1000: marca(ski, 150, 480), row1000: marca(row, 150, 480) },
     };
     guardarHyrox(config);
@@ -99,10 +101,22 @@
   </fieldset>
   <label class="campo"><span>Hora habitual de entreno</span><input type="time" bind:value={hora} step="900" /></label>
 
+  <h2 class="seccion"><Icono n="biceps-flexed" tam={22} /> Tu objetivo con el entreno</h2>
+  <fieldset class="opciones dos"><legend>Enfoque</legend>
+    <label class="opcion"><input type="radio" name="enfoque" value="equilibrado" bind:group={enfoque} /><span><b>HYROX + físico</b><small>Pierna completa, 2 días de torso y brazos (pecho, espalda, hombro, bíceps y tríceps) y carrera y estaciones</small></span></label>
+    <label class="opcion"><input type="radio" name="enfoque" value="hyrox" bind:group={enfoque} /><span><b>Solo HYROX</b><small>Fuerza para rendir en la carrera, más carrera y estaciones</small></span></label>
+  </fieldset>
+  <fieldset class="opciones tres"><legend>Exigencia</legend>
+    <label class="opcion"><input type="radio" name="exigencia" value="normal" bind:group={exigencia} /><span><b>Normal</b><small>2-3 repeticiones en reserva</small></span></label>
+    <label class="opcion"><input type="radio" name="exigencia" value="exigente" bind:group={exigencia} /><span><b>Exigente</b><small>Más series y volumen</small></span></label>
+    <label class="opcion"><input type="radio" name="exigencia" value="muy" bind:group={exigencia} /><span><b>Muy exigente</b><small>Cerca del fallo, superseries y dropsets</small></span></label>
+  </fieldset>
+  {#if enfoque === 'equilibrado' && dias.length < 6}<p class="pie-nota">Con 6 días tienes 2 sesiones de torso y brazos; con {dias.length}, {dias.length >= 3 ? 'una' : 'ninguna'}.</p>{/if}
+
   <h2 class="seccion"><Emoji e="🏋️" tam={24} /> Material de tu gimnasio</h2>
   <div class="chips-sel">
     {#each Object.entries(MATERIAL) as [id, m] (id)}
-      <label class="chip-check"><input type="checkbox" bind:checked={material[id]} /><span>{m.emoji} {m.nombre}</span></label>
+      <label class="chip-check"><input type="checkbox" bind:checked={material[id]} /><span><Icono e={m.emoji} tam={15} /> {m.nombre}</span></label>
     {/each}
   </div>
   <p class="pie-nota">Lo que no tengas lo sustituyo por ejercicios equivalentes.</p>

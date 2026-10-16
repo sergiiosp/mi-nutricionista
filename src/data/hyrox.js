@@ -129,6 +129,25 @@ export const EJERCICIOS = {
   plancha_lateral: { nombre: 'Plancha lateral', emoji: '🧘', tecnica: 'Sobre un antebrazo, cuerpo en línea y cadera alta.' },
   sprint_cuesta: { nombre: 'Sprints en cuesta', emoji: '🏃', tecnica: 'Cuesta moderada, 15-20 s a tope y bajada andando para recuperar.' },
   burpees: { nombre: 'Burpees', emoji: '💥', tecnica: 'Pecho al suelo, sube y salta con las manos arriba; ritmo que puedas mantener.' },
+  // Torso y brazos (hipertrofia)
+  press_banca: { nombre: 'Press de banca con barra', emoji: '🏋️', tecnica: 'Escápulas juntas y pies firmes; baja la barra al pecho controlando y empuja.', hombro: 'flexiones' },
+  press_inclinado: { nombre: 'Press inclinado con mancuernas', emoji: '🏋️', tecnica: 'Banco a 30°, baja las mancuernas a los lados del pecho y empuja juntándolas arriba.', hombro: 'flexiones' },
+  cruces_polea: { nombre: 'Cruces en polea', emoji: '💪', tecnica: 'Codos algo flexionados, junta las manos delante del pecho y vuelve lento.' },
+  elevaciones: { nombre: 'Elevaciones laterales', emoji: '💪', tecnica: 'Sube las mancuernas hasta la altura de los hombros sin balanceo.' },
+  fondos: { nombre: 'Fondos en paralelas', emoji: '💪', tecnica: 'Tronco algo inclinado, baja hasta 90° de codo y sube sin bloquear.', hombro: 'extension_triceps' },
+  extension_triceps: { nombre: 'Extensión de tríceps en polea', emoji: '💪', tecnica: 'Codos pegados al cuerpo; solo se mueve el antebrazo.' },
+  press_frances: { nombre: 'Press francés con barra Z', emoji: '💪', tecnica: 'Tumbado, baja la barra hacia la frente doblando solo los codos.' },
+  curl_barra: { nombre: 'Curl de bíceps con barra', emoji: '💪', tecnica: 'Codos quietos a los lados; sube sin balancear el tronco y baja en 2-3 s.' },
+  curl_inclinado: { nombre: 'Curl inclinado con mancuernas', emoji: '💪', tecnica: 'En banco inclinado, brazos colgando por detrás del cuerpo; estiramiento completo abajo.' },
+  curl_martillo: { nombre: 'Curl martillo', emoji: '💪', tecnica: 'Agarre neutro (palmas mirándose), sube alternando sin balanceo.' },
+  remo_mancuerna: { nombre: 'Remo con mancuerna a una mano', emoji: '🚣', tecnica: 'Apoyado en un banco, lleva la mancuerna hacia la cadera con la espalda plana.' },
+  jalon: { nombre: 'Jalón al pecho', emoji: '🧗', tecnica: 'Pecho alto, lleva la barra a la parte alta del pecho juntando escápulas.' },
+  face_pull: { nombre: 'Face pull en polea', emoji: '💪', tecnica: 'Cuerda a la altura de la cara, tira separando las manos y abriendo los codos.' },
+  flexiones_diamante: { nombre: 'Flexiones diamante', emoji: '🙇', tecnica: 'Manos juntas formando un rombo bajo el pecho: trabajan los tríceps.' },
+  flexiones_declinadas: { nombre: 'Flexiones con pies elevados', emoji: '🙇', tecnica: 'Pies en un banco o escalón: más trabajo de pecho alto y hombro.' },
+  pike: { nombre: 'Flexiones en pica', emoji: '🙇', tecnica: 'Cadera arriba formando una V; baja la cabeza entre las manos: trabajan los hombros.' },
+  fondos_banco: { nombre: 'Fondos en banco', emoji: '💪', tecnica: 'Manos en un banco detrás de ti, baja doblando los codos hasta 90°.' },
+  chin_ups: { nombre: 'Dominadas supinas', emoji: '🧗', tecnica: 'Palmas hacia ti: más bíceps. Si no salen, negativas lentas de 4 s.' },
 };
 
 /** Ejercicio con alternativa si hay lesión (rodilla, espalda, hombro). */

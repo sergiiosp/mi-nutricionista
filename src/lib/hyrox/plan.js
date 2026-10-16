@@ -30,6 +30,24 @@ const PLANTILLAS = {
   },
 };
 
+// HYROX + físico: una sesión de pierna completa, dos de torso y brazos, y carrera y estaciones
+const PLANTILLAS_FISICO = {
+  base: {
+    3: ['fuerza', 'series', 'torso'], 4: ['fuerza', 'series', 'torso', 'largo'], 5: ['fuerza', 'series', 'torso', 'estaciones', 'largo'],
+    6: ['fuerza', 'series', 'torso', 'estaciones', 'torso', 'largo'], 7: ['fuerza', 'series', 'torso', 'rodaje', 'estaciones', 'torso', 'largo'],
+  },
+  construccion: {
+    3: ['fuerza', 'umbral', 'torso'], 4: ['fuerza', 'umbral', 'torso', 'compromised'], 5: ['fuerza', 'umbral', 'torso', 'compromised', 'largo'],
+    6: ['fuerza', 'umbral', 'torso', 'compromised', 'torso', 'largo'], 7: ['fuerza', 'series', 'torso', 'rodaje', 'compromised', 'torso', 'largo'],
+  },
+  especifico: {
+    3: ['fuerza', 'series', 'simulacro'], 4: ['fuerza', 'series', 'torso', 'simulacro'], 5: ['fuerza', 'series', 'torso', 'compromised', 'simulacro'],
+    6: ['fuerza', 'series', 'torso', 'compromised', 'torso', 'simulacro'], 7: ['fuerza', 'series', 'torso', 'rodaje', 'compromised', 'torso', 'simulacro'],
+  },
+};
+// Volumen de carrera y estaciones según la exigencia que elijas
+const FACTOR_EXIGENCIA = { normal: 1, exigente: 1.1, muy: 1.2 };
+
 const ordenSemana = (d) => (d + 6) % 7; // lunes = 0 … domingo = 6
 const fechaDe = (iso) => new Date(`${iso}T12:00:00`);
 export function lunesDe(iso) {
@@ -100,7 +118,8 @@ export function generarPlanHyrox(hyrox, perfil, hoy) {
     } else {
       const base = fase === 'taper' ? 'especifico' : fase;
       const n = Math.min(7, Math.max(2, dias.length));
-      tipos = [...PLANTILLAS[base][n]].slice(0, dias.length);
+      const fisico = config.enfoque === 'equilibrado' && n >= 3;
+      tipos = [...(fisico ? PLANTILLAS_FISICO : PLANTILLAS)[base][n]].slice(0, dias.length);
       if (fase === 'taper') tipos = tipos.map((t) => (t === 'simulacro' ? (dias.length >= 4 ? 'largo' : 'compromised') : t));
       if (fase === 'especifico') {
         const idx = tipos.indexOf('simulacro');
@@ -111,15 +130,17 @@ export function generarPlanHyrox(hyrox, perfil, hoy) {
 
     const semana = { w, fase, deload, ajuste, lunes, sesiones: [] };
     let nFuerza = 0;
+    let nTorso = 0;
+    const pierna = config.enfoque === 'equilibrado' && dias.length >= 3;
     tipos.forEach((tipo, i) => {
       const d = dias[i];
       let fecha = sumarDias(lunes, ordenSemana(d));
       if (carrera && fecha >= carrera) return; // nada el mismo día o después de la carrera
       const id = `s${w}-${d}`;
       const contenido = construirSesion({
-        tipo, fase, p, factor, semana: w, config, perfil, rit,
+        tipo, fase, p, factor: factor * (FACTOR_EXIGENCIA[config.exigencia] || 1), semana: w, config, perfil, rit,
         completo: w === simCompletoSemana, mitad: (w % 2 === 0 ? '1-4' : '5-8'),
-        variante: tipo === 'fuerza' ? (nFuerza++ % 2 === 0 ? 'A' : 'B') : 'A', sinGym: !!sinGym[id],
+        variante: tipo === 'fuerza' ? (pierna ? 'P' : nFuerza++ % 2 === 0 ? 'A' : 'B') : tipo === 'torso' ? (nTorso++ % 2 === 0 ? 'A' : 'B') : 'A', sinGym: !!sinGym[id],
       });
       const original = fecha;
       if (movidas[id]) fecha = movidas[id];

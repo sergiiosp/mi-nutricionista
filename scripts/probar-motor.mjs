@@ -98,6 +98,11 @@ const conEntreno = metaDia(objH, proveedorDe({ ...estH, entrenoDia: {} })(fechaF
 const sinEntreno = metaDia(objH, proveedorDe(estH)(fechaF));
 comprobar(sinEntreno.kcal < conEntreno.kcal, `«Hoy no entreno» baja las kcal del día (${conEntreno.kcal} → ${sinEntreno.kcal})`);
 
+const ph6 = generarPlanHyrox({ config: { ...configH, dias: [1, 2, 3, 4, 5, 6], enfoque: 'equilibrado', exigencia: 'muy' } }, perfilH, '2026-10-12');
+const tiposS0 = ph6.semanas[0].sesiones.map((s) => s.tipo);
+comprobar(tiposS0.filter((t) => t === 'torso').length === 2 && tiposS0.filter((t) => t === 'fuerza').length === 1, 'HYROX + físico con 6 días: pierna, 2 de torso y brazos, carrera y estaciones');
+comprobar(/pecho|banca/i.test(ph6.sesiones.find((s) => s.tipo === 'torso').bloques[0].lineas.join(' ')), 'Torso A trabaja pecho');
+
 // ── Comidas montadas por ingredientes ─────────────────────────────────────
 const { proponerCombos, montarCombo } = await import('../src/lib/combos.js');
 const perfilD = { ...comun, sexo: 'h', edad: 32, altura: 178, peso: 80, objetivo: 'perder', ritmo: 'moderado', comidas: 4 };
