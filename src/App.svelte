@@ -18,7 +18,7 @@
   import Ajustes from './pages/Ajustes.svelte';
   import { estado, actualizar } from './stores/estado.js';
   import { ruta, ir } from './stores/ruta.js';
-  import { hoja, cerrarHoja, abrirHoja, aviso, avisar } from './stores/ui.js';
+  import { hoja, cerrarHoja, abrirHoja, aviso, avisar, deshacerAviso } from './stores/ui.js';
   import { calcularObjetivos } from './lib/nutricion.js';
   import { crearPlan, reajustarPlan } from './lib/acciones.js';
   import { hoyISO } from './lib/planificador.js';
@@ -121,7 +121,8 @@
 {#if $aviso}
   {#key $aviso.clave}
     <div class="toast-nuevo" role="status" in:fly={{ y: 20, duration: 200 }} out:fly={{ y: 20, duration: 200 }}>
-      <Emoji e={$aviso.emoji} tam={22} /> {$aviso.texto}
+      <Emoji e={$aviso.emoji} tam={22} /> <span class="toast-texto">{$aviso.texto}</span>
+      {#if $aviso.deshacer}<button class="toast-deshacer" onclick={deshacerAviso}>Deshacer</button>{/if}
     </div>
   {/key}
 {/if}

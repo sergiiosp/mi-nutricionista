@@ -51,7 +51,7 @@
       <div class="t-cab"><b>{capital(diaSemana(dia.fecha))}</b><span class="etq {dia.entreno ? 'etq-pre' : 'etq-nota'}">{dia.entreno ? 'Entreno' : 'Descanso'}</span><span class="coste">{euros(dia.comidas.reduce((s, c) => s + costeComida(c.ingredientes), 0))}</span></div>
       <Macros m={t} />
       <p class="pie-nota">Objetivo: {od.kcal} kcal · P {od.proteina} · H {od.hidratos} · G {od.grasa}</p>
-      {#if dia.fecha === hoy}<a class="enlace" href="#hoy">Ver hoy con lo que llevas comido</a>{/if}
+      {#if dia.fecha === hoy}<a class="enlace enlace-hoy" href="#hoy">Ver hoy con lo que llevas comido</a>{/if}
     </div>
     <div class="lista">
       {#each dia.comidas as c (c.franja)}
@@ -70,6 +70,7 @@
 {/if}
 
 <style>
+  .enlace-hoy { display: inline-block; padding: 12px 0; margin: -12px 0; }
   .dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 8px 0 4px; }
   .dias button { display: grid; justify-items: center; padding: 8px 0 4px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.75rem; color: var(--texto-2); }
   .dias b { font-size: 1.1rem; font-weight: 800; color: var(--texto); }

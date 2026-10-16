@@ -47,8 +47,14 @@
   }
 
   function borrar(id) {
+    const pos = propias.findIndex((p) => p.id === id);
+    const quitada = propias[pos];
     actualizar((e) => { e.propias = e.propias.filter((p) => p.id !== id); });
     propias = get(estado).propias;
+    avisar(`Borrada: ${quitada.nombre}`, '🗑️', () => {
+      actualizar((e) => { if (!e.propias.some((p) => p.id === id)) e.propias.splice(pos, 0, quitada); });
+      propias = get(estado).propias;
+    });
   }
 </script>
 
@@ -119,7 +125,7 @@
   .txt { flex: 1; display: grid; }
   .txt small { color: var(--texto-2); font-weight: 600; }
   .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; }
-  .borrar { border: 0; background: none; cursor: pointer; padding: 6px; color: var(--texto-2); }
+  .borrar { display: grid; place-items: center; flex-shrink: 0; min-width: 44px; min-height: 44px; border: 0; border-radius: 12px; background: none; cursor: pointer; padding: 0; color: var(--texto-2); }
   .emojis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 6px 0 12px; }
   .emojis button { aspect-ratio: 1; border-radius: 12px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; display: grid; place-items: center; }
   .emojis button.activo { border-color: var(--primario); background: var(--primario-claro); }

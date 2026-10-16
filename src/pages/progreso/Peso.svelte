@@ -35,6 +35,13 @@
     } else avisar('Peso guardado', '⚖️');
   }
 
+  function borrarPeso(p) {
+    actualizar((e) => { e.pesos = e.pesos.filter((x) => x.fecha !== p.fecha); });
+    avisar(`Peso del ${fechaCorta(p.fecha)} borrado`, '🗑️', () => {
+      actualizar((e) => { if (!e.pesos.some((x) => x.fecha === p.fecha)) e.pesos = [...e.pesos, p]; });
+    });
+  }
+
   function aplicarAjuste(n) {
     actualizar((e) => { e.perfil.ajusteKcal = (e.perfil.ajusteKcal || 0) + n; });
     reajustarPlan();
@@ -109,7 +116,7 @@
     <ul class="historial">
       {#each [...pesos].reverse() as p (p.fecha)}
         <li><span>{fechaCorta(p.fecha)}</span><b>{num(p.peso, 1)} kg</b><span></span>
-          <button class="boton-icono" aria-label="Borrar" onclick={() => actualizar((e) => { e.pesos = e.pesos.filter((x) => x.fecha !== p.fecha); })}><Icono e="🗑️" tam={18} /></button></li>
+          <button class="boton-icono" aria-label="Borrar el peso del {fechaCorta(p.fecha)}" onclick={() => borrarPeso(p)}><Icono e="🗑️" tam={18} /></button></li>
       {/each}
     </ul>
   </details>

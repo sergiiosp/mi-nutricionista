@@ -70,7 +70,7 @@
   .hoja-cab.sin-titulo { justify-content: flex-end; padding-bottom: 0; }
   .hoja-asa { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 38px; height: 4px; border-radius: 999px; background: var(--superficie-3); }
   .hoja-cab h2 { margin: 0; font-size: 1.15rem; }
-  .hoja-cerrar { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--superficie-2); display: grid; place-items: center; cursor: pointer; color: var(--texto); flex-shrink: 0; }
+  .hoja-cerrar { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie-2); display: grid; place-items: center; cursor: pointer; color: var(--texto); flex-shrink: 0; }
   .hoja-cab.sin-titulo .hoja-cerrar { position: absolute; top: 12px; right: 14px; z-index: 2; background: color-mix(in srgb, var(--superficie-2) 85%, transparent); backdrop-filter: blur(8px); }
   .hoja-cuerpo { overflow-y: auto; padding: 8px 16px calc(24px + env(safe-area-inset-bottom)); overscroll-behavior: contain; }
   @media (min-width: 760px) {

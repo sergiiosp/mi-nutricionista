@@ -62,7 +62,7 @@
 <style>
   .cuenta { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 18px; background: var(--hero); color: #fff; font-weight: 800; margin-bottom: 12px; box-shadow: var(--sombra-fuerte); }
   .nav-semana { display: flex; align-items: center; gap: 10px; }
-  .nav-semana button { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 800; cursor: pointer; color: var(--texto); }
+  .nav-semana button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 800; cursor: pointer; color: var(--texto); }
   .nav-semana button:disabled { opacity: 0.3; cursor: default; }
   .info { flex: 1; text-align: center; display: grid; }
   .info small { color: var(--texto-2); font-weight: 700; }

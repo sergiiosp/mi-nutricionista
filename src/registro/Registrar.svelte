@@ -79,7 +79,7 @@
 <div class="registrar">
   {#if vista !== 'inicio'}
     <div class="nav">
-      <button class="atras" onclick={atras} aria-label="Atrás">←</button>
+      <button class="atras" onclick={atras} aria-label="Atrás"><Icono n="arrow-left" tam={20} /></button>
       <b>{TITULOS[vista]}</b>
       <span class="franja-chip">{franjaSel.nombre}</span>
     </div>
@@ -139,7 +139,7 @@
 <style>
   .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .nav b { flex: 1; font-size: 1.05rem; }
-  .atras { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.2rem; font-weight: 800; cursor: pointer; color: var(--texto); }
+  .atras { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; color: var(--texto); }
   .franja-chip { padding: 5px 11px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; font-size: 0.8rem; }
   .franjas { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 10px; }
   .franjas::-webkit-scrollbar { display: none; }

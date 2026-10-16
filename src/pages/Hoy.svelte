@@ -5,7 +5,7 @@
   import TarjetaComida from '../components/TarjetaComida.svelte';
   import TarjetaSesion from '../components/TarjetaSesion.svelte';
   import { planDe, sesionesDia } from '../lib/hyrox/index.js';
-  import { estado, añadirRegistro, borrarRegistro, horaActual } from '../stores/estado.js';
+  import { estado, añadirRegistro, horaActual } from '../stores/estado.js';
   import { avisar } from '../stores/ui.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
   import { hoyISO } from '../lib/planificador.js';
@@ -22,6 +22,7 @@
   let ahora = $state(horaActual());
   $effect(() => { const t = setInterval(() => (ahora = horaActual()), 60000); return () => clearInterval(t); });
   const d = $derived(estadoDia($estado, objetivos, hoy, ahora));
+  const siguiente = $derived(d.comidas.find((c) => c.situacion === 'pendiente' && !c.pasada)?.franja);
   const diaIdx = $derived($estado.plan?.dias.findIndex((x) => x.fecha === hoy) ?? -1);
   const entreno = $derived(d.dia ? d.entreno : esDiaEntreno($estado.perfil, hoy));
   const sesion = $derived(d.dia?.sesion || (entreno ? horarioDia($estado.perfil, true).entreno : null));
@@ -189,7 +190,7 @@
           <div class="tl-linea"><span></span></div>
           <div class="tl-contenido">
             {#if it.tipo === 'comida'}
-              <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} />
+              <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={it.c.franja === siguiente} />
             {:else if it.tipo === 'hyrox'}
               <TarjetaSesion sesion={it.s} registro={$estado.hyrox?.registros?.[it.s.id]} />
             {:else if it.tipo === 'entreno'}
@@ -203,7 +204,7 @@
               <div class="extra">
                 {#if it.x.imagen && it.x.tipo === 'producto'}<img src={it.x.imagen} alt="" />{:else}<span class="ic"><Icono n="utensils" tam={20} /></span>{/if}
                 <span class="txt"><small>{it.x.franja ? NOMBRES[it.x.franja] : 'Picoteo'}</small><b>{it.x.nombre}</b><small>{it.x.cantidad?.texto}, {entero(it.x.macros.kcal)} kcal, {Math.round(it.x.macros.p)} g de proteína</small></span>
-                <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => borrarRegistro(hoy, it.x.id)}><Icono n="x" tam={16} /></button>
+                <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="x" tam={16} /></button>
               </div>
             {/if}
           </div>
@@ -226,6 +227,9 @@
   .chip-hoy.naranja { background: var(--primario-claro); color: var(--primario-fuerte); }
   .tipo-dia { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--superficie-2); }
   .tipo-dia button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border: 0; border-radius: 999px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  /* Zona táctil de 44 px sin cambiar el aspecto de la píldora */
+  .tipo-dia button { position: relative; }
+  .tipo-dia button::after { content: ""; position: absolute; inset: -8px 0; }
   .tipo-dia button.activo { background: var(--primario); color: var(--sobre-primario); }
   .nota-cambio { margin: 10px 0 0; font-size: 0.8rem; color: var(--texto-2); }
   .marcador { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 16px 0 14px; }
@@ -272,7 +276,7 @@
   .sug-txt { flex: 1; min-width: 0; display: grid; font-size: 0.86rem; }
   .sug-txt b { font-weight: 600; }
   .sug-txt small { color: var(--texto-2); font-size: 0.74rem; }
-  .sug-mas, .borrar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--primario); color: var(--sobre-primario); cursor: pointer; flex-shrink: 0; transition: transform 0.15s; }
+  .sug-mas, .borrar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--primario); color: var(--sobre-primario); cursor: pointer; flex-shrink: 0; transition: transform 0.15s; }
   .sug-mas:active { transform: scale(0.9); }
   .borrar { background: var(--superficie-2); color: var(--texto-2); }
 

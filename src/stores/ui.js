@@ -1,5 +1,5 @@
 // Estado de interfaz no persistente: hoja inferior abierta y avisos.
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 
 /** Hoja inferior: { tipo: 'registrar' | 'receta' | 'alternativas' | ..., props } o null */
 export const hoja = writable(null);
@@ -8,10 +8,17 @@ export const cerrarHoja = () => hoja.set(null);
 
 export const aviso = writable(null);
 let t;
-export function avisar(texto, emoji = '✅') {
-  aviso.set({ texto, emoji, clave: Date.now() });
+/** Aviso breve. Con `deshacer` (función) el aviso lleva un botón «Deshacer» y dura más. */
+export function avisar(texto, emoji = '✅', deshacer = null) {
+  aviso.set({ texto, emoji, deshacer, clave: Date.now() });
   clearTimeout(t);
-  t = setTimeout(() => aviso.set(null), 2800);
+  t = setTimeout(() => aviso.set(null), deshacer ? 6000 : 2800);
+}
+export function deshacerAviso() {
+  const a = get(aviso);
+  a?.deshacer?.();
+  clearTimeout(t);
+  aviso.set(null);
 }
 
 /** Celebración breve (confeti) para logros del día */

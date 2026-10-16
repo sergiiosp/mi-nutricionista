@@ -101,7 +101,8 @@
   .barra div { height: 100%; background: var(--hero); border-radius: 999px; transition: width 0.3s; }
   .item { display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 12px; }
   .item + .item { border-top: 1px solid var(--superficie-2); }
-  .check { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--borde); background: var(--superficie); color: transparent; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .check { position: relative; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--borde); background: var(--superficie); color: transparent; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .check::after, .casa-btn::after { content: ""; position: absolute; inset: -7px; }
   .check.activo { background: var(--primario); border-color: var(--primario); color: #fff; }
   .check:disabled { opacity: 0.3; }
   .item img, .img { width: 48px; height: 48px; border-radius: 12px; object-fit: contain; background: #fff; padding: 3px; flex-shrink: 0; display: grid; place-items: center; }
@@ -109,7 +110,7 @@
   .info b { font-size: 0.9rem; line-height: 1.25; }
   .info small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
   .precio { font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
-  .casa-btn { width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--superficie-2); cursor: pointer; filter: grayscale(1); opacity: 0.6; flex-shrink: 0; }
+  .casa-btn { position: relative; width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--superficie-2); cursor: pointer; filter: grayscale(1); opacity: 0.6; flex-shrink: 0; }
   .casa-btn.activo { filter: none; opacity: 1; background: var(--amarillo-claro); }
   .cogido b { text-decoration: line-through; color: var(--texto-2); }
   .cogido img, .casa img { opacity: 0.4; }

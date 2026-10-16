@@ -155,7 +155,7 @@
   .info b { font-weight: 600; font-size: 0.92rem; line-height: 1.3; }
   .info small { color: var(--texto-2); font-size: 0.76rem; line-height: 1.35; }
   .info .nota { color: var(--texto-3); }
-  .estrella { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 0; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
+  .estrella { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
   .estrella.activa, .estrella-btn.activa { color: var(--amarillo); }
   .estrella.activa :global(.icono), .estrella-btn.activa :global(.icono) { fill: currentColor; }
   .grupo { margin: 4px 0 14px; }

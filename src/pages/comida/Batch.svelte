@@ -71,7 +71,8 @@
   .linea { font-weight: 700; font-size: 0.88rem; }
   .linea small { font-weight: 600; }
   .consejo-mini { margin: 4px 0 0; font-size: 0.8rem; color: var(--texto-2); font-weight: 600; }
-  .check { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--borde); background: var(--superficie); color: transparent; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .check { position: relative; width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--borde); background: var(--superficie); color: transparent; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .check::after { content: ""; position: absolute; inset: -6px; }
   .check.activo { background: var(--primario); border-color: var(--primario); color: #fff; }
   .vacia { text-align: center; }
 </style>

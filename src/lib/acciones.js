@@ -9,11 +9,26 @@ import { proveedorDe } from './hyrox/index.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 
+/** Borra un registro del día con opción de deshacer (vuelve a su sitio en la lista). */
+export function quitarRegistro(fecha, id, texto) {
+  const lista = get(estado).registros[fecha] || [];
+  const pos = lista.findIndex((r) => r.id === id);
+  if (pos === -1) return;
+  const registro = lista[pos];
+  borrarRegistro(fecha, id);
+  avisar(texto || `Borrado: ${registro.nombre}`, '🗑️', () => {
+    actualizar((x) => {
+      const dia = (x.registros[fecha] ||= []);
+      if (!dia.some((r) => r.id === id)) dia.splice(Math.min(pos, dia.length), 0, registro);
+    });
+  });
+}
+
 export function marcarHecha(fecha, comida) {
   const e = get(estado);
   const ya = (e.registros[fecha] || []).find((r) => r.tipo === 'plan' && r.franja === comida.franja);
   if (ya) {
-    borrarRegistro(fecha, ya.id);
+    quitarRegistro(fecha, ya.id, 'Comida desmarcada');
     return;
   }
   actualizar((x) => {
@@ -107,8 +122,15 @@ export function registrarSesion(id, datos) {
 }
 
 export function borrarRegistroSesion(id) {
+  const anterior = get(estado).hyrox?.registros?.[id];
   actualizar((x) => { delete x.hyrox.registros[id]; });
   reajustarPlan();
+  if (anterior) {
+    avisar('Registro de la sesión borrado', '🗑️', () => {
+      actualizar((x) => { if (x.hyrox) x.hyrox.registros[id] = anterior; });
+      reajustarPlan();
+    });
+  }
 }
 
 /** Marca (o desmarca) que una sesión la harás sin gimnasio: peso corporal, parque y cuestas. */
