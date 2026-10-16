@@ -2,7 +2,7 @@
   import { slide } from 'svelte/transition';
   import FotoReceta from './FotoReceta.svelte';
   import Macros from './Macros.svelte';
-  import Emoji from './Emoji.svelte';
+  import Icono from './Icono.svelte';
   import { recetaPorId } from '../lib/planificador.js';
   import { macrosComida, costeComida, cantidadTexto, alimento } from '../lib/nutricion.js';
   import { marcarHecha, alternarSaltada } from '../lib/acciones.js';
@@ -17,7 +17,7 @@
   const m = $derived(macrosComida(comida.ingredientes));
   const situacion = $derived(comida.situacion || 'pendiente');
   let abierta = $state(false);
-  const ETQ = { pre: '⚡ Pre-entreno', post: '💪 Post-entreno' };
+  const ETQ = { pre: 'Pre-entreno', post: 'Post-entreno' };
 
   function verReceta() {
     abrirHoja('receta', { recetaId: comida.recetaId, ingredientes: comida.ingredientes, titulo: [comida.hora, franjaNombre].filter(Boolean).join(' · '), diaIdx, franja: comida.franja });
@@ -27,40 +27,40 @@
 <article class="comida-card s-{situacion}" class:ajustada={comida.ajustada}>
   <div class="fila">
     <button class="miniatura" onclick={verReceta} aria-label="Ver receta">
-      <FotoReceta {receta} alto={78} redondeo={18} tamEmoji={44} />
+      <FotoReceta {receta} alto={84} redondeo={16} tamEmoji={44} />
     </button>
     <div class="cuerpo">
       <div class="franja">
         <span>{franjaNombre}</span>
         {#if comida.etiqueta}<span class="etq etq-{comida.etiqueta}">{ETQ[comida.etiqueta]}</span>{/if}
-        {#if comida.ajustada && situacion === 'pendiente'}<span class="etq etq-ajuste">🔄 Ajustada</span>{/if}
-        {#if nota}<span class="etq etq-nota">🥡 {nota}</span>{/if}
+        {#if comida.ajustada && situacion === 'pendiente'}<span class="etq etq-ajuste">Ajustada</span>{/if}
+        {#if nota}<span class="etq etq-nota">{nota}</span>{/if}
       </div>
       <button class="titulo" onclick={verReceta}>{receta?.nombre}</button>
-      <div class="meta">{receta?.tiempo} min · {euros(costeComida(comida.ingredientes))}</div>
       <Macros {m} peque />
+      <div class="meta"><Icono n="clock" tam={13} /> {receta?.tiempo} min <span>·</span> {euros(costeComida(comida.ingredientes))}</div>
     </div>
     {#if editable && fecha && situacion !== 'saltada' && situacion !== 'sustituida'}
       <button class="check" class:activo={situacion === 'hecha'} aria-pressed={situacion === 'hecha'}
         aria-label={situacion === 'hecha' ? 'Desmarcar' : 'Marcar como comida'} onclick={() => marcarHecha(fecha, comida)}>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+        <Icono n="check" tam={18} grosor={3} />
       </button>
     {/if}
   </div>
 
   {#if comida.pasada && editable && fecha}
-    <div class="pasada">🕐 ¿Ya la has comido? <button class="enlace" onclick={() => marcarHecha(fecha, comida)}>Sí, márcala</button> · <button class="enlace" onclick={() => alternarSaltada(fecha, comida.franja)}>No, me la salté</button></div>
+    <div class="pasada"><Icono n="clock" tam={15} /> <span>¿Ya la has comido?</span> <button onclick={() => marcarHecha(fecha, comida)}>Sí</button><button onclick={() => alternarSaltada(fecha, comida.franja)}>Me la salté</button></div>
   {/if}
   {#if situacion === 'saltada'}
-    <div class="estado-linea">⏭️ Te la has saltado. <button class="enlace" onclick={() => alternarSaltada(fecha, comida.franja)}>Deshacer</button></div>
+    <div class="estado-linea"><Icono n="skip-forward" tam={15} /> Saltada <button class="enlace" onclick={() => alternarSaltada(fecha, comida.franja)}>Deshacer</button></div>
   {:else if situacion === 'sustituida'}
-    <div class="estado-linea">🔁 Comiste otra cosa:</div>
+    <div class="estado-linea"><Icono n="repeat" tam={15} /> Comiste otra cosa</div>
     {#each comida.otros as r (r.id)}
       <div class="otro">
-        <Emoji e={r.emoji || '🍽️'} tam={22} />
+        <Icono n="utensils" tam={16} />
         <span class="otro-nombre">{r.nombre}{#if r.cantidad?.texto}<small>{' · '}{r.cantidad.texto}</small>{/if}</span>
         <span class="otro-kcal">{Math.round(r.macros.kcal)} kcal</span>
-        <button class="borrar" aria-label="Borrar" onclick={() => borrarRegistro(fecha, r.id)}>✕</button>
+        <button class="borrar" aria-label="Borrar" onclick={() => borrarRegistro(fecha, r.id)}><Icono n="x" tam={15} /></button>
       </div>
     {/each}
   {/if}
@@ -83,48 +83,51 @@
 
   {#if editable && fecha && situacion === 'pendiente'}
     <footer class="acciones">
-      <button onclick={() => (abierta = !abierta)}>🧾 {abierta ? 'Ocultar' : 'Cantidades'}</button>
-      <button onclick={() => abrirHoja('alternativas', { diaIdx, franja: comida.franja })}>🔄 Cambiar</button>
-      <button onclick={() => abrirHoja('registrar', { fecha, franja: comida.franja })}>🍽️ Comí otra cosa</button>
-      <button onclick={() => alternarSaltada(fecha, comida.franja)}>⏭️ Saltar</button>
+      <button class:activo={abierta} onclick={() => (abierta = !abierta)}><Icono n="list" tam={15} /> Cantidades</button>
+      <button onclick={() => abrirHoja('alternativas', { diaIdx, franja: comida.franja })}><Icono n="shuffle" tam={15} /> Cambiar</button>
+      <button onclick={() => abrirHoja('registrar', { fecha, franja: comida.franja })}><Icono n="repeat" tam={15} /> Otra cosa</button>
+      <button onclick={() => alternarSaltada(fecha, comida.franja)}><Icono n="skip-forward" tam={15} /> Saltar</button>
     </footer>
   {:else if !editable || !fecha}
     <footer class="acciones">
-      <button onclick={() => (abierta = !abierta)}>🧾 {abierta ? 'Ocultar' : 'Cantidades'}</button>
-      {#if diaIdx !== undefined}<button onclick={() => abrirHoja('alternativas', { diaIdx, franja: comida.franja })}>🔄 Cambiar</button>{/if}
+      <button class:activo={abierta} onclick={() => (abierta = !abierta)}><Icono n="list" tam={15} /> Cantidades</button>
+      {#if diaIdx !== undefined}<button onclick={() => abrirHoja('alternativas', { diaIdx, franja: comida.franja })}><Icono n="shuffle" tam={15} /> Cambiar</button>{/if}
     </footer>
   {/if}
 </article>
 
 <style>
-  .comida-card { background: var(--superficie); border-radius: var(--radio); padding: 12px; box-shadow: var(--sombra); transition: opacity 0.2s, background 0.2s; }
-  .comida-card.ajustada.s-pendiente { box-shadow: var(--sombra), inset 0 0 0 2px var(--lila-claro); }
+  .comida-card { background: var(--superficie); border-radius: var(--radio); padding: 12px; box-shadow: var(--sombra); transition: opacity 0.25s, background 0.25s; }
+  .comida-card.ajustada.s-pendiente { box-shadow: 0 0 0 1px color-mix(in srgb, var(--lila) 45%, transparent); }
   .fila { position: relative; display: flex; gap: 12px; align-items: flex-start; }
-  .miniatura { padding: 0; border: 0; background: none; cursor: pointer; width: 78px; flex-shrink: 0; }
-  .cuerpo { flex: 1; min-width: 0; padding-right: 40px; display: grid; gap: 2px; }
-  .franja { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--texto-2); }
-  .franja .etq { text-transform: none; letter-spacing: 0; }
+  .miniatura { padding: 0; border: 0; background: none; cursor: pointer; width: 84px; flex-shrink: 0; }
+  .cuerpo { flex: 1; min-width: 0; padding-right: 42px; display: grid; gap: 1px; }
+  .franja { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--texto-3); }
+  .etq { padding: 2px 7px; border-radius: 999px; font-size: 0.6rem; letter-spacing: 0.06em; }
+  .etq-pre, .etq-post { background: var(--primario-claro); color: var(--primario-fuerte); }
   .etq-ajuste { background: var(--lila-claro); color: var(--lila); }
-  .titulo { padding: 0; border: 0; background: none; text-align: left; font-weight: 800; font-size: 1rem; line-height: 1.25; cursor: pointer; color: var(--texto); }
-  .meta { font-size: 0.8rem; color: var(--texto-2); font-weight: 600; }
-  .check { position: absolute; right: 0; top: 0; width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--borde); background: var(--superficie); color: transparent; display: grid; place-items: center; cursor: pointer; transition: all 0.2s; }
+  .etq-nota { background: var(--superficie-2); color: var(--texto-2); }
+  .titulo { padding: 0; border: 0; background: none; text-align: left; font-weight: 600; font-size: 0.97rem; line-height: 1.3; cursor: pointer; color: var(--texto); margin-top: 2px; }
+  .meta { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 0.74rem; color: var(--texto-3); }
+  .check { position: absolute; right: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--borde); background: transparent; color: transparent; display: grid; place-items: center; cursor: pointer; transition: all 0.25s cubic-bezier(.3,1.5,.5,1); }
   .check:hover { border-color: var(--primario); color: var(--primario); }
-  .check.activo { background: var(--primario); border-color: var(--primario); color: #fff; transform: scale(1.05); }
-  .s-hecha { background: color-mix(in srgb, var(--superficie) 75%, var(--primario-claro)); }
-  .s-hecha .titulo { text-decoration: line-through; text-decoration-color: var(--primario); text-decoration-thickness: 2px; opacity: 0.7; }
-  .s-saltada, .s-sustituida { background: color-mix(in srgb, var(--superficie) 70%, var(--fondo)); }
-  .s-saltada .fila, .s-sustituida .fila { opacity: 0.55; }
-  .pasada { margin-top: 10px; padding: 8px 12px; border-radius: 12px; background: var(--amarillo-claro); font-size: 0.84rem; font-weight: 700; }
-  .estado-linea { margin-top: 10px; font-size: 0.88rem; font-weight: 700; color: var(--texto-2); }
-  .otro { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: var(--superficie-2); font-size: 0.88rem; font-weight: 700; }
-  .otro-nombre { flex: 1; min-width: 0; }
-  .otro-nombre small { color: var(--texto-2); font-weight: 600; }
-  .otro-kcal { color: var(--texto-2); white-space: nowrap; }
-  .borrar { border: 0; background: none; color: var(--texto-2); cursor: pointer; font-size: 0.9rem; padding: 4px; }
-  .ingredientes { margin-top: 10px; }
-  .antes { display: block; color: var(--lila); font-weight: 700; }
+  .check.activo { background: var(--primario); border-color: var(--primario); color: var(--sobre-primario); transform: scale(1.06); box-shadow: 0 0 16px rgb(255 91 31 / 0.5); }
+  .s-hecha { background: color-mix(in srgb, var(--superficie) 95%, var(--primario)); }
+  .s-hecha .titulo { color: var(--texto-2); }
+  .s-saltada .fila, .s-sustituida .fila { opacity: 0.45; }
+  .pasada { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 8px 10px; border-radius: 12px; background: var(--amarillo-claro); color: var(--aviso-texto); font-size: 0.8rem; font-weight: 600; }
+  .pasada span { flex: 1; }
+  .pasada button { padding: 5px 10px; border-radius: 999px; border: 0; background: rgb(255 255 255 / 0.08); color: var(--texto); font-weight: 600; font-size: 0.76rem; cursor: pointer; }
+  .estado-linea { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
+  .otro { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: var(--superficie-2); font-size: 0.84rem; font-weight: 600; color: var(--texto-2); }
+  .otro-nombre { flex: 1; min-width: 0; color: var(--texto); }
+  .otro-nombre small { color: var(--texto-2); font-weight: 500; }
+  .otro-kcal { white-space: nowrap; }
+  .borrar { display: grid; place-items: center; border: 0; background: none; color: var(--texto-3); cursor: pointer; padding: 4px; }
+  .ingredientes { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--linea); }
+  .antes { display: block; color: var(--lila); font-weight: 600; font-size: 0.78rem; }
   .acciones { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
   .acciones::-webkit-scrollbar { display: none; }
-  .acciones button { flex-shrink: 0; padding: 7px 11px; border-radius: 12px; border: 0; background: var(--superficie-2); font-weight: 800; font-size: 0.8rem; cursor: pointer; color: var(--texto); }
-  .acciones button:hover { background: var(--primario-claro); color: var(--primario-fuerte); }
+  .acciones button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; padding: 7px 10px; border-radius: 10px; border: 0; background: var(--superficie-2); font-weight: 600; font-size: 0.74rem; cursor: pointer; color: var(--texto-2); transition: background 0.15s, color 0.15s; }
+  .acciones button:hover, .acciones button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
 </style>

@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../components/Icono.svelte';
   // Comidas propias: lista y creación (por ingredientes o con los macros a mano)
   import { get } from 'svelte/store';
   import Emoji from '../components/Emoji.svelte';
@@ -52,7 +53,7 @@
 </script>
 
 {#if !creando}
-  <button class="boton ancho" onclick={() => (creando = true)}>➕ Crear una comida mía</button>
+  <button class="boton ancho" onclick={() => (creando = true)}><Icono e="➕" tam={18} /> Crear una comida mía</button>
   {#if propias.length}
     <ul class="lista">
       {#each propias as p (p.id)}
@@ -62,7 +63,7 @@
             <span class="txt"><b>{p.nombre}</b><small>{Math.round(p.macros.kcal)} kcal · P {Math.round(p.macros.p)} g por ración</small></span>
             <span class="mas">+</span>
           </button>
-          <button class="borrar" aria-label="Borrar {p.nombre}" onclick={() => borrar(p.id)}>🗑️</button>
+          <button class="borrar" aria-label="Borrar {p.nombre}" onclick={() => borrar(p.id)}><Icono e="🗑️" tam={18} /></button>
         </li>
       {/each}
     </ul>
@@ -86,7 +87,7 @@
         <Emoji e={emojiAlimento(ing.a)} tam={24} />
         <span class="ing-n">{ALIMENTOS[ing.a].nombre}</span>
         <input type="number" min="0" bind:value={ing.g} aria-label="Gramos" /><small>{ALIMENTOS[ing.a].medida || 'g'}</small>
-        <button class="borrar" aria-label="Quitar" onclick={() => (ingredientes = ingredientes.filter((_, j) => j !== i))}>✕</button>
+        <button class="borrar" aria-label="Quitar" onclick={() => (ingredientes = ingredientes.filter((_, j) => j !== i))}><Icono e="✕" tam={18} /></button>
       </div>
     {/each}
     <input class="busca" bind:value={busca} placeholder="Añadir ingrediente: pan, jamón, aceite…" aria-label="Buscar ingrediente" />
@@ -117,7 +118,7 @@
   .ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--superficie-2); }
   .txt { flex: 1; display: grid; }
   .txt small { color: var(--texto-2); font-weight: 600; }
-  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 900; }
+  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; }
   .borrar { border: 0; background: none; cursor: pointer; padding: 6px; color: var(--texto-2); }
   .emojis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 6px 0 12px; }
   .emojis button { aspect-ratio: 1; border-radius: 12px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; display: grid; place-items: center; }

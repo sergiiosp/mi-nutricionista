@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import FotoReceta from '../../components/FotoReceta.svelte';
   import { estado } from '../../stores/estado.js';
@@ -43,7 +44,7 @@
         {#each t.lineas || [] as l (l.texto)}
           <div class="linea">• {l.texto}{#if l.cuando}<small> — {l.cuando}</small>{/if}</div>
         {/each}
-        {#if t.consejo}<p class="consejo-mini">💡 {t.consejo}</p>{/if}
+        {#if t.consejo}<p class="consejo-mini"><Icono e="💡" tam={18} /> {t.consejo}</p>{/if}
       </div>
       {#if t.tipo !== 'nota'}
         <button class="check" class:activo={hechas[t.titulo]} aria-label="Hecho" onclick={() => (hechas = { ...hechas, [t.titulo]: !hechas[t.titulo] })}>

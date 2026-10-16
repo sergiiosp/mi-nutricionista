@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   // Cuestionario HYROX: carrera, categoría, nivel, marcas, disponibilidad, material y lesiones
   import { get } from 'svelte/store';
   import Emoji from '../../components/Emoji.svelte';
@@ -78,7 +79,7 @@
 
   <fieldset class="opciones lista"><legend>Tu nivel</legend>
     {#each Object.entries(NIVELES) as [id, n] (id)}
-      <label class="opcion"><input type="radio" name="nivel" value={id} bind:group={nivel} /><span><i class="op-emoji">{id === 'principiante' ? '🌱' : id === 'intermedio' ? '💪' : '🔥'}</i><b>{n.nombre}</b><small>{n.desc}</small></span></label>
+      <label class="opcion"><input type="radio" name="nivel" value={id} bind:group={nivel} /><span><i class="op-emoji"><Icono e={id === 'principiante' ? '🌱' : id === 'intermedio' ? '💪' : '🔥'} tam={22} /></i><b>{n.nombre}</b><small>{n.desc}</small></span></label>
     {/each}
   </fieldset>
 
@@ -115,7 +116,7 @@
   {#if error}<p class="error-form">{error}</p>{/if}
   <div class="botones">
     {#if oncancelar}<button type="button" class="boton boton-sec" onclick={oncancelar}>Cancelar</button>{/if}
-    <button class="boton" type="submit">{previa.inicio ? 'Guardar cambios' : 'Crear mi plan 🏆'}</button>
+    <button class="boton" type="submit">{previa.inicio ? 'Guardar cambios' : 'Crear mi plan'}</button>
   </div>
 </form>
 

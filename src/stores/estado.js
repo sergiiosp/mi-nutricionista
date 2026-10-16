@@ -19,7 +19,7 @@ export const VACIO = () => ({
   propias: [], // comidas propias: { id, nombre, emoji, ingredientes?, macros, racion }
   recientes: [], // últimas cosas registradas (para repetir con un toque)
   productos: {}, // productos escaneados (Open Food Facts) para usarlos sin conexión
-  tema: 'auto',
+  tema: 'oscuro', // oscuro · claro · sistema
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
 });
 
@@ -28,6 +28,7 @@ function migrar(datos) {
   const e = { ...VACIO(), ...datos };
   e.compra = { ...VACIO().compra, ...(datos.compra || {}) };
   delete e.strava; // de cuando hubo conexión con Strava
+  if (!['oscuro', 'claro', 'sistema'].includes(e.tema)) e.tema = 'oscuro'; // el diseño nuevo es oscuro por defecto
   if (datos.hechas && e.plan) {
     for (const clave of Object.keys(datos.hechas)) {
       const [fecha, franja] = clave.split('|');

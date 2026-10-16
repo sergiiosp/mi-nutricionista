@@ -115,5 +115,5 @@
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.94rem; line-height: 1.25; }
   .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
-  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 900; font-size: 1.2rem; flex-shrink: 0; }
+  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
 </style>

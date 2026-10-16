@@ -5,6 +5,7 @@ import { OBJETIVOS, DIETAS, TRABAJO, PASOS, DEPORTES, calcularObjetivos } from '
 import { horarioDia } from './horario.js';
 import { CONDICIONES, ESTRES, SUENO, ALCOHOL, recomendaciones } from './salud.js';
 import { num } from './formato.js';
+import { iconoSVG } from './iconos.js';
 
 export function esc(v) {
   return String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -32,7 +33,7 @@ export function iniciarCuestionario(perfilActual) {
 
 const DURACIONES = { 30: '30 min', 45: '45 min', 60: '1 h', 75: '1 h 15 min', 90: '1 h 30 min', 120: '2 h' };
 const DIAS = [[1, 'L'],[2, 'M'], [3, 'X'], [4, 'J'], [5, 'V'], [6, 'S'], [0, 'D']];
-const GRUPOS_NOMBRE = { proteina: '🍗 Carne, pescado y huevos', lacteo: '🥛 Lácteos', hidrato: '🍞 Cereales, legumbres y tubérculos', fruta: '🍎 Fruta', verdura: '🥦 Verdura', grasa: '🥑 Grasas y frutos secos', otros: '🧂 Otros' };
+const GRUPOS_NOMBRE = { proteina: 'Carne, pescado y huevos', lacteo: 'Lácteos', hidrato: 'Cereales, legumbres y tubérculos', fruta: 'Fruta', verdura: 'Verdura', grasa: 'Grasas y frutos secos', otros: 'Otros' };
 const numero = (v) => Number(String(v ?? '').replace(',', '.'));
 
 const PASOS_CUESTIONARIO = [
@@ -77,8 +78,8 @@ const PASOS_CUESTIONARIO = [
     burbuja: 'Con tu horario coloco las comidas en el mejor momento. Piensa en un día de diario normal.',
     html: (b) => `
       <div class="fila-campos dos">
-        ${campoHora('despertar', '☀️ Me levanto', b.despertar)}
-        ${campoHora('dormir', '🌙 Me acuesto', b.dormir)}
+        ${campoHora('despertar', 'Me levanto', b.despertar)}
+        ${campoHora('dormir', 'Me acuesto', b.dormir)}
       </div>
       <fieldset class="opciones dos"><legend>Tu trabajo es…</legend>
         ${Object.entries(TRABAJO).map(([k, t]) => opcion('trabajo', k, t.nombre, b.trabajo, t.desc, t.emoji)).join('')}
@@ -114,7 +115,7 @@ const PASOS_CUESTIONARIO = [
       </fieldset>
       <div class="solo-si" data-si="entrena=si">
         <fieldset class="chips-sel"><legend>¿Qué entrenas?</legend>
-          ${Object.entries(DEPORTES).map(([k, d]) => chipCheck('deportes', k, `${d.emoji} ${d.nombre}`, b.deportes.includes(k))).join('')}
+          ${Object.entries(DEPORTES).map(([k, d]) => chipCheck('deportes', k, d.nombre, b.deportes.includes(k))).join('')}
         </fieldset>
         <fieldset class="dias-sel"><legend>¿Qué días?</legend>
           ${DIAS.map(([n, l]) => `<label class="dia-check"><input type="checkbox" name="diasEntreno" value="${n}" ${b.diasEntreno.includes(n) ? 'checked' : ''}><span>${l}</span></label>`).join('')}
@@ -130,7 +131,7 @@ const PASOS_CUESTIONARIO = [
           ${opcion('intensidad', 'intensa', 'Intensa', b.intensidad, 'Acabas reventado', '🥵')}
         </fieldset>
         <label class="interruptor"><input type="checkbox" name="compite" ${b.compite ? 'checked' : ''}>
-          <span><b>🏆 Compito o me preparo para una prueba</b><small>Carrera, torneo, culturismo, powerlifting…</small></span></label>
+          <span><b>Compito o me preparo para una prueba</b><small>Carrera, torneo, culturismo, powerlifting…</small></span></label>
         <div class="solo-si" data-si="compite=on">
           <label class="campo"><span>Fecha de la próxima competición <small>(opcional)</small></span>
             <input type="date" name="fechaCompeticion" value="${esc(b.fechaCompeticion)}"></label>
@@ -187,10 +188,10 @@ const PASOS_CUESTIONARIO = [
     burbuja: 'Así adapto los alimentos y te digo qué suplementos tienen sentido para ti. Esta información se queda solo en tu dispositivo.',
     html: (b) => `
       <fieldset class="chips-sel"><legend>¿Tienes alguna de estas situaciones?</legend>
-        ${Object.entries(CONDICIONES).map(([k, c]) => chipCheck('condiciones', k, `${c.emoji} ${c.nombre}`, b.condiciones.includes(k))).join('')}
+        ${Object.entries(CONDICIONES).map(([k, c]) => chipCheck('condiciones', k, c.nombre, b.condiciones.includes(k))).join('')}
       </fieldset>
       <label class="interruptor"><input type="checkbox" name="medicacion" ${b.medicacion ? 'checked' : ''}>
-        <span><b>💊 Tomo medicación de forma habitual</b><small>Para avisarte de posibles interacciones con suplementos</small></span></label>
+        <span><b>Tomo medicación de forma habitual</b><small>Para avisarte de posibles interacciones con suplementos</small></span></label>
       <fieldset class="opciones tres"><legend>Nivel de estrés</legend>
         ${opcion('estres', 'bajo', ESTRES.bajo, b.estres, '', '😌')}${opcion('estres', 'medio', ESTRES.medio, b.estres, '', '😐')}${opcion('estres', 'alto', ESTRES.alto, b.estres, '', '😵')}
       </fieldset>
@@ -198,9 +199,9 @@ const PASOS_CUESTIONARIO = [
         ${Object.entries(SUENO).map(([k, v]) => opcion('sueno', k, v, b.sueno)).join('')}
       </fieldset>
       <div class="fila-campos dos">
-        <label class="campo"><span>☕ Cafés al día</span>
+        <label class="campo"><span>Cafés al día</span>
           <select name="cafes">${[0, 1, 2, 3, 4, 5, 6].map((n) => `<option value="${n}" ${Number(b.cafes) === n ? 'selected' : ''}>${n === 6 ? '6 o más' : n}</option>`).join('')}</select></label>
-        <label class="campo"><span>🍷 Alcohol</span>
+        <label class="campo"><span>Alcohol</span>
           <select name="alcohol">${Object.entries(ALCOHOL).map(([k, v]) => `<option value="${k}" ${b.alcohol === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
       </div>`,
     leer: (f, b) => {
@@ -231,9 +232,9 @@ const PASOS_CUESTIONARIO = [
         ${opcion('tiempoMax', '20', '20 min', String(b.tiempoMax), '', '⚡')}${opcion('tiempoMax', '30', '30 min', String(b.tiempoMax), '', '⏱️')}${opcion('tiempoMax', '0', 'Sin límite', String(b.tiempoMax), '', '👨‍🍳')}
       </fieldset>
       <label class="interruptor"><input type="checkbox" name="sobras" ${b.sobras ? 'checked' : ''}>
-        <span><b>🥡 Cocinar la comida para dos días</b><small>Cocinas una vez y te llevas táper al día siguiente</small></span></label>
+        <span><b>Cocinar la comida para dos días</b><small>Cocinas una vez y te llevas táper al día siguiente</small></span></label>
       <label class="interruptor"><input type="checkbox" name="presupuesto" ${b.presupuesto === 'ajustado' ? 'checked' : ''}>
-        <span><b>💶 Priorizar recetas baratas</b><small>Menos salmón y ternera, más pollo, huevos y legumbres</small></span></label>`,
+        <span><b>Priorizar recetas baratas</b><small>Menos salmón y ternera, más pollo, huevos y legumbres</small></span></label>`,
     leer: (f, b) => {
       b.comidas = Number(f.get('comidas'));
       b.dieta = f.get('dieta');
@@ -269,7 +270,7 @@ const PASOS_CUESTIONARIO = [
 
 function opcion(nombre, valor, etiqueta, actual, desc = '', emoji = '') {
   return `<label class="opcion"><input type="radio" name="${nombre}" value="${valor}" ${String(actual) === String(valor) ? 'checked' : ''}>
-    <span>${emoji ? `<i class="op-emoji" aria-hidden="true">${emoji}</i>` : ''}<b>${esc(etiqueta)}</b>${desc ? `<small>${esc(desc)}</small>` : ''}</span></label>`;
+    <span>${emoji ? `<i class="op-emoji" aria-hidden="true">${iconoSVG(emoji, 24)}</i>` : ''}<b>${esc(etiqueta)}</b>${desc ? `<small>${esc(desc)}</small>` : ''}</span></label>`;
 }
 
 function chipCheck(nombre, valor, etiqueta, marcado, estilo = '') {
@@ -296,7 +297,7 @@ export function resumenObjetivos(perfil, { conHorario = false } = {}) {
     semanas = ` Llegarías a ${num(perfil.pesoObjetivo, 1)} kg en unas <b>${n} semanas</b>.`;
   }
   const tarjetaDia = (t, titulo, emoji, clase) => `<div class="dia-obj ${clase}">
-      <div class="dia-obj-cab"><span>${emoji}</span> ${titulo}</div>
+      <div class="dia-obj-cab">${iconoSVG(emoji, 18)} ${titulo}</div>
       <div class="dia-obj-kcal">${t.kcal}<small> kcal</small></div>
       <div class="dia-obj-macros"><span class="t-p">P ${t.proteina}</span><span class="t-c">H ${t.hidratos}</span><span class="t-g">G ${t.grasa}</span></div>
     </div>`;
@@ -305,24 +306,24 @@ export function resumenObjetivos(perfil, { conHorario = false } = {}) {
   let horario = '';
   if (conHorario) {
     const h = horarioDia(perfil, !!entrena);
-    horario = `<h3>${entrena ? '🗓️ Tu horario un día de entreno' : '🗓️ Tu horario de comidas'}</h3>
+    horario = `<h3>${entrena ? 'Tu horario un día de entreno' : 'Tu horario de comidas'}</h3>
       <ul class="horario-mini">
-        ${h.franjas.map((f) => `<li><b>${f.horaTexto}</b> ${esc(f.nombre)}${f.etiqueta ? ` <span class="etq etq-${f.etiqueta}">${f.etiqueta === 'pre' ? '⚡ pre-entreno' : '💪 post-entreno'}</span>` : ''}</li>`)
-          .concat(h.entreno ? [`<li class="hm-entreno"><b>${h.entreno.inicio}</b> 🏋️ Entreno hasta las ${h.entreno.fin}</li>`] : [])
+        ${h.franjas.map((f) => `<li><b>${f.horaTexto}</b> ${esc(f.nombre)}${f.etiqueta ? ` <span class="etq etq-${f.etiqueta}">${f.etiqueta === 'pre' ? 'pre-entreno' : 'post-entreno'}</span>` : ''}</li>`)
+          .concat(h.entreno ? [`<li class="hm-entreno"><b>${h.entreno.inicio}</b> Entreno hasta las ${h.entreno.fin}</li>`] : [])
           .sort((a, b) => a.match(/<b>(.*?)<\/b>/)[1].localeCompare(b.match(/<b>(.*?)<\/b>/)[1]))
           .join('')}
       </ul>`;
     const recs = recomendaciones(perfil, o);
     if (recs.suplementos.length) {
-      horario += `<h3>💊 Suplementos que tienen sentido para ti</h3>
-        <div class="chips-lista">${recs.suplementos.map((s) => `<span class="chip-sup">${s.emoji} ${esc(s.nombre)}</span>`).join('')}</div>
+      horario += `<h3>Suplementos que tienen sentido para ti</h3>
+        <div class="chips-lista">${recs.suplementos.map((s) => `<span class="chip-sup">${iconoSVG(s.emoji, 15)} ${esc(s.nombre)}</span>`).join('')}</div>
         <p class="pie-nota">Tienes las dosis, el momento y las precauciones en <b>Mi plan</b>.</p>`;
     }
     if (recs.avisos.length) horario += recs.avisos.map((a) => `<p class="alerta">${esc(a.texto)}</p>`).join('');
   }
 
   return `
-    <div class="burbuja">${perfil.nombre ? `${esc(perfil.nombre)}, ` : ''}esto es lo que he calculado para ti. Objetivo: <b>${obj.emoji} ${obj.nombre.toLowerCase()}</b>.</div>
+    <div class="burbuja">${perfil.nombre ? `${esc(perfil.nombre)}, ` : ''}esto es lo que he calculado para ti. Objetivo: <b>${obj.nombre.toLowerCase()}</b>.</div>
     <div class="tarjeta resumen-obj">
       ${entrena
         ? `<div class="dias-obj">${tarjetaDia(o.porTipo.entreno, 'Día de entreno', '💪', 'entreno')}${tarjetaDia(o.porTipo.descanso, 'Día de descanso', '😌', 'descanso')}</div>
@@ -354,7 +355,7 @@ export function vistaCuestionario() {
       <div class="progreso-pasos" aria-label="Paso ${paso + 1} de ${total}"><div style="width:${((paso + 1) / total) * 100}%"></div></div>
       <span class="paso-num">${paso + 1}/${total}</span>
     </div>
-    <div class="cuest-emoji" aria-hidden="true">${p.emoji}</div>
+    <div class="cuest-emoji" aria-hidden="true">${iconoSVG(p.emoji, 30, 1.6)}</div>
     <h1>${esc(p.titulo)}</h1>
     ${p.burbuja ? `<div class="burbuja">${esc(p.burbuja)}</div>` : ''}
     <form id="form-paso" novalidate>
@@ -362,7 +363,7 @@ export function vistaCuestionario() {
       <p class="error-form" id="error-paso" role="alert"></p>
       <div class="botones-paso">
         ${paso > (editando ? 1 : 0) ? '<button type="button" class="boton boton-sec" data-accion="paso-atras">Atrás</button>' : editando ? '<button type="button" class="boton boton-sec" data-accion="cancelar-edicion">Cancelar</button>' : '<span></span>'}
-        <button type="submit" class="boton">${paso === total - 1 ? (editando ? 'Guardar cambios' : 'Crear mi menú ✨') : 'Siguiente'}</button>
+        <button type="submit" class="boton">${paso === total - 1 ? (editando ? 'Guardar cambios' : 'Crear mi menú') : 'Siguiente'}</button>
       </div>
     </form>
   </section>`;

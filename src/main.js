@@ -13,6 +13,13 @@ if (vincular) {
 
 const app = mount(App, { target: document.getElementById('app') });
 
+// Fuera la pantalla de carga
+setTimeout(() => {
+  const carga = document.getElementById('carga');
+  carga?.classList.add('fuera');
+  setTimeout(() => carga?.remove(), 400);
+}, 60);
+
 // Service worker (solo en producción): la app funciona sin conexión y recibe recordatorios
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});

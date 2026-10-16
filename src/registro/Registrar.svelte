@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../components/Icono.svelte';
   // Centro de registro (botón ➕): escanear, buscar, comer fuera, mis comidas, foto y recientes
   import { get } from 'svelte/store';
   import { fly } from 'svelte/transition';
@@ -85,7 +86,7 @@
   {/if}
 
   {#if fotoUrl}
-    <div class="foto-adjunta"><img src={fotoUrl} alt="Foto del plato" /><span>📸 Foto adjunta: ahora dime qué es</span></div>
+    <div class="foto-adjunta"><img src={fotoUrl} alt="Foto del plato" /><span><Icono e="📸" tam={18} /> Foto adjunta: ahora dime qué es</span></div>
   {/if}
 
   {#key vista}
@@ -100,11 +101,11 @@
         </div>
 
         <div class="opciones-grandes">
-          <button class="op op-escanear" onclick={() => (vista = 'escanear')}><Emoji e="📷" tam={40} /><b>Escanear</b><small>Código de barras</small></button>
-          <button class="op op-buscar" onclick={() => (vista = 'buscar')}><Emoji e="🔍" tam={40} /><b>Buscar</b><small>Alimento o producto</small></button>
-          <button class="op op-fuera" onclick={() => (vista = 'fuera')}><Emoji e="🍔" tam={40} /><b>Comer fuera</b><small>Bar, restaurante…</small></button>
-          <button class="op op-mias" onclick={() => (vista = 'propias')}><Emoji e="👨‍🍳" tam={40} /><b>Mis comidas</b><small>Las tuyas</small></button>
-          <button class="op op-foto" onclick={() => inputFoto.click()}><Emoji e="📸" tam={40} /><b>Foto</b><small>Guárdala en tu diario</small></button>
+          <button class="op op-escanear" onclick={() => (vista = 'escanear')}><Icono n="scan-barcode" tam={28} /><b>Escanear</b><small>Código de barras</small></button>
+          <button class="op op-buscar" onclick={() => (vista = 'buscar')}><Icono n="search" tam={28} /><b>Buscar</b><small>Alimento o producto</small></button>
+          <button class="op op-fuera" onclick={() => (vista = 'fuera')}><Icono n="utensils" tam={28} /><b>Comer fuera</b><small>Bar, restaurante…</small></button>
+          <button class="op op-mias" onclick={() => (vista = 'propias')}><Icono n="chef-hat" tam={28} /><b>Mis comidas</b><small>Las tuyas</small></button>
+          <button class="op op-foto" onclick={() => inputFoto.click()}><Icono n="camera" tam={28} /><b>Foto</b><small>Guárdala en tu diario</small></button>
         </div>
         <input bind:this={inputFoto} type="file" accept="image/*" capture="environment" hidden onchange={alFoto} />
 
@@ -138,32 +139,31 @@
 <style>
   .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .nav b { flex: 1; font-size: 1.05rem; }
-  .atras { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.2rem; font-weight: 900; cursor: pointer; color: var(--texto); }
+  .atras { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.2rem; font-weight: 800; cursor: pointer; color: var(--texto); }
   .franja-chip { padding: 5px 11px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; font-size: 0.8rem; }
   .franjas { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 10px; }
   .franjas::-webkit-scrollbar { display: none; }
-  .franjas button { flex-shrink: 0; display: grid; justify-items: center; padding: 8px 14px; border: 2px solid transparent; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 800; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
+  .franjas button { flex-shrink: 0; display: grid; justify-items: center; padding: 8px 14px; border: 1.5px solid transparent; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 800; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
   .franjas small { font-size: 0.7rem; color: var(--texto-2); font-weight: 700; }
   .franjas button.activa { border-color: var(--primario); background: var(--primario-claro); }
   .opciones-grandes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; }
-  .op { display: grid; justify-items: start; gap: 2px; padding: 16px; border: 0; border-radius: 22px; cursor: pointer; text-align: left; color: var(--texto); box-shadow: var(--sombra); }
-  .op b { font-size: 1.02rem; margin-top: 6px; }
-  .op small { color: var(--texto-2); font-weight: 700; font-size: 0.78rem; }
-  .op-escanear { background: linear-gradient(135deg, var(--primario-claro), var(--superficie)); }
-  .op-buscar { background: linear-gradient(135deg, var(--azul-claro), var(--superficie)); }
-  .op-fuera { background: linear-gradient(135deg, var(--amarillo-claro), var(--superficie)); }
-  .op-mias { background: linear-gradient(135deg, var(--lila-claro), var(--superficie)); }
-  .op-foto { background: linear-gradient(135deg, var(--coral-claro), var(--superficie)); grid-column: 1 / -1; grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; }
-  .op-foto :global(img), .op-foto :global(span:first-child) { grid-row: span 2; }
+  .op { display: grid; justify-items: start; gap: 2px; padding: 16px; border: 0; border-radius: 20px; cursor: pointer; text-align: left; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); transition: transform 0.15s, background 0.2s; }
+  .op:active { transform: scale(0.97); }
+  .op :global(.icono) { color: var(--primario); }
+  .op b { font-size: 0.98rem; margin-top: 8px; }
+  .op small { color: var(--texto-2); font-weight: 500; font-size: 0.76rem; }
+  .op-escanear { background: radial-gradient(120% 100% at 0% 0%, rgb(255 91 31 / 0.2), transparent 65%), var(--superficie); }
+  .op-foto { grid-column: 1 / -1; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; }
+  .op-foto :global(.icono) { grid-row: span 2; }
   .op-foto b { margin-top: 0; }
-  .grupo { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--texto-2); margin: 18px 4px 6px; }
+  .grupo { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--texto-3); margin: 18px 4px 8px; }
   .recientes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .recientes button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
   .recientes img, .ic { width: 42px; height: 42px; border-radius: 12px; object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.92rem; }
   .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
-  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 900; }
-  .foto-adjunta { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 16px; background: var(--coral-claro); margin-bottom: 10px; font-weight: 800; font-size: 0.86rem; }
+  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; }
+  .foto-adjunta { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 16px; background: var(--primario-claro); margin-bottom: 10px; font-weight: 600; font-size: 0.84rem; }
   .foto-adjunta img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; }
 </style>

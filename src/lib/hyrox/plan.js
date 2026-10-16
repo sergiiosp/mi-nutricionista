@@ -4,10 +4,10 @@ import { ritmos } from './ritmos.js';
 import { sumarDias } from '../planificador.js';
 
 export const FASES = {
-  base: { nombre: 'Base', desc: 'Base aeróbica, fuerza general y técnica de estaciones', color: '#4b8cf5' },
-  construccion: { nombre: 'Construcción', desc: 'Más ritmo, umbral y primeras combinaciones carrera + estación', color: '#8576ef' },
-  especifico: { nombre: 'Específico', desc: 'Compromised running y simulacros a ritmo de carrera', color: '#ff6f56' },
-  taper: { nombre: 'Puesta a punto', desc: 'Menos volumen, mantener la chispa y llegar fresco', color: '#12a86b' },
+  base: { nombre: 'Base', desc: 'Base aeróbica, fuerza general y técnica de estaciones', color: '#4da3ff' },
+  construccion: { nombre: 'Construcción', desc: 'Más ritmo, umbral y primeras combinaciones carrera + estación', color: '#a98bff' },
+  especifico: { nombre: 'Específico', desc: 'Compromised running y simulacros a ritmo de carrera', color: '#ff5b1f' },
+  taper: { nombre: 'Puesta a punto', desc: 'Menos volumen, mantener la chispa y llegar fresco', color: '#3ddc97' },
 };
 
 // Tipos de sesión por fase y número de días disponibles (de lunes a domingo)

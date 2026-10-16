@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import { estado } from '../../stores/estado.js';
   import { planDe } from '../../lib/hyrox/index.js';
@@ -37,7 +38,7 @@
       {/each}
     </div>
     <div class="leyenda">{#each Object.entries(FASES) as [id, f] (id)}{#if fases.some((x) => x.f === id)}<span><i style="background:{f.color}"></i>{f.nombre}</span>{/if}{/each}</div>
-    <p class="pie-nota">Altura = minutos de entreno de cada semana. Las barras claras son semanas de descarga.</p>
+    <p class="pie-nota">Altura = minutos de entreno de cada semana. Las barras más apagadas son semanas de descarga.</p>
   </div>
 
   {#each fases as x (x.f)}
@@ -65,7 +66,7 @@
       <dt>Días</dt><dd>{config.dias.length} por semana · {config.hora}</dd>
     </dl>
     <div class="acciones-fila">
-      <button class="boton boton-peq" onclick={oneditar}>✏️ Editar plan y marcas</button>
+      <button class="boton boton-peq" onclick={oneditar}><Icono e="✏️" tam={18} /> Editar plan y marcas</button>
       <button class="boton boton-peligro boton-peq" onclick={borrar}>Borrar plan</button>
     </div>
   </div>
@@ -85,6 +86,6 @@
   .ritmos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .ritmos div { display: grid; justify-items: center; padding: 12px 4px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); text-align: center; }
   .ritmos span { font-size: 0.72rem; font-weight: 800; color: var(--texto-2); }
-  .ritmos b { font-size: 1.3rem; font-weight: 900; }
+  .ritmos b { font-size: 1.3rem; font-weight: 800; }
   .ritmos small { font-size: 0.7rem; color: var(--texto-2); font-weight: 700; }
 </style>

@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import Macros from '../../components/Macros.svelte';
   import TarjetaComida from '../../components/TarjetaComida.svelte';
@@ -32,13 +33,13 @@
 </script>
 
 {#if !plan}
-  <div class="tarjeta vacia"><Emoji e="🥗" tam={56} /><p>Todavía no tienes menú.</p><button class="boton" onclick={() => crearPlan()}>✨ Crear menú de 7 días</button></div>
+  <div class="tarjeta vacia"><Emoji e="🥗" tam={56} /><p>Todavía no tienes menú.</p><button class="boton" onclick={() => crearPlan()}><Icono e="✨" tam={18} /> Crear menú de 7 días</button></div>
 {:else}
   <p class="sobretitulo">{fechaCorta(plan.dias[0].fecha)} – {fechaCorta(plan.dias.at(-1).fecha)}</p>
   <div class="dias" role="tablist">
     {#each plan.dias as d, i (d.fecha)}
       <button role="tab" aria-selected={i === sel} class:activo={i === sel} class:hoy={d.fecha === hoy} onclick={() => (sel = i)}>
-        <span>{diaCorto(d.fecha)}</span><b>{Number(d.fecha.slice(8))}</b><i>{d.entreno ? '💪' : ''}</i>
+        <span>{diaCorto(d.fecha)}</span><b>{Number(d.fecha.slice(8))}</b><i>{#if d.entreno}<Icono n="dumbbell" tam={12} grosor={2.2} />{/if}</i>
       </button>
     {/each}
   </div>
@@ -47,7 +48,7 @@
     {@const od = objetivosDia(objetivos, dia.entreno)}
     {@const t = macrosComida(dia.comidas.flatMap((c) => c.ingredientes))}
     <div class="tarjeta total">
-      <div class="t-cab"><b>{capital(diaSemana(dia.fecha))}</b><span class="etq {dia.entreno ? 'etq-pre' : 'etq-nota'}">{dia.entreno ? '💪 Entreno' : '😌 Descanso'}</span><span class="coste">{euros(dia.comidas.reduce((s, c) => s + costeComida(c.ingredientes), 0))}</span></div>
+      <div class="t-cab"><b>{capital(diaSemana(dia.fecha))}</b><span class="etq {dia.entreno ? 'etq-pre' : 'etq-nota'}">{dia.entreno ? 'Entreno' : 'Descanso'}</span><span class="coste">{euros(dia.comidas.reduce((s, c) => s + costeComida(c.ingredientes), 0))}</span></div>
       <Macros m={t} />
       <p class="pie-nota">Objetivo: {od.kcal} kcal · P {od.proteina} · H {od.hidratos} · G {od.grasa}</p>
       {#if dia.fecha === hoy}<a class="enlace" href="#hoy">Ver hoy con lo que llevas comido →</a>{/if}
@@ -63,15 +64,15 @@
   {/if}
 
   <div class="acciones-plan">
-    <button class="boton boton-sec" onclick={() => nuevo(true)}>🎲 Otro menú con las mismas fechas</button>
-    <button class="boton boton-sec" onclick={() => nuevo(false)}>📅 Nueva semana desde hoy</button>
+    <button class="boton boton-sec" onclick={() => nuevo(true)}><Icono e="🎲" tam={18} /> Otro menú con las mismas fechas</button>
+    <button class="boton boton-sec" onclick={() => nuevo(false)}><Icono e="📅" tam={18} /> Nueva semana desde hoy</button>
   </div>
 {/if}
 
 <style>
   .dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 8px 0 4px; }
   .dias button { display: grid; justify-items: center; padding: 8px 0 4px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.75rem; color: var(--texto-2); }
-  .dias b { font-size: 1.1rem; font-weight: 900; color: var(--texto); }
+  .dias b { font-size: 1.1rem; font-weight: 800; color: var(--texto); }
   .dias i { font-style: normal; font-size: 0.7rem; height: 1em; line-height: 1; }
   .dias button.hoy { outline: 2px solid var(--primario); outline-offset: -2px; }
   .dias button.activo { background: var(--hero); color: rgb(255 255 255 / 0.85); }
@@ -79,6 +80,6 @@
   .t-cab { display: flex; align-items: center; gap: 8px; }
   .coste { margin-left: auto; font-weight: 800; color: var(--texto-2); font-size: 0.9rem; }
   .lista { display: grid; gap: 10px; }
-  .hora { display: block; font-size: 0.78rem; font-weight: 900; color: var(--texto-2); margin: 0 0 4px 6px; }
+  .hora { display: block; font-size: 0.78rem; font-weight: 800; color: var(--texto-2); margin: 0 0 4px 6px; }
   .vacia { text-align: center; }
 </style>

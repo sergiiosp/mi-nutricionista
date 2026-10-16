@@ -1,4 +1,5 @@
 <script>
+  import Icono from './Icono.svelte';
   import Emoji from './Emoji.svelte';
   import { estado } from '../stores/estado.js';
   import { abrirHoja, avisar } from '../stores/ui.js';
@@ -18,8 +19,8 @@
   const semana = $derived(s ? plan.semanas[s.semana] : null);
   const opcionesMover = $derived(semana ? Array.from({ length: 7 }, (_, i) => sumarDias(semana.lunes, i)).filter((f) => f >= hoy && (!plan.carrera || f < plan.carrera)) : []);
   let moviendo = $state(false);
-  const ESTADO = { completa: '✓ Completada', parcial: '◐ A medias', no: '✕ No la hice' };
-  const SENS = { bien: '😀 Bien', normal: '😐 Normal', mal: '😫 Mal' };
+  const ESTADO = { completa: 'Completada', parcial: 'A medias', no: 'No la hice' };
+  const SENS = { bien: 'Bien', normal: 'Normal', mal: 'Mal' };
 
   function mover(f) {
     moverSesion(s.id, f, s.fechaOriginal);
@@ -34,33 +35,33 @@
     <div>
       <p class="sobre">{capital(fechaLarga(s.fecha))} · {s.hora}</p>
       <h2>{s.titulo}</h2>
-      <div class="datos"><span>⏱️ {s.duracion} min</span>{#if s.distancia}<span>📍 {String(s.distancia).replace('.', ',')} km</span>{/if}<span>💥 RPE {s.rpe}/10</span></div>
+      <div class="datos"><span><Icono e="⏱️" tam={18} /> {s.duracion} min</span>{#if s.distancia}<span><Icono e="📍" tam={18} /> {String(s.distancia).replace('.', ',')} km</span>{/if}<span><Icono e="💥" tam={18} /> RPE {s.rpe}/10</span></div>
     </div>
   </div>
 
   {#if reg}
     <div class="registro">
       <b>{ESTADO[reg.estado]}</b>{#if reg.rpe} · RPE {reg.rpe}{/if}{#if reg.sensacion} · {SENS[reg.sensacion]}{/if}
-      {#if reg.tiempo}<br />⏱️ Tiempo: {mmss(reg.tiempo)}{/if}{#if reg.ritmo} · Ritmo medio {mmss(reg.ritmo)}/km{/if}{#if reg.distancia} · {reg.distancia} km{/if}{#if reg.peso} · {reg.peso} kg{/if}
+      {#if reg.tiempo}<br /><Icono e="⏱️" tam={18} /> Tiempo: {mmss(reg.tiempo)}{/if}{#if reg.ritmo} · Ritmo medio {mmss(reg.ritmo)}/km{/if}{#if reg.distancia} · {reg.distancia} km{/if}{#if reg.peso} · {reg.peso} kg{/if}
       {#if reg.notas}<p>“{reg.notas}”</p>{/if}
       <div class="acciones-fila">
-        <button class="boton boton-sec boton-peq" onclick={() => abrirHoja('registrarSesion', { id })}>✏️ Editar</button>
+        <button class="boton boton-sec boton-peq" onclick={() => abrirHoja('registrarSesion', { id })}><Icono e="✏️" tam={18} /> Editar</button>
         <button class="boton boton-peligro boton-peq" onclick={() => borrarRegistroSesion(id)}>Borrar registro</button>
       </div>
     </div>
   {/if}
 
   {#if s.calentamiento.length}
-    <h3>🔥 Calentamiento</h3>
+    <h3><Icono e="🔥" tam={18} /> Calentamiento</h3>
     <ul class="lista">{#each s.calentamiento as l (l)}<li>{l}</li>{/each}</ul>
   {/if}
   {#each s.bloques as b (b.titulo)}
-    <h3>💪 {b.titulo}</h3>
+    <h3><Icono e="💪" tam={18} /> {b.titulo}</h3>
     <ul class="lista principal">{#each b.lineas as l, i (i)}<li>{l}</li>{/each}</ul>
   {/each}
-  {#each s.notas as n (n)}<p class="nota">💡 {n}</p>{/each}
+  {#each s.notas as n (n)}<p class="nota"><Icono e="💡" tam={18} /> {n}</p>{/each}
   {#if s.vueltaCalma.length}
-    <h3>🧘 Vuelta a la calma</h3>
+    <h3><Icono e="🧘" tam={18} /> Vuelta a la calma</h3>
     <ul class="lista">{#each s.vueltaCalma as l (l)}<li>{l}</li>{/each}</ul>
   {/if}
 
@@ -73,15 +74,15 @@
 
   {#if s.tipo !== 'carrera'}
     <div class="botones">
-      {#if s.fecha <= hoy}<button class="boton" onclick={() => abrirHoja('registrarSesion', { id })}>📝 {reg ? 'Editar registro' : 'Registrar sesión'}</button>{/if}
-      <button class="boton boton-sec" onclick={() => (moviendo = !moviendo)}>🔀 Mover de día</button>
+      {#if s.fecha <= hoy}<button class="boton" onclick={() => abrirHoja('registrarSesion', { id })}><Icono e="📝" tam={18} /> {reg ? 'Editar registro' : 'Registrar sesión'}</button>{/if}
+      <button class="boton boton-sec" onclick={() => (moviendo = !moviendo)}><Icono e="🔀" tam={18} /> Mover de día</button>
     </div>
     {#if moviendo}
       <div class="mover">
         <p class="pie-nota">Elige otro día de esta semana. Si juntas dos sesiones duras seguidas, mejor separa la más intensa.</p>
         <div class="dias">
           {#each opcionesMover as f (f)}
-            <button class:activo={f === s.fecha} onclick={() => mover(f)}><span>{diaCorto(f)}</span><b>{Number(f.slice(8))}</b>{#if (plan.porFecha[f] || []).some((x) => x.id !== s.id)}<i>⚠️</i>{/if}</button>
+            <button class:activo={f === s.fecha} onclick={() => mover(f)}><span>{diaCorto(f)}</span><b>{Number(f.slice(8))}</b>{#if (plan.porFecha[f] || []).some((x) => x.id !== s.id)}<i><Icono e="⚠️" tam={18} /></i>{/if}</button>
           {/each}
         </div>
         {#if s.fecha !== s.fechaOriginal}<button class="enlace" onclick={() => mover(s.fechaOriginal)}>Volver a su día original</button>{/if}

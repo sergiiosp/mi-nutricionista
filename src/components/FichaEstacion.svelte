@@ -1,4 +1,5 @@
 <script>
+  import Icono from './Icono.svelte';
   import Emoji from './Emoji.svelte';
   import { estado } from '../stores/estado.js';
   import { estacionPorId, pesoEstacion } from '../data/hyrox.js';
@@ -19,22 +20,22 @@
 </div>
 <h2>{e.nombre}</h2>
 <div class="datos">
-  <span>📏 {e.distancia}</span>
-  {#if peso}<span>🏋️ {peso}</span>{/if}
-  {#if mejor}<span class="mejor">🏅 Tu mejor: {mmss(mejor)}</span>{/if}
+  <span><Icono e="📏" tam={18} /> {e.distancia}</span>
+  {#if peso}<span><Icono e="🏋️" tam={18} /> {peso}</span>{/if}
+  {#if mejor}<span class="mejor"><Icono e="🏅" tam={18} /> Tu mejor: {mmss(mejor)}</span>{/if}
 </div>
 <p class="desc">{e.desc}</p>
 <p class="pie-nota">Trabaja: {e.musculos}</p>
 
-<h3>✅ Técnica</h3>
+<h3><Icono e="✅" tam={18} /> Técnica</h3>
 <ul class="lista ok">{#each e.tecnica as t (t)}<li>{t}</li>{/each}</ul>
-<h3>⚠️ Errores típicos</h3>
+<h3><Icono e="⚠️" tam={18} /> Errores típicos</h3>
 <ul class="lista mal">{#each e.errores as t (t)}<li>{t}</li>{/each}</ul>
-<div class="consejo">🏁 <b>En carrera:</b> {e.carrera}</div>
-<div class="consejo sust">🔁 {e.sustituto}</div>
+<div class="consejo"><Icono e="🏁" tam={18} /> <b>En carrera:</b> {e.carrera}</div>
+<div class="consejo sust"><Icono e="🔁" tam={18} /> {e.sustituto}</div>
 
 <style>
-  .foto { position: relative; border-radius: 24px; overflow: hidden; height: 210px; background: linear-gradient(135deg, var(--amarillo-claro), var(--coral-claro)); }
+  .foto { position: relative; border-radius: 24px; overflow: hidden; height: 210px; background: radial-gradient(circle at 30% 20%, var(--superficie-3), var(--superficie-2)); color: var(--primario); }
   .foto img { width: 100%; height: 100%; object-fit: cover; }
   .ilus { height: 100%; display: grid; place-items: center; }
   .num { position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; background: rgb(0 0 0 / 0.55); color: #fff; font-weight: 800; font-size: 0.8rem; }

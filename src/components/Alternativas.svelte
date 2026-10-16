@@ -1,4 +1,5 @@
 <script>
+  import Icono from './Icono.svelte';
   import { get } from 'svelte/store';
   import FotoReceta from './FotoReceta.svelte';
   import Macros from './Macros.svelte';
@@ -25,8 +26,8 @@
 <p class="pie-nota">Ahora: <b>{recetaPorId[actual?.recetaId]?.nombre}</b>. Todas vienen ajustadas a tus macros de esta comida.</p>
 <div class="filtros">
   <button class="filtro" class:activo={filtro === 'todas'} onclick={() => (filtro = 'todas')}>Todas</button>
-  <button class="filtro" class:activo={filtro === 'rapidas'} onclick={() => (filtro = 'rapidas')}>⚡ Rápidas</button>
-  <button class="filtro" class:activo={filtro === 'nuevas'} onclick={() => (filtro = 'nuevas')}>✨ No repetidas</button>
+  <button class="filtro" class:activo={filtro === 'rapidas'} onclick={() => (filtro = 'rapidas')}><Icono e="⚡" tam={18} /> Rápidas</button>
+  <button class="filtro" class:activo={filtro === 'nuevas'} onclick={() => (filtro = 'nuevas')}><Icono e="✨" tam={18} /> No repetidas</button>
 </div>
 <div class="lista">
   {#each visibles as alt (alt.comida.recetaId)}

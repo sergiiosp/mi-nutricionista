@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import { estado } from '../../stores/estado.js';
   import { abrirHoja } from '../../stores/ui.js';
@@ -22,14 +23,14 @@
       <span class="cuerpo">
         <b>{e.nombre}</b>
         <small>{e.distancia}{pesoEstacion(e, config.categoria, $estado.perfil.sexo) ? ` · ${pesoEstacion(e, config.categoria, $estado.perfil.sexo)}` : ''}</small>
-        {#if mejores[e.id]}<small class="mejor">🏅 {mmss(mejores[e.id])}</small>{/if}
+        {#if mejores[e.id]}<small class="mejor"><Icono e="🏅" tam={18} /> {mmss(mejores[e.id])}</small>{/if}
       </span>
     </button>
   {/each}
 </div>
 
 <details class="tarjeta ejercicios">
-  <summary>💪 Ejercicios de fuerza del plan</summary>
+  <summary><Icono e="💪" tam={18} /> Ejercicios de fuerza del plan</summary>
   {#each Object.values(EJERCICIOS) as x (x.nombre)}
     <div class="ej"><Emoji e={x.emoji} tam={26} /><div><b>{x.nombre}</b><p>{x.tecnica}</p></div></div>
   {/each}
@@ -38,10 +39,10 @@
 <style>
   .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   .card { padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
-  .foto { position: relative; height: 110px; background: linear-gradient(135deg, var(--amarillo-claro), var(--coral-claro)); }
+  .foto { position: relative; height: 110px; background: radial-gradient(circle at 30% 20%, var(--superficie-3), var(--superficie-2)); color: var(--primario); }
   .foto img { width: 100%; height: 100%; object-fit: cover; }
   .ilus { height: 100%; display: grid; place-items: center; }
-  .n { position: absolute; left: 8px; top: 8px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: rgb(0 0 0 / 0.6); color: #fff; font-weight: 900; font-size: 0.8rem; }
+  .n { position: absolute; left: 8px; top: 8px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: rgb(0 0 0 / 0.6); color: #fff; font-weight: 800; font-size: 0.8rem; }
   .cuerpo { display: grid; padding: 10px 12px 12px; }
   .cuerpo small { color: var(--texto-2); font-weight: 700; font-size: 0.76rem; }
   .cuerpo .mejor { color: color-mix(in srgb, var(--amarillo) 70%, var(--texto)); }

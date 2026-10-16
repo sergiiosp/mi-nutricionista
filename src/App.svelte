@@ -2,6 +2,7 @@
   import { fly } from 'svelte/transition';
   import Hoja from './components/Hoja.svelte';
   import Emoji from './components/Emoji.svelte';
+  import Icono from './components/Icono.svelte';
   import Confeti from './components/Confeti.svelte';
   import DetalleReceta from './components/DetalleReceta.svelte';
   import Alternativas from './components/Alternativas.svelte';
@@ -27,9 +28,9 @@
   // Tema claro / oscuro / automático
   $effect(() => {
     const t = $estado.tema;
-    if (t === 'claro') document.documentElement.dataset.theme = 'light';
-    else if (t === 'oscuro') document.documentElement.dataset.theme = 'dark';
-    else delete document.documentElement.dataset.theme;
+    document.documentElement.dataset.theme = t === 'claro' ? 'light' : t === 'sistema' ? 'system' : 'dark';
+    const claro = t === 'claro' || (t === 'sistema' && matchMedia('(prefers-color-scheme: light)').matches);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', claro ? '#f2f2f5' : '#0a0a0c');
   });
 
   // Al cambiar de pantalla, arriba del todo y sin hojas abiertas
@@ -59,11 +60,11 @@
   }
 
   const PESTAÑAS = [
-    { id: 'hoy', nombre: 'Hoy', emoji: '🏠' },
-    { id: 'entreno', nombre: 'Entreno', emoji: '🏋️' },
-    { id: 'registrar', nombre: '', emoji: '➕' },
-    { id: 'comida', nombre: 'Comida', emoji: '🥗' },
-    { id: 'progreso', nombre: 'Progreso', emoji: '📈' },
+    { id: 'hoy', nombre: 'Hoy', icono: 'house' },
+    { id: 'entreno', nombre: 'Entreno', icono: 'dumbbell' },
+    { id: 'registrar', nombre: '', icono: 'plus' },
+    { id: 'comida', nombre: 'Comida', icono: 'utensils' },
+    { id: 'progreso', nombre: 'Progreso', icono: 'chart-column' },
   ];
   const TITULOS = { receta: '', alternativas: 'Cambiar plato', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
@@ -72,8 +73,8 @@
   <Cuestionario perfil={editando ? $estado.perfil : null} onterminar={terminarCuestionario} oncancelar={() => (editando = false)} />
 {:else}
   <header class="cabecera">
-    <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="30" height="30" /> Mi Nutricionista</a>
-    <a href="#ajustes" class="boton-plan" class:activo={$ruta.pagina === 'ajustes'} aria-label="Mi plan y ajustes"><Emoji e="⚙️" tam={20} /> Mi plan</a>
+    <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Mi <span>Nutricionista</span></a>
+    <a href="#ajustes" class="boton-plan" class:activo={$ruta.pagina === 'ajustes'} aria-label="Mi plan y ajustes"><Icono n="user" tam={20} /></a>
   </header>
 
   <main class="contenido">
@@ -92,11 +93,11 @@
     {#each PESTAÑAS as p (p.id)}
       {#if p.id === 'registrar'}
         <button class="nav-mas" aria-label="Registrar comida" onclick={() => abrirHoja('registrar', { fecha: hoyISO() })}>
-          <span>+</span>
+          <Icono n="plus" tam={28} grosor={2.4} />
         </button>
       {:else}
-        <a href="#{p.id}" class:activo={$ruta.pagina === p.id || ($ruta.pagina === 'ajustes' && false)} aria-current={$ruta.pagina === p.id ? 'page' : undefined}>
-          <Emoji e={p.emoji} tam={26} />
+        <a href="#{p.id}" class:activo={$ruta.pagina === p.id} aria-current={$ruta.pagina === p.id ? 'page' : undefined}>
+          <Icono n={p.icono} tam={23} grosor={$ruta.pagina === p.id ? 2.2 : 1.8} />
           <span>{p.nombre}</span>
         </a>
       {/if}

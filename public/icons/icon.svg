@@ -1,6 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#12a86b"/>
-  <circle cx="256" cy="276" r="150" fill="none" stroke="#fff" stroke-width="28"/>
-  <path d="M256 330c-6-70 20-128 92-168-8 84-40 138-92 168z" fill="#9be2b8"/>
-  <path d="M256 330c-40-30-62-72-58-128 44 26 64 70 58 128z" fill="#fff"/>
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f1f25"/><stop offset="1" stop-color="#09090b"/></linearGradient>
+    <linearGradient id="naranja" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a1f"/><stop offset="1" stop-color="#ff3d2e"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#fondo)"/>
+  <circle cx="256" cy="256" r="146" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="42"/>
+  <circle cx="256" cy="256" r="146" fill="none" stroke="url(#naranja)" stroke-width="42" stroke-linecap="round" stroke-dasharray="690 917" transform="rotate(-90 256 256)"/>
+  <path d="M278 152 198 270h52l-18 90 84-124h-54z" fill="#fff" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
 </svg>

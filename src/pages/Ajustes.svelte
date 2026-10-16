@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../components/Icono.svelte';
   import Emoji from '../components/Emoji.svelte';
   import Segmentos from '../components/Segmentos.svelte';
   import Conectar from './ajustes/Conectar.svelte';
@@ -24,7 +25,7 @@
   const recs = $derived(recomendaciones(p, o));
   const entrena = $derived(p.entrena && o.diasEntreno);
   const NIVEL = { alta: 'Evidencia alta', moderada: 'Evidencia moderada', baja: 'Evidencia limitada' };
-  const ETQ = { pre: '⚡ Pre-entreno', post: '💪 Post-entreno' };
+  const ETQ = { pre: 'Pre-entreno', post: 'Post-entreno' };
   const horario = (e) => {
     const h = horarioDia(p, e);
     const items = h.franjas.map((f) => ({ hora: f.horaTexto, texto: f.nombre, etq: f.etiqueta }));
@@ -56,27 +57,27 @@
 
 {#if pestaña === 'plan'}
   {#if !p.trabajo}
-    <div class="tarjeta destacada"><b>✨ Completa tu perfil</b><p>Añade tu horario, tus entrenos y tu salud para afinar calorías, horas de comida y suplementos.</p><button class="boton" onclick={oneditar}>Completar mis datos</button></div>
+    <div class="tarjeta destacada"><b><Icono e="✨" tam={18} /> Completa tu perfil</b><p>Añade tu horario, tus entrenos y tu salud para afinar calorías, horas de comida y suplementos.</p><button class="boton" onclick={oneditar}>Completar mis datos</button></div>
   {/if}
   {@html resumenObjetivos(p)}
-  <h2 class="seccion">🗓️ Tu horario</h2>
+  <h2 class="seccion"><Icono e="🗓️" tam={18} /> Tu horario</h2>
   <div class="tarjeta">
     {#each entrena ? [true, false] : [false] as e (e)}
       {@const h = horario(e)}
-      <div class="h-cab"><b>{e ? '💪 Día de entreno' : entrena ? '😌 Día de descanso' : '🗓️ Tu día'}</b></div>
+      <div class="h-cab"><b>{e ? 'Día de entreno' : entrena ? 'Día de descanso' : 'Tu día'}</b></div>
       <ul class="horario-mini">
         {#each h.items as it (it.hora + it.texto)}
           <li class:hm-entreno={it.entreno}><b>{it.hora}</b> {it.texto}{#if it.etq}<span class="etq etq-{it.etq}">{ETQ[it.etq]}</span>{/if}</li>
         {/each}
       </ul>
-      {#each h.consejos as c (c)}<p class="nota-dia">💡 {c}</p>{/each}
+      {#each h.consejos as c (c)}<p class="nota-dia"><Icono e="💡" tam={18} /> {c}</p>{/each}
     {/each}
   </div>
-  <button class="boton ancho" onclick={oneditar}>✏️ Editar mis datos</button>
+  <button class="boton ancho" onclick={oneditar}><Icono e="✏️" tam={18} /> Editar mis datos</button>
 {:else if pestaña === 'salud'}
   {#each recs.avisos as a (a.texto)}<p class="alerta {a.nivel === 'importante' ? 'alerta-fuerte' : ''}">{a.texto}</p>{/each}
   {#if recs.suplementos.length}
-    <h2 class="seccion">💊 Suplementos para ti</h2>
+    <h2 class="seccion"><Icono e="💊" tam={18} /> Suplementos para ti</h2>
     <p class="pie-nota">Solo los que tienen sentido en tu caso. Dosis orientativas para adultos sanos: si tomas medicación o tienes alguna patología, consúltalo antes.</p>
     <div class="lista">
       {#each recs.suplementos as s (s.id)}
@@ -88,15 +89,15 @@
     </div>
   {/if}
   {#if recs.alimentacion.length}
-    <h2 class="seccion">🥦 Tu alimentación</h2>
+    <h2 class="seccion"><Icono e="🥦" tam={18} /> Tu alimentación</h2>
     {#each recs.alimentacion as a (a.titulo)}<div class="tarjeta consejo-item"><Emoji e={a.emoji} tam={32} /><div><b>{a.titulo}</b><p>{a.texto}</p></div></div>{/each}
   {/if}
-  <h2 class="seccion">🌿 Hábitos</h2>
+  <h2 class="seccion"><Icono e="🌿" tam={18} /> Hábitos</h2>
   {#each recs.habitos as a (a.titulo)}<div class="tarjeta consejo-item"><Emoji e={a.emoji} tam={32} /><div><b>{a.titulo}</b><p>{a.texto}</p></div></div>{/each}
 {:else if pestaña === 'conectar'}
   <Conectar />
 {:else}
-  <h2 class="seccion">👤 Tus datos</h2>
+  <h2 class="seccion"><Icono e="👤" tam={18} /> Tus datos</h2>
   <div class="tarjeta">
     <dl class="datos-perfil">
       <dt>Persona</dt><dd>{p.sexo === 'h' ? 'Hombre' : 'Mujer'}, {p.edad} años, {p.altura} cm, {num(p.peso, 1)} kg</dd>
@@ -107,14 +108,14 @@
       <dt>Alergias</dt><dd>{p.alergias.length ? p.alergias.map((a) => ALERGENOS[a]).join(', ') : 'Ninguna'}</dd>
       {#if p.condiciones?.length}<dt>Salud</dt><dd>{p.condiciones.map((c) => CONDICIONES[c]?.nombre).join(', ')}</dd>{/if}
     </dl>
-    <button class="boton ancho" onclick={oneditar}>✏️ Editar mis datos</button>
+    <button class="boton ancho" onclick={oneditar}><Icono e="✏️" tam={18} /> Editar mis datos</button>
   </div>
 
-  <h2 class="seccion">🎨 Apariencia</h2>
-  <Segmentos opciones={[{ id: 'auto', nombre: 'Automático', emoji: '🌗' }, { id: 'claro', nombre: 'Claro', emoji: '☀️' }, { id: 'oscuro', nombre: 'Oscuro', emoji: '🌙' }]}
+  <h2 class="seccion"><Icono e="🎨" tam={18} /> Apariencia</h2>
+  <Segmentos opciones={[{ id: 'oscuro', nombre: 'Oscuro', emoji: '🌙' }, { id: 'claro', nombre: 'Claro', emoji: '☀️' }, { id: 'sistema', nombre: 'Como el móvil', emoji: '🌗' }]}
     valor={$estado.tema} onchange={(t) => actualizar((e) => { e.tema = t; })} />
 
-  <h2 class="seccion">💾 Copia de seguridad</h2>
+  <h2 class="seccion"><Icono e="💾" tam={18} /> Copia de seguridad</h2>
   <div class="tarjeta">
     <p class="pie-nota">Tus datos se guardan en este dispositivo (y, si activas la sincronización en Conectar, cifrados en tu servidor con copia diaria). También puedes descargar una copia en un archivo (las fotos no se incluyen).</p>
     <div class="acciones-fila">
@@ -125,8 +126,8 @@
   </div>
 
   <details class="tarjeta creditos">
-    <summary>📜 Créditos e información</summary>
-    <p>Precios y productos: tienda online de Mercadona (datos públicos). Productos envasados: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL). Iconos 3D: Fluent Emoji de Microsoft (MIT).</p>
+    <summary><Icono e="📜" tam={18} /> Créditos e información</summary>
+    <p>Precios y productos: tienda online de Mercadona (datos públicos). Productos envasados: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL). Iconos: Lucide (ISC). Tipografía: Manrope (OFL).</p>
     <p>Fotos de recetas de Wikimedia Commons:</p>
     <ul>
       {#each Object.entries(FOTOS_RECETAS) as [id, c] (id)}

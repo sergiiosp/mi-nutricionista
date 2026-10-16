@@ -45,7 +45,7 @@ Cada `git push` a `main` publica automáticamente en GitHub Pages, y los lunes G
 - **Precios y envases**: API pública de la tienda online de Mercadona → `npm run precios` (escribe `src/data/precios.js`).
 - **Productos envasados**: [Open Food Facts](https://world.openfoodfacts.org), en tiempo real desde la app.
 - **Fotos de recetas**: Wikimedia Commons (licencias libres; créditos en Mi plan → Ajustes → Créditos).
-- **Iconos 3D**: Fluent Emoji de Microsoft (MIT). Si usas emojis nuevos en el código, ejecuta `node scripts/copiar-emojis.mjs <carpeta assets del paquete @lobehub/fluent-emoji-3d>`.
+- **Iconos**: de línea, de [Lucide](https://lucide.dev) (ISC). Los datos usan emojis como clave y `src/lib/iconos.js` los traduce al icono; si añades uno nuevo, ejecuta `node scripts/generar-iconos-linea.mjs`.
 
 Tus datos se guardan en el dispositivo (localStorage y, las fotos, IndexedDB). Si activas la sincronización, también en tu servidor, cifrados con una clave que solo tienen tus dispositivos. Las fotos nunca salen del dispositivo.
 

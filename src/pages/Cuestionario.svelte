@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../components/Icono.svelte';
   // Envoltorio Svelte del cuestionario (lib/cuestionario.js genera cada paso)
   import { tick } from 'svelte';
   import { iniciarCuestionario, vistaCuestionario, enviarPaso, pasoAtras, actualizarVisibles } from '../lib/cuestionario.js';
@@ -44,10 +45,9 @@
   $effect(() => { tick().then(() => actualizarVisibles(raiz?.querySelector('#form-paso'))); });
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 {#if !perfil}
   <div class="contenido ya-uso">
-    <button class="boton-texto" onclick={() => (vinculando = true)}>🔗 ¿Ya usas la app en otro dispositivo? <b>Vincúlalo</b></button>
+    <button class="boton-texto" onclick={() => (vinculando = true)}><Icono e="🔗" tam={18} /> ¿Ya usas la app en otro dispositivo? <b>Vincúlalo</b></button>
   </div>
 {/if}
 {#if vinculando}
@@ -55,6 +55,7 @@
     <Vincular clave={claveEnlace} onhecho={() => (vinculando = false)} />
   </Hoja>
 {/if}
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div class="contenido" bind:this={raiz} onsubmit={alEnviar} onclick={alClic} onchange={alCambiar}>
   {@html html}
 </div>

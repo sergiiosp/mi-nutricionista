@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import { PRECIOS_INFO } from '../../data/precios.js';
   import { ALIMENTOS } from '../../data/alimentos.js';
@@ -29,12 +30,12 @@
   });
 
   async function compartir() {
-    const lineas = ['🛒 *Lista de la compra* (Mercadona)', ''];
+    const lineas = ['*Lista de la compra* (Mercadona)', ''];
     for (const g of lista.grupos) {
       const items = g.items.filter((i) => !enCasa[i.id] && !marcados[i.id]);
       if (!items.length) continue;
       lineas.push(`*${g.nombre}*`);
-      for (const it of items) lineas.push(`▫️ ${it.producto?.nombre || it.nombre}: ${textoEnvases(it)}`);
+      for (const it of items) lineas.push(`${it.producto?.nombre || it.nombre}: ${textoEnvases(it)}`);
       lineas.push('');
     }
     lineas.push(`Total estimado: ${euros(falta)}`);
@@ -59,10 +60,10 @@
     <label class="interruptor"><input type="checkbox" checked={$estado.compra.soloRestantes} onchange={(ev) => actualizar((e) => { e.compra.soloRestantes = ev.currentTarget.checked; })} />
       <span><b>Solo lo que queda de semana</b><small>Desde hoy hasta el final del menú</small></span></label>
     <div class="acciones-fila">
-      <button class="boton boton-peq" onclick={compartir}>📤 Compartir por WhatsApp</button>
+      <button class="boton boton-peq" onclick={compartir}><Icono e="📤" tam={18} /> Compartir por WhatsApp</button>
       <button class="boton boton-sec boton-peq" onclick={() => actualizar((e) => { e.compra.marcados = {}; })}>Desmarcar todo</button>
     </div>
-    <p class="pie-nota">Toca 🏠 en lo que ya tengas en casa y no se sumará al ticket. Precios de Mercadona online del {new Date(PRECIOS_INFO.actualizado).toLocaleDateString('es-ES')}.</p>
+    <p class="pie-nota">Toca <Icono n="house" tam={14} /> en lo que ya tengas en casa y no se sumará al ticket. Precios de Mercadona online del {new Date(PRECIOS_INFO.actualizado).toLocaleDateString('es-ES')}.</p>
   </div>
 
   {#each [...lista.grupos, ...(lista.despensa.length ? [{ nombre: 'Despensa · revisa si te queda', items: lista.despensa }] : [])] as g (g.nombre)}
@@ -81,7 +82,7 @@
             <small>{casa ? 'Lo tienes en casa' : textoEnvases(it)} · usas {Math.round(it.gramos)} {ALIMENTOS[it.id].medida || 'g'}</small>
           </span>
           <span class="precio">{casa ? '—' : euros(it.coste)}</span>
-          <button class="casa-btn" class:activo={casa} aria-pressed={casa} aria-label="Lo tengo en casa" onclick={() => alternar('enCasa', it.id)}>🏠</button>
+          <button class="casa-btn" class:activo={casa} aria-pressed={casa} aria-label="Lo tengo en casa" onclick={() => alternar('enCasa', it.id)}><Icono e="🏠" tam={18} /></button>
         </li>
       {/each}
     </ul>
@@ -95,7 +96,7 @@
 <style>
   .total { display: flex; justify-content: space-between; align-items: baseline; }
   .total span { font-weight: 800; color: var(--texto-2); }
-  .total b { font-size: 2rem; font-weight: 900; color: var(--primario-fuerte); }
+  .total b { font-size: 2rem; font-weight: 800; color: var(--primario-fuerte); }
   .barra { height: 8px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; margin: 8px 0 12px; }
   .barra div { height: 100%; background: var(--hero); border-radius: 999px; transition: width 0.3s; }
   .item { display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 12px; }
@@ -107,7 +108,7 @@
   .info { flex: 1; min-width: 0; display: grid; }
   .info b { font-size: 0.9rem; line-height: 1.25; }
   .info small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
-  .precio { font-weight: 900; font-size: 0.9rem; white-space: nowrap; }
+  .precio { font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
   .casa-btn { width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--superficie-2); cursor: pointer; filter: grayscale(1); opacity: 0.6; flex-shrink: 0; }
   .casa-btn.activo { filter: none; opacity: 1; background: var(--amarillo-claro); }
   .cogido b { text-decoration: line-through; color: var(--texto-2); }

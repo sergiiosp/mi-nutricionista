@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import { estado, actualizar } from '../../stores/estado.js';
   import { avisar } from '../../stores/ui.js';
@@ -108,7 +109,7 @@
     <ul class="historial">
       {#each [...pesos].reverse() as p (p.fecha)}
         <li><span>{fechaCorta(p.fecha)}</span><b>{num(p.peso, 1)} kg</b><span></span>
-          <button class="boton-icono" aria-label="Borrar" onclick={() => actualizar((e) => { e.pesos = e.pesos.filter((x) => x.fecha !== p.fecha); })}>🗑️</button></li>
+          <button class="boton-icono" aria-label="Borrar" onclick={() => actualizar((e) => { e.pesos = e.pesos.filter((x) => x.fecha !== p.fecha); })}><Icono e="🗑️" tam={18} /></button></li>
       {/each}
     </ul>
   </details>

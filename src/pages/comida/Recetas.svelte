@@ -22,7 +22,7 @@
       const ing = racionReceta(r, $estado.perfil, objetivos, franja);
       return { r, ing, m: macrosComida(ing), franja };
     }));
-  const FILTROS = [['todas', 'Todas'], ['desayuno', '🍳 Desayunos'], ['comida', '🍲 Comidas'], ['cena', '🌙 Cenas'], ['snack', '🍎 Snacks'], ['rapidas', '⚡ ≤ 15 min'], ['taper', '🥡 Táper']];
+  const FILTROS = [['todas', 'Todas'], ['desayuno', 'Desayunos'], ['comida', 'Comidas'], ['cena', 'Cenas'], ['snack', 'Snacks'], ['rapidas', '≤ 15 min'], ['taper', 'Táper']];
 </script>
 
 <div class="buscador-caja">
@@ -40,7 +40,7 @@
     <button class="card" onclick={() => abrirHoja('receta', { recetaId: r.id, ingredientes: ing, titulo: `Ración para tu ${franja}` })}>
       <FotoReceta receta={r} alto={130} redondeo={0} tamEmoji={70} />
       <span class="cuerpo">
-        <span class="meta">{r.tiempo} min{r.batch ? ' · 🥡 táper' : ''}</span>
+        <span class="meta">{r.tiempo} min{r.batch ? ' · táper' : ''}</span>
         <b>{r.nombre}</b>
         <span class="mac"><span>{Math.round(m.kcal)} kcal</span><span class="t-p">P {Math.round(m.p)}</span><span class="t-c">H {Math.round(m.c)}</span><span class="t-g">G {Math.round(m.g)}</span></span>
       </span>

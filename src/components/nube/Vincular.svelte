@@ -65,5 +65,5 @@
 <style>
   .centro { text-align: center; }
   .ancho { width: 100%; margin-top: 8px; }
-  .codigo { font-size: 1.4rem; font-weight: 900; letter-spacing: 0.18em; text-align: center; text-transform: uppercase; }
+  .codigo { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.18em; text-align: center; text-transform: uppercase; }
 </style>

@@ -36,7 +36,7 @@
 
 <div class="cant-cab">
   {#if item.tipo === 'receta'}
-    <FotoReceta receta={item.receta} alto={72} redondeo={18} tamEmoji={44} clase="mini" />
+    <FotoReceta receta={item.receta} alto={72} redondeo={18} tamEmoji={44} clase="foto-cantidad" />
   {:else if d.imagen}
     <img class="producto" src={d.imagen} alt="" />
   {:else}
@@ -82,7 +82,7 @@
   .cant-cab { display: flex; gap: 14px; align-items: center; margin: 4px 0 14px; }
   .icono { width: 72px; height: 72px; border-radius: 20px; display: grid; place-items: center; background: var(--superficie); box-shadow: var(--sombra); flex-shrink: 0; }
   .producto { width: 72px; height: 72px; border-radius: 18px; object-fit: contain; background: #fff; padding: 4px; box-shadow: var(--sombra); }
-  :global(.mini) { width: 72px; }
+  :global(.foto-cantidad) { width: 72px; }
   .nombre { display: grid; }
   .nombre b { font-size: 1.1rem; line-height: 1.25; }
   .nombre small { color: var(--texto-2); font-weight: 700; }
@@ -93,12 +93,12 @@
   .ajuste { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 16px 0 6px; }
   .mas-menos { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 800; cursor: pointer; color: var(--texto); }
   .ajuste label { display: flex; align-items: baseline; gap: 6px; }
-  .ajuste input { width: 110px; text-align: center; font-size: 1.8rem; font-weight: 900; border: 0; border-bottom: 3px solid var(--primario); background: transparent; padding: 2px; color: var(--texto); }
+  .ajuste input { width: 110px; text-align: center; font-size: 1.8rem; font-weight: 800; border: 0; border-bottom: 3px solid var(--primario); background: transparent; padding: 2px; color: var(--texto); }
   .ajuste input:focus { outline: none; }
   .ajuste span { font-weight: 800; color: var(--texto-2); }
   .resultado { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin: 12px 0 16px; }
   .kcal { font-weight: 700; color: var(--texto-2); }
-  .kcal b { font-size: 1.6rem; font-weight: 900; color: var(--texto); }
+  .kcal b { font-size: 1.6rem; font-weight: 800; color: var(--texto); }
   .ancho { width: 100%; }
   .boton:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import { estado, actualizar, nuevoId } from '../../stores/estado.js';
   import { avisar } from '../../stores/ui.js';
@@ -34,7 +35,7 @@
 </script>
 
 <div class="tarjeta intro"><Emoji e="🔒" tam={32} /><p>Tus fotos se guardan <b>solo en este dispositivo</b>; no se suben a ningún sitio. Hazlas siempre con la misma luz, ropa y postura (de frente, de lado y de espaldas).</p></div>
-<button class="boton ancho" onclick={() => entrada.click()}>📸 Añadir foto de hoy</button>
+<button class="boton ancho" onclick={() => entrada.click()}><Icono e="📸" tam={18} /> Añadir foto de hoy</button>
 <input bind:this={entrada} type="file" accept="image/*" capture="user" hidden onchange={añadir} />
 
 {#if fotos.length >= 2}
@@ -52,7 +53,7 @@
     {#each [...fotos].reverse() as f (f.id)}
       <figure>
         {#if urls[f.id]}<img src={urls[f.id]} alt="Foto de progreso del {fechaCorta(f.fecha)}" />{/if}
-        <figcaption>{fechaCorta(f.fecha)} <button aria-label="Borrar foto" onclick={() => borrar(f.id)}>🗑️</button></figcaption>
+        <figcaption>{fechaCorta(f.fecha)} <button aria-label="Borrar foto" onclick={() => borrar(f.id)}><Icono e="🗑️" tam={18} /></button></figcaption>
       </figure>
     {/each}
   </div>

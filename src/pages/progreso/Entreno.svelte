@@ -95,24 +95,25 @@
 
 <style>
   .totales { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  .totales div { display: grid; justify-items: center; padding: 10px 4px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
-  .totales b { font-size: 1.3rem; font-weight: 900; }
+  .totales div { display: grid; justify-items: center; padding: 12px 4px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--primario); }
+  .totales b { font-size: 1.3rem; font-weight: 800; color: var(--texto); letter-spacing: -0.03em; }
   .totales small { font-size: 0.7rem; font-weight: 800; color: var(--texto-2); }
   .barras { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; height: 150px; margin-top: 10px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; }
   .zona { width: 100%; display: flex; align-items: flex-end; }
-  .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; }
+  .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; transform-origin: bottom; animation: crecer 0.8s cubic-bezier(0.25, 0.9, 0.3, 1) both; }
+  @keyframes crecer { from { transform: scaleY(0); } }
   .col small { font-size: 0.68rem; font-weight: 800; color: var(--texto-2); }
   .col .h { color: var(--primario-fuerte); }
   .records { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .records div { display: grid; padding: 10px; border-radius: 18px; background: linear-gradient(160deg, var(--amarillo-claro), var(--superficie)); box-shadow: var(--sombra); }
+  .records div { display: grid; padding: 12px 10px; border-radius: 18px; background: radial-gradient(120% 100% at 0% 0%, rgb(255 91 31 / 0.16), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
   .records small { font-size: 0.7rem; font-weight: 800; color: var(--texto-2); }
-  .records b { font-size: 1.05rem; font-weight: 900; }
+  .records b { font-size: 1.05rem; font-weight: 800; }
   .est { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 8px; align-items: center; padding: 6px 0; font-weight: 700; font-size: 0.85rem; }
   .est .n { display: flex; gap: 6px; align-items: center; }
   .pista { height: 8px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; }
   .relleno { height: 100%; border-radius: 999px; background: var(--primario); }
-  .est .t { font-weight: 900; min-width: 42px; text-align: right; }
+  .est .t { font-weight: 800; min-width: 42px; text-align: right; }
   .graf { width: 100%; height: auto; margin-top: 8px; }
   .sim { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid var(--superficie-2); font-weight: 700; font-size: 0.9rem; }
   .vacia { text-align: center; }

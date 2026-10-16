@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import TarjetaSesion from '../../components/TarjetaSesion.svelte';
   import { estado } from '../../stores/estado.js';
@@ -47,11 +48,11 @@
     {#each diasSemana as f (f)}
       {@const ses = semana.sesiones.filter((s) => s.fecha === f)}
       <div class="dia" class:hoy={f === hoy}>
-        <div class="dia-cab"><b>{capital(diaSemana(f))}</b><small>{fechaCorta(f)}{f === hoy ? ' · hoy' : ''}{plan.diasCarga.includes(f) ? ' · 🍝 carga de hidratos' : ''}</small></div>
+        <div class="dia-cab"><b>{capital(diaSemana(f))}</b><small>{fechaCorta(f)}{f === hoy ? ' · hoy' : ''}{plan.diasCarga.includes(f) ? ' · carga de hidratos' : ''}</small></div>
         {#each ses as s (s.id)}
           <TarjetaSesion sesion={s} registro={registros[s.id]} />
         {:else}
-          <div class="descanso">😌 Descanso{f < hoy ? '' : ': camina, estira y duerme bien'}</div>
+          <div class="descanso"><Icono e="😌" tam={18} /> Descanso{f < hoy ? '' : ': camina, estira y duerme bien'}</div>
         {/each}
       </div>
     {/each}
@@ -61,7 +62,7 @@
 <style>
   .cuenta { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 18px; background: var(--hero); color: #fff; font-weight: 800; margin-bottom: 12px; box-shadow: var(--sombra-fuerte); }
   .nav-semana { display: flex; align-items: center; gap: 10px; }
-  .nav-semana button { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 900; cursor: pointer; color: var(--texto); }
+  .nav-semana button { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 800; cursor: pointer; color: var(--texto); }
   .nav-semana button:disabled { opacity: 0.3; cursor: default; }
   .info { flex: 1; text-align: center; display: grid; }
   .info small { color: var(--texto-2); font-weight: 700; }
@@ -69,7 +70,7 @@
   .fase .punto { width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
   .fase div { flex: 1; display: grid; }
   .fase small { color: var(--texto-2); font-weight: 600; font-size: 0.82rem; }
-  .progreso { font-weight: 900; font-size: 1.1rem; color: var(--primario-fuerte); }
+  .progreso { font-weight: 800; font-size: 1.1rem; color: var(--primario-fuerte); }
   .ajuste { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 18px; background: var(--lila-claro); margin-bottom: 12px; font-size: 0.9rem; font-weight: 600; }
   .ajuste b { display: block; }
   .dias { display: grid; gap: 14px; }

@@ -1,4 +1,5 @@
 <script>
+  import Icono from '../../components/Icono.svelte';
   // Mi plan → Conectar: sincronización entre dispositivos, copias de seguridad y recordatorios
   import { onMount } from 'svelte';
   import qrcode from 'qrcode-generator';
@@ -91,8 +92,8 @@
   {#if !$nube.activa}
     <div class="tarjeta">
       <p class="intro">Usa la app en el móvil y en el ordenador con los mismos datos. Se guardan <b>cifrados de extremo a extremo</b> en tu servidor (solo tus dispositivos pueden leerlos) y cada día se hace una copia de seguridad.</p>
-      <button class="boton ancho" disabled={!!ocupado} onclick={() => hacer('crear', crearCuenta, ['Sincronización activada', '☁️'])}>{ocupado === 'crear' ? 'Activando…' : '☁️ Activar en este dispositivo'}</button>
-      <button class="boton boton-sec ancho" onclick={() => (vista = 'vincular')}>🔗 Ya la uso en otro dispositivo</button>
+      <button class="boton ancho" disabled={!!ocupado} onclick={() => hacer('crear', crearCuenta, ['Sincronización activada', '☁️'])}>{ocupado === 'crear' ? 'Activando…' : 'Activar en este dispositivo'}</button>
+      <button class="boton boton-sec ancho" onclick={() => (vista = 'vincular')}><Icono e="🔗" tam={18} /> Ya la uso en otro dispositivo</button>
     </div>
   {:else}
     <div class="tarjeta">
@@ -102,7 +103,7 @@
           <b>{$nube.estado === 'sincronizando' ? 'Sincronizando…' : $nube.estado === 'error' ? 'No se pudo sincronizar' : $nube.estado === 'sin-conexion' ? 'Sin conexión' : 'Sincronizado'}</b>
           <small>{$nube.estado === 'error' ? $nube.error : `Última vez: ${hace($nube.ultima)}`}</small>
         </span>
-        <button class="boton boton-sec boton-peq" disabled={$nube.estado === 'sincronizando'} onclick={() => sincronizar()}>🔄</button>
+        <button class="boton boton-sec boton-peq" disabled={$nube.estado === 'sincronizando'} onclick={() => sincronizar()}><Icono e="🔄" tam={18} /></button>
       </div>
       {#if vista === 'añadir' && qr}
         <div class="añadir">
@@ -111,17 +112,17 @@
             <rect x="-2" y="-2" width={qr.n + 4} height={qr.n + 4} fill="#fff" />
             <path d={qr.d} fill="#163a2c" />
           </svg>
-          <p class="pie-nota">⚠️ Este QR da acceso a todos tus datos: no lo compartas.</p>
+          <p class="pie-nota"><Icono e="⚠️" tam={18} /> Este QR da acceso a todos tus datos: no lo compartas.</p>
           {#if codigo && restante > 0}
             <p class="codigo-grande">{formatoCodigo(codigo.codigo)}</p>
             <p class="pie-nota centro">Escríbelo en el otro dispositivo · caduca en {Math.floor(restante / 60)}:{String(restante % 60).padStart(2, '0')}</p>
           {:else}
-            <button class="boton boton-sec ancho" disabled={ocupado === 'codigo'} onclick={nuevoCodigo}>⌨️ ¿Sin cámara? Ver código de 8 letras</button>
+            <button class="boton boton-sec ancho" disabled={ocupado === 'codigo'} onclick={nuevoCodigo}><Icono e="⌨️" tam={18} /> ¿Sin cámara? Ver código de 8 letras</button>
           {/if}
           <button class="boton-texto ancho" onclick={() => { vista = null; codigo = null; }}>Cerrar</button>
         </div>
       {:else}
-        <button class="boton ancho" onclick={() => (vista = 'añadir')}>📱 Añadir otro dispositivo</button>
+        <button class="boton ancho" onclick={() => (vista = 'añadir')}><Icono e="📱" tam={18} /> Añadir otro dispositivo</button>
       {/if}
       <p class="pie-nota">Se sincroniza todo menos las fotos (se quedan en cada dispositivo).</p>
     </div>
@@ -157,19 +158,19 @@
     {:else if !prefs.activo}
       <p class="intro">Te aviso en <b>este dispositivo</b> a la hora de cada comida, una hora antes de entrenar, el día de pesarte y para tus suplementos (como la creatina), aunque la app esté cerrada.</p>
       {#if soporte.ok}
-        <button class="boton ancho" disabled={!!ocupado} onclick={() => hacer('avisos', async () => { await activarAvisos(); prefs = prefsAvisos(); await probarAviso().catch(() => {}); }, ['Recordatorios activados', '🔔'])}>{ocupado === 'avisos' ? 'Activando…' : '🔔 Activar recordatorios'}</button>
+        <button class="boton ancho" disabled={!!ocupado} onclick={() => hacer('avisos', async () => { await activarAvisos(); prefs = prefsAvisos(); await probarAviso().catch(() => {}); }, ['Recordatorios activados', '🔔'])}>{ocupado === 'avisos' ? 'Activando…' : 'Activar recordatorios'}</button>
       {:else}
         <p class="alerta">{soporte.motivo}</p>
       {/if}
     {:else}
       <label class="interruptor"><input type="checkbox" checked={prefs.comidas} onchange={(ev) => cambiarPref({ comidas: ev.currentTarget.checked })} />
-        <span><b>🍽️ Comidas</b><small>A la hora de cada comida del menú (si no la has marcado)</small></span></label>
+        <span><b><Icono e="🍽️" tam={18} /> Comidas</b><small>A la hora de cada comida del menú (si no la has marcado)</small></span></label>
       <label class="interruptor"><input type="checkbox" checked={prefs.entreno} onchange={(ev) => cambiarPref({ entreno: ev.currentTarget.checked })} />
-        <span><b>💪 Entreno</b><small>Una hora antes, con la sesión que toca</small></span></label>
+        <span><b><Icono e="💪" tam={18} /> Entreno</b><small>Una hora antes, con la sesión que toca</small></span></label>
       <label class="interruptor"><input type="checkbox" checked={prefs.suplementos} onchange={(ev) => cambiarPref({ suplementos: ev.currentTarget.checked })} />
-        <span><b>💊 Suplementos</b><small>Creatina y el resto de tu plan, a su hora</small></span></label>
+        <span><b><Icono e="💊" tam={18} /> Suplementos</b><small>Creatina y el resto de tu plan, a su hora</small></span></label>
       <label class="interruptor"><input type="checkbox" checked={prefs.pesarse} onchange={(ev) => cambiarPref({ pesarse: ev.currentTarget.checked })} />
-        <span><b>⚖️ Pesarse</b><small>Una vez a la semana</small></span></label>
+        <span><b><Icono e="⚖️" tam={18} /> Pesarse</b><small>Una vez a la semana</small></span></label>
       {#if prefs.pesarse}
         <div class="fila-peso">
           <select value={prefs.diaPeso} onchange={(ev) => cambiarPref({ diaPeso: Number(ev.currentTarget.value) })} aria-label="Día de pesarse">
@@ -216,7 +217,7 @@
   .añadir { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--superficie-2); }
   .añadir p { font-size: 0.92rem; }
   .qr { display: block; width: min(240px, 70%); margin: 10px auto; border-radius: 14px; box-shadow: var(--sombra); }
-  .codigo-grande { margin: 12px 0 0; text-align: center; font-size: 1.9rem; font-weight: 900; letter-spacing: 0.14em; font-variant-numeric: tabular-nums; }
+  .codigo-grande { margin: 12px 0 0; text-align: center; font-size: 1.9rem; font-weight: 800; letter-spacing: 0.14em; font-variant-numeric: tabular-nums; }
   .copias { list-style: none; margin: 0; padding: 0; }
   .copias li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--superficie-2); }
   .copias li span { display: grid; }

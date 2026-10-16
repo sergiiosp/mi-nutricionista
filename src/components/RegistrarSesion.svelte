@@ -63,7 +63,7 @@
     </div>
 
     <fieldset class="opciones tres"><legend>¿Cómo te encontraste?</legend>
-      {#each [['bien', '😀 Bien'], ['normal', '😐 Normal'], ['mal', '😫 Mal']] as [v, n] (v)}
+      {#each [['bien', 'Bien'], ['normal', 'Normal'], ['mal', 'Mal']] as [v, n] (v)}
         <label class="opcion"><input type="radio" name="sens" value={v} bind:group={sensacion} /><span><b>{n}</b></span></label>
       {/each}
     </fieldset>
