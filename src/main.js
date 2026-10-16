@@ -3,6 +3,7 @@ import './app.css';
 import App from './App.svelte';
 import { iniciarNube } from './lib/nube/sincro.js';
 import { iniciarAvisos } from './lib/nube/avisos.js';
+import { completarMenu } from './lib/acciones.js';
 
 // Enlace del QR para vincular este dispositivo (#vincular=CLAVE): se guarda y se quita de la barra
 const vincular = location.hash.match(/^#vincular=([\w-]{32})$/);
@@ -10,6 +11,9 @@ if (vincular) {
   sessionStorage.setItem('vincular', vincular[1]);
   history.replaceState(null, '', `${location.pathname}#ajustes/conectar`);
 }
+
+// Si al menú le falta alguna comida (p. ej. el desayuno), se completa al abrir
+completarMenu();
 
 const app = mount(App, { target: document.getElementById('app') });
 

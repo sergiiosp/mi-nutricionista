@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { estado, actualizar, registroDePlan, borrarRegistro } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos } from './nutricion.js';
-import { generarPlan, sustituir, reescalarPlan, hoyISO } from './planificador.js';
+import { generarPlan, sustituir, reescalarPlan, completarPlan, hoyISO } from './planificador.js';
 import { estadoDia } from './dia.js';
 import { proveedorDe } from './hyrox/index.js';
 
@@ -38,13 +38,34 @@ export function alternarSaltada(fecha, franja) {
 
 export function crearPlan(inicio = hoyISO()) {
   actualizar((x) => {
-    x.plan = generarPlan(x.perfil, calcularObjetivos(x.perfil), { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: proveedorDe(x) });
+    x.plan = generarPlan(x.perfil, calcularObjetivos(x.perfil), { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: proveedorDe(x), favoritas: x.favoritas || [] });
     x.compra.marcados = {};
   });
 }
 
+/** Guarda o quita una comida (receta o montada) de tus favoritas. Devuelve si queda guardada. */
+export function alternarFavorita(id) {
+  let guardada = false;
+  actualizar((x) => {
+    const lista = x.favoritas || [];
+    guardada = !lista.includes(id);
+    x.favoritas = guardada ? [...lista, id] : lista.filter((f) => f !== id);
+  });
+  return guardada;
+}
+
 export function sustituirComida(diaIdx, franja, comida) {
   actualizar((x) => sustituir(x.plan, diaIdx, franja, comida));
+}
+
+/** Rellena las comidas que le falten al menú actual (sin tocar las demás). */
+export function completarMenu() {
+  const e = get(estado);
+  if (!e.plan || !e.perfil) return 0;
+  const copia = structuredClone(e.plan);
+  const n = completarPlan(copia, e.perfil, calcularObjetivos(e.perfil), proveedorDe(e), e.favoritas || []);
+  if (n) actualizar((x) => { x.plan = copia; });
+  return n;
 }
 
 /** Tras cambiar perfil o peso: mismas recetas, nuevas cantidades y horario. */

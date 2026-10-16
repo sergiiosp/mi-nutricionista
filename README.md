@@ -7,6 +7,7 @@ Nutricionista y entrenador personal para HYROX en una app web instalable en el m
 - **Primera consulta**: cuestionario con tus datos, horario y trabajo, entrenamiento, objetivo, salud y hábitos, preferencias y lo que no te gusta.
 - **Objetivos**: metabolismo basal (Mifflin-St Jeor), gasto por trabajo, pasos y entreno (MET), calorías y macros distintas para días de entreno y de descanso.
 - **Menú semanal** con recetas reales (con foto) ajustadas a tus macros y colocadas según tu horario, con comida pre y post-entreno.
+- **Elegir o montar cada comida**: en cada comida puedes escoger entre tus favoritas, ideas nuevas con productos de Mercadona y el recetario (todas ajustadas a tus macros), o montarla tú eligiendo ingredientes (copos de avena, cereales de trigo 0 %, tortitas de maíz o de arroz de varios sabores, bebidas vegetales, matcha, yogures +Proteínas…) y la app calcula los gramos de cada uno. Las favoritas entran solas en tus menús.
 - **Día dinámico**: registras lo que comes y ves en vivo lo que te queda; si comes algo fuera del plan, las comidas que quedan se reajustan solas y te sugiere qué comer para completar.
 - **Registro sin IA**: escáner de código de barras (Open Food Facts), buscador de alimentos, recetas y productos, raciones visuales (puño, palma, cuchara…), comidas propias, platos típicos de comer fuera y foto del plato como diario.
 - **Entrenador HYROX**: plan por fases (base, construcción, específico y puesta a punto) hasta tu carrera, con descargas, sesiones detalladas (carrera, estaciones, fuerza, *compromised running* y simulacros), tus ritmos y los pesos de tu categoría, sustitutos si te falta material y alternativas si tienes lesiones. Registras cada sesión (RPE, sensaciones, tiempos) y el plan se ajusta solo; puedes mover entrenos de día. Incluye estimación de tiempo de carrera, estrategia por estación, nutrición del día de carrera y de la semana previa, y fichas de técnica de las 8 estaciones.
@@ -41,7 +42,8 @@ Cada `git push` a `main` publica automáticamente en GitHub Pages, y los lunes G
 
 ## Datos
 
-- **Macros**: base revisada en `src/data/alimentos.js` (la API de Mercadona no da valores nutricionales).
+- **Macros**: base revisada en `src/data/alimentos.js` (la API de Mercadona no da valores nutricionales) y productos envasados de Mercadona en `src/data/productos.js`, con los macros de su etiqueta vía Open Food Facts → `node scripts/productos-mercadona.mjs`.
+- **Comidas por ingredientes**: grupos e ingredientes en `src/data/montar.js`; el motor está en `src/lib/combos.js`.
 - **Precios y envases**: API pública de la tienda online de Mercadona → `npm run precios` (escribe `src/data/precios.js`).
 - **Productos envasados**: [Open Food Facts](https://world.openfoodfacts.org), en tiempo real desde la app.
 - **Fotos de recetas**: Wikimedia Commons (licencias libres; créditos en Mi plan → Ajustes → Créditos).

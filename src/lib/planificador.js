@@ -5,10 +5,15 @@ import { ALIMENTOS } from '../data/alimentos.js';
 import { escalarReceta, recetaPermitida, costeComida, macrosComida, objetivosDia, metaDia } from './nutricion.js';
 import { REPARTOS, horarioDia, objetivoFranja, esDiaEntreno } from './horario.js';
 import { preferenciasAlimentos } from './salud.js';
+import { comboDesdeId, esCombo, combosAleatorios, familiaDe } from './combos.js';
 
 export { REPARTOS, objetivoFranja };
 
-export const recetaPorId = Object.fromEntries(RECETAS.map((r) => [r.id, r]));
+// Recetas del recetario y, además, las comidas montadas por ingredientes (ids «combo:…»)
+const RECETARIO = Object.fromEntries(RECETAS.map((r) => [r.id, r]));
+export const recetaPorId = new Proxy(RECETARIO, {
+  get: (t, k) => t[k] ?? (esCombo(k) ? comboDesdeId(k) : undefined),
+});
 
 // Generador pseudoaleatorio con semilla (mulberry32) para que un plan sea reproducible
 function rng(semilla) {
@@ -28,34 +33,47 @@ function proteinaPrincipal(receta) {
   return p ? p.a : null;
 }
 
-export function candidatas(perfil, franja) {
+export function candidatas(perfil, franja, { favoritas = [] } = {}) {
   let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && recetaPermitida(r, perfil));
   if (perfil.tiempoMax) {
     const rapidas = lista.filter((r) => r.tiempo <= perfil.tiempoMax);
     if (rapidas.length >= 3) lista = rapidas;
   }
+  // Tus comidas favoritas (recetas o montadas por ti) también entran en el menú
+  const ids = new Set(lista.map((r) => r.id));
+  for (const id of favoritas) {
+    const r = recetaPorId[id];
+    if (r && !ids.has(id) && r.tipos.includes(franja.tipo) && recetaPermitida(r, perfil)) { lista.push(r); ids.add(id); }
+  }
+  // Si con tus alergias y gustos no queda ninguna receta, se monta una con lo que sí comes
+  if (!lista.length) lista = combosAleatorios(perfil, familiaDe(franja.tipo), 8, franja.tipo.length * 7919);
   return lista;
 }
 
 // Fracción de las kcal de una receta que viene de la grasa (antes de entrenar, cuanto menos mejor)
-const grasaRelativa = Object.fromEntries(RECETAS.map((r) => {
-  const m = macrosComida(r.ingredientes);
-  return [r.id, { grasa: (m.g * 9) / Math.max(m.kcal, 1), fibra: m.f }];
-}));
+const grasaRelativaCache = {};
+function grasaRelativa(r) {
+  if (!grasaRelativaCache[r.id]) {
+    const m = macrosComida(r.ingredientes);
+    grasaRelativaCache[r.id] = { grasa: (m.g * 9) / Math.max(m.kcal, 1), fibra: m.f };
+  }
+  return grasaRelativaCache[r.id];
+}
 
 function puntuar(receta, ctx) {
-  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs } = ctx;
+  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas } = ctx;
   let s = aleatorio() * 3;
   const n = usos[receta.id] || 0;
   s -= n * (franja.tipo === 'desayuno' || franja.tipo === 'snack' ? 1.2 : 3.5);
   if (receta.prefiere && receta.prefiere !== franja.tipo) s -= 1.2;
+  if (favoritas?.has(receta.id)) s += 4; // tus favoritas salen a menudo (sin repetirse cada día)
   const prot = proteinaPrincipal(receta);
   if (prot && proteinasDia.includes(prot)) s -= 2.5;
   if (perfil.presupuesto === 'ajustado') s -= ctx.costeRelativo(receta) * 2;
   if (perfil.sobras && franja.tipo === 'comida' && receta.batch) s += 0.8;
   if (franja.etiqueta === 'pre') {
     // Antes de entrenar: poca grasa y poca fibra para no ir pesado
-    const { grasa, fibra } = grasaRelativa[receta.id];
+    const { grasa, fibra } = grasaRelativa(receta);
     s -= Math.max(0, grasa - 0.25) * 12 + Math.max(0, fibra - 8) * 0.3;
   }
   // Recetas que encajan mal en los macros de la franja (aun escaladas) salen menos
@@ -102,7 +120,7 @@ export function contextoDia(perfil, objetivos, fecha, proveedor = null) {
  * Genera un plan de N días empezando en `inicio` (fecha ISO yyyy-mm-dd).
  * perfil.sobras = true → la comida se cocina para dos días seguidos (táper).
  */
-export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null } = {}) {
+export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null, favoritas = [] } = {}) {
   const aleatorio = rng(semilla);
   const usos = {};
   const prefs = preferenciasAlimentos(perfil);
@@ -110,7 +128,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   // Coste medio de cada receta a ración base, para la preferencia de presupuesto
   const costes = Object.fromEntries(RECETAS.map((r) => [r.id, costeComida(r.ingredientes)]));
   const medio = Object.values(costes).reduce((a, b) => a + b, 0) / RECETAS.length;
-  const costeRelativo = (r) => costes[r.id] / medio - 1;
+  const costeRelativo = (r) => (costes[r.id] ?? costeComida(r.ingredientes)) / medio - 1;
 
   // Cada receta se escala una vez por franja y tipo de día
   const escaladas = {};
@@ -137,10 +155,10 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       if (perfil.sobras && franja.tipo === 'comida' && d % 2 === 1 && anterior) {
         receta = recetaPorId[anterior.recetaId]; // segundo día del táper
       } else {
-        const lista = candidatas(perfil, franja);
+        const lista = candidatas(perfil, franja, { favoritas });
         if (lista.length) {
           const errorAjuste = (r) => comidaEscalada(r, franja, objDia, tipoDia).error;
-          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs };
+          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas) };
           receta = lista.map((r) => [r, puntuar(r, ctx)]).sort((a, b) => b[1] - a[1])[0][0];
         }
       }
@@ -156,13 +174,21 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   return { version: 2, creado: new Date().toISOString(), inicio, semilla, comidasDia: perfil.comidas, dias: resultado };
 }
 
+/** Franja y macros objetivo de una comida concreta del plan. */
+export function objetivoComida(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null) {
+  const dia = plan?.dias[diaIdx];
+  if (!dia) return null;
+  const { franja, objDia } = franjaDelDia(perfil, objetivos, dia, franjaId, proveedor);
+  return franja ? { franja, obj: objetivoFranja(objDia, franja) } : null;
+}
+
 function franjaDelDia(perfil, objetivos, dia, franjaId, proveedor) {
   const ctx = contextoDia(perfil, objetivos, dia.fecha, proveedor);
   return { ...ctx, franja: ctx.horario.franjas.find((f) => f.id === franjaId) };
 }
 
 /** Alternativas para sustituir una comida concreta del plan, ordenadas por encaje. */
-export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null) {
+export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null, favoritas = []) {
   const dia = plan.dias[diaIdx];
   const { franja, objDia } = franjaDelDia(perfil, objetivos, dia, franjaId, proveedor);
   if (!franja) return [];
@@ -170,13 +196,13 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
   const usos = {};
   for (const d of plan.dias) for (const c of d.comidas) usos[c.recetaId] = (usos[c.recetaId] || 0) + 1;
   const obj = objetivoFranja(objDia, franja);
-  return candidatas(perfil, franja)
+  return candidatas(perfil, franja, { favoritas })
     .filter((r) => r.id !== actual)
     .map((r) => {
       const comida = crearComida(r, franja, objDia);
       const m = macrosComida(comida.ingredientes);
       const desvio = Math.abs(m.kcal - obj.kcal) / obj.kcal + Math.abs(m.p - obj.p) / Math.max(obj.p, 1);
-      const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa[r.id].grasa - 0.25) : 0;
+      const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa(r).grasa - 0.25) : 0;
       return { comida, macros: m, usos: usos[r.id] || 0, orden: desvio + (usos[r.id] || 0) * 0.15 + pre };
     })
     .sort((a, b) => a.orden - b.orden);
@@ -185,6 +211,24 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
 export function sustituir(plan, diaIdx, franjaId, comida) {
   const dia = plan.dias[diaIdx];
   dia.comidas = dia.comidas.map((c) => (c.franja === franjaId ? comida : c));
+}
+
+/** Añade las comidas que falten en el plan (p. ej. un desayuno que no se pudo elegir). Devuelve cuántas. */
+export function completarPlan(plan, perfil, objetivos, proveedor = null, favoritas = []) {
+  let n = 0;
+  plan.dias.forEach((dia, i) => {
+    const { horario, objDia } = contextoDia(perfil, objetivos, dia.fecha, proveedor);
+    for (const franja of horario.franjas) {
+      if (dia.comidas.some((c) => c.franja === franja.id)) continue;
+      const lista = candidatas(perfil, franja, { favoritas });
+      if (!lista.length) continue;
+      const receta = lista[(i * 7 + franja.id.length) % lista.length];
+      dia.comidas.push(crearComida(receta, franja, objDia));
+      n++;
+    }
+    dia.comidas.sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
+  });
+  return n;
 }
 
 /** Recalcula horario y cantidades de todo el plan (mismas recetas) tras cambiar el perfil. */

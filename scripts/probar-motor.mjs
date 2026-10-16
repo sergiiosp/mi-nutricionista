@@ -82,4 +82,19 @@ comprobar(m.cambiaLocal && m.cambiaRemoto, 'Sincro: hay que aplicar y subir');
 const estadoH = { perfil: { peso: 80 }, registros: { d: [1] }, hyrox: { config: { a: 1 }, registros: { s1: { estado: 'completa' } }, movidas: {} }, fotosProgreso: [{ id: 'f' }] };
 const ida = desaplanar(aplanar(estadoH));
 comprobar(ida.hyrox.registros.s1.estado === 'completa' && ida.registros.d && !ida.fotosProgreso.length, 'Sincro: aplanar y reconstruir conserva los datos (las fotos se quedan en local)');
+// ── Comidas montadas por ingredientes ─────────────────────────────────────
+const { proponerCombos, montarCombo } = await import('../src/lib/combos.js');
+const perfilD = { ...comun, sexo: 'h', edad: 32, altura: 178, peso: 80, objetivo: 'perder', ritmo: 'moderado', comidas: 4 };
+const objD = { kcal: 480, p: 30, c: 58, g: 13 };
+const props = proponerCombos(perfilD, 'd', objD, { n: 4, semilla: 3 });
+comprobar(props.length === 4 && props.every((x) => Math.abs(macrosComida(x.ingredientes).kcal - objD.kcal) < objD.kcal * 0.12), 'Combos: 4 desayunos propuestos que cuadran las kcal');
+const mio = montarCombo('d', ['cereales_trigo_0', 'bebida_almendra', 'yogur_proteinas', 'platano', 'matcha'], objD);
+comprobar(mio && Math.abs(mio.macros.kcal - objD.kcal) < objD.kcal * 0.15 && mio.ingredientes.find((i) => i.a === 'matcha').g === 2, `Combos: desayuno montado a mano ajustado (${Math.round(mio.macros.kcal)} kcal)`);
+// Alguien a quien no le encaja ninguna receta de desayuno: nunca se queda sin desayuno
+const exigente = { ...perfilD, alergias: ['gluten', 'lactosa', 'huevo'], noMeGusta: ['platano', 'fresas', 'kiwi', 'manzana', 'pera', 'avena', 'pan_integral', 'pan_molde', 'tortitas_arroz', 'aguacate'] };
+const planE = generarPlan(exigente, calcularObjetivos(exigente), { inicio: '2026-10-19', semilla: 5 });
+comprobar(planE.dias.every((d) => d.comidas.some((c) => c.franja === 'desayuno')), 'Menú: con muchas restricciones sigue habiendo desayuno todos los días');
+const fav = 'combo:d:cereales_trigo_0+bebida_almendra+yogur_proteinas+platano';
+const planF = generarPlan(perfilD, calcularObjetivos(perfilD), { inicio: '2026-10-19', semilla: 5, favoritas: [fav] });
+comprobar(planF.dias.some((d) => d.comidas.some((c) => c.recetaId === fav)), 'Menú: usa tus comidas favoritas');
 if (fallosH) process.exitCode = 1;

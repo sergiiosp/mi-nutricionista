@@ -15,6 +15,8 @@
 //   envaseG: gramos útiles por envase si la API no los da bien (p. ej. aceite: 1 l = 916 g)
 //   despensa: true si es un básico que normalmente ya tienes y dura semanas
 
+import { PRODUCTOS } from './productos.js';
+
 export const ALIMENTOS = {
   // ── Proteínas ─────────────────────────────────────────────────────────────
   pollo_pechuga: { nombre: 'Pechuga de pollo', kcal: 110, p: 23, c: 0, g: 1.5, f: 0, grupo: 'proteina', dieta: 'carne', al: [], mercadona: '2787' },
@@ -114,6 +116,9 @@ export const ALIMENTOS = {
   vinagre: { nombre: 'Vinagre de manzana', kcal: 20, p: 0, c: 0.5, g: 0, f: 0, grupo: 'otros', dieta: 'vegetal', al: [], mercadona: '4957', medida: 'ml', despensa: true },
   mostaza: { nombre: 'Mostaza de Dijon', kcal: 150, p: 7, c: 3, g: 11, f: 3, grupo: 'otros', dieta: 'vegetal', al: [], mercadona: '17228', despensa: true },
 };
+
+// Productos envasados de Mercadona con los macros de su etiqueta (scripts/productos-mercadona.mjs)
+Object.assign(ALIMENTOS, PRODUCTOS);
 
 // Especias y condimentos (sin aporte calórico relevante). Se listan aparte en la compra.
 export const ESPECIAS = {

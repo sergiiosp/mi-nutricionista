@@ -281,7 +281,7 @@ function redondear(id, g) {
  * Ajusta las cantidades de una receta para acercarse a un objetivo { kcal, p, c, g }.
  * Escala por grupos (proteína, hidratos, grasa) con mínimos cuadrados acotados.
  */
-export function escalarReceta(receta, objetivo) {
+export function escalarReceta(receta, objetivo, limites = receta.limites || LIMITES) {
   const grupos = { P: [], C: [], G: [] };
   const fijos = [];
   for (const ing of receta.ingredientes) {
@@ -304,7 +304,7 @@ export function escalarReceta(receta, objetivo) {
         num += PESOS[i] * M[r][i] * resto;
         den += PESOS[i] * M[r][i] * M[r][i];
       }
-      if (den > 0) x[r] = Math.min(LIMITES[r][1], Math.max(LIMITES[r][0], num / den));
+      if (den > 0) x[r] = Math.min(limites[r][1], Math.max(limites[r][0], num / den));
     }
   }
 

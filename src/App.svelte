@@ -66,7 +66,7 @@
     { id: 'comida', nombre: 'Comida', icono: 'utensils' },
     { id: 'progreso', nombre: 'Progreso', icono: 'chart-column' },
   ];
-  const TITULOS = { receta: '', alternativas: 'Cambiar plato', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
+  const TITULOS = { receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
 
 {#if !$estado.perfil || editando}
