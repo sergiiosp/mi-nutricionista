@@ -108,7 +108,7 @@
     </fieldset>
 
     {#if ['series', 'umbral'].includes(s.tipo)}
-      <CampoTiempo etiqueta="Ritmo medio de las series (min/km)" bind:value={ritmo} ejemplo="4:55" />
+      <div class="lista-tiempos"><CampoTiempo etiqueta="Ritmo medio de las series (min/km)" bind:value={ritmo} ejemplo="4:55" /></div>
     {:else if ['rodaje', 'largo'].includes(s.tipo)}
       <label class="campo"><span>Distancia (km)</span><input type="number" step="0.1" bind:value={distancia} inputmode="decimal" placeholder={String(s.distancia || '')} /></label>
     {:else if s.tipo === 'fuerza' && !ejercicios.length}
@@ -148,11 +148,11 @@
       </div>
     {/if}
     {#if ['simulacro', 'compromised', 'estaciones', 'carrera'].includes(s.tipo)}
-      <CampoTiempo etiqueta="Tiempo total" bind:value={tiempo} horas ejemplo={s.tipo === 'carrera' ? '1:25:00' : '0:45:00'} />
+      <div class="lista-tiempos"><CampoTiempo etiqueta="Tiempo total" bind:value={tiempo} horas ejemplo={s.tipo === 'carrera' ? '1:25:00' : '0:45:00'} /></div>
     {/if}
     {#if conEstaciones}
       <p class="pie-nota">Tiempo de cada estación (opcional): mejora tu estimación de carrera.</p>
-      <div class="estaciones">
+      <div class="lista-tiempos">
         {#each estacionesSesion as est (est.id)}
           <CampoTiempo etiqueta={est.nombre} bind:value={tiemposEst[est.id]} ejemplo="4:30" />
         {/each}
@@ -176,8 +176,6 @@
   .rpe-cab b { display: flex; gap: 6px; align-items: center; font-size: 1.1rem; }
   .rpe input { width: 100%; accent-color: var(--primario); margin: 10px 0 2px; }
   .rpe-ley { display: flex; justify-content: space-between; color: var(--texto-2); font-weight: 700; }
-  .estaciones { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
-  .estaciones :global(.campo-tiempo) { margin: 6px 0; }
   .ancho { width: 100%; margin-top: 6px; }
   .pesos { margin: 14px 0 4px; }
   .pesos-cab { margin: 0 0 8px; display: grid; }

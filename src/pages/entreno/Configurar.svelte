@@ -88,7 +88,7 @@
 
   <h2 class="seccion"><Emoji e="⏱️" tam={24} /> Tus marcas</h2>
   <p class="pie-nota">Con ellas calculo tus ritmos y tu tiempo estimado. Si no las sabes, déjalas vacías y uso las de tu nivel.</p>
-  <div class="fila-campos">
+  <div class="lista-tiempos">
     <CampoTiempo etiqueta="5 km" bind:value={t5k} ejemplo="25:00" />
     <CampoTiempo etiqueta="SkiErg 1.000 m" bind:value={ski} ejemplo="4:30" />
     <CampoTiempo etiqueta="Remo 1.000 m" bind:value={row} ejemplo="4:10" />

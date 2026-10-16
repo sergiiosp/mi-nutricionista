@@ -41,7 +41,8 @@
 
   <div class="tarjeta">
     <b>Carga semanal</b>
-    <div class="barras">
+    {#if ult.some((s) => s.carga > 0)}
+    <div class="barras" style="--n:{Math.max(4, ult.length)}">
       {#each ult as s (s.w)}
         <div class="col">
           <div class="zona"><div class="barra" style="height:{(s.carga / maxCarga) * 100}%;background:{FASES[s.fase].color}"></div></div>
@@ -51,6 +52,9 @@
       {/each}
     </div>
     <p class="pie-nota">Carga = minutos × esfuerzo percibido (RPE). Debajo, sesiones hechas sobre previstas.</p>
+    {:else}
+    <p class="pie-nota">Cuando registres tus sesiones verás aquí cuánto has entrenado cada semana.</p>
+    {/if}
   </div>
 
   <h2 class="seccion"><Icono n="medal" tam={20} /> Récords</h2>
@@ -121,7 +125,7 @@
 {/if}
 
 <style>
-  .barras { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; height: 150px; margin-top: 10px; }
+  .barras { display: grid; grid-template-columns: repeat(var(--n, 8), minmax(0, 1fr)); gap: 8px; height: 150px; margin-top: 10px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; }
   .zona { width: 100%; display: flex; align-items: flex-end; }
   .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; }

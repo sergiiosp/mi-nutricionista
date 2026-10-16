@@ -359,7 +359,7 @@
   .recordatorio { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
   .recordatorio :global(.icono) { color: var(--lila); }
   .extra { display: flex; align-items: center; gap: 10px; padding: 10px 0 12px; border-bottom: 1px solid var(--linea); }
-  .extra img, .ic { width: 44px; height: 44px; border-radius: 12px; object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; color: var(--texto-2); }
+  .ic { width: 44px; height: 44px; border-radius: 12px; object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; color: var(--texto-2); }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-weight: 600; font-size: 0.92rem; }
   .txt small { color: var(--texto-2); font-size: 0.74rem; }

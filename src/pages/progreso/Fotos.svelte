@@ -106,7 +106,6 @@
   .et.izq { left: 8px; } .et.der { right: 8px; }
   .corte { width: 100%; margin: 10px 0 0; accent-color: var(--primario); }
   .ancho { width: 100%; }
-  .comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   figure { margin: 0; border-radius: 18px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); }
   figure img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; background: var(--superficie-2); }

@@ -252,8 +252,14 @@ hr { border: 0; border-top: 1px solid var(--linea); margin: 14px 0; }
 
 fieldset { border: 0; padding: 0; margin: 16px 0; min-width: 0; }
 
+/* Lista de tiempos (marcas, estaciones): filas separadas dentro de una tarjeta */
+.lista-tiempos { padding: 2px 14px; margin: 10px 0; border-radius: var(--radio-s); background: var(--superficie); box-shadow: var(--sombra); }
+.lista-tiempos > * + * { border-top: 1px solid var(--linea); }
+
 /* Fecha y hora: en iPhone tienen un ancho mínimo propio y se salían de las filas de dos columnas */
 .fila-campos > *, .campo { min-width: 0; }
+/* Ningún campo más ancho que su hueco (Safari les da un ancho propio de ~20 caracteres) */
+input, select, textarea { min-width: 0; max-width: 100%; }
 input[type="date"], input[type="time"] {
   -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; max-width: 100%;
 }
