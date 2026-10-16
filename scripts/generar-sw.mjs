@@ -51,7 +51,8 @@ self.addEventListener('fetch', (ev) => {
   if (url.origin === location.origin) {
     if (req.mode === 'navigate') {
       // La página: red primero para ver siempre la última versión
-      ev.respondWith(fetch(req).then((r) => guardar(req, r)).catch(() => caches.match('./')));
+      // (sin la caché HTTP: así una versión nueva se ve en cuanto se publica)
+      ev.respondWith(fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }).then((r) => guardar(req, r)).catch(() => caches.match('./')));
       return;
     }
     // Archivos con huella (assets/), fotos e iconos: caché primero

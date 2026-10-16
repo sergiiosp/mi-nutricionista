@@ -22,7 +22,18 @@ setTimeout(() => {
 
 // Service worker (solo en producción): la app funciona sin conexión y recibe recordatorios
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  const habiaVersion = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').then((reg) => {
+    // Al volver a la app se mira si hay versión nueva publicada
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+  // Cuando la versión nueva toma el control, se recarga una vez para estrenarla
+  let recargando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!habiaVersion || recargando) return;
+    recargando = true;
+    location.reload();
+  });
   navigator.serviceWorker.addEventListener('message', (ev) => {
     if (ev.data?.tipo === 'ir') location.hash = new URL(ev.data.url).hash;
   });
