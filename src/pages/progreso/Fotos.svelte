@@ -48,16 +48,16 @@
     <p class="mini"><Icono n="lock" tam={13} /> Se guardan <b>solo en este dispositivo</b>; no se suben a ningún sitio ni se sincronizan.</p>
   </div>
 </div>
-<div class="tarjeta como">
-  <b>Cómo hacerlas bien</b>
+<details class="tarjeta como" open={!fotos.length}>
+  <summary><b>Cómo hacerlas bien</b></summary>
   <ul>
     <li>Por la mañana, en ayunas y con la misma ropa (bañador o ropa interior).</li>
     <li>Misma luz y mismo sitio: delante de una pared lisa, luz de frente (no a contraluz).</li>
     <li>Móvil a la altura del pecho, a unos 2 m, apoyado o con temporizador. Brazos relajados, sin apretar.</li>
     <li>Tres fotos: de frente, de lado y de espaldas. Elige la pose antes de hacerla.</li>
   </ul>
-  {#if proxima}<p class="pie-nota">Última foto el {fechaCorta(ultimaFecha)}. {proxima <= hoyISO() ? 'Ya toca la siguiente.' : `La siguiente, a partir del ${fechaCorta(proxima)}.`}</p>{/if}
-</div>
+</details>
+{#if proxima}<p class="pie-nota">Última foto el {fechaCorta(ultimaFecha)}. {proxima <= hoyISO() ? 'Ya toca la siguiente.' : `La siguiente, a partir del ${fechaCorta(proxima)}.`}</p>{/if}
 <div class="poses" role="radiogroup" aria-label="Pose">
   {#each POSES as [v, n] (v)}<button role="radio" aria-checked={pose === v} class:activo={pose === v} onclick={() => (pose = v)}>{n}</button>{/each}
 </div>

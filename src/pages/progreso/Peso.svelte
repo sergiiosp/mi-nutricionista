@@ -12,6 +12,7 @@
   const hoy = hoyISO();
   let fecha = $state(hoy);
   let peso = $state('');
+  let formAbierto = $state(false);
   const pesos = $derived([...$estado.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)));
   const o = $derived(calcularObjetivos($estado.perfil));
   const t = $derived(tendencia(pesos));
@@ -29,6 +30,7 @@
       e.perfil.peso = [...e.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)).at(-1).peso;
     });
     peso = '';
+    formAbierto = false;
     if (Math.abs(calcularObjetivos($estado.perfil).kcal - antes) >= 30) {
       reajustarPlan();
       avisar('Peso guardado y raciones actualizadas', '⚖️');
@@ -68,21 +70,28 @@
   });
 </script>
 
+{#if pesos.length}
+  <div class="panel">
+    <div class="bloque bajo"><span class="b-cab"><Icono n="scale" tam={15} grosor={2.2} /> Actual</span><b class="b-num cifra">{num(actual, 1)}</b><span class="b-sub">kg</span></div>
+    <div class="bloque bajo"><span class="b-cab">Cambio</span><b class="b-num cifra">{actual - inicial > 0 ? '+' : ''}{num(actual - inicial, 1)}</b><span class="b-sub">kg desde {fechaCorta(pesos[0].fecha)}</span></div>
+    <div class="bloque bajo"><span class="b-cab">Ritmo</span><b class="b-num cifra">{t ? `${t.kgSemana > 0 ? '+' : ''}${num(t.kgSemana, 2)}` : '—'}</b><span class="b-sub">kg/semana</span></div>
+  </div>
+{/if}
+
+{#if !formAbierto && pesos.length}
+  <button class="boton ancho-peso" onclick={() => (formAbierto = true)}><Icono n="plus" tam={18} grosor={2.4} /> Apuntar peso de hoy</button>
+{:else}
 <form class="tarjeta form" onsubmit={guardar}>
   <b class="tit"><Emoji e="⚖️" tam={24} /> Registrar peso</b>
   <label class="campo"><span>Fecha</span><input type="date" bind:value={fecha} max={hoy} required /></label>
   <label class="campo"><span>Peso</span><input type="number" step="0.1" min="35" max="250" inputmode="decimal" bind:value={peso} placeholder={actual ? num(actual, 1) : ''} required /><small>kg</small></label>
   <button class="boton" type="submit">Guardar</button>
 </form>
+{/if}
 
 {#if pesos.length}
   <div class="tarjeta">
-    <div class="stats">
-      <div><span>Inicio</span><b>{num(inicial, 1)}</b><small>kg</small></div>
-      <div><span>Actual</span><b>{num(actual, 1)}</b><small>kg</small></div>
-      <div class:baja={actual < inicial} class:sube={actual > inicial}><span>Cambio</span><b>{actual - inicial > 0 ? '+' : ''}{num(actual - inicial, 1)}</b><small>kg</small></div>
-      <div><span>Ritmo</span><b>{t ? `${t.kgSemana > 0 ? '+' : ''}${num(t.kgSemana, 2)}` : '—'}</b><small>kg/sem</small></div>
-    </div>
+    <b class="tit-graf">Evolución</b>
     {#if g}
       <svg class="grafico" viewBox="0 0 {W} {H}" role="img" aria-label="Evolución del peso">
         <defs><linearGradient id="area-peso" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="g-area-ini" /><stop offset="1" class="g-area-fin" /></linearGradient></defs>
@@ -103,8 +112,8 @@
   </div>
 {/if}
 
-<div class="tarjeta rec rec-{rec.tipo}">
-  <div class="cab"><Emoji e="🥗" tam={30} /><b>Tu nutricionista dice</b></div>
+<div class="tarjeta destacada rec rec-{rec.tipo}">
+  <div class="cab"><span class="ic-cab"><Icono n="lightbulb" tam={18} /></span><b>Tu nutricionista dice</b></div>
   <p>{rec.texto}</p>
   {#if rec.tipo === 'ajuste'}<button class="boton" onclick={() => aplicarAjuste(rec.ajuste)}>Aplicar ajuste ({rec.ajuste > 0 ? '+' : ''}{rec.ajuste} kcal)</button>{/if}
   {#if $estado.perfil.ajusteKcal}<p class="pie-nota">Ajuste acumulado: {$estado.perfil.ajusteKcal > 0 ? '+' : ''}{$estado.perfil.ajusteKcal} kcal. <button class="enlace" onclick={() => aplicarAjuste(-$estado.perfil.ajusteKcal)}>Quitar</button></p>{/if}
@@ -128,5 +137,8 @@
   .form .campo { margin: 10px 0; }
   .form .boton { grid-column: 1 / -1; }
   .rec .cab { display: flex; gap: 10px; align-items: center; }
+  .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
+  .ancho-peso { width: 100%; margin-top: 12px; }
+  .tit-graf { display: block; margin-bottom: 6px; }
   .rec p { font-weight: 600; }
 </style>

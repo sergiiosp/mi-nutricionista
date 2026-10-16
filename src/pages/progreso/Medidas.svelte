@@ -1,5 +1,6 @@
 <script>
   import Emoji from '../../components/Emoji.svelte';
+  import Icono from '../../components/Icono.svelte';
   import { estado, actualizar } from '../../stores/estado.js';
   import { avisar } from '../../stores/ui.js';
   import { hoyISO } from '../../lib/planificador.js';
@@ -19,6 +20,7 @@
   const ultima = $derived(medidas.at(-1));
 
   let guia = $state(false);
+  let formAbierto = $state(false);
   // Qué dicen tus medidas: cintura (grasa) frente a brazo y pecho (músculo)
   const lectura = $derived.by(() => {
     if (medidas.length < 2) return null;
@@ -40,6 +42,7 @@
       e.medidas = (e.medidas || []).filter((m) => m.fecha !== fecha).concat([{ fecha, ...datos }]);
     });
     valores = {};
+    formAbierto = false;
     avisar('Medidas guardadas', '📏');
   }
 </script>
@@ -65,17 +68,6 @@
   </div>
 {/if}
 
-<form class="tarjeta" onsubmit={guardar}>
-  <label class="campo"><span>Fecha</span><input type="date" bind:value={fecha} max={hoyISO()} /></label>
-  <div class="campos">
-    {#each CAMPOS as c (c.id)}
-      <label class="campo"><span><Emoji e={c.emoji} tam={18} /> {c.nombre}</span>
-        <input type="number" step="0.5" min="20" max="200" inputmode="decimal" bind:value={valores[c.id]} placeholder={ultima?.[c.id] ? num(ultima[c.id], 1) : ''} /><small>cm</small></label>
-    {/each}
-  </div>
-  <button class="boton ancho" type="submit">Guardar medidas</button>
-</form>
-
 {#if medidas.length}
   <div class="tarjeta">
     <b>Evolución</b>
@@ -94,6 +86,21 @@
     {#if lectura}<p class="lectura" class:ok={lectura.ok}>{lectura.texto}</p>{/if}
     <p class="pie-nota">Desde el {fechaCorta(primera.fecha)} · {medidas.length} registros</p>
   </div>
+{/if}
+
+{#if medidas.length && !formAbierto}
+  <button class="boton ancho" onclick={() => (formAbierto = true)}><Icono n="ruler" tam={18} /> Apuntar medidas</button>
+{:else}
+<form class="tarjeta" onsubmit={guardar}>
+  <label class="campo"><span>Fecha</span><input type="date" bind:value={fecha} max={hoyISO()} /></label>
+  <div class="campos">
+    {#each CAMPOS as c (c.id)}
+      <label class="campo"><span><Emoji e={c.emoji} tam={18} /> {c.nombre}</span>
+        <input type="number" step="0.5" min="20" max="200" inputmode="decimal" bind:value={valores[c.id]} placeholder={ultima?.[c.id] ? num(ultima[c.id], 1) : ''} /><small>cm</small></label>
+    {/each}
+  </div>
+  <button class="boton ancho" type="submit">Guardar medidas</button>
+</form>
 {/if}
 
 <style>

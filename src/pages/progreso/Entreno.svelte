@@ -34,11 +34,9 @@
 {#if !st}
   <div class="tarjeta vacia"><Emoji e="🏋️" tam={56} /><p>Crea tu plan HYROX en Entreno para ver aquí tu evolución.</p><a class="boton" href="#entreno">Ir a Entreno</a></div>
 {:else}
-  <div class="totales">
-    <div><Emoji e="✅" tam={28} /><b>{st.totalSesiones}</b><small>sesiones</small></div>
-    <div><Emoji e="🏃" tam={28} /><b>{st.totalKm}</b><small>km</small></div>
-    <div><Emoji e="⏱️" tam={28} /><b>{num(st.totalHoras, 1)}</b><small>horas</small></div>
-    <div><Emoji e="🎯" tam={28} /><b>{st.cumplimiento ?? '—'}{st.cumplimiento !== null ? '%' : ''}</b><small>cumplido</small></div>
+  <div class="panel dos">
+    <div class="bloque bajo"><span class="b-cab"><Icono n="circle-check" tam={15} grosor={2.2} /> Sesiones</span><b class="b-num cifra">{st.totalSesiones}</b><span class="b-sub">{st.cumplimiento !== null ? `${st.cumplimiento} % del plan cumplido` : 'registradas'}</span></div>
+    <div class="bloque bajo"><span class="b-cab"><Icono n="route" tam={15} grosor={2.2} /> Carrera</span><b class="b-num cifra">{st.totalKm} km</b><span class="b-sub">{num(st.totalHoras, 1)} horas en total</span></div>
   </div>
 
   <div class="tarjeta">
@@ -55,11 +53,11 @@
     <p class="pie-nota">Carga = minutos × esfuerzo percibido (RPE). Debajo, sesiones hechas sobre previstas.</p>
   </div>
 
-  <h2 class="seccion"><Emoji e="🏅" tam={24} /> Récords</h2>
-  <div class="records">
-    <div><small>Mejor simulacro completo</small><b>{st.records.mejorSimulacro ? hms(st.records.mejorSimulacro.tiempo) : '—'}</b></div>
-    <div><small>Series más rápidas</small><b>{st.records.mejorSerie ? `${mmss(st.records.mejorSerie)}/km` : '—'}</b></div>
-    <div><small>Sentadilla máxima</small><b>{st.records.maxSentadilla ? `${st.records.maxSentadilla} kg` : '—'}</b></div>
+  <h2 class="seccion"><Icono n="medal" tam={20} /> Récords</h2>
+  <div class="panel">
+    <div class="bloque bajo"><span class="b-cab">Simulacro</span><b class="b-num b-texto cifra">{st.records.mejorSimulacro ? hms(st.records.mejorSimulacro.tiempo) : '—'}</b><span class="b-sub">mejor completo</span></div>
+    <div class="bloque bajo"><span class="b-cab">Series</span><b class="b-num b-texto cifra">{st.records.mejorSerie ? `${mmss(st.records.mejorSerie)}` : '—'}</b><span class="b-sub">min/km más rápido</span></div>
+    <div class="bloque bajo"><span class="b-cab">Sentadilla</span><b class="b-num b-texto cifra">{st.records.maxSentadilla ? `${st.records.maxSentadilla} kg` : '—'}</b><span class="b-sub">máximo</span></div>
   </div>
 
   <div class="tarjeta">
@@ -123,20 +121,12 @@
 {/if}
 
 <style>
-  .totales { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  .totales div { display: grid; justify-items: center; padding: 12px 4px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--primario); }
-  .totales b { font-size: 1.3rem; font-weight: 800; color: var(--texto); letter-spacing: -0.03em; }
-  .totales small { font-size: 0.7rem; font-weight: 800; color: var(--texto-2); }
   .barras { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; height: 150px; margin-top: 10px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; }
   .zona { width: 100%; display: flex; align-items: flex-end; }
   .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; }
   .col small { font-size: 0.68rem; font-weight: 800; color: var(--texto-2); }
   .col .h { color: var(--primario-fuerte); }
-  .records { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .records div { display: grid; padding: 12px 10px; border-radius: 18px; background: radial-gradient(120% 100% at 0% 0%, rgb(255 91 31 / 0.16), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
-  .records small { font-size: 0.7rem; font-weight: 800; color: var(--texto-2); }
-  .records b { font-size: 1.05rem; font-weight: 800; }
   .est { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 8px; align-items: center; padding: 6px 0; font-weight: 700; font-size: 0.85rem; }
   .est .n { display: flex; gap: 6px; align-items: center; }
   .pista { height: 8px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; }

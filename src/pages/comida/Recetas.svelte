@@ -1,5 +1,6 @@
 <script>
   import FotoReceta from '../../components/FotoReceta.svelte';
+  import Icono from '../../components/Icono.svelte';
   import { RECETAS } from '../../data/recetas.js';
   import { adaptarReceta } from '../../lib/sustituciones.js';
   import { ALIMENTOS } from '../../data/alimentos.js';
@@ -39,11 +40,13 @@
 <div class="rejilla">
   {#each lista as { r, ing, m, franja } (r.id)}
     <button class="card" onclick={() => abrirHoja('receta', { recetaId: r.id, ingredientes: ing, titulo: `Ración para tu ${franja}` })}>
-      <FotoReceta receta={r} alto={130} redondeo={0} tamEmoji={70} />
+      <span class="imagen">
+        <FotoReceta receta={r} alto={124} redondeo={0} tamEmoji={70} />
+        <span class="chips-img"><span class="chip-img"><Icono n="clock" tam={12} grosor={2.4} /> {r.tiempo} min</span>{#if r.batch}<span class="chip-img"><Icono n="package" tam={12} grosor={2.4} /> táper</span>{/if}</span>
+      </span>
       <span class="cuerpo">
-        <span class="meta">{r.tiempo} min{r.batch ? ', aguanta en táper' : ''}</span>
         <b>{r.nombre}</b>
-        <span class="mac"><span>{Math.round(m.kcal)} kcal</span><span class="t-p">P {Math.round(m.p)}</span><span class="t-c">H {Math.round(m.c)}</span><span class="t-g">G {Math.round(m.g)}</span></span>
+        <span class="mac"><span class="kcal cifra">{Math.round(m.kcal)} kcal</span><span class="cifra">{Math.round(m.p)} g proteína</span></span>
       </span>
     </button>
   {:else}
@@ -58,8 +61,11 @@
   .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 8px; }
   .card { display: flex; flex-direction: column; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: left; color: var(--texto); transition: transform 0.12s; }
   .card:hover { transform: translateY(-2px); }
-  .cuerpo { display: grid; gap: 3px; padding: 10px 12px 12px; }
-  .cuerpo b { font-size: 0.92rem; line-height: 1.25; }
-  .meta { font-size: 0.7rem; color: var(--texto-2); font-weight: 800; }
-  .mac { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; font-weight: 800; color: var(--texto-2); }
+  .imagen { position: relative; display: block; }
+  .chips-img { position: absolute; left: 8px; top: 8px; display: flex; gap: 4px; }
+  .chip-img { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: rgb(10 10 12 / 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #fff; font-size: 0.68rem; font-weight: 700; }
+  .cuerpo { display: grid; gap: 6px; padding: 10px 12px 12px; flex: 1; align-content: space-between; }
+  .cuerpo b { font-size: 0.9rem; font-weight: 600; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .mac { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
+  .mac .kcal { color: var(--primario-fuerte); font-weight: 800; }
 </style>

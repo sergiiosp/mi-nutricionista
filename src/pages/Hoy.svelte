@@ -275,24 +275,6 @@
   .saludo p { margin: 8px 0 0; color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .saludo h1 { margin: 2px 0 16px; }
 
-  /* Panel de tres bloques: cada uno con el color de su sección */
-  .panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .bloque {
-    display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; min-height: 132px; padding: 12px;
-    border: 0; border-radius: 20px; text-align: left; font: inherit; color: var(--texto); text-decoration: none; cursor: pointer;
-    background: radial-gradient(140% 110% at 0% 0%, var(--halo), transparent 70%), var(--superficie);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 18%, transparent);
-    transition: box-shadow 0.2s, transform 0.15s;
-  }
-  .bloque:active { transform: scale(0.97); }
-  .bloque.activo { box-shadow: inset 0 0 0 1.5px var(--primario); }
-  .b-cab { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 6px; font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
-  .b-num { font-size: 1.55rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; }
-  .b-num.b-texto { font-size: 1.05rem; line-height: 1.2; letter-spacing: -0.02em; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .b-sub { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
-  .b-pista { width: 100%; height: 5px; margin: 6px 0 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
-  .b-pista span { display: block; height: 100%; border-radius: 999px; background: var(--primario); transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
-  .b-ok { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding: 3px 8px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.7rem; font-weight: 800; }
   .detalle { margin-top: 10px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .detalle .marcador { margin-top: 0; }
   .detalle :global(.sesion) { margin-top: 10px; }

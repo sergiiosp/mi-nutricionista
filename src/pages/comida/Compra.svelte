@@ -35,6 +35,8 @@
     return { id, nombre: ALIMENTOS[id]?.nombre || id, producto: p, envases: n, coste: p ? n * p.precio : 0, extra: true, gramos: 0, bruto: 0 };
   }));
   let abierto = $state(null);
+  // Pasillos: se pliegan solos cuando ya lo tienes todo; tocando la cabecera, a tu gusto
+  let plegados = $state({});
   let añadiendo = $state(false);
   function quitar(it) {
     const n = quitarDeCompra(it.id);
@@ -79,25 +81,32 @@
 {#if !lista}
   <div class="tarjeta vacia"><Emoji e="🛒" tam={56} /><p>Crea un menú y te preparo la lista.</p></div>
 {:else}
+  <div class="panel">
+    <div class="bloque bajo"><span class="b-cab"><Icono n="receipt" tam={15} grosor={2.2} /> Ticket</span><b class="b-num medio cifra">{euros(ticket)}</b><span class="b-sub">estimado</span></div>
+    <div class="bloque bajo"><span class="b-cab"><Icono n="shopping-cart" tam={15} grosor={2.2} /> Te falta</span><b class="b-num medio cifra">{euros(falta)}</b><span class="b-sub">por coger</span></div>
+    <div class="bloque bajo"><span class="b-cab"><Icono n="check" tam={15} grosor={2.4} /> Cogido</span><b class="b-num medio cifra">{progreso} %</b><span class="b-pista" aria-hidden="true"><span style="width:{progreso}%"></span></span></div>
+  </div>
   <div class="tarjeta resumen">
-    <div class="total"><span>Ticket estimado</span><b>{euros(ticket)}</b></div>
-    <div class="barra"><div style="width:{progreso}%"></div></div>
-    <div class="cifras">
-      <div><span>Te falta coger</span><b>{euros(falta)}</b></div>
-      <div><span>Coste real de lo que comes</span><b>{euros(lista.costeConsumo)}</b></div>
-    </div>
+    <p class="coste-real">Lo que comes de verdad esta semana cuesta <b>{euros(lista.costeConsumo)}</b>: el resto del ticket queda en la despensa.</p>
     <label class="interruptor"><input type="checkbox" checked={$estado.compra.soloRestantes} onchange={(ev) => actualizar((e) => { e.compra.soloRestantes = ev.currentTarget.checked; })} />
       <span><b>Solo lo que queda de semana</b><small>Desde hoy hasta el final del menú</small></span></label>
     <div class="acciones-fila">
-      <button class="boton boton-peq" onclick={compartir}><Icono e="📤" tam={18} /> Compartir por WhatsApp</button>
-      <button class="boton boton-sec boton-peq" onclick={() => actualizar((e) => { e.compra.marcados = {}; })}>Desmarcar todo</button>
+      <button class="boton boton-peq" onclick={compartir}><Icono n="share" tam={16} /> Compartir lista</button>
+      <button class="boton boton-sec boton-peq" onclick={() => actualizar((e) => { e.compra.marcados = {}; })}><Icono n="refresh-cw" tam={16} /> Desmarcar</button>
     </div>
     <p class="pie-nota">Toca <Icono n="house" tam={14} /> en lo que ya tengas en casa y no se sumará al ticket. Precios de Mercadona online del {new Date(PRECIOS_INFO.actualizado).toLocaleDateString('es-ES')}.</p>
   </div>
 
   {#each [...grupos, ...(extras.length ? [{ nombre: 'Añadido por ti', items: extras }] : []), ...(lista.despensa.length ? [{ nombre: 'Despensa · revisa si te queda', items: lista.despensa }] : [])] as g (g.nombre)}
-    <h2 class="pasillo">{g.nombre}</h2>
-    <ul class="lista-compra">
+    {@const hechos = g.items.filter((i) => marcados[i.id] || enCasa[i.id]).length}
+    {@const plegado = g.nombre in plegados ? plegados[g.nombre] : hechos === g.items.length}
+    <button class="pasillo-cab" class:completo={hechos === g.items.length} aria-expanded={!plegado} onclick={() => (plegados = { ...plegados, [g.nombre]: !plegado })}>
+      <span class="pc-nombre">{#if hechos === g.items.length}<Icono n="circle-check" tam={16} grosor={2.2} />{/if}{g.nombre}</span>
+      <span class="pc-cuenta cifra">{hechos}/{g.items.length}</span>
+      <Icono n={plegado ? 'chevron-down' : 'chevron-up'} tam={18} />
+    </button>
+    {#if !plegado}
+    <ul class="lista-compra" transition:slide={{ duration: 180 }}>
       {#each g.items as it (it.id)}
         {@const casa = !!enCasa[it.id]}
         {@const cogido = !!marcados[it.id]}
@@ -137,6 +146,7 @@
         {/if}
       {/each}
     </ul>
+    {/if}
   {/each}
   {#if Object.keys(quitados).length}
     <p class="pie-nota">Has quitado: {#each Object.keys(quitados) as id, i (id)}{i ? ', ' : ''}<button class="enlace" onclick={() => devolverACompra(id)}>{ALIMENTOS[id]?.nombre || id} (volver a poner)</button>{/each}</p>
@@ -156,11 +166,14 @@
 {/if}
 
 <style>
-  .total { display: flex; justify-content: space-between; align-items: baseline; }
-  .total span { font-weight: 800; color: var(--texto-2); }
-  .total b { font-size: 2rem; font-weight: 800; color: var(--primario-fuerte); }
-  .barra { height: 8px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; margin: 8px 0 12px; }
-  .barra div { height: 100%; background: var(--hero); border-radius: 999px; transition: width 0.3s; }
+  .coste-real { margin: 0 0 6px; font-size: 0.86rem; color: var(--texto-2); }
+  .coste-real b { color: var(--texto); }
+  .pasillo-cab { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 48px; margin: 18px 0 6px; padding: 0 4px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .pc-nombre { flex: 1; display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.95rem; }
+  .pc-nombre :global(svg) { color: var(--primario); }
+  .pc-cuenta { font-weight: 700; font-size: 0.82rem; color: var(--primario-fuerte); padding: 3px 9px; border-radius: 999px; background: var(--primario-claro); }
+  .pasillo-cab > :global(svg:last-child) { color: var(--texto-3); }
+  .pasillo-cab.completo .pc-nombre { color: var(--texto-2); }
   .item { display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 12px; }
   .item + .item { border-top: 1px solid var(--superficie-2); }
   .check { position: relative; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--borde); background: var(--superficie); color: transparent; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }

@@ -17,12 +17,13 @@
 
 <RepasoSemanal />
 
-<div class="rachas">
-  <div><Emoji e="🔥" tam={30} /><b>{r.registro}</b><small>días registrando</small></div>
-  <div><Emoji e="💪" tam={30} /><b>{r.proteina}</b><small>días con tu proteína</small></div>
-  <div><Emoji e="🎯" tam={30} /><b>{r.calorias}</b><small>días en tus kcal</small></div>
+<div class="panel">
+  <div class="bloque bajo"><span class="b-cab"><Icono n="flame" tam={15} grosor={2.2} /> Racha</span><b class="b-num cifra">{r.registro}</b><span class="b-sub">días registrando</span></div>
+  <div class="bloque bajo"><span class="b-cab"><Icono n="biceps-flexed" tam={15} grosor={2.2} /> Proteína</span><b class="b-num cifra">{r.proteina}</b><span class="b-sub">días seguidos llegando</span></div>
+  <div class="bloque bajo"><span class="b-cab"><Icono n="target" tam={15} grosor={2.2} /> Kcal</span><b class="b-num cifra">{r.calorias}</b><span class="b-sub">días en tu objetivo</span></div>
 </div>
 
+{#if s.porDia.some((d) => d.r)}
 <div class="tarjeta">
   <b>Calorías de los últimos 7 días</b>
   <div class="grafico" role="img" aria-label="Calorías por día frente a tu objetivo">
@@ -42,23 +43,24 @@
   <p class="pie-nota">Línea discontinua: tu objetivo de cada día · <Icono n="biceps-flexed" tam={14} /> = llegaste a tu proteína.</p>
 </div>
 
-<div class="cifras-g">
-  <div class="tarjeta"><small>Media diaria</small><b>{entero(s.kcal)} kcal</b><small>objetivo {entero(s.objetivoKcal)}</small></div>
-  <div class="tarjeta"><small>Proteína media</small><b>{Math.round(s.p)} g</b><small>objetivo {Math.round(s.objetivoP)} g</small></div>
-  <div class="tarjeta"><small>Días registrados</small><b>{s.diasRegistrados}/6</b><small>{s.diasKcal} dentro de kcal</small></div>
-  <div class="tarjeta"><small>Tendencia de peso</small><b>{s.tendencia ? `${s.tendencia.kgSemana > 0 ? '+' : ''}${num(s.tendencia.kgSemana, 2)}` : '—'}</b><small>kg/semana</small></div>
+<h2 class="seccion">Medias de la semana</h2>
+<div class="panel dos">
+  <div class="bloque bajo"><span class="b-cab">Kcal al día</span><b class="b-num cifra">{entero(s.kcal)}</b><span class="b-sub">objetivo {entero(s.objetivoKcal)}</span></div>
+  <div class="bloque bajo"><span class="b-cab">Proteína al día</span><b class="b-num cifra">{Math.round(s.p)} g</b><span class="b-sub">objetivo {Math.round(s.objetivoP)} g</span></div>
+  <div class="bloque bajo"><span class="b-cab">Días registrados</span><b class="b-num cifra">{s.diasRegistrados}/6</b><span class="b-sub">{s.diasKcal} dentro de kcal</span></div>
+  <div class="bloque bajo"><span class="b-cab">Peso</span><b class="b-num cifra">{s.tendencia ? `${s.tendencia.kgSemana > 0 ? '+' : ''}${num(s.tendencia.kgSemana, 2)}` : '—'}</b><span class="b-sub">kg por semana</span></div>
 </div>
 
-<div class="tarjeta consejos">
-  <div class="cab"><Emoji e="🥗" tam={30} /><b>Tu nutricionista dice</b></div>
+{:else}
+<div class="tarjeta vacia-semana"><Icono n="chart-column" tam={26} /><p>Cuando registres tus comidas verás aquí tus calorías y tu proteína de cada día.</p></div>
+{/if}
+
+<div class="tarjeta destacada consejos">
+  <div class="cab"><span class="ic-cab"><Icono n="lightbulb" tam={18} /></span><b>Tu nutricionista dice</b></div>
   {#each s.consejos as c (c)}<p>{c}</p>{/each}
 </div>
 
 <style>
-  .rachas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .rachas div { display: grid; justify-items: center; text-align: center; gap: 2px; padding: 14px 6px 12px; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); color: var(--primario); }
-  .rachas b { font-size: 1.7rem; font-weight: 800; line-height: 1.1; color: var(--texto); letter-spacing: -0.03em; }
-  .rachas small { font-size: 0.68rem; font-weight: 600; color: var(--texto-2); line-height: 1.25; }
   .grafico { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 170px; margin-top: 12px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; gap: 2px; }
   .zona { position: relative; width: 100%; height: 100%; }
@@ -69,11 +71,10 @@
   .objetivo { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--texto-3); }
   .col small { font-weight: 700; color: var(--texto-3); font-size: 0.7rem; }
   .p-ok { height: 18px; color: var(--primario); }
-  .cifras-g { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
-  .cifras-g .tarjeta { display: grid; margin: 6px 0; }
-  .cifras-g small { color: var(--texto-2); font-weight: 600; font-size: 0.72rem; }
-  .cifras-g b { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
   .consejos .cab { display: flex; align-items: center; gap: 10px; color: var(--primario); }
+  .vacia-semana { display: flex; gap: 12px; align-items: center; color: var(--primario); }
+  .vacia-semana p { margin: 0; color: var(--texto-2); font-size: 0.88rem; }
+  .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); }
   .consejos .cab b { color: var(--texto); }
   .consejos p { margin: 8px 0 0; font-weight: 500; font-size: 0.88rem; color: var(--texto-2); }
 </style>
