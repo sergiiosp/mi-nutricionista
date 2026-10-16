@@ -64,7 +64,7 @@
   .zona { position: relative; width: 100%; height: 100%; }
   .barra { position: absolute; bottom: 0; left: 20%; right: 20%; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #ffd56b, var(--amarillo)); transition: height 0.5s; min-height: 3px; }
   .barra.ok { background: var(--hero); box-shadow: 0 0 14px rgb(255 91 31 / 0.4); }
-  .barra.alto { background: linear-gradient(180deg, #ff7a8e, var(--coral)); }
+  .barra.alto { background: linear-gradient(180deg, #ffd56b, var(--amarillo)); opacity: 0.75; }
   .barra.sin { background: var(--superficie-3); }
   .objetivo { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--texto-3); }
   .col small { font-weight: 700; color: var(--texto-3); font-size: 0.7rem; }

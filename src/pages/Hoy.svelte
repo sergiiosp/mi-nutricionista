@@ -6,7 +6,7 @@
   import TarjetaSesion from '../components/TarjetaSesion.svelte';
   import { planDe, sesionesDia } from '../lib/hyrox/index.js';
   import { estado, añadirRegistro, horaActual } from '../stores/estado.js';
-  import { avisar } from '../stores/ui.js';
+  import { avisar, abrirHoja } from '../stores/ui.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
   import { hoyISO } from '../lib/planificador.js';
   import { estadoDia, sugerencias, faltas } from '../lib/dia.js';
@@ -14,8 +14,11 @@
   import { recomendaciones, recordatoriosDia } from '../lib/salud.js';
   import { esDiaEntreno, horarioDia } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
-  import { crearPlan, marcarEntrenoDia } from '../lib/acciones.js';
-  import { fechaLarga, saludo, entero, capital } from '../lib/formato.js';
+  import { crearPlan, marcarEntrenoDia, quitarRegistro } from '../lib/acciones.js';
+  import { fechaLarga, saludo, entero, capital, num } from '../lib/formato.js';
+  import { slide } from 'svelte/transition';
+  import { tendencia } from '../lib/progreso.js';
+  import { semanaDe } from '../lib/hyrox/plan.js';
   import { rachas } from '../lib/logros.js';
 
   const hoy = hoyISO();
@@ -43,6 +46,18 @@
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const r = $derived(rachas($estado, objetivos, hoy));
+  // Panel: qué bloque está abierto (ninguno al entrar: lo esencial ya se ve)
+  let abierto = $state(null);
+  const alternar = (k) => (abierto = abierto === k ? null : k);
+  const tend = $derived(tendencia($estado.pesos || []));
+  const sesionHecha = $derived(sesionesHoy.some((s) => $estado.hyrox?.registros?.[s.id]?.estado === 'completa'));
+  const semanaEntreno = $derived.by(() => {
+    const plan = planDe($estado);
+    const sem = plan ? semanaDe(plan, hoy) : null;
+    if (!sem) return null;
+    const ses = sem.sesiones.filter((x) => x.tipo !== 'carrera');
+    return { total: ses.length, hechas: ses.filter((x) => ['completa', 'parcial'].includes($estado.hyrox?.registros?.[x.id]?.estado)).length };
+  });
   const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
   const nombreFranja = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja]);
 
@@ -76,6 +91,10 @@
     return items.sort((a, b) => a.hora.localeCompare(b.hora) || orden[a.tipo] - orden[b.tipo]);
   });
 
+  // Lo siguiente que toca (comida pendiente o sesión sin registrar) y el resto del día, en líneas
+  const proximo = $derived(linea.find((it) => (it.tipo === 'comida' && it.c.situacion === 'pendiente') || (it.tipo === 'hyrox' && it.s.tipo !== 'carrera' && !$estado.hyrox?.registros?.[it.s.id])) || null);
+  const resto = $derived(linea.filter((it) => it !== proximo));
+
   const CONSEJOS = [
     'Llena medio plato de verdura: aporta volumen, fibra y casi nada de calorías.',
     'Si un día te sales del plan, no compenses al siguiente: vuelve al menú y listo.',
@@ -101,57 +120,75 @@
     <h1>{saludo()}{$estado.perfil.nombre ? `, ${$estado.perfil.nombre}` : ''}</h1>
   </header>
 
-  <section class="resumen" aria-label="Resumen del día">
-    <div class="chips">
+  <!-- Panel: lo esencial de un vistazo; cada bloque se toca para ver el detalle -->
+  <div class="panel">
+    <button class="bloque s-comida" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} onclick={() => alternar('comida')}>
+      <span class="b-cab"><Icono n="utensils" tam={15} grosor={2.2} /> Comida</span>
+      <b class="b-num cifra">{entero(d.consumido.kcal)}</b>
+      <span class="b-sub">de {entero(d.objetivo.kcal)} kcal</span>
+      <span class="b-pista" aria-hidden="true"><span style="width:{listo ? Math.min(100, (d.consumido.kcal / d.objetivo.kcal) * 100) : 0}%"></span></span>
+      <span class="b-sub">P {Math.round(d.consumido.p)}/{Math.round(d.objetivo.p)} g</span>
+    </button>
+    <button class="bloque s-entreno" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} onclick={() => alternar('entreno')}>
+      <span class="b-cab"><Icono n="dumbbell" tam={15} grosor={2.2} /> Entreno</span>
+      <b class="b-num b-texto">{entrenoHoy ? (sesionesHoy[0]?.titulo.split(':')[0] || 'Entreno') : 'Descanso'}</b>
+      <span class="b-sub">{#if !entrenoHoy}recupera y camina{:else if sesionesHoy[0]}{sesionesHoy[0].hora} · {sesionesHoy[0].duracion} min{:else if sesion}a las {sesion.inicio}{/if}</span>
+      {#if sesionHecha}<span class="b-ok"><Icono n="check" tam={13} grosor={2.8} /> hecha</span>{/if}
+    </button>
+    <a class="bloque s-progreso" href="#progreso">
+      <span class="b-cab"><Icono n="chart-column" tam={15} grosor={2.2} /> Semana</span>
+      <b class="b-num cifra">{semanaEntreno ? `${semanaEntreno.hechas}/${semanaEntreno.total}` : r.registro}</b>
+      <span class="b-sub">{semanaEntreno ? 'sesiones' : 'días seguidos'}</span>
+      {#if tend}<span class="b-sub">{tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem</span>{/if}
+    </a>
+  </div>
+
+  {#if abierto === 'comida'}
+    <section class="detalle s-comida" aria-label="Detalle de la comida de hoy" transition:slide={{ duration: 200 }}>
+    <div class="marcador">
+        <div>
+          <span class="lbl">{d.pasado ? 'Por encima de tu objetivo' : 'Te quedan'}</span>
+          <b class="num cifra" class:pasado={d.pasado}><Cifra valor={Math.abs(d.objetivo.kcal - d.consumido.kcal)} /></b>
+          <span class="lbl">kcal</span>
+        </div>
+        <div class="dcha">
+          <span class="lbl">Llevas</span>
+          <b class="cifra">{entero(d.consumido.kcal)}</b>
+          <span class="lbl">de {entero(d.objetivo.kcal)}</span>
+        </div>
+      </div>
+
+      <div class="tramos" role="list">
+        {#each tramos as t, i (t.id)}
+          {@const pct = Math.min(100, (t.comido / t.plan) * 100)}
+          <div class="tramo" role="listitem" style="flex:{t.plan}" class:siguiente={t.siguiente} class:saltada={t.saltada} class:extra={t.extra}>
+            <div class="pista"><div class="relleno" class:sobra={t.comido > t.plan * 1.15} style="width:{listo ? pct : 0}%;transition-delay:{i * 140}ms"></div></div>
+            <span class="t-nombre">{t.nombre}</span>
+            <span class="t-kcal cifra" class:pendiente={!t.comido}>{t.saltada ? 'saltada' : entero(t.comido || t.plan)}</span>
+          </div>
+        {/each}
+      </div>
+
+      <div class="macros-dia">
+        {#each [['Proteína', 'p', 'b-p'], ['Hidratos', 'c', 'b-c'], ['Grasa', 'g', 'b-g']] as [n, k, cl] (k)}
+          <div class="macro {cl}">
+            <span>{n}</span>
+            <b class="cifra">{Math.round(d.consumido[k])}<small>/{Math.round(d.objetivo[k])} g</small></b>
+            <div class="pista"><div class="relleno" style="width:{listo ? Math.min(100, (d.consumido[k] / d.objetivo[k]) * 100) : 0}%"></div></div>
+          </div>
+        {/each}
+      </div>
+    </section>
+  {:else if abierto === 'entreno'}
+    <section class="detalle s-entreno" aria-label="Entreno de hoy" transition:slide={{ duration: 200 }}>
       <div class="tipo-dia" role="group" aria-label="¿Hoy entrenas?">
         <button class:activo={entrenoHoy} aria-pressed={entrenoHoy} onclick={() => cambiarEntreno(true)}><Icono n="dumbbell" tam={15} grosor={2.2} /> Entreno</button>
         <button class:activo={!entrenoHoy} aria-pressed={!entrenoHoy} onclick={() => cambiarEntreno(false)}><Icono n="moon" tam={15} grosor={2.2} /> Descanso</button>
       </div>
-      {#if entrenoHoy && hyroxActivo && sesionesHoy.length}
-        <span class="chip-hoy naranja"><Icono e={sesionesHoy[0].emoji} tam={15} grosor={2.2} /> {sesionesHoy[0].titulo.split(':')[0]}</span>
-      {:else if entrenoHoy && sesion}
-        <span class="chip-hoy">a las {sesion.inicio}</span>
-      {/if}
-      {#if r.registro > 1}<span class="chip-hoy"><Icono n="flame" tam={15} grosor={2.2} /> {r.registro} días seguidos</span>{/if}
-    </div>
-    {#if cambioHoy === 'no' && hyroxActivo && sesionesHoy.length}
-      <p class="nota-cambio">Hoy cuento descanso. Tu sesión sigue en el plan: muévela a otro día o márcala como no hecha.</p>
-    {/if}
-
-    <div class="marcador">
-      <div>
-        <span class="lbl">{d.pasado ? 'Te has pasado' : 'Te quedan'}</span>
-        <b class="num cifra" class:pasado={d.pasado}><Cifra valor={Math.abs(d.objetivo.kcal - d.consumido.kcal)} /></b>
-        <span class="lbl">kcal</span>
-      </div>
-      <div class="dcha">
-        <span class="lbl">Llevas</span>
-        <b class="cifra">{entero(d.consumido.kcal)}</b>
-        <span class="lbl">de {entero(d.objetivo.kcal)}</span>
-      </div>
-    </div>
-
-    <div class="tramos" role="list">
-      {#each tramos as t, i (t.id)}
-        {@const pct = Math.min(100, (t.comido / t.plan) * 100)}
-        <div class="tramo" role="listitem" style="flex:{t.plan}" class:siguiente={t.siguiente} class:saltada={t.saltada} class:extra={t.extra}>
-          <div class="pista"><div class="relleno" class:sobra={t.comido > t.plan * 1.15} style="width:{listo ? pct : 0}%;transition-delay:{i * 140}ms"></div></div>
-          <span class="t-nombre">{t.nombre}</span>
-          <span class="t-kcal cifra" class:pendiente={!t.comido}>{t.saltada ? 'saltada' : entero(t.comido || t.plan)}</span>
-        </div>
-      {/each}
-    </div>
-
-    <div class="macros-dia">
-      {#each [['Proteína', 'p', 'b-p'], ['Hidratos', 'c', 'b-c'], ['Grasa', 'g', 'b-g']] as [n, k, cl] (k)}
-        <div class="macro {cl}">
-          <span>{n}</span>
-          <b class="cifra">{Math.round(d.consumido[k])}<small>/{Math.round(d.objetivo[k])} g</small></b>
-          <div class="pista"><div class="relleno" style="width:{listo ? Math.min(100, (d.consumido[k] / d.objetivo[k]) * 100) : 0}%"></div></div>
-        </div>
-      {/each}
-    </div>
-  </section>
+      <p class="nota-cambio">{entrenoHoy ? 'Hoy comes como día de entreno: más hidratos y kcal.' : 'Hoy comes como día de descanso.'}{cambioHoy === 'no' && hyroxActivo && sesionesHoy.length ? ' Tu sesión sigue en el plan: muévela a otro día o márcala como no hecha.' : ''}</p>
+      {#each sesionesHoy as s (s.id)}<TarjetaSesion sesion={s} registro={$estado.hyrox?.registros?.[s.id]} />{/each}
+    </section>
+  {/if}
 
   {#if !$estado.plan || diaIdx === -1}
     <div class="tarjeta vacia">
@@ -165,7 +202,7 @@
     <div class="aviso"><Icono n="refresh-cw" tam={18} /> <span><b>Próximas comidas reajustadas</b> para cuadrar el día con lo que ya has comido.</span></div>
   {/if}
   {#if d.pasado}
-    <div class="aviso amarillo"><Icono n="thumbs-up" tam={18} /> <span><b>Te has pasado un poco.</b> No compenses mañana: sigue el menú normal.</span></div>
+    <div class="aviso amarillo"><Icono n="thumbs-up" tam={18} /> <span><b>Hoy vas algo por encima.</b> Es normal en días así: mañana sigue el menú sin compensar.</span></div>
   {/if}
 
   {#if d.dia && opciones.length && (d.huecoFinal.kcal > 120 || cortos.length)}
@@ -183,36 +220,50 @@
     </div>
   {/if}
 
-  {#if linea.length}
-    <h2 class="seccion">Tu día</h2>
-    <ol class="timeline">
-      {#each linea as it, i (it.tipo + (it.c?.franja || it.s?.id || it.x?.id || it.x?.texto || i))}
-        <li class="tl tl-{it.tipo} {it.tipo === 'comida' ? 's-comida' : ['hyrox', 'entreno'].includes(it.tipo) ? 's-entreno' : ''}" class:hecho={it.c?.situacion === 'hecha'}>
-          <div class="tl-hora cifra">{it.tipo === 'sup' ? '' : it.hora}</div>
-          <div class="tl-linea"><span></span></div>
-          <div class="tl-contenido">
-            {#if it.tipo === 'comida'}
-              <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={it.c.franja === siguiente} plegable />
-            {:else if it.tipo === 'hyrox'}
-              <TarjetaSesion sesion={it.s} registro={$estado.hyrox?.registros?.[it.s.id]} />
-            {:else if it.tipo === 'entreno'}
-              <div class="bloque-entreno">
-                <span class="be-ic"><Icono e={deportes[0]?.emoji || '🏋️'} tam={24} /></span>
-                <div><b>Entreno</b><small>{sesion.inicio} – {sesion.fin} · {deportes.map((x) => x.nombre).join(', ') || 'tu sesión'}</small></div>
-              </div>
-            {:else if it.tipo === 'sup'}
-              <div class="recordatorio"><Icono e={it.x.emoji} tam={15} grosor={2.2} /> {it.x.texto}</div>
-            {:else if it.tipo === 'extra'}
-              <div class="extra">
-                {#if it.x.imagen && it.x.tipo === 'producto'}<img src={it.x.imagen} alt="" />{:else}<span class="ic"><Icono n="utensils" tam={20} /></span>{/if}
-                <span class="txt"><small>{it.x.franja ? NOMBRES[it.x.franja] : 'Picoteo'}</small><b>{it.x.nombre}</b><small>{it.x.cantidad?.texto}, {entero(it.x.macros.kcal)} kcal, {Math.round(it.x.macros.p)} g de proteína</small></span>
-                <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="x" tam={16} /></button>
-              </div>
-            {/if}
+  {#if proximo}
+    <h2 class="seccion">Ahora toca</h2>
+    {#if proximo.tipo === 'comida'}
+      <div class="s-comida"><TarjetaComida comida={proximo.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(proximo.c)} destacada /></div>
+    {:else}
+      <div class="s-entreno"><TarjetaSesion sesion={proximo.s} registro={$estado.hyrox?.registros?.[proximo.s.id]} /></div>
+    {/if}
+  {:else if d.comidas.length}
+    <div class="tarjeta completo s-comida"><Icono n="circle-check" tam={22} /> <span><b>Día completado.</b> Todas las comidas registradas.</span></div>
+  {/if}
+
+  {#if resto.length}
+    <h2 class="seccion">Resto del día</h2>
+    <div class="resto">
+      {#each resto as it, i (it.tipo + (it.c?.franja || it.s?.id || it.x?.id || it.x?.texto || i))}
+        {#if it.tipo === 'comida'}
+          <div class="s-comida"><TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={false} compacta /></div>
+        {:else if it.tipo === 'hyrox'}
+          {@const reg = $estado.hyrox?.registros?.[it.s.id]}
+          <button class="fila s-entreno" onclick={() => abrirHoja('sesion', { id: it.s.id })}>
+            <span class="f-ic" class:ok={reg?.estado === 'completa'}><Icono n={reg?.estado === 'completa' ? 'check' : 'dumbbell'} tam={15} grosor={2.4} /></span>
+            <span class="f-txt"><small>{it.s.hora} · Entreno</small><b>{it.s.titulo}</b></span>
+            <span class="f-dato">{it.s.duracion} min</span>
+          </button>
+        {:else if it.tipo === 'entreno'}
+          <div class="fila s-entreno">
+            <span class="f-ic"><Icono n="dumbbell" tam={15} grosor={2.4} /></span>
+            <span class="f-txt"><small>{sesion.inicio} · Entreno</small><b>{deportes.map((x) => x.nombre).join(', ') || 'Tu sesión'}</b></span>
           </div>
-        </li>
+        {:else if it.tipo === 'sup'}
+          <div class="fila s-hoy">
+            <span class="f-ic"><Icono e={it.x.emoji} tam={15} grosor={2.4} /></span>
+            <span class="f-txt"><small>{it.hora || 'Hoy'} · Suplemento</small><b>{it.x.texto}</b></span>
+          </div>
+        {:else if it.tipo === 'extra'}
+          <div class="fila s-comida">
+            <span class="f-ic ok"><Icono n="check" tam={15} grosor={2.4} /></span>
+            <span class="f-txt"><small>{it.x.hora || ''} · {it.x.franja ? NOMBRES[it.x.franja] : 'Picoteo'}</small><b>{it.x.nombre}</b></span>
+            <span class="f-dato">{entero(it.x.macros.kcal)} kcal</span>
+            <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="x" tam={16} /></button>
+          </div>
+        {/if}
       {/each}
-    </ol>
+    </div>
     {#each d.dia?.consejos || [] as c (c)}<p class="nota-dia"><Icono n="info" tam={16} /> {c}</p>{/each}
   {/if}
 
@@ -223,6 +274,42 @@
 <style>
   .saludo p { margin: 8px 0 0; color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .saludo h1 { margin: 2px 0 16px; }
+
+  /* Panel de tres bloques: cada uno con el color de su sección */
+  .panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .bloque {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; min-height: 132px; padding: 12px;
+    border: 0; border-radius: 20px; text-align: left; font: inherit; color: var(--texto); text-decoration: none; cursor: pointer;
+    background: radial-gradient(140% 110% at 0% 0%, var(--halo), transparent 70%), var(--superficie);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 18%, transparent);
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .bloque:active { transform: scale(0.97); }
+  .bloque.activo { box-shadow: inset 0 0 0 1.5px var(--primario); }
+  .b-cab { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 6px; font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
+  .b-num { font-size: 1.55rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; }
+  .b-num.b-texto { font-size: 1.05rem; line-height: 1.2; letter-spacing: -0.02em; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .b-sub { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
+  .b-pista { width: 100%; height: 5px; margin: 6px 0 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .b-pista span { display: block; height: 100%; border-radius: 999px; background: var(--primario); transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+  .b-ok { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding: 3px 8px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.7rem; font-weight: 800; }
+  .detalle { margin-top: 10px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
+  .detalle .marcador { margin-top: 0; }
+  .detalle :global(.sesion) { margin-top: 10px; }
+
+  /* Resto del día: una lista de líneas, cada una con el color de lo que es */
+  .resto { display: grid; gap: 6px; }
+  .resto :global(.comida-card) { margin: 0; }
+  .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
+  button.fila { cursor: pointer; }
+  .f-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .f-ic.ok { background: var(--primario); color: var(--sobre-primario); }
+  .f-txt { flex: 1; min-width: 0; display: grid; }
+  .f-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
+  .f-txt b { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .f-dato { font-weight: 700; font-size: 0.86rem; white-space: nowrap; color: var(--texto-2); }
+  .completo { display: flex; gap: 10px; align-items: center; color: var(--texto-2); }
+  .completo :global(.icono) { color: var(--primario); }
 
   .resumen { padding: 16px; border-radius: 24px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -240,7 +327,7 @@
   .marcador .dcha { text-align: right; }
   .lbl { font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
   .num { font-size: 3.4rem; line-height: 1; letter-spacing: -0.05em; margin: 2px 0; }
-  .num.pasado { color: var(--coral); }
+  .num.pasado { color: var(--texto); }
   .dcha b { font-size: 1.6rem; line-height: 1.1; margin: 2px 0; }
   .tramos { display: flex; gap: 4px; }
   .tramo { min-width: 0; display: grid; gap: 5px; }
@@ -248,7 +335,7 @@
   .tramo:first-child .pista { border-radius: 8px 4px 4px 8px; }
   .tramo:last-child .pista { border-radius: 4px 8px 8px 4px; }
   .tramo .relleno { height: 100%; background: var(--hero); transition: width 0.7s cubic-bezier(0.25, 0.9, 0.3, 1); }
-  .tramo .relleno.sobra { background: var(--coral); }
+  .tramo .relleno.sobra { background: var(--amarillo); }
   .tramo.siguiente .pista { box-shadow: inset 0 0 0 1.5px var(--primario); }
   .tramo.saltada { opacity: 0.45; }
   .tramo.extra .relleno { background: var(--lila); }

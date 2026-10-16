@@ -33,15 +33,27 @@
   // Kilos y repeticiones por serie (opcional): solo se guardan los ejercicios que abras
   const ejercicios = s?.ejercicios || [];
   const ultimas = Object.fromEntries(ejercicios.map((ej) => [ej.id, ultimaVez(e.hyrox?.registros, ej.id, id, planDe(e))]));
-  let cargas = $state(Object.fromEntries(Object.entries(previo.series || {}).map(([k, l]) => [k, l.map((x) => ({ kg: x.kg ?? '', reps: x.reps ?? '' }))])));
+  let cargas = $state(Object.fromEntries(Object.entries(previo.series || {}).map(([k, l]) => [k, l.map((x) => ({ kg: x.kg ?? '', reps: x.reps ?? '', hecha: true, phKg: '', phReps: '' }))])));
   const objetivoReps = (ej) => Number(/\d+/.exec(ej.reps)?.[0]) || '';
   function abrir(ej) {
     if (cargas[ej.id]) { delete cargas[ej.id]; return; }
     const antes = ultimas[ej.id]?.series || [];
+    // Como en Hevy: lo de la última vez queda de sugerencia y cada serie se confirma con un toque
     cargas[ej.id] = Array.from({ length: Math.max(ej.series, antes.length) }, (_, i) => {
       const x = antes[i] || antes.at(-1);
-      return { kg: x?.kg ?? '', reps: x?.reps ?? objetivoReps(ej) };
+      return { kg: '', reps: '', hecha: false, phKg: x?.kg ?? '', phReps: x?.reps ?? objetivoReps(ej) };
     });
+  }
+  function marcar(serie) {
+    if (!serie.hecha) {
+      if (serie.kg === '' || serie.kg == null) serie.kg = serie.phKg;
+      if (serie.reps === '' || serie.reps == null) serie.reps = serie.phReps;
+    }
+    serie.hecha = !serie.hecha;
+  }
+  function igualQueUltima(ej) {
+    if (!cargas[ej.id]) abrir(ej);
+    for (const s of cargas[ej.id]) { s.kg = s.phKg; s.reps = s.phReps; s.hecha = true; }
   }
   const resumen = (u) => (u ? `${String(u.kg).replace('.', ',')} kg × ${u.reps}` : '');
   const numero = (v) => Number(String(v).replace(',', '.')) || 0;
@@ -56,7 +68,7 @@
     if (s.tipo === 'fuerza' && Number(peso) > 0) datos.peso = Number(peso);
     datos.fecha = s.fecha;
     const series = Object.fromEntries(Object.entries(cargas)
-      .map(([k, l]) => [k, l.map((x) => ({ kg: numero(x.kg), reps: Math.round(numero(x.reps)) })).filter((x) => x.kg > 0 || x.reps > 0)])
+      .map(([k, l]) => [k, l.filter((x) => x.hecha || x.kg !== '' || x.reps !== '').map((x) => ({ kg: numero(x.kg), reps: Math.round(numero(x.reps)) })).filter((x) => x.kg > 0 || x.reps > 0)])
       .filter(([, l]) => l.length));
     if (situacion !== 'no' && Object.keys(series).length) {
       datos.series = series;
@@ -104,7 +116,7 @@
     {/if}
     {#if ejercicios.length}
       <div class="pesos">
-        <p class="pesos-cab"><b>Pesos</b> <small>opcional: toca un ejercicio para apuntar kilos y repeticiones</small></p>
+        <p class="pesos-cab"><b>Pesos</b> <small>opcional: abre un ejercicio y marca cada serie con ✓ (si no cambias nada, se guarda lo de la última vez)</small></p>
         {#each ejercicios as ej (ej.id)}
           {@const u = ultimas[ej.id]}
           <div class="ej" class:abierto={cargas[ej.id]}>
@@ -112,20 +124,23 @@
               <span><b>{ej.nombre}</b><small>{ej.series} × {ej.reps}{#if u} · última vez {resumen(u)}{/if}</small></span>
               <Icono n={cargas[ej.id] ? 'minus' : 'plus'} tam={18} />
             </button>
+            {#if u && !(cargas[ej.id] || []).every((s) => s.hecha)}
+              <button class="repetir" onclick={() => igualQueUltima(ej)}><Icono n="repeat" tam={14} grosor={2.2} /> Igual que la última vez</button>
+            {/if}
             {#if cargas[ej.id]}
               {#each cargas[ej.id] as serie, i (i)}
-                <div class="serie">
+                <div class="serie" class:hecha={serie.hecha}>
                   <span class="n">{i + 1}</span>
-                  <input type="number" step="0.5" min="0" inputmode="decimal" bind:value={serie.kg} placeholder="kg" aria-label="Kilos de la serie {i + 1}" />
+                  <input type="number" step="0.5" min="0" inputmode="decimal" bind:value={serie.kg} placeholder={serie.phKg !== '' ? String(serie.phKg) : 'kg'} aria-label="Kilos de la serie {i + 1}" />
                   <i>kg ×</i>
-                  <input type="number" min="0" inputmode="numeric" bind:value={serie.reps} placeholder="reps" aria-label="Repeticiones de la serie {i + 1}" />
-                  <i>reps</i>
-                  {#if cargas[ej.id].length > 1}
-                    <button class="quitar" aria-label="Quitar la serie {i + 1}" onclick={() => cargas[ej.id].splice(i, 1)}><Icono n="x" tam={16} /></button>
-                  {/if}
+                  <input type="number" min="0" inputmode="numeric" bind:value={serie.reps} placeholder={serie.phReps !== '' ? String(serie.phReps) : 'reps'} aria-label="Repeticiones de la serie {i + 1}" />
+                  <button class="hecha-btn" class:activo={serie.hecha} aria-pressed={serie.hecha} aria-label="Serie {i + 1} hecha" onclick={() => marcar(serie)}><Icono n="check" tam={18} grosor={2.8} /></button>
                 </div>
               {/each}
-              <button class="enlace" onclick={() => cargas[ej.id].push({ ...(cargas[ej.id].at(-1) || { kg: '', reps: '' }) })}>+ otra serie</button>
+              <div class="serie-acciones">
+                <button class="enlace" onclick={() => { const u2 = cargas[ej.id].at(-1); cargas[ej.id].push({ kg: '', reps: '', hecha: false, phKg: u2?.kg || u2?.phKg || '', phReps: u2?.reps || u2?.phReps || '' }); }}>+ otra serie</button>
+                {#if cargas[ej.id].length > 1}<button class="enlace quitar-ult" onclick={() => cargas[ej.id].pop()}>Quitar la última</button>{/if}
+              </div>
             {/if}
           </div>
         {/each}
@@ -172,10 +187,16 @@
   .ej-cab span { display: grid; }
   .ej-cab small { color: var(--texto-2); font-size: 0.78rem; font-weight: 600; }
   .ej.abierto .ej-cab { color: var(--primario); }
-  .serie { display: grid; grid-template-columns: 20px 1fr auto 1fr auto 36px; gap: 6px; align-items: center; margin: 4px 0; }
+  .serie { display: grid; grid-template-columns: 20px 1fr auto 1fr 44px; gap: 6px; align-items: center; margin: 4px 0; padding: 3px; border-radius: 14px; transition: background 0.15s; }
+  .serie.hecha { background: var(--primario-claro); }
+  .serie.hecha input { border-color: transparent; background: transparent; }
+  .hecha-btn { width: 44px; height: 42px; border-radius: 12px; border: 0; background: var(--superficie-3); color: var(--texto-3); display: grid; place-items: center; cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .hecha-btn.activo { background: var(--primario); color: var(--sobre-primario); }
+  .repetir { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; margin: -4px 0 8px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--primario-claro); color: var(--primario-fuerte); font: inherit; font-weight: 700; font-size: 0.78rem; cursor: pointer; }
+  .serie-acciones { display: flex; justify-content: space-between; }
+  .quitar-ult { color: var(--texto-3); }
   .serie .n { font-weight: 800; color: var(--texto-3); font-size: 0.8rem; }
   .serie input { width: 100%; min-height: 42px; padding: 6px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
   .serie i { font-style: normal; font-size: 0.78rem; color: var(--texto-2); font-weight: 600; }
-  .quitar { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--superficie-2); color: var(--texto-2); display: grid; place-items: center; cursor: pointer; }
   .ej .enlace { margin: 2px 0 10px; }
 </style>

@@ -154,7 +154,7 @@
   .g-n small { font-weight: 600; font-size: 0.75rem; color: var(--texto-2); }
   .g-v { display: flex; align-items: center; gap: 4px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--texto-2); }
   .g-v.sube { color: var(--exito); }
-  .g-v.baja { color: var(--coral); }
+  .g-v.baja { color: var(--texto-2); }
   .g-ej { list-style: none; margin: 0 0 8px; padding: 0 0 0 10px; display: grid; gap: 6px; font-size: 0.84rem; }
   .g-ej li { display: flex; justify-content: space-between; gap: 10px; }
   .g-ej span { display: grid; font-weight: 600; }

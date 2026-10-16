@@ -45,7 +45,7 @@
   .etq-estado { flex-shrink: 0; padding: 4px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; background: var(--superficie-2); color: var(--texto-2); }
   .e-completa .etq-estado { background: var(--exito-claro); color: var(--exito); }
   .e-parcial .etq-estado { background: var(--amarillo-claro); color: var(--amarillo); }
-  .e-no .etq-estado { background: var(--coral-claro); color: var(--coral); }
+  .e-no .etq-estado { background: var(--superficie-3); color: var(--texto-2); }
   .e-sin-registrar .etq-estado { background: var(--primario-claro); color: var(--primario-fuerte); }
   .e-completa .txt b { color: var(--texto-2); }
   .registrar { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 11px; border: 0; border-top: 1px solid var(--linea); background: none; font-size: 0.86rem; font-weight: 700; color: var(--primario); cursor: pointer; }

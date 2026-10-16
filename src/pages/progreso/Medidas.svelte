@@ -112,5 +112,5 @@
   .n { flex: 1; font-weight: 700; }
   .dif { min-width: 56px; text-align: center; padding: 3px 8px; border-radius: 999px; font-weight: 800; font-size: 0.82rem; background: var(--superficie); }
   .dif.baja { background: var(--primario-claro); color: var(--primario-fuerte); }
-  .dif.sube { background: var(--coral-claro); color: var(--coral); }
+  .dif.sube { background: var(--superficie-3); color: var(--texto); }
 </style>

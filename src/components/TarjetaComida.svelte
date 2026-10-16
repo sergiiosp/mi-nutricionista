@@ -16,8 +16,10 @@
   /** comida: elemento de estadoDia().comidas (o del plan si editable=false) */
   /** destacada: es la próxima comida pendiente (su botón «Hecha» va en naranja) */
   /** plegable: si ya está hecha, se ve en una línea y se despliega al tocar (para no llenar Hoy) */
-  let { comida, fecha, diaIdx, franjaNombre, nota = '', editable = true, destacada = true, plegable = false } = $props();
+  let { comida, fecha, diaIdx, franjaNombre, nota = '', editable = true, destacada = true, plegable = false, compacta = false } = $props();
   let desplegada = $state(false);
+  // Plegada: hecha (si es plegable) o siempre que se pida en línea (compacta), hasta que la toques
+  const plegada = $derived(((plegable && situacion !== 'pendiente') || compacta) && !desplegada);
 
   const receta = $derived(recetaPorId[comida.recetaId]);
   const situacion = $derived(comida.situacion || 'pendiente');
@@ -55,11 +57,11 @@
   }
 </script>
 
-<article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada={plegable && situacion !== 'pendiente' && !desplegada}>
-{#if plegable && situacion !== 'pendiente' && !desplegada}
+<article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada>
+{#if plegada}
   <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
-    <span class="pl-ok"><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' ? 'skip-forward' : 'repeat'} tam={15} grosor={2.6} /></span>
-    <span class="pl-txt"><small>{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
+    <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
+    <span class="pl-txt"><small>{comida.hora ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
     {#if situacion !== 'saltada'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
     <Icono n="chevron-down" tam={18} />
   </button>
@@ -178,7 +180,7 @@
       {#if diaIdx !== undefined}{@render botonCambiar()}{/if}
     </footer>
   {/if}
-{#if plegable && situacion !== 'pendiente'}
+{#if (plegable && situacion !== 'pendiente') || compacta}
   <button class="replegar" onclick={() => (desplegada = false)}><Icono n="chevron-up" tam={16} /> Plegar</button>
 {/if}
 {/if}
@@ -192,6 +194,8 @@
   .fila-plegada > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   .pl-ok { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
   .s-saltada .pl-ok { background: var(--superficie-3); color: var(--texto-2); }
+  .pl-ok.pendiente { background: var(--superficie-3); color: var(--primario); }
+  .s-pendiente .fila-plegada { background: var(--superficie); box-shadow: var(--sombra); }
   .pl-txt { flex: 1; min-width: 0; display: grid; }
   .pl-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
   .pl-txt b { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
