@@ -55,8 +55,8 @@ const LISTA = [
   ['huevos_cocidos', '31010', 'proteina', 'huevo', [140, 12.5, 0.5, 10, 0], { unidad: { n: 'huevo', pl: 'huevos', g: 52 }, redondeo: 'unidad' }],
   ['pollo_asado', '13707', 'proteina', 'carne', [190, 25, 0.5, 10, 0], {}],
   ['edamame', '70740', 'proteina', 'vegetal', [125, 12, 4, 5.5, 5], {}],
-  ['gazpacho', '15604', 'verdura', 'vegetal', [50, 1, 4, 3.5, 1], { medida: 'ml' }],
-  ['salmorejo', '39902', 'verdura', 'vegetal', [90, 1.5, 7, 6, 1], { medida: 'ml' }],
+  ['gazpacho', '15604', 'verdura', 'vegetal', [50, 1, 4, 3.5, 1], { medida: 'ml', al: ['verdura_cruda'] }],
+  ['salmorejo', '39902', 'verdura', 'vegetal', [90, 1.5, 7, 6, 1], { medida: 'ml', al: ['verdura_cruda'] }],
 ];
 
 // Alérgenos que declara Mercadona («Contiene …», no las trazas)

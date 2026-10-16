@@ -120,6 +120,15 @@ export const EJERCICIOS = {
   cajon: { nombre: 'Saltos al cajón', emoji: '📦', tecnica: 'Salto explosivo, aterriza suave con las dos piernas y baja andando.', rodilla: 'puente' },
   farmer_pesado: { nombre: 'Farmer carry pesado', emoji: '🧺', tecnica: 'Más peso que en carrera y tramos cortos: agarre y core a tope.' },
   sled_pesado: { nombre: 'Sled push pesado', emoji: '🛷', tecnica: 'Más peso que en carrera, tramos de 15-20 m con buena técnica.' },
+  // Sin gimnasio: peso corporal, parque y calle
+  bulgara: { nombre: 'Sentadilla búlgara (pie atrás en un banco)', emoji: '🦵', tecnica: 'Pie de atrás apoyado en un banco, baja vertical hasta que la rodilla casi toque el suelo.', rodilla: 'puente' },
+  zancada_salto: { nombre: 'Zancadas con salto', emoji: '🦵', tecnica: 'Desde la zancada, salta y cambia de pierna en el aire; aterriza suave.', rodilla: 'puente' },
+  remo_invertido: { nombre: 'Remo invertido en barra baja', emoji: '🚣', tecnica: 'Bajo una barra del parque, cuerpo recto, lleva el pecho a la barra.' },
+  dominadas_parque: { nombre: 'Dominadas en barra del parque', emoji: '🧗', tecnica: 'Desde brazos estirados, pecho a la barra; si no salen, negativas lentas de 4 s.' },
+  pm_una_pierna: { nombre: 'Peso muerto a una pierna', emoji: '🦵', tecnica: 'Inclina el tronco con la espalda recta mientras la pierna de atrás sube; vuelve apretando glúteo.', espalda: 'puente' },
+  plancha_lateral: { nombre: 'Plancha lateral', emoji: '🧘', tecnica: 'Sobre un antebrazo, cuerpo en línea y cadera alta.' },
+  sprint_cuesta: { nombre: 'Sprints en cuesta', emoji: '🏃', tecnica: 'Cuesta moderada, 15-20 s a tope y bajada andando para recuperar.' },
+  burpees: { nombre: 'Burpees', emoji: '💥', tecnica: 'Pecho al suelo, sube y salta con las manos arriba; ritmo que puedas mantener.' },
 };
 
 /** Ejercicio con alternativa si hay lesión (rodilla, espalda, hombro). */

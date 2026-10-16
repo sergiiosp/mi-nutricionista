@@ -13,7 +13,7 @@
   import { recomendaciones, recordatoriosDia } from '../lib/salud.js';
   import { esDiaEntreno, horarioDia } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
-  import { crearPlan } from '../lib/acciones.js';
+  import { crearPlan, marcarEntrenoDia } from '../lib/acciones.js';
   import { fechaLarga, saludo, entero, capital } from '../lib/formato.js';
   import { rachas } from '../lib/logros.js';
 
@@ -28,6 +28,15 @@
   const deportes = $derived(($estado.perfil.deportes || []).map((x) => DEPORTES[x]).filter(Boolean));
   const hyroxActivo = $derived(!!planDe($estado));
   const sesionesHoy = $derived(sesionesDia($estado, hoy));
+  // ¿Hoy entrenas? Lo que diga el plan, salvo que lo cambies tú
+  const entrenoPlan = $derived(hyroxActivo ? sesionesHoy.some((s) => s.tipo !== 'recuperacion') : esDiaEntreno($estado.perfil, hoy));
+  const cambioHoy = $derived($estado.entrenoDia?.[hoy] || null);
+  const entrenoHoy = $derived(cambioHoy ? cambioHoy === 'si' : entrenoPlan);
+  function cambiarEntreno(quiero) {
+    if (quiero === entrenoHoy) return;
+    marcarEntrenoDia(hoy, quiero === entrenoPlan ? null : quiero ? 'si' : 'no');
+    avisar(quiero ? 'Hoy cuenta como día de entreno: más hidratos y kcal' : 'Hoy cuenta como descanso: comidas ajustadas', quiero ? '💪' : '😴');
+  }
   const recs = $derived(recomendaciones($estado.perfil, objetivos));
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const r = $derived(rachas($estado, objetivos, hoy));
@@ -91,15 +100,20 @@
 
   <section class="resumen" aria-label="Resumen del día">
     <div class="chips">
-      {#if hyroxActivo && sesionesHoy.length}
+      <div class="tipo-dia" role="group" aria-label="¿Hoy entrenas?">
+        <button class:activo={entrenoHoy} aria-pressed={entrenoHoy} onclick={() => cambiarEntreno(true)}><Icono n="dumbbell" tam={15} grosor={2.2} /> Entreno</button>
+        <button class:activo={!entrenoHoy} aria-pressed={!entrenoHoy} onclick={() => cambiarEntreno(false)}><Icono n="moon" tam={15} grosor={2.2} /> Descanso</button>
+      </div>
+      {#if entrenoHoy && hyroxActivo && sesionesHoy.length}
         <span class="chip-hoy naranja"><Icono e={sesionesHoy[0].emoji} tam={15} grosor={2.2} /> {sesionesHoy[0].titulo.split(':')[0]}</span>
-      {:else if entreno}
-        <span class="chip-hoy naranja"><Icono n="dumbbell" tam={15} grosor={2.2} /> Entreno{#if sesion}{' a las '}{sesion.inicio}{/if}</span>
-      {:else}
-        <span class="chip-hoy"><Icono n="moon" tam={15} grosor={2.2} /> Descanso</span>
+      {:else if entrenoHoy && sesion}
+        <span class="chip-hoy">a las {sesion.inicio}</span>
       {/if}
       {#if r.registro > 1}<span class="chip-hoy"><Icono n="flame" tam={15} grosor={2.2} /> {r.registro} días seguidos</span>{/if}
     </div>
+    {#if cambioHoy === 'no' && hyroxActivo && sesionesHoy.length}
+      <p class="nota-cambio">Hoy cuento descanso. Tu sesión sigue en el plan: muévela a otro día o márcala como no hecha.</p>
+    {/if}
 
     <div class="marcador">
       <div>
@@ -210,6 +224,10 @@
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip-hoy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: var(--superficie-2); font-size: 0.78rem; font-weight: 600; color: var(--texto-2); max-width: 100%; }
   .chip-hoy.naranja { background: var(--primario-claro); color: var(--primario-fuerte); }
+  .tipo-dia { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--superficie-2); }
+  .tipo-dia button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border: 0; border-radius: 999px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .tipo-dia button.activo { background: var(--primario); color: var(--sobre-primario); }
+  .nota-cambio { margin: 10px 0 0; font-size: 0.8rem; color: var(--texto-2); }
   .marcador { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 16px 0 14px; }
   .marcador > div { display: grid; }
   .marcador .dcha { text-align: right; }

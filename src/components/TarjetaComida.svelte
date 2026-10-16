@@ -7,16 +7,35 @@
   import { macrosComida, costeComida, cantidadTexto, alimento } from '../lib/nutricion.js';
   import { marcarHecha, alternarSaltada } from '../lib/acciones.js';
   import { abrirHoja } from '../stores/ui.js';
-  import { borrarRegistro } from '../stores/estado.js';
+  import { borrarRegistro, editarRegistro } from '../stores/estado.js';
+  import { avisar } from '../stores/ui.js';
   import { euros } from '../lib/formato.js';
 
   /** comida: elemento de estadoDia().comidas (o del plan si editable=false) */
   let { comida, fecha, diaIdx, franjaNombre, nota = '', editable = true } = $props();
 
   const receta = $derived(recetaPorId[comida.recetaId]);
-  const m = $derived(macrosComida(comida.ingredientes));
   const situacion = $derived(comida.situacion || 'pendiente');
+  // Si ya la comiste, se muestra lo que registraste (puedes haber cambiado cantidades)
+  const comidos = $derived(situacion === 'hecha' && comida.registro?.ingredientes ? comida.registro.ingredientes : comida.ingredientes);
+  const m = $derived(macrosComida(comidos));
   let abierta = $state(false);
+
+  // Ajustar lo que comiste de verdad, alimento a alimento
+  let editando = $state(null); // { a: gramos }
+  const PASO = (a) => (alimento(a).unidad?.g && alimento(a).redondeo === 'unidad' ? alimento(a).unidad.g : alimento(a).medida === 'ml' ? 25 : 5);
+  function empezarEdicion() {
+    editando = Object.fromEntries(comidos.map((i) => [i.a, i.g]));
+  }
+  function cambiar(a, delta) {
+    editando = { ...editando, [a]: Math.max(0, Math.round((editando[a] || 0) + delta)) };
+  }
+  function guardarEdicion() {
+    editarRegistro(fecha, comida.registro.id, Object.entries(editando).map(([a, g]) => ({ a, g })));
+    editando = null;
+    avisar('Cantidades guardadas: el día se recalcula', '✅');
+  }
+  const mEdit = $derived(editando ? macrosComida(Object.entries(editando).map(([a, g]) => ({ a, g }))) : null);
   const ETQ = { pre: 'Pre-entreno', post: 'Post-entreno' };
 
   function verReceta() {
@@ -65,9 +84,27 @@
     {/each}
   {/if}
 
-  {#if abierta}
+  {#if editando}
+    <div class="editor" transition:slide={{ duration: 180 }}>
+      <p class="editor-cab">¿Cuánto comiste de cada cosa?</p>
+      {#each Object.entries(editando) as [a, g] (a)}
+        <div class="editor-fila">
+          <span class="editor-nombre">{alimento(a).nombre}<small>{g > 0 ? cantidadTexto(a, g) : 'nada'}</small></span>
+          <button aria-label="Menos {alimento(a).nombre}" onclick={() => cambiar(a, -PASO(a))}><Icono n="minus" tam={16} /></button>
+          <input type="number" inputmode="decimal" min="0" value={g} aria-label="Gramos de {alimento(a).nombre}"
+            onchange={(ev) => (editando = { ...editando, [a]: Math.max(0, Number(ev.currentTarget.value) || 0) })} />
+          <button aria-label="Más {alimento(a).nombre}" onclick={() => cambiar(a, PASO(a))}><Icono n="plus" tam={16} /></button>
+        </div>
+      {/each}
+      <p class="editor-total">{Math.round(mEdit.kcal)} kcal, {Math.round(mEdit.p)} g de proteína</p>
+      <div class="editor-acciones">
+        <button class="boton boton-peq" onclick={guardarEdicion}>Guardar</button>
+        <button class="boton boton-sec boton-peq" onclick={() => (editando = null)}>Cancelar</button>
+      </div>
+    </div>
+  {:else if abierta}
     <ul class="ingredientes" transition:slide={{ duration: 180 }}>
-      {#each comida.ingredientes as i (i.a)}
+      {#each comidos as i (i.a)}
         <li>
           <span class="ing-cant">{cantidadTexto(i.a, i.g)}</span>
           <span>{alimento(i.a).nombre}
@@ -83,10 +120,15 @@
 
   {#if editable && fecha && situacion === 'pendiente'}
     <footer class="acciones">
-      <button class:activo={abierta} onclick={() => (abierta = !abierta)}><Icono n="list" tam={15} /> Cantidades</button>
+      <button class:activo={abierta} onclick={() => (abierta = !abierta)}><Icono n="list" tam={15} /> {abierta ? 'Ocultar' : 'Cantidades'}</button>
       <button onclick={() => abrirHoja('alternativas', { diaIdx, franja: comida.franja })}><Icono n="shuffle" tam={15} /> Cambiar</button>
       <button onclick={() => abrirHoja('registrar', { fecha, franja: comida.franja })}><Icono n="repeat" tam={15} /> Otra cosa</button>
       <button onclick={() => alternarSaltada(fecha, comida.franja)}><Icono n="skip-forward" tam={15} /> Saltar</button>
+    </footer>
+  {:else if editable && fecha && situacion === 'hecha' && comida.registro && !editando}
+    <footer class="acciones">
+      <button class:activo={abierta} onclick={() => (abierta = !abierta)}><Icono n="list" tam={15} /> {abierta ? 'Ocultar' : 'Cantidades'}</button>
+      <button onclick={empezarEdicion}><Icono n="pencil" tam={15} /> Ajustar lo que comí</button>
     </footer>
   {:else if !editable || !fecha}
     <footer class="acciones">
@@ -125,6 +167,15 @@
   .otro-kcal { white-space: nowrap; }
   .borrar { display: grid; place-items: center; border: 0; background: none; color: var(--texto-3); cursor: pointer; padding: 4px; }
   .ingredientes { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--linea); }
+  .editor { margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
+  .editor-cab { margin: 0 0 8px; font-weight: 600; font-size: 0.88rem; }
+  .editor-fila { display: grid; grid-template-columns: 1fr 34px 70px 34px; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px solid var(--linea); }
+  .editor-nombre { display: grid; font-size: 0.82rem; line-height: 1.25; min-width: 0; }
+  .editor-nombre small { color: var(--texto-3); }
+  .editor-fila button { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--superficie-2); color: var(--texto); cursor: pointer; }
+  .editor-fila input { width: 100%; min-height: 34px; padding: 4px 6px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .editor-total { margin: 10px 0 0; font-size: 0.82rem; color: var(--texto-2); }
+  .editor-acciones { display: flex; gap: 8px; margin-top: 10px; }
   .antes { display: block; color: var(--lila); font-weight: 600; font-size: 0.78rem; }
   .acciones { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
   .acciones::-webkit-scrollbar { display: none; }

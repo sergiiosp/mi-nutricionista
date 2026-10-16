@@ -21,6 +21,7 @@ export const VACIO = () => ({
   productos: {}, // productos escaneados (Open Food Facts) para usarlos sin conexión
   tema: 'oscuro', // oscuro · claro · sistema
   favoritas: [], // ids de recetas o comidas montadas («combo:…») que el menú usa a menudo
+  entrenoDia: {}, // fecha → 'si' | 'no' cuando cambias si ese día entrenas
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
 });
 
@@ -30,6 +31,7 @@ function migrar(datos) {
   e.compra = { ...VACIO().compra, ...(datos.compra || {}) };
   delete e.strava; // de cuando hubo conexión con Strava
   e.favoritas ||= [];
+  e.entrenoDia ||= {};
   if (!['oscuro', 'claro', 'sistema'].includes(e.tema)) e.tema = 'oscuro'; // el diseño nuevo es oscuro por defecto
   if (datos.hechas && e.plan) {
     for (const clave of Object.keys(datos.hechas)) {
@@ -108,6 +110,18 @@ export function añadirRegistro(fecha, registro) {
       const clave = `${registro.tipo}:${registro.ref || registro.nombre}`;
       e.recientes = [{ ...registro, clave, foto: undefined }, ...e.recientes.filter((r) => r.clave !== clave)].slice(0, 30);
     }
+  });
+}
+
+/** Cambia las cantidades de algo que ya registraste (lo que comiste de verdad). */
+export function editarRegistro(fecha, id, ingredientes) {
+  const limpios = ingredientes.filter((i) => i.g > 0).map((i) => ({ a: i.a, g: Math.round(i.g) }));
+  actualizar((e) => {
+    const r = (e.registros[fecha] || []).find((x) => x.id === id);
+    if (!r) return;
+    r.ingredientes = limpios;
+    r.macros = macrosComida(limpios);
+    r.editado = true;
   });
 }
 

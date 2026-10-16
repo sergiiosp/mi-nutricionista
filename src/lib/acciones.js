@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { estado, actualizar, registroDePlan, borrarRegistro } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos } from './nutricion.js';
-import { generarPlan, sustituir, reescalarPlan, completarPlan, hoyISO } from './planificador.js';
+import { generarPlan, sustituir, reescalarPlan, completarPlan, hoyISO, sumarDias } from './planificador.js';
 import { estadoDia } from './dia.js';
 import { proveedorDe } from './hyrox/index.js';
 
@@ -58,6 +58,19 @@ export function sustituirComida(diaIdx, franja, comida) {
   actualizar((x) => sustituir(x.plan, diaIdx, franja, comida));
 }
 
+/** Cambia si un día entrenas o descansas (null = lo que diga el plan) y recalcula la comida. */
+export function marcarEntrenoDia(fecha, valor) {
+  actualizar((x) => {
+    x.entrenoDia ||= {};
+    if (valor) x.entrenoDia[fecha] = valor;
+    else delete x.entrenoDia[fecha];
+    // Se olvidan los cambios de días ya pasados de hace más de dos semanas
+    const limite = sumarDias(hoyISO(), -14);
+    for (const f of Object.keys(x.entrenoDia)) if (f < limite) delete x.entrenoDia[f];
+  });
+  reajustarPlan();
+}
+
 /** Rellena las comidas que le falten al menú actual (sin tocar las demás). */
 export function completarMenu() {
   const e = get(estado);
@@ -96,6 +109,19 @@ export function registrarSesion(id, datos) {
 export function borrarRegistroSesion(id) {
   actualizar((x) => { delete x.hyrox.registros[id]; });
   reajustarPlan();
+}
+
+/** Marca (o desmarca) que una sesión la harás sin gimnasio: peso corporal, parque y cuestas. */
+export function alternarSinGym(id) {
+  let ahora = false;
+  actualizar((x) => {
+    x.hyrox.sinGym ||= {};
+    ahora = !x.hyrox.sinGym[id];
+    if (ahora) x.hyrox.sinGym[id] = true;
+    else delete x.hyrox.sinGym[id];
+  });
+  reajustarPlan();
+  return ahora;
 }
 
 export function moverSesion(id, fecha, fechaOriginal) {

@@ -21,6 +21,17 @@ const SUSTITUTO_CORTO = {
   ski: 'remo o assault bike', push: 'prensa de piernas pesada o sprints en cuesta', pull: 'remo en polea pesado',
   row: 'bici o SkiErg', wallballs: 'thrusters con mancuernas', farmers: 'mancuernas o garrafas', lunges: 'zancadas con mancuernas',
 };
+// Sin gimnasio: cómo trabajar cada estación con el cuerpo, un parque o una cuesta
+const SIN_GYM = {
+  ski: ['20 burpees', '40 burpees'],
+  push: ['4 × 20 m de sprint en cuesta', '6 × 20 m de sprint en cuesta'],
+  pull: ['4 × 20 m de carrera hacia atrás en cuesta', '6 × 20 m de carrera hacia atrás en cuesta'],
+  bbj: ['10 burpees con salto largo', '20 burpees con salto largo'],
+  row: ['40 mountain climbers + 20 sentadillas con salto', '80 mountain climbers + 40 sentadillas con salto'],
+  farmers: ['1 min de plancha + 100 m de carrera con paso corto', '2 × (1 min de plancha + 100 m de carrera)'],
+  lunges: ['25 m de zancadas andando', '50 m de zancadas andando'],
+  wallballs: ['25 sentadillas con salto', '50 sentadillas con salto'],
+};
 const MEDIA = { ski: '500 m', push: '25 m', pull: '25 m', bbj: '40 m', row: '500 m', farmers: '100 m', lunges: '50 m', wallballs: '50 reps' };
 const COMPLETA = { ski: '1.000 m', push: '50 m', pull: '50 m', bbj: '80 m', row: '1.000 m', farmers: '200 m', lunges: '100 m', wallballs: '100 reps' };
 
@@ -41,9 +52,10 @@ const VUELTA_CALMA = {
  * @param ctx { tipo, fase, p (0-1 progreso en la fase), factor (volumen), semana, config, perfil, rit, mitad ('1-4'|'5-8'), completo }
  */
 export function construirSesion(ctx) {
-  const { tipo, fase, p = 0, factor = 1, semana = 0, config, perfil, rit } = ctx;
+  const { tipo, fase, p = 0, factor = 1, semana = 0, config, perfil, rit, sinGym = false, variante = 'A' } = ctx;
   const T = TIPOS[tipo];
-  const material = config.material || {};
+  // Sin gimnasio: como si no hubiera ninguna máquina
+  const material = sinGym ? { ski: false, row: false, sled: false, wallball: false, kettlebell: false, sandbag: false } : config.material || {};
   const lesiones = config.lesiones || [];
   const vol = (a, b) => Math.max(1, Math.round((a + (b - a) * p) * factor));
   const nombreEst = (id) => {
@@ -52,6 +64,7 @@ export function construirSesion(ctx) {
     return falta ? `${e.nombre} → ${SUSTITUTO_CORTO[id]}` : e.nombre;
   };
   const peso = (id) => {
+    if (sinGym) return '';
     if (MATERIAL_DE[id] && material[MATERIAL_DE[id]] === false && id !== 'lunges' && id !== 'farmers') return ''; // el sustituto no usa ese peso
     const pe = pesoEstacion(estacionPorId[id], config.categoria, perfil?.sexo);
     return pe ? ` · ${pe}` : '';
@@ -112,13 +125,29 @@ export function construirSesion(ctx) {
       break;
     }
     case 'fuerza': {
-      const lista = {
-        base: [['sentadilla', '4 × 8'], ['pmr', '3 × 10'], ['zancadas', '3 × 10 por pierna'], ['remo_barra', '4 × 8'], ['press', '3 × 8'], ['plancha', '3 × 40 s']],
-        construccion: [['sentadilla', '4 × 6'], ['pmr', '4 × 6'], [material.sled === false ? 'zancadas' : 'sled_pesado', material.sled === false ? '3 × 12 por pierna' : '4 × 20 m'], ['thrusters', '3 × 10'], ['dominadas', '4 × 6-8'], ['farmer_pesado', '4 × 40 m']],
-        especifico: [['sentadilla', '3 × 5 (pesado)'], ['cajon', '4 × 5'], ['thrusters', '3 × 12'], ['dominadas', '3 × 8'], ['farmer_pesado', '3 × 50 m'], ['plancha', '3 × 45 s']],
+      // Dos sesiones por semana: A (pierna y empuje) y B (bisagra de cadera y tirón)
+      const B = variante === 'B';
+      const sled = material.sled === false ? ['zancadas', '3 × 12 por pierna'] : ['sled_pesado', '4 × 20 m'];
+      const conGym = {
+        base: B
+          ? [['pmr', '4 × 8'], ['remo_barra', '4 × 8'], ['dominadas', '3 × 6-8'], ['hipthrust', '3 × 10'], ['farmer_pesado', '3 × 40 m']]
+          : [['sentadilla', '4 × 8'], ['zancadas', '3 × 10 por pierna'], ['press', '3 × 8'], ['flexiones', '3 × 12'], ['plancha', '3 × 40 s']],
+        construccion: B
+          ? [['pmr', '4 × 6'], ['dominadas', '4 × 6-8'], ['remo_barra', '4 × 8'], ['farmer_pesado', '4 × 40 m'], ['plancha', '3 × 45 s']]
+          : [['sentadilla', '4 × 6'], sled, ['thrusters', '3 × 10'], ['press', '3 × 6'], ['plancha', '3 × 45 s']],
+        especifico: B
+          ? [['pmr', '3 × 6'], ['dominadas', '3 × 8'], ['farmer_pesado', '3 × 50 m'], ['remo_barra', '3 × 8']]
+          : [['sentadilla', '3 × 5 (pesado)'], ['cajon', '4 × 5'], ['thrusters', '3 × 12'], ['plancha', '3 × 45 s']],
         taper: [['sentadilla', '2 × 5 (ligero)'], ['cajon', '3 × 3'], ['plancha', '2 × 30 s']],
       }[fase] || [];
-      titulo = { base: 'Fuerza general', construccion: 'Fuerza + trineo', especifico: 'Fuerza y potencia', taper: 'Fuerza ligera' }[fase] || 'Fuerza';
+      const sinMaquinas = B
+        ? [['pm_una_pierna', '4 × 10 por pierna'], ['remo_invertido', '4 × 8-10'], ['dominadas_parque', '4 × las que puedas (-2)'], ['puente', '3 × 12 por pierna'], ['plancha_lateral', '3 × 30 s por lado']]
+        : [['bulgara', '4 × 10 por pierna'], ['zancada_salto', '3 × 10'], ['flexiones', '4 × las que puedas (-2)'], ['sprint_cuesta', '6 × 15 s'], ['plancha', '3 × 45 s']];
+      const lista = sinGym && fase !== 'taper' ? sinMaquinas : conGym;
+      titulo = sinGym
+        ? (B ? 'Fuerza sin gimnasio: cadera y tirón' : 'Fuerza sin gimnasio: pierna y empuje')
+        : fase === 'taper' ? 'Fuerza ligera'
+          : `${{ base: 'Fuerza', construccion: 'Fuerza', especifico: 'Fuerza y potencia' }[fase] || 'Fuerza'} ${B ? 'B: cadera y tirón' : 'A: pierna y empuje'}`;
       bloques.push({
         titulo: factor < 0.9 ? 'Circuito (una serie menos en cada ejercicio)' : 'Ejercicios',
         lineas: lista.map(([id, series]) => {
@@ -126,7 +155,7 @@ export function construirSesion(ctx) {
           return `${e.nombre}: ${series}${e.alternativa ? ' (alternativa por tu lesión)' : ''}`;
         }),
       });
-      notas.push('RPE 7-8: termina cada serie con 2-3 repeticiones en reserva. Descansa 90-120 s entre series.');
+      notas.push(sinGym ? 'Sin máquinas: haz las repeticiones lentas y controladas (3 s al bajar) para que cueste de verdad. Descansa 60-90 s.' : 'RPE 7-8: termina cada serie con 2-3 repeticiones en reserva. Descansa 90-120 s entre series.');
       duracion = fase === 'taper' ? 30 : Math.round(55 * Math.min(1, factor + 0.1));
       break;
     }
@@ -136,7 +165,8 @@ export function construirSesion(ctx) {
         ? [['ski', '500 m'], ['push', '15 m'], ['wallballs', '15 reps'], ['bbj', '10 m']]
         : [['row', '500 m'], ['pull', '25 m'], ['farmers', '100 m'], ['lunges', '25 m']];
       titulo = semana % 2 === 0 ? 'Estaciones A: ski, trineo, wall balls, burpees' : 'Estaciones B: remo, pull, carry, lunges';
-      bloques.push({ titulo: `${rondas} rondas`, lineas: [...circuito.map(([id, d]) => `${d} ${nombreEst(id)}${peso(id)}`), fase === 'base' ? '2 min de descanso entre rondas · foco en técnica' : '90 s de descanso · a ritmo de carrera'] });
+      if (sinGym) titulo = `Estaciones sin gimnasio ${semana % 2 === 0 ? 'A' : 'B'}`;
+      bloques.push({ titulo: `${rondas} rondas`, lineas: [...circuito.map(([id, d]) => (sinGym ? SIN_GYM[id][0] : `${d} ${nombreEst(id)}${peso(id)}`)), fase === 'base' ? '2 min de descanso entre rondas, foco en técnica' : '90 s de descanso, a ritmo de carrera'] });
       duracion = 25 + rondas * 9;
       break;
     }
@@ -147,7 +177,7 @@ export function construirSesion(ctx) {
       titulo = `Compromised running ${rondas} rondas`;
       bloques.push({
         titulo: `${rondas} rondas seguidas`,
-        lineas: sel.flatMap((id) => [`1 km a ritmo HYROX (${km(rit.hyrox)})`, `${MEDIA[id]} ${nombreEst(id)}${peso(id)}`]),
+        lineas: sel.flatMap((id) => [`1 km a ritmo HYROX (${km(rit.hyrox)})`, sinGym ? SIN_GYM[id][0] : `${MEDIA[id]} ${nombreEst(id)}${peso(id)}`]),
       });
       notas.push('Sin descanso entre la carrera y la estación: así aprendes a correr con las piernas cargadas. 1-2 min de pausa entre rondas.');
       duracion = 25 + rondas * (rit.hyrox / 60 + 5);
@@ -161,7 +191,7 @@ export function construirSesion(ctx) {
       titulo = completo ? 'Simulacro HYROX completo' : `Medio simulacro (estaciones ${ctx.mitad || '1-4'})`;
       bloques.push({
         titulo: completo ? '8 × (1 km + estación)' : '4 × (1 km + estación)',
-        lineas: estaciones.flatMap((e) => [`1 km a ritmo HYROX (${km(rit.hyrox)})`, `${COMPLETA[e.id]} ${nombreEst(e.id)}${peso(e.id)}`]),
+        lineas: estaciones.flatMap((e) => [`1 km a ritmo HYROX (${km(rit.hyrox)})`, sinGym ? SIN_GYM[e.id][1] : `${COMPLETA[e.id]} ${nombreEst(e.id)}${peso(e.id)}`]),
       });
       notas.push('Cronometra cada tramo y apúntalo al registrar la sesión: así afino tu estimación de carrera.');
       if (completo) notas.push('Ensaya también la nutrición del día de carrera (desayuno, cafeína, gel).');
@@ -199,10 +229,11 @@ export function construirSesion(ctx) {
     rpe: T.rpe,
     duracion: Math.round(duracion),
     distancia: Math.round(distancia * 10) / 10,
-    calentamiento: CALENTAMIENTO[T.clase] || [],
+    calentamiento: sinGym && ['fuerza', 'hyrox'].includes(T.clase) ? ['8 min de trote suave', 'Movilidad dinámica de cadera, tobillos y hombros (5 min)', '10 sentadillas, 10 zancadas y 5 flexiones a ritmo suave'] : CALENTAMIENTO[T.clase] || [],
     bloques,
     vueltaCalma: VUELTA_CALMA[T.clase] || [],
     notas,
+    sinGym,
   };
 }
 

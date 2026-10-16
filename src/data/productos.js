@@ -633,7 +633,9 @@ export const PRODUCTOS = {
   "f": 1.1,
   "grupo": "verdura",
   "dieta": "vegetal",
-  "al": [],
+  "al": [
+  "verdura_cruda"
+ ],
   "mercadona": "15604",
   "medida": "ml"
  },
@@ -646,9 +648,8 @@ export const PRODUCTOS = {
   "f": 1.3,
   "grupo": "verdura",
   "dieta": "vegetal",
-  "al": [
-   "gluten"
-  ],
+  "al": ["gluten",
+  "verdura_cruda"],
   "mercadona": "39902",
   "medida": "ml"
  }

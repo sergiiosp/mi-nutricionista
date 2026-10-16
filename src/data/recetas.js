@@ -31,7 +31,7 @@ export const RECETAS = [
     consejo: 'Puedes dejarlo hecho la noche anterior en frío (overnight oats): mezcla todo en un tarro y a la nevera.',
   },
   {
-    id: 'tostadas-aguacate-huevo',
+    id: 'tostadas-aguacate-huevo', crudas: true,
     emoji: '🥑',
     nombre: 'Tostadas de aguacate con huevos revueltos',
     tipos: ['desayuno'],
@@ -51,7 +51,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'tostadas-tomate-jamon',
+    id: 'tostadas-tomate-jamon', crudas: true,
     emoji: '🍅',
     nombre: 'Tostadas con tomate, AOVE y jamón serrano',
     tipos: ['desayuno'],
@@ -110,7 +110,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'tortilla-pavo-pan',
+    id: 'tortilla-pavo-pan', crudas: true,
     emoji: '🍳',
     nombre: 'Tortilla francesa de pavo con tostada',
     tipos: ['desayuno', 'cena'],
@@ -183,7 +183,7 @@ export const RECETAS = [
     pasos: ['Tritura todo en la batidora hasta que quede fino. Si lo quieres muy frío, añade un par de hielos.'],
   },
   {
-    id: 'tostada-burgos-tomate',
+    id: 'tostada-burgos-tomate', crudas: true,
     emoji: '🧀',
     nombre: 'Tostadas de queso fresco, tomate y orégano',
     tipos: ['desayuno', 'snack'],
@@ -218,7 +218,7 @@ export const RECETAS = [
     pasos: ['Trocea la manzana, mézclala con el yogur y añade las nueces y canela.'],
   },
   {
-    id: 'tortitas-pavo-queso',
+    id: 'tortitas-pavo-queso', crudas: true,
     emoji: '🍘',
     nombre: 'Tortitas de arroz con queso fresco y pavo',
     tipos: ['snack'],
@@ -232,7 +232,7 @@ export const RECETAS = [
     pasos: ['Monta las tortitas con el queso fresco y el pavo. Acompaña con los cherry.'],
   },
   {
-    id: 'sandwich-atun',
+    id: 'sandwich-atun', crudas: true,
     emoji: '🥪',
     nombre: 'Sándwich de atún y tomate',
     tipos: ['snack', 'desayuno'],
@@ -247,7 +247,7 @@ export const RECETAS = [
     pasos: ['Mezcla el atún escurrido con el queso batido (hace de mayonesa ligera) y monta el sándwich con tomate y lechuga.'],
   },
   {
-    id: 'crudites-hummus-huevo',
+    id: 'crudites-hummus-huevo', crudas: true,
     emoji: '🥕',
     nombre: 'Crudités con hummus y huevo cocido',
     tipos: ['snack', 'cena'],
@@ -470,7 +470,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'ensalada-garbanzos-atun',
+    id: 'ensalada-garbanzos-atun', crudas: true,
     emoji: '🥗',
     nombre: 'Ensalada completa de garbanzos y atún',
     tipos: ['comida', 'cena'],
@@ -603,7 +603,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'burger-ternera-batata',
+    id: 'burger-ternera-batata', crudas: true,
     emoji: '🍔',
     nombre: 'Hamburguesa casera con batata al horno y ensalada',
     tipos: ['comida', 'cena'],
@@ -667,7 +667,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'ensalada-cuscus-pollo',
+    id: 'ensalada-cuscus-pollo', crudas: true,
     emoji: '🥗',
     nombre: 'Ensalada templada de cuscús con pollo y aguacate',
     tipos: ['comida', 'cena'],
@@ -861,7 +861,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'ternera-ensalada-patata',
+    id: 'ternera-ensalada-patata', crudas: true,
     emoji: '🥩',
     nombre: 'Filete de ternera con patata cocida y ensalada',
     tipos: ['comida', 'cena'],
@@ -882,7 +882,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'ensalada-lentejas',
+    id: 'ensalada-lentejas', crudas: true,
     emoji: '🥗',
     nombre: 'Ensalada fría de lentejas con huevo y atún',
     tipos: ['comida', 'cena'],
@@ -972,7 +972,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'burrito-bowl-pavo',
+    id: 'burrito-bowl-pavo', crudas: true,
     emoji: '🌯',
     nombre: 'Burrito bowl de pavo, alubias y maíz',
     tipos: ['comida', 'cena'],
@@ -1102,7 +1102,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'tortilla-espinacas',
+    id: 'tortilla-espinacas', crudas: true,
     emoji: '🥬',
     nombre: 'Tortilla de espinacas con ensalada y pan',
     tipos: ['comida', 'cena'],
@@ -1124,7 +1124,7 @@ export const RECETAS = [
     ],
   },
   {
-    id: 'ensalada-alubias-huevo',
+    id: 'ensalada-alubias-huevo', crudas: true,
     emoji: '🥗',
     nombre: 'Ensalada de alubias con huevo, tomate y pimiento',
     tipos: ['comida', 'cena'],
@@ -1176,7 +1176,7 @@ export const RECETAS = [
     pasos: ['Machaca el aguacate sobre las tortitas y coloca el huevo cocido en rodajas. Sal y pimienta.'],
   },
   {
-    id: 'bocadillo-pavo',
+    id: 'bocadillo-pavo', crudas: true,
     emoji: '🥖',
     nombre: 'Bocadillo de pavo con tomate',
     tipos: ['snack', 'desayuno'],

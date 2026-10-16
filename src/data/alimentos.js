@@ -66,8 +66,8 @@ export const ALIMENTOS = {
 
   // ── Fruta ────────────────────────────────────────────────────────────────
   platano: { nombre: 'Plátano', kcal: 95, p: 1.2, c: 20, g: 0.3, f: 2, grupo: 'fruta', dieta: 'vegetal', al: [], mercadona: '3819', rendimiento: 0.68, unidad: { n: 'plátano', pl: 'plátanos', g: 110 } },
-  manzana: { nombre: 'Manzana', kcal: 52, p: 0.3, c: 12, g: 0.2, f: 2.2, grupo: 'fruta', dieta: 'vegetal', al: [], mercadona: '8177', rendimiento: 0.9, unidad: { n: 'manzana', pl: 'manzanas', g: 170 } },
-  pera: { nombre: 'Pera conferencia', kcal: 57, p: 0.4, c: 13, g: 0.1, f: 3, grupo: 'fruta', dieta: 'vegetal', al: [], mercadona: '3119', rendimiento: 0.9, unidad: { n: 'pera', pl: 'peras', g: 150 } },
+  manzana: { nombre: 'Manzana', kcal: 52, p: 0.3, c: 12, g: 0.2, f: 2.2, grupo: 'fruta', dieta: 'vegetal', al: ['fruta_piel'], mercadona: '8177', rendimiento: 0.9, unidad: { n: 'manzana', pl: 'manzanas', g: 170 } },
+  pera: { nombre: 'Pera conferencia', kcal: 57, p: 0.4, c: 13, g: 0.1, f: 3, grupo: 'fruta', dieta: 'vegetal', al: ['fruta_piel'], mercadona: '3119', rendimiento: 0.9, unidad: { n: 'pera', pl: 'peras', g: 150 } },
   kiwi: { nombre: 'Kiwi', kcal: 61, p: 1.1, c: 12, g: 0.5, f: 3, grupo: 'fruta', dieta: 'vegetal', al: [], mercadona: '3820', rendimiento: 0.85, unidad: { n: 'kiwi', pl: 'kiwis', g: 85 } },
   naranja: { nombre: 'Naranja', kcal: 45, p: 0.9, c: 9, g: 0.2, f: 2, grupo: 'fruta', dieta: 'vegetal', al: [], mercadona: '3235', rendimiento: 0.7, unidad: { n: 'naranja', pl: 'naranjas', g: 160 } },
   fresas: { nombre: 'Fresas', kcal: 33, p: 0.7, c: 6, g: 0.3, f: 2, grupo: 'fruta', dieta: 'vegetal', al: [], mercadona: '3723', rendimiento: 0.95 },
@@ -142,4 +142,6 @@ export const ALERGENOS = {
   marisco: 'Marisco',
   frutos_secos: 'Frutos secos / cacahuete',
   soja: 'Soja',
+  verdura_cruda: 'Verdura cruda (salvo lechuga y pepino)',
+  fruta_piel: 'Fruta con piel (manzana, pera, melocotón…)',
 };

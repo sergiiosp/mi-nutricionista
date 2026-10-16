@@ -82,6 +82,22 @@ comprobar(m.cambiaLocal && m.cambiaRemoto, 'Sincro: hay que aplicar y subir');
 const estadoH = { perfil: { peso: 80 }, registros: { d: [1] }, hyrox: { config: { a: 1 }, registros: { s1: { estado: 'completa' } }, movidas: {} }, fotosProgreso: [{ id: 'f' }] };
 const ida = desaplanar(aplanar(estadoH));
 comprobar(ida.hyrox.registros.s1.estado === 'completa' && ida.registros.d && !ida.fotosProgreso.length, 'Sincro: aplanar y reconstruir conserva los datos (las fotos se quedan en local)');
+// ── Fuerza dos días, sin gimnasio y «hoy no entreno» ─────────────────────
+const cfg4 = { ...configH, dias: [1, 3, 4, 6] };
+const ph4 = generarPlanHyrox({ config: cfg4 }, perfilH, '2026-10-12');
+comprobar(ph4.semanas[0].sesiones.filter((s) => s.tipo === 'fuerza').length === 2, 'HYROX: con 4 días hay 2 sesiones de fuerza (A y B)');
+const idF = ph4.semanas[0].sesiones.find((s) => s.tipo === 'fuerza').id;
+const sinGym = generarPlanHyrox({ config: cfg4, sinGym: { [idF]: true } }, perfilH, '2026-10-12').sesiones.find((s) => s.id === idF);
+comprobar(sinGym.sinGym && !/barra|mancuerna/i.test(sinGym.bloques[0].lineas.join(' ')), 'HYROX: la sesión sin gimnasio no usa barra ni mancuernas');
+const { proveedorDe } = await import('../src/lib/hyrox/index.js');
+const { metaDia } = await import('../src/lib/nutricion.js');
+const fechaF = ph4.semanas[0].sesiones.find((s) => s.id === idF).fecha;
+const estH = { perfil: { ...perfiles['Oficina, fuerza 18:30, perder'], peso: 82.5 }, hyrox: { config: cfg4, registros: {}, movidas: {} }, entrenoDia: { [fechaF]: 'no' } };
+const objH = calcularObjetivos(estH.perfil);
+const conEntreno = metaDia(objH, proveedorDe({ ...estH, entrenoDia: {} })(fechaF));
+const sinEntreno = metaDia(objH, proveedorDe(estH)(fechaF));
+comprobar(sinEntreno.kcal < conEntreno.kcal, `«Hoy no entreno» baja las kcal del día (${conEntreno.kcal} → ${sinEntreno.kcal})`);
+
 // ── Comidas montadas por ingredientes ─────────────────────────────────────
 const { proponerCombos, montarCombo } = await import('../src/lib/combos.js');
 const perfilD = { ...comun, sexo: 'h', edad: 32, altura: 178, peso: 80, objetivo: 'perder', ritmo: 'moderado', comidas: 4 };

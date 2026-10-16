@@ -12,20 +12,21 @@ export const FASES = {
 
 // Tipos de sesión por fase y número de días disponibles (de lunes a domingo)
 const PLANTILLAS = {
+  // Fuerza dos días por semana (A: pierna y empuje · B: cadera y tirón) en base y construcción
   base: {
-    2: ['series', 'estaciones'], 3: ['series', 'fuerza', 'largo'], 4: ['series', 'fuerza', 'estaciones', 'largo'],
-    5: ['series', 'fuerza', 'rodaje', 'estaciones', 'largo'], 6: ['series', 'fuerza', 'rodaje', 'estaciones', 'recuperacion', 'largo'],
-    7: ['series', 'fuerza', 'rodaje', 'estaciones', 'recuperacion', 'rodaje', 'largo'],
+    2: ['fuerza', 'series'], 3: ['fuerza', 'series', 'estaciones'], 4: ['fuerza', 'series', 'fuerza', 'largo'],
+    5: ['fuerza', 'series', 'estaciones', 'fuerza', 'largo'], 6: ['fuerza', 'series', 'rodaje', 'fuerza', 'estaciones', 'largo'],
+    7: ['fuerza', 'series', 'rodaje', 'fuerza', 'estaciones', 'recuperacion', 'largo'],
   },
   construccion: {
-    2: ['umbral', 'compromised'], 3: ['umbral', 'fuerza', 'compromised'], 4: ['series', 'fuerza', 'compromised', 'largo'],
-    5: ['umbral', 'fuerza', 'rodaje', 'compromised', 'largo'], 6: ['series', 'fuerza', 'rodaje', 'compromised', 'recuperacion', 'largo'],
-    7: ['series', 'fuerza', 'rodaje', 'compromised', 'recuperacion', 'estaciones', 'largo'],
+    2: ['fuerza', 'compromised'], 3: ['fuerza', 'umbral', 'compromised'], 4: ['fuerza', 'umbral', 'fuerza', 'compromised'],
+    5: ['fuerza', 'series', 'compromised', 'fuerza', 'largo'], 6: ['fuerza', 'series', 'rodaje', 'fuerza', 'compromised', 'largo'],
+    7: ['fuerza', 'series', 'rodaje', 'fuerza', 'compromised', 'recuperacion', 'largo'],
   },
   especifico: {
-    2: ['series', 'simulacro'], 3: ['series', 'fuerza', 'simulacro'], 4: ['series', 'fuerza', 'compromised', 'simulacro'],
-    5: ['umbral', 'fuerza', 'rodaje', 'compromised', 'simulacro'], 6: ['series', 'fuerza', 'rodaje', 'compromised', 'recuperacion', 'simulacro'],
-    7: ['series', 'fuerza', 'rodaje', 'compromised', 'recuperacion', 'estaciones', 'simulacro'],
+    2: ['series', 'simulacro'], 3: ['fuerza', 'series', 'simulacro'], 4: ['fuerza', 'series', 'compromised', 'simulacro'],
+    5: ['fuerza', 'series', 'compromised', 'fuerza', 'simulacro'], 6: ['fuerza', 'series', 'rodaje', 'fuerza', 'compromised', 'simulacro'],
+    7: ['fuerza', 'series', 'rodaje', 'fuerza', 'compromised', 'recuperacion', 'simulacro'],
   },
 };
 
@@ -65,7 +66,7 @@ function ajusteSemana(sesionesPrevias, registros, hoy) {
  * config: { inicio, fechaCarrera, categoria, nivel, dias[], hora, material{}, lesiones[], marcas{} }
  */
 export function generarPlanHyrox(hyrox, perfil, hoy) {
-  const { config, registros = {}, movidas = {} } = hyrox;
+  const { config, registros = {}, movidas = {}, sinGym = {} } = hyrox;
   const inicio = lunesDe(config.inicio);
   const carrera = config.fechaCarrera && config.fechaCarrera > inicio ? config.fechaCarrera : null;
   const N = carrera ? Math.min(30, Math.max(2, Math.ceil((diasEntre(inicio, carrera) + 1) / 7))) : 12;
@@ -109,15 +110,17 @@ export function generarPlanHyrox(hyrox, perfil, hoy) {
     }
 
     const semana = { w, fase, deload, ajuste, lunes, sesiones: [] };
+    let nFuerza = 0;
     tipos.forEach((tipo, i) => {
       const d = dias[i];
       let fecha = sumarDias(lunes, ordenSemana(d));
       if (carrera && fecha >= carrera) return; // nada el mismo día o después de la carrera
+      const id = `s${w}-${d}`;
       const contenido = construirSesion({
         tipo, fase, p, factor, semana: w, config, perfil, rit,
         completo: w === simCompletoSemana, mitad: (w % 2 === 0 ? '1-4' : '5-8'),
+        variante: tipo === 'fuerza' ? (nFuerza++ % 2 === 0 ? 'A' : 'B') : 'A', sinGym: !!sinGym[id],
       });
-      const id = `s${w}-${d}`;
       const original = fecha;
       if (movidas[id]) fecha = movidas[id];
       semana.sesiones.push({ id, semana: w, fase, fecha, fechaOriginal: original, hora: config.hora || perfil?.horaEntreno || '19:00', ...contenido, rpe: deload ? Math.max(2, contenido.rpe - 1) : contenido.rpe });

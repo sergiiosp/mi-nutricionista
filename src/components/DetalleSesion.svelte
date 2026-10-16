@@ -5,7 +5,8 @@
   import { abrirHoja, avisar } from '../stores/ui.js';
   import { planDe, proveedorDe } from '../lib/hyrox/index.js';
   import { calcularObjetivos, metaDia } from '../lib/nutricion.js';
-  import { moverSesion, borrarRegistroSesion } from '../lib/acciones.js';
+  import { moverSesion, borrarRegistroSesion, alternarSinGym } from '../lib/acciones.js';
+  import { TIPOS } from '../lib/hyrox/sesiones.js';
   import { hoyISO, sumarDias } from '../lib/planificador.js';
   import { mmss } from '../lib/hyrox/ritmos.js';
   import { diaSemana, diaCorto, fechaLarga, capital, entero } from '../lib/formato.js';
@@ -21,6 +22,13 @@
   let moviendo = $state(false);
   const ESTADO = { completa: 'Completada', parcial: 'A medias', no: 'No la hice' };
   const SENS = { bien: 'Bien', normal: 'Normal', mal: 'Mal' };
+
+  // Las sesiones de fuerza y de estaciones se pueden hacer sin gimnasio
+  const sinGymPosible = $derived(s && ['fuerza', 'hyrox'].includes(TIPOS[s.tipo]?.clase) && !['carrera', 'activacion'].includes(s.tipo));
+  function sinGym() {
+    const ahora = alternarSinGym(s.id);
+    avisar(ahora ? 'Sesión cambiada: sin máquinas, con peso corporal y una cuesta' : 'Vuelve la sesión de gimnasio', ahora ? '🏃' : '🏋️');
+  }
 
   function mover(f) {
     moverSesion(s.id, f, s.fechaOriginal);
@@ -77,6 +85,10 @@
       {#if s.fecha <= hoy}<button class="boton" onclick={() => abrirHoja('registrarSesion', { id })}><Icono e="📝" tam={18} /> {reg ? 'Editar registro' : 'Registrar sesión'}</button>{/if}
       <button class="boton boton-sec" onclick={() => (moviendo = !moviendo)}><Icono e="🔀" tam={18} /> Mover de día</button>
     </div>
+    {#if sinGymPosible}
+      <label class="interruptor sin-gym"><input type="checkbox" checked={!!s.sinGym} onchange={sinGym} />
+        <span><b>Hoy no puedo ir al gimnasio</b><small>Te cambio la sesión por una de peso corporal, parque y cuestas</small></span></label>
+    {/if}
     {#if moviendo}
       <div class="mover">
         <p class="pie-nota">Elige otro día de esta semana. Si juntas dos sesiones duras seguidas, mejor separa la más intensa.</p>

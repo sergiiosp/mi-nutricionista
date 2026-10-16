@@ -101,7 +101,7 @@ function pasosCombo(fam, ids) {
     const gra = grupo('grasa');
     for (const h of hid) pasos.push(LISTOS.has(h) ? `Calienta ${c(h)} (ya viene cocido).` : `Cuece ${c(h)} según el paquete.`);
     if (prot) pasos.push(LISTOS.has(prot) ? `Prepara ${c(prot)}: ya está listo para comer.` : `Haz ${c(prot)} a la plancha, al horno o en la sartén con sal y tus especias favoritas.`);
-    if (ver.length) pasos.push(`Prepara ${lista(ver.map(c))}: salteado, al vapor o en ensalada.`);
+    if (ver.length) pasos.push(`Prepara ${lista(ver.map(c))}: salteado, al horno o al vapor${ver.every((v) => ['lechuga', 'pepino'].includes(v)) ? ', o en ensalada' : ''}.`);
     pasos.push(gra.length ? `Aliña con ${lista(gra.map(c))} y sirve.` : 'Sirve todo junto.');
   }
   return pasos;
@@ -171,8 +171,14 @@ function rng(semilla) {
 }
 
 /** Ingredientes permitidos de cada grupo según tu perfil (alergias, dieta, lo que no te gusta). */
+// Verdura que en un desayuno o tentempié va cruda (en los platos se puede cocinar)
+const CRUDA_EN_DESAYUNO = new Set(['tomate']);
 export function gruposPermitidos(fam, perfil) {
-  return MONTAR[fam].grupos.map((g) => ({ ...g, items: g.items.filter(([id]) => ALIMENTOS[id] && alimentoPermitido(id, perfil)) }));
+  const sinCruda = (perfil.alergias || []).includes('verdura_cruda');
+  return MONTAR[fam].grupos.map((g) => ({
+    ...g,
+    items: g.items.filter(([id]) => ALIMENTOS[id] && alimentoPermitido(id, perfil) && !(sinCruda && fam === 'd' && CRUDA_EN_DESAYUNO.has(id))),
+  }));
 }
 
 /** Combinaciones al azar con sentido (sin evaluar macros). */

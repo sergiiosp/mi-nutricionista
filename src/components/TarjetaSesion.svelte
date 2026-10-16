@@ -20,6 +20,7 @@
         {#if sesion.distancia}<span><Icono n="route" tam={13} /> {String(sesion.distancia).replace('.', ',')} km</span>{/if}
         <span><Icono n="flame" tam={13} /> RPE {sesion.rpe}</span>
         {#if sesion.fecha !== sesion.fechaOriginal}<span><Icono n="shuffle" tam={13} /> movida</span>{/if}
+        {#if sesion.sinGym}<span><Icono n="map-pin" tam={13} /> sin gimnasio</span>{/if}
       </span>
     </span>
     {#if ETQ[estado]}<span class="etq-estado">{ETQ[estado]}</span>{/if}
