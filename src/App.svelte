@@ -1,5 +1,5 @@
 <script>
-  import { fly } from 'svelte/transition';
+  import { fly, fade } from 'svelte/transition';
   import Hoja from './components/Hoja.svelte';
   import Emoji from './components/Emoji.svelte';
   import Icono from './components/Icono.svelte';
@@ -79,7 +79,7 @@
 
   <main class="contenido">
     {#key $ruta.pagina}
-      <div in:fly={{ y: 10, duration: 220 }}>
+      <div in:fade={{ duration: 160 }}>
         {#if $ruta.pagina === 'entreno'}<Entreno sub={$ruta.sub} />
         {:else if $ruta.pagina === 'comida'}<Comida sub={$ruta.sub} />
         {:else if $ruta.pagina === 'progreso'}<Progreso sub={$ruta.sub} />

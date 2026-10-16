@@ -105,7 +105,7 @@
   input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: 16px; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
   input:focus { outline: 2px solid var(--primario); }
   .centro { text-align: center; }
-  .grupo { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--texto-2); margin: 14px 4px 6px; }
+  .grupo { font-size: 0.78rem; color: var(--texto-2); margin: 14px 4px 6px; }
   .grupo small { text-transform: none; letter-spacing: 0; font-weight: 600; }
   .resultados { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }

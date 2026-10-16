@@ -38,7 +38,7 @@
       </div>
       <button class="titulo" onclick={verReceta}>{receta?.nombre}</button>
       <Macros {m} peque />
-      <div class="meta"><Icono n="clock" tam={13} /> {receta?.tiempo} min <span>·</span> {euros(costeComida(comida.ingredientes))}</div>
+      <div class="meta"><span><Icono n="clock" tam={13} /> {receta?.tiempo} min</span><span><Icono n="euro" tam={13} /> {euros(costeComida(comida.ingredientes))}</span></div>
     </div>
     {#if editable && fecha && situacion !== 'saltada' && situacion !== 'sustituida'}
       <button class="check" class:activo={situacion === 'hecha'} aria-pressed={situacion === 'hecha'}
@@ -97,22 +97,22 @@
 </article>
 
 <style>
-  .comida-card { background: var(--superficie); border-radius: var(--radio); padding: 12px; box-shadow: var(--sombra); transition: opacity 0.25s, background 0.25s; }
-  .comida-card.ajustada.s-pendiente { box-shadow: 0 0 0 1px color-mix(in srgb, var(--lila) 45%, transparent); }
+  .comida-card { padding: 10px 0 14px; border-bottom: 1px solid var(--linea); transition: opacity 0.25s; }
   .fila { position: relative; display: flex; gap: 12px; align-items: flex-start; }
   .miniatura { padding: 0; border: 0; background: none; cursor: pointer; width: 84px; flex-shrink: 0; }
   .cuerpo { flex: 1; min-width: 0; padding-right: 42px; display: grid; gap: 1px; }
-  .franja { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--texto-3); }
+  .franja { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.74rem; font-weight: 700; color: var(--texto-3); }
   .etq { padding: 2px 7px; border-radius: 999px; font-size: 0.6rem; letter-spacing: 0.06em; }
   .etq-pre, .etq-post { background: var(--primario-claro); color: var(--primario-fuerte); }
   .etq-ajuste { background: var(--lila-claro); color: var(--lila); }
+  .ajustada.s-pendiente .titulo { color: var(--texto); }
   .etq-nota { background: var(--superficie-2); color: var(--texto-2); }
   .titulo { padding: 0; border: 0; background: none; text-align: left; font-weight: 600; font-size: 0.97rem; line-height: 1.3; cursor: pointer; color: var(--texto); margin-top: 2px; }
-  .meta { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 0.74rem; color: var(--texto-3); }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px; font-size: 0.76rem; color: var(--texto-3); }
+  .meta span { display: inline-flex; align-items: center; gap: 4px; }
   .check { position: absolute; right: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--borde); background: transparent; color: transparent; display: grid; place-items: center; cursor: pointer; transition: all 0.25s cubic-bezier(.3,1.5,.5,1); }
   .check:hover { border-color: var(--primario); color: var(--primario); }
   .check.activo { background: var(--primario); border-color: var(--primario); color: var(--sobre-primario); transform: scale(1.06); box-shadow: 0 0 16px rgb(255 91 31 / 0.5); }
-  .s-hecha { background: color-mix(in srgb, var(--superficie) 95%, var(--primario)); }
   .s-hecha .titulo { color: var(--texto-2); }
   .s-saltada .fila, .s-sustituida .fila { opacity: 0.45; }
   .pasada { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 8px 10px; border-radius: 12px; background: var(--amarillo-claro); color: var(--aviso-texto); font-size: 0.8rem; font-weight: 600; }

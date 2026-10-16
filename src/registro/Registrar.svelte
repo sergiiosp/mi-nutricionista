@@ -156,7 +156,7 @@
   .op-foto { grid-column: 1 / -1; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; }
   .op-foto :global(.icono) { grid-row: span 2; }
   .op-foto b { margin-top: 0; }
-  .grupo { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--texto-3); margin: 18px 4px 8px; }
+  .grupo { font-size: 0.7rem; font-weight: 700; color: var(--texto-3); margin: 18px 4px 8px; }
   .recientes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .recientes button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
   .recientes img, .ic { width: 42px; height: 42px; border-radius: 12px; object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; }

@@ -395,7 +395,7 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding: 0; }
 .t-comida .comida-emoji, .receta-card.t-comida .rc-emoji { background: var(--primario-claro); }
 .t-cena .comida-emoji, .receta-card.t-cena .rc-emoji { background: var(--lila-claro); }
 .comida-cuerpo { min-width: 0; padding-right: 40px; }
-.comida-franja { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--texto-2); font-weight: 800; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.comida-franja { font-size: 0.74rem; color: var(--texto-2); font-weight: 800; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .comida-titulo { margin: 3px 0 2px; font-size: 1.05rem; line-height: 1.25; }
 .enlace-receta { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; font-weight: 800; }
 .enlace-receta:hover { color: var(--primario-fuerte); }
@@ -450,7 +450,7 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding: 0; }
 .rc-total b { font-size: 2rem; font-weight: 800; color: var(--primario-fuerte); }
 .rc-progreso { height: 8px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; margin: 8px 0 14px; }
 .rc-progreso div { height: 100%; background: var(--hero); border-radius: 999px; transition: width 0.4s; box-shadow: 0 0 10px rgb(255 91 31 / 0.5); }
-.pasillo { font-size: 0.8rem; color: var(--texto-2); text-transform: uppercase; letter-spacing: 0.07em; margin: 22px 4px 8px; font-weight: 800; }
+.pasillo { font-size: 0.8rem; color: var(--texto-2); margin: 22px 4px 8px; font-weight: 800; }
 .pasillo small { text-transform: none; letter-spacing: 0; font-weight: 600; }
 .lista-compra { list-style: none; margin: 0; padding: 4px 0; background: var(--superficie); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
 .item-compra { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
@@ -489,14 +489,14 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding: 0; }
 .rc-emoji { display: grid; place-items: center; flex-shrink: 0; width: 64px; height: 64px; border-radius: 20px; font-size: 2.1rem; }
 .rc-cuerpo { display: grid; gap: 2px; min-width: 0; }
 .rc-cuerpo b { font-size: 0.98rem; line-height: 1.25; }
-.rc-meta { font-size: 0.74rem; color: var(--texto-2); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.rc-meta { font-size: 0.74rem; color: var(--texto-2); font-weight: 800; }
 .rc-macros { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; font-weight: 800; color: var(--texto-2); }
 
 /* Detalle de receta (modal) */
 .receta-cabecera { display: flex; gap: 14px; align-items: center; padding-right: 40px; }
 .receta-emoji-grande { display: grid; place-items: center; flex-shrink: 0; width: 76px; height: 76px; border-radius: 24px; font-size: 2.6rem; background: var(--primario-claro); }
 .receta-cabecera h2 { margin: 2px 0 4px; font-size: 1.3rem; }
-.sobre-etiqueta { margin: 0; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 800; color: var(--primario-fuerte); }
+.sobre-etiqueta { margin: 0; font-size: 0.74rem; font-weight: 800; color: var(--primario-fuerte); }
 .macros-grandes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 6px; }
 .macros-grandes div { display: grid; text-align: center; padding: 10px 4px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
 .macros-grandes b { font-size: 1.1rem; font-weight: 800; }

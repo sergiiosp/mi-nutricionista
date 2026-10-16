@@ -16,7 +16,7 @@
   <FotoReceta {receta} alto={210} redondeo={24} tamEmoji={110} />
   <p class="sobre">{titulo || receta.tipos.join(' · ')}</p>
   <h2>{receta.nombre}</h2>
-  <div class="meta"><Icono e="⏱️" tam={18} /> {receta.tiempo} min · {euros(costeComida(ingredientes))} por ración{#if receta.batch} · 🥡 aguanta en táper{/if}</div>
+  <div class="meta"><span><Icono n="clock" tam={16} /> {receta.tiempo} min</span><span><Icono n="euro" tam={16} /> {euros(costeComida(ingredientes))} por ración</span>{#if receta.batch}<span><Icono n="package" tam={16} /> Aguanta en táper</span>{/if}</div>
 
   <div class="grandes">
     <div><b>{Math.round(m.kcal)}</b><span>kcal</span></div>
@@ -49,7 +49,9 @@
 </div>
 
 <style>
-  .sobre { margin: 14px 0 0; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--primario-fuerte); }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .sobre { margin: 14px 0 0; font-size: 0.74rem; font-weight: 800; color: var(--primario-fuerte); }
   h2 { margin: 2px 0 4px; font-size: 1.4rem; }
   .meta { color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .grandes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 4px; }

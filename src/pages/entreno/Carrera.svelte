@@ -82,10 +82,10 @@
 
 <style>
   .hero-carrera { position: relative; overflow: hidden; padding: 18px; border-radius: 26px; background: radial-gradient(110% 90% at 100% 0%, rgb(255 91 31 / 0.28), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
-  .hero-carrera p { margin: 0; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--texto-2); }
+  .hero-carrera p { margin: 0; font-weight: 600; font-size: 0.78rem; color: var(--texto-2); }
   .hero-carrera h2 { margin: 2px 0 14px; font-size: 1.5rem; }
   .estimado { display: grid; }
-  .estimado span { font-weight: 700; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--texto-2); }
+  .estimado span { font-weight: 700; font-size: 0.74rem; color: var(--texto-2); }
   .estimado b { font-size: 3rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; background: var(--hero); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .estimado small { font-weight: 600; color: var(--texto-2); }
   .partes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px; }

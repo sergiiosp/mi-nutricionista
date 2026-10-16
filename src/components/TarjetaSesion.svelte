@@ -14,7 +14,13 @@
     <span class="ic"><Icono e={sesion.emoji} tam={compacta ? 22 : 24} /></span>
     <span class="txt">
       <b>{sesion.titulo}</b>
-      <small>{sesion.hora} · {sesion.duracion} min{sesion.distancia ? ` · ${String(sesion.distancia).replace('.', ',')} km` : ''} · RPE {sesion.rpe}{sesion.fecha !== sesion.fechaOriginal ? ' · movida' : ''}</small>
+      <span class="datos">
+        <span><Icono n="clock" tam={13} /> {sesion.hora}</span>
+        <span><Icono n="timer" tam={13} /> {sesion.duracion} min</span>
+        {#if sesion.distancia}<span><Icono n="route" tam={13} /> {String(sesion.distancia).replace('.', ',')} km</span>{/if}
+        <span><Icono n="flame" tam={13} /> RPE {sesion.rpe}</span>
+        {#if sesion.fecha !== sesion.fechaOriginal}<span><Icono n="shuffle" tam={13} /> movida</span>{/if}
+      </span>
     </span>
     {#if ETQ[estado]}<span class="etq-estado">{ETQ[estado]}</span>{/if}
   </button>
@@ -33,8 +39,9 @@
   .compacta .ic { width: 42px; height: 42px; }
   .txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
   .txt b { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
-  .txt small { color: var(--texto-2); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
-  .etq-estado { flex-shrink: 0; padding: 4px 9px; border-radius: 999px; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; background: var(--superficie-2); color: var(--texto-2); }
+  .datos { display: flex; flex-wrap: wrap; gap: 3px 12px; color: var(--texto-2); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+  .datos span { display: inline-flex; align-items: center; gap: 4px; }
+  .etq-estado { flex-shrink: 0; padding: 4px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; background: var(--superficie-2); color: var(--texto-2); }
   .e-completa .etq-estado { background: var(--exito-claro); color: var(--exito); }
   .e-parcial .etq-estado { background: var(--amarillo-claro); color: var(--amarillo); }
   .e-no .etq-estado { background: var(--coral-claro); color: var(--coral); }

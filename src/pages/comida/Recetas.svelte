@@ -40,7 +40,7 @@
     <button class="card" onclick={() => abrirHoja('receta', { recetaId: r.id, ingredientes: ing, titulo: `Ración para tu ${franja}` })}>
       <FotoReceta receta={r} alto={130} redondeo={0} tamEmoji={70} />
       <span class="cuerpo">
-        <span class="meta">{r.tiempo} min{r.batch ? ' · táper' : ''}</span>
+        <span class="meta">{r.tiempo} min{r.batch ? ', aguanta en táper' : ''}</span>
         <b>{r.nombre}</b>
         <span class="mac"><span>{Math.round(m.kcal)} kcal</span><span class="t-p">P {Math.round(m.p)}</span><span class="t-c">H {Math.round(m.c)}</span><span class="t-g">G {Math.round(m.g)}</span></span>
       </span>
@@ -59,6 +59,6 @@
   .card:hover { transform: translateY(-2px); }
   .cuerpo { display: grid; gap: 3px; padding: 10px 12px 12px; }
   .cuerpo b { font-size: 0.92rem; line-height: 1.25; }
-  .meta { font-size: 0.7rem; color: var(--texto-2); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+  .meta { font-size: 0.7rem; color: var(--texto-2); font-weight: 800; }
   .mac { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; font-weight: 800; color: var(--texto-2); }
 </style>

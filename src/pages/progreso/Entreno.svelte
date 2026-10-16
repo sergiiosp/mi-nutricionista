@@ -101,8 +101,7 @@
   .barras { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; height: 150px; margin-top: 10px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; }
   .zona { width: 100%; display: flex; align-items: flex-end; }
-  .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; transform-origin: bottom; animation: crecer 0.8s cubic-bezier(0.25, 0.9, 0.3, 1) both; }
-  @keyframes crecer { from { transform: scaleY(0); } }
+  .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; }
   .col small { font-size: 0.68rem; font-weight: 800; color: var(--texto-2); }
   .col .h { color: var(--primario-fuerte); }
   .records { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
