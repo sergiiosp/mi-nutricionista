@@ -4,7 +4,8 @@
   import { FOTOS_RECETAS } from '../data/fotos.js';
 
   let { receta, alto = 140, redondeo = 18, tamEmoji = 64, clase = '' } = $props();
-  const tieneFoto = $derived(!!FOTOS_RECETAS[receta?.id]);
+  // Si la receta se adaptó cambiando un fruto seco, la foto ya no es fiel (sale lo que no puedes comer)
+  const tieneFoto = $derived(!!FOTOS_RECETAS[receta?.id] && !receta?.sinFoto);
 </script>
 
 <div class="foto {clase}" style="height:{alto}px;border-radius:{redondeo}px">

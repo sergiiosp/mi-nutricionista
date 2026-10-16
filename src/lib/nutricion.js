@@ -1,7 +1,7 @@
 // Cálculos nutricionales: gasto energético, objetivos de macros, macros de ingredientes
 // y escalado de recetas a un objetivo concreto.
 
-import { ALIMENTOS } from '../data/alimentos.js';
+import { ALIMENTOS, FRUTOS_SECOS } from '../data/alimentos.js';
 import { PRECIOS } from '../data/precios.js';
 
 // Perfil antiguo (antes del cuestionario ampliado): factor de actividad único
@@ -339,10 +339,20 @@ export const DIETAS = {
   vegetariana: 'Vegetariana (huevo y lácteos sí)',
 };
 
+/** Cruza los alérgenos de un alimento con los tuyos («frutos_secos» = todos o una mezcla sin especificar). */
+export function tieneAlergeno(del, mias) {
+  if (!mias.length || !del.length) return false;
+  if (del.some((x) => mias.includes(x))) return true;
+  const nuez = (x) => FRUTOS_SECOS.includes(x);
+  if (mias.includes('frutos_secos') && del.some(nuez)) return true;
+  if (del.includes('frutos_secos') && mias.some(nuez)) return true;
+  return false;
+}
+
 export function alimentoPermitido(id, perfil) {
   const a = alimento(id);
   if ((EXCLUSIONES_DIETA[perfil.dieta] || []).includes(a.dieta)) return false;
-  if (a.al.some((x) => (perfil.alergias || []).includes(x))) return false;
+  if (tieneAlergeno(a.al, perfil.alergias || [])) return false;
   if ((perfil.noMeGusta || []).includes(id)) return false;
   return true;
 }

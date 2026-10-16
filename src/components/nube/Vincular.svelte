@@ -34,7 +34,7 @@
 
   function leido(texto) {
     const m = String(texto).match(/#vincular=([\w-]{32})$/);
-    if (!m) { error = 'Ese QR no es de Mi Nutricionista. Abre Mi plan → Conectar → «Añadir otro dispositivo» en el otro dispositivo.'; modo = 'codigo'; return; }
+    if (!m) { error = 'Ese QR no es de Pulso. Abre Mi plan → Conectar → «Añadir otro dispositivo» en el otro dispositivo.'; modo = 'codigo'; return; }
     hacer(() => unirse(m[1]));
   }
 </script>
@@ -42,7 +42,7 @@
 {#if modo === 'enlace'}
   <div class="tarjeta centro">
     <Emoji e="🔗" tam={56} />
-    <p><b>Vas a vincular este dispositivo</b> con tu cuenta de Mi Nutricionista. Verás aquí tu perfil, menús, registros y entrenos, y todo se mantendrá sincronizado.</p>
+    <p><b>Vas a vincular este dispositivo</b> con tu cuenta de Pulso. Verás aquí tu perfil, menús, registros y entrenos, y todo se mantendrá sincronizado.</p>
     <button class="boton ancho" disabled={ocupado} onclick={() => hacer(() => unirse(clave))}>{ocupado ? 'Vinculando…' : 'Vincular este dispositivo'}</button>
   </div>
 {:else}

@@ -47,7 +47,7 @@ const LISTA = [
   ['semillas_lino', '34962', 'grasa', 'vegetal', [530, 18, 2, 42, 27], {}],
   ['mezcla_semillas', '34963', 'grasa', 'vegetal', [560, 22, 10, 45, 12], {}],
   ['cacahuete_polvo', '13738', 'proteina', 'vegetal', [400, 50, 14, 12, 12], {}],
-  ['crema_avellana', '11630', 'grasa', 'lacteo', [540, 6, 56, 32, 3], {}],
+  ['crema_avellana', '11630', 'grasa', 'lacteo', [540, 6, 56, 32, 3], { al: ['avellana'] }],
   ['frutos_secos_mix', '16833', 'grasa', 'vegetal', [600, 20, 12, 52, 8], { al: ['frutos_secos'] }],
   // Proteínas y platos
   ['salmon_ahumado', '53444', 'proteina', 'pescado', [180, 22, 0, 10, 0], {}],
@@ -55,23 +55,46 @@ const LISTA = [
   ['huevos_cocidos', '31010', 'proteina', 'huevo', [140, 12.5, 0.5, 10, 0], { unidad: { n: 'huevo', pl: 'huevos', g: 52 }, redondeo: 'unidad' }],
   ['pollo_asado', '13707', 'proteina', 'carne', [190, 25, 0.5, 10, 0], {}],
   ['edamame', '70740', 'proteina', 'vegetal', [125, 12, 4, 5.5, 5], {}],
+  // Embutidos magros y fiambres
+  ['lomo_embuchado', '86444', 'proteina', 'cerdo', [220, 40, 1, 6.5, 0], {}],
+  ['cabecero_lomo', '86442', 'proteina', 'cerdo', [330, 29, 1, 23, 0], {}],
+  ['lomo_pavo', '12282', 'proteina', 'carne', [110, 22, 1, 2, 0], {}],
+  ['pollo_braseado_lonchas', '18106', 'proteina', 'carne', [105, 20, 1.5, 2, 0], {}],
+  ['jamon_cocido_extra', '60329', 'proteina', 'cerdo', [110, 20, 1, 3, 0], {}],
+  // Frutos secos y semillas (cada uno con su alérgeno)
+  ['almendra_tostada', '17668', 'grasa', 'vegetal', [610, 22, 5, 54, 11], { al: ['almendra'] }],
+  ['pistacho', '86190', 'grasa', 'vegetal', [600, 25, 12, 49, 10], { al: ['pistacho'] }],
+  ['pipas_girasol', '23059', 'grasa', 'vegetal', [610, 23, 9, 53, 9], {}],
+  ['pipas_calabaza', '18259', 'grasa', 'vegetal', [580, 33, 4, 48, 6], {}],
+  // Listos en microondas y conservas para platos sin cocinar
+  ['arroz_microondas', '61302', 'hidrato', 'vegetal', [140, 2.8, 30, 0.8, 0.5], {}],
+  ['arroz_vasito', '22279', 'hidrato', 'vegetal', [155, 2.6, 34, 0.9, 0.5], { unidad: { n: 'vasito', pl: 'vasitos', g: 125 } }],
+  ['patata_microondas', '69484', 'hidrato', 'vegetal', [77, 2, 17, 0.1, 2], {}],
+  ['alubias_pintas', '26001', 'hidrato', 'vegetal', [90, 6, 11, 0.5, 5.5], {}],
+  ['aceitunas_negras', '8309', 'grasa', 'vegetal', [145, 1, 0.5, 15, 3], {}],
+  ['pimientos_asados', '16124', 'verdura', 'vegetal', [35, 1, 5, 0.5, 2], {}],
   ['gazpacho', '15604', 'verdura', 'vegetal', [50, 1, 4, 3.5, 1], { medida: 'ml', al: ['verdura_cruda'] }],
   ['salmorejo', '39902', 'verdura', 'vegetal', [90, 1.5, 7, 6, 1], { medida: 'ml', al: ['verdura_cruda'] }],
 ];
 
+const FRUTOS_SECOS = ['almendra', 'avellana', 'nueces', 'anacardo', 'pistacho', 'cacahuete'];
 // Alérgenos que declara Mercadona («Contiene …», no las trazas)
 const ALERGENOS = [
   [/gluten|trigo|cebada|centeno|espelta|avena/i, 'gluten'],
   [/leche|lactosa/i, 'lactosa'],
   [/huevo/i, 'huevo'],
   [/soja/i, 'soja'],
-  [/frutos de c[aá]scara|almendra|avellana|nuez|anacardo|pistacho|cacahuete/i, 'frutos_secos'],
+  // Cada fruto seco por separado (hay quien tolera unos y otros no); «frutos de cáscara» sin más = todos
+  [/almendra/i, 'almendra'], [/avellana/i, 'avellana'], [/\bnuez|nueces/i, 'nueces'], [/anacardo/i, 'anacardo'],
+  [/pistacho/i, 'pistacho'], [/cacahuete/i, 'cacahuete'],
   [/pescado/i, 'pescado'],
   [/crust[aá]ceo|molusco/i, 'marisco'],
 ];
 function alergenos(texto = '') {
   const contiene = String(texto).replace(/<[^>]+>/g, '').split(/Puede contener|Trazas|trazas/)[0];
-  return [...new Set(ALERGENOS.filter(([re]) => re.test(contiene)).map(([, a]) => a))];
+  const al = ALERGENOS.filter(([re]) => re.test(contiene)).map(([, a]) => a);
+  if (/frutos de c[aá]scara/i.test(contiene) && !al.some((a) => FRUTOS_SECOS.includes(a))) al.push('frutos_secos');
+  return [...new Set(al)];
 }
 
 async function json(url) {

@@ -1,5 +1,5 @@
 // Generado por scripts/actualizar-precios.mjs — no editar a mano.
-export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-16T07:30:03.774Z"};
+export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-16T12:15:26.808Z"};
 export const PRECIOS = {
  "2787": {
   "nombre": "Filetes pechuga de pollo",
@@ -325,7 +325,7 @@ export const PRECIOS = {
   "contenido": 1000,
   "unidadContenido": "g",
   "aproximado": false,
-  "imagen": "https://prod-mercadona.imgix.net/images/3e2c70ef189f6a929a7fa045cfc22485.jpg?fit=crop&h=300&w=300",
+  "imagen": "https://prod-mercadona.imgix.net/images/6c57497fe4619d585d742041fcc9436e.jpg?fit=crop&h=300&w=300",
   "url": "https://tienda.mercadona.es/product/7313/caldo-pollo-hacendado-brick",
   "categoria": "Conservas, caldos y cremas",
   "subcategoria": "Sopa y caldo",
@@ -344,6 +344,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/8177/manzana-roja-dulce-pieza",
   "categoria": "Fruta y verdura",
   "subcategoria": "Fruta",
+  "disponible": true
+ },
+ "8309": {
+  "nombre": "Aceitunas negras en rodajas Hacendado",
+  "formato": "0.148 kg",
+  "precio": 1.9,
+  "precioRef": 12.838,
+  "unidadRef": "kg",
+  "contenido": 148,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/4cc12679f0a56049713fc09731163d79.jpeg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/8309/aceitunas-negras-hacendado-rodajas",
+  "categoria": "Aperitivos",
+  "subcategoria": "Aceitunas y encurtidos",
   "disponible": true
  },
  "8936": {
@@ -509,6 +524,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/11630/crema-avellanas-cacao-hacendado-bote",
   "categoria": "Azúcar, caramelos y chocolate",
   "subcategoria": "Chocolate",
+  "disponible": true
+ },
+ "12282": {
+  "nombre": "Lomo de pavo Hacendado lonchas",
+  "formato": "0.125 kg",
+  "precio": 3.2,
+  "precioRef": 25.6,
+  "unidadRef": "kg",
+  "contenido": 125,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/ab4213a1cad06e813609fe4589af0837.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/12282/lomo-pavo-hacendado-lonchas",
+  "categoria": "Charcutería y quesos",
+  "subcategoria": "Embutido curado",
   "disponible": true
  },
  "13445": {
@@ -766,6 +796,21 @@ export const PRECIOS = {
   "subcategoria": "Tomate",
   "disponible": true
  },
+ "16124": {
+  "nombre": "Pimientos rojos asados Hacendado en tiras extra",
+  "formato": "Pack-3 · 0.24 kg",
+  "precio": 1.35,
+  "precioRef": 7.5,
+  "unidadRef": "kg",
+  "contenido": 180,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/e1809a4d7fa066bbdf7ce41932f80b47.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/16124/pimientos-rojos-asados-hacendado-tiras-extra-pack-3",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Conservas de verdura y frutas",
+  "disponible": true
+ },
  "16712": {
   "nombre": "Maíz dulce Hacendado",
   "formato": "Pack-3 · 0.45 kg",
@@ -871,6 +916,21 @@ export const PRECIOS = {
   "subcategoria": "Otras salsas",
   "disponible": true
  },
+ "17668": {
+  "nombre": "Almendra tostada Hacendado 0% sal añadida pelada",
+  "formato": "Paquete · 0.2 kg",
+  "precio": 2.9,
+  "precioRef": 14.5,
+  "unidadRef": "kg",
+  "contenido": 200,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/7dfed96a41cd56a3bb55376d8180bfdb.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/17668/almendra-tostada-hacendado-0-sal-anadida-pelada-paquete",
+  "categoria": "Aperitivos",
+  "subcategoria": "Frutos secos y fruta desecada",
+  "disponible": true
+ },
  "18018": {
   "nombre": "Atún claro al natural Hacendado",
   "formato": "0.48 kg",
@@ -884,6 +944,36 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/18018/atun-claro-natural-hacendado",
   "categoria": "Conservas, caldos y cremas",
   "subcategoria": "Atún y otras conservas de pescado",
+  "disponible": true
+ },
+ "18106": {
+  "nombre": "Pechuga de pollo braseada Hacendado lonchas",
+  "formato": "Paquete · 0.225 kg",
+  "precio": 2.3,
+  "precioRef": 10.223,
+  "unidadRef": "kg",
+  "contenido": 225,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/857e317f4da4d99288d787a428f564be.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/18106/pechuga-pollo-braseada-hacendado-lonchas-paquete",
+  "categoria": "Charcutería y quesos",
+  "subcategoria": "Aves y jamón cocido",
+  "disponible": true
+ },
+ "18259": {
+  "nombre": "Pipas de calabaza natural Hacendado peladas",
+  "formato": "Paquete · 0.2 kg",
+  "precio": 2.2,
+  "precioRef": 11,
+  "unidadRef": "kg",
+  "contenido": 200,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/00f270d0c243fcedc9a94026e0f85840.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/18259/pipas-calabaza-natural-hacendado-peladas-paquete",
+  "categoria": "Aperitivos",
+  "subcategoria": "Frutos secos y fruta desecada",
   "disponible": true
  },
  "18294": {
@@ -1021,6 +1111,21 @@ export const PRECIOS = {
   "subcategoria": "Arroz",
   "disponible": true
  },
+ "22279": {
+  "nombre": "Arroz cocido redondo Sabroz",
+  "formato": "Pack-2 · 0.25 kg",
+  "precio": 1.05,
+  "precioRef": 4.2,
+  "unidadRef": "kg",
+  "contenido": 250,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/b87d489084215ea73d35d6c2d465f39e.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/22279/arroz-cocido-redondo-sabroz-brillante-pack-2",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Arroz",
+  "disponible": true
+ },
  "22580": {
   "nombre": "Cacao puro en polvo La Chocolatera",
   "formato": "Bote · 0.265 kg",
@@ -1049,6 +1154,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/23047/bebida-arroz-sin-azucares-anadidos-hacendado-brick",
   "categoria": "Huevos, leche y mantequilla",
   "subcategoria": "Leche y bebidas vegetales",
+  "disponible": true
+ },
+ "23059": {
+  "nombre": "Pipas girasol tostadas Hacendado 0% sal añadida",
+  "formato": "Paquete · 0.2 kg",
+  "precio": 1.3,
+  "precioRef": 6.5,
+  "unidadRef": "kg",
+  "contenido": 200,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/d461e17f42de4571398e7c126d26ddd6.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/23059/pipas-girasol-tostadas-hacendado-0-sal-anadida-paquete",
+  "categoria": "Aperitivos",
+  "subcategoria": "Frutos secos y fruta desecada",
   "disponible": true
  },
  "23912": {
@@ -1109,6 +1229,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/24511/lomos-salmon-sin-piel-sin-espinas-hacendado-congelado-paquete",
   "categoria": "Congelados",
   "subcategoria": "Pescado",
+  "disponible": true
+ },
+ "26001": {
+  "nombre": "Alubia cocida pinta Hacendado",
+  "formato": "Tarro · 0.57 kg",
+  "precio": 1.25,
+  "precioRef": 3.125,
+  "unidadRef": "kg",
+  "contenido": 400,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/cb1552d49aded16856fe625f266137fb.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/26001/alubia-cocida-pinta-hacendado-tarro",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Legumbres",
   "disponible": true
  },
  "26019": {
@@ -1516,6 +1651,21 @@ export const PRECIOS = {
   "subcategoria": "Cereales",
   "disponible": true
  },
+ "60329": {
+  "nombre": "Jamón cocido extra Hacendado finas lonchas",
+  "formato": "Paquete · 0.2 kg",
+  "precio": 2,
+  "precioRef": 10,
+  "unidadRef": "kg",
+  "contenido": 200,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/d070e4c58948dba0b36098e312bb401b.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/60329/jamon-cocido-extra-hacendado-finas-lonchas-paquete",
+  "categoria": "Charcutería y quesos",
+  "subcategoria": "Aves y jamón cocido",
+  "disponible": true
+ },
  "61261": {
   "nombre": "Brócoli Hacendado ultracongelado",
   "formato": "Paquete · 1 kg",
@@ -1559,6 +1709,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/61283/judia-verde-plana-hacendado-ultracongelada-paquete",
   "categoria": "Congelados",
   "subcategoria": "Fruta y verdura",
+  "disponible": true
+ },
+ "61302": {
+  "nombre": "Arroz para microondas Hacendado ultracongelado",
+  "formato": "Paquete · 1 kg",
+  "precio": 1.9,
+  "precioRef": 1.9,
+  "unidadRef": "kg",
+  "contenido": 1000,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/6e9554aa659c51ead8bc8f8a4ff4cfda.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/61302/arroz-precocido-hacendado-ultracongelado-paquete",
+  "categoria": "Congelados",
+  "subcategoria": "Arroz y pasta",
   "disponible": true
  },
  "62228": {
@@ -1692,6 +1857,21 @@ export const PRECIOS = {
   "aproximado": true,
   "imagen": "https://prod-mercadona.imgix.net/images/ebbfb6a904fe02ba5a88b02f2be911fd.jpg?fit=crop&h=300&w=300",
   "url": "https://tienda.mercadona.es/product/69338/calabacin-verde-pieza",
+  "categoria": "Fruta y verdura",
+  "subcategoria": "Verdura",
+  "disponible": true
+ },
+ "69484": {
+  "nombre": "Patatas para microondas",
+  "formato": "Paquete · 0.4 kg",
+  "precio": 1.5,
+  "precioRef": 3.75,
+  "unidadRef": "kg",
+  "contenido": 400,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/7e5af136d661fc6a8de8764b9d8859f4.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/69484/patata-microondas-paquete",
   "categoria": "Fruta y verdura",
   "subcategoria": "Verdura",
   "disponible": true
@@ -1831,6 +2011,21 @@ export const PRECIOS = {
   "subcategoria": "Pan de molde y otras especialidades",
   "disponible": true
  },
+ "86190": {
+  "nombre": "Pistacho tostado Hacendado 0% sal añadida",
+  "formato": "Paquete · 0.25 kg",
+  "precio": 3.4,
+  "precioRef": 13.6,
+  "unidadRef": "kg",
+  "contenido": 250,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/17700c85e2423c877653e72cab234426.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/86190/pistacho-tostado-hacendado-0-sal-anadida-paquete",
+  "categoria": "Aperitivos",
+  "subcategoria": "Frutos secos y fruta desecada",
+  "disponible": true
+ },
  "86341": {
   "nombre": "Copos de avena Brüggen",
   "formato": "Caja · 0.8 kg",
@@ -1859,6 +2054,36 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/86368/copos-avena-hacendado-paquete",
   "categoria": "Cereales y galletas",
   "subcategoria": "Cereales",
+  "disponible": true
+ },
+ "86442": {
+  "nombre": "Cabecero de lomo Hacendado lonchas",
+  "formato": "0.15 kg",
+  "precio": 2.7,
+  "precioRef": 18,
+  "unidadRef": "kg",
+  "contenido": 150,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/7e9aca9ecdc532b220dceddb5d100659.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/86442/cabecero-lomo-hacendado-lonchas",
+  "categoria": "Charcutería y quesos",
+  "subcategoria": "Embutido curado",
+  "disponible": true
+ },
+ "86444": {
+  "nombre": "Lomo embuchado Hacendado lonchas",
+  "formato": "0.15 kg",
+  "precio": 2.55,
+  "precioRef": 17,
+  "unidadRef": "kg",
+  "contenido": 150,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/fe5275c25f5a00ab4496b3191040ed6f.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/86444/lomo-embuchado-hacendado-lonchas",
+  "categoria": "Charcutería y quesos",
+  "subcategoria": "Embutido curado",
   "disponible": true
  },
  "86483": {

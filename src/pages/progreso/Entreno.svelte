@@ -8,6 +8,10 @@
   import { hoyISO } from '../../lib/planificador.js';
   import { mmss, hms } from '../../lib/hyrox/ritmos.js';
   import { fechaCorta, num } from '../../lib/formato.js';
+  import Icono from '../../components/Icono.svelte';
+
+  const signo = (x) => (x === null ? '—' : `${x > 0 ? '+' : ''}${num(x, 1)} %`);
+  let grupoAbierto = $state(null);
 
   const plan = $derived(planDe($estado));
   const st = $derived(plan ? estadisticas(plan, $estado.hyrox.registros, hoyISO()) : null);
@@ -72,6 +76,31 @@
     <p class="pie-nota">Mejor tiempo registrado en simulacros. La barra crece cuanto más rápido vas respecto a la referencia de tu nivel ({mmss(TIEMPOS_BASE.ski * nivel.k)} en SkiErg, por ejemplo).</p>
   </div>
 
+  <h2 class="seccion"><Icono n="dumbbell" tam={22} /> Fuerza por zonas</h2>
+  {#if !st.fuerza.grupos.length}
+    <div class="tarjeta"><p class="pie-nota sin-margen">Apunta los kilos y repeticiones al registrar tus sesiones de fuerza y torso: aquí verás qué zonas suben y cuál se queda atrás.</p></div>
+  {:else}
+    {#if st.fuerza.flojo}
+      <div class="aviso-flojo"><Icono n="triangle-alert" tam={20} /><span><b>{st.fuerza.flojo.nombre}</b> es lo que menos sube ({signo(st.fuerza.flojo.cambio)} en 8 semanas). Dale más caña: una serie más en sus ejercicios o sube 2,5 kg cuando completes todas las repeticiones.</span></div>
+    {/if}
+    <div class="tarjeta grupos">
+      {#each st.fuerza.grupos as g (g.grupo)}
+        <button class="grupo" onclick={() => (grupoAbierto = grupoAbierto === g.grupo ? null : g.grupo)} aria-expanded={grupoAbierto === g.grupo}>
+          <span class="g-n">{g.nombre}<small>{g.series} series/semana</small></span>
+          <span class="g-v" class:sube={g.cambio > 0} class:baja={g.cambio < 0}>{#if g.cambio !== null}<Icono n={g.cambio >= 0 ? 'trending-up' : 'trending-down'} tam={16} />{/if} {signo(g.cambio)}</span>
+        </button>
+        {#if grupoAbierto === g.grupo}
+          <ul class="g-ej">
+            {#each g.ejercicios as x (x.id)}
+              <li><span>{x.nombre}<small>{x.veces} {x.veces === 1 ? 'sesión' : 'sesiones'} · mejor {String(x.ultimo.kg).replace('.', ',')} kg × {x.ultimo.reps}</small></span><b>{signo(x.cambio)}</b></li>
+            {/each}
+          </ul>
+        {/if}
+      {/each}
+      <p class="pie-nota">Cambio de tu fuerza estimada (1RM) en las últimas 8 semanas. Toca una zona para ver sus ejercicios. Para crecer, cada grupo necesita unas 10-20 series a la semana.</p>
+    </div>
+  {/if}
+
   {#if graf}
     <div class="tarjeta">
       <b>Ritmo de tus series</b>
@@ -116,4 +145,18 @@
   .graf { width: 100%; height: auto; margin-top: 8px; }
   .sim { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid var(--superficie-2); font-weight: 700; font-size: 0.9rem; }
   .vacia { text-align: center; }
+  .sin-margen { margin: 0; }
+  .aviso-flojo { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; margin-bottom: 10px; border-radius: 18px; background: color-mix(in srgb, var(--primario) 14%, var(--superficie)); color: var(--texto); font-size: 0.88rem; line-height: 1.4; }
+  .aviso-flojo :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
+  .grupo { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 52px; padding: 8px 0; border: 0; border-top: 1px solid var(--linea); background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .grupo:first-child { border-top: 0; }
+  .g-n { display: grid; font-weight: 700; }
+  .g-n small { font-weight: 600; font-size: 0.75rem; color: var(--texto-2); }
+  .g-v { display: flex; align-items: center; gap: 4px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--texto-2); }
+  .g-v.sube { color: var(--exito); }
+  .g-v.baja { color: var(--coral); }
+  .g-ej { list-style: none; margin: 0 0 8px; padding: 0 0 0 10px; display: grid; gap: 6px; font-size: 0.84rem; }
+  .g-ej li { display: flex; justify-content: space-between; gap: 10px; }
+  .g-ej span { display: grid; font-weight: 600; }
+  .g-ej small { color: var(--texto-2); font-size: 0.74rem; }
 </style>

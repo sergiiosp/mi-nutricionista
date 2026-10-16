@@ -1,5 +1,6 @@
 // Estadísticas de entreno a partir del plan HYROX y tus registros.
 import { mejoresEstaciones } from './carrera.js';
+import { historialFuerza, progresoGrupos } from './fuerza.js';
 
 export function estadisticas(plan, registros = {}, hoy) {
   const semanas = plan.semanas
@@ -26,6 +27,7 @@ export function estadisticas(plan, registros = {}, hoy) {
     .map((s) => ({ fecha: s.fecha, titulo: s.titulo, tiempo: registros[s.id].tiempo, completo: s.tipo === 'carrera' || /completo/i.test(s.titulo) }));
   const series = conRegistro.filter((s) => registros[s.id].ritmo).map((s) => ({ fecha: s.fecha, ritmo: registros[s.id].ritmo }));
   const fuerza = conRegistro.filter((s) => registros[s.id].peso).map((s) => ({ fecha: s.fecha, peso: registros[s.id].peso }));
+  const hist = historialFuerza(registros, plan);
   const pasadas = plan.sesiones.filter((s) => s.fecha < hoy && s.tipo !== 'carrera');
   const cumplidas = pasadas.filter((s) => ['completa', 'parcial'].includes(registros[s.id]?.estado)).length;
 
@@ -43,5 +45,7 @@ export function estadisticas(plan, registros = {}, hoy) {
     },
     simulacros,
     series,
+    fuerza: progresoGrupos(hist, hoy),
+    historial: hist,
   };
 }

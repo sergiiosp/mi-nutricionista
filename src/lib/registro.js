@@ -17,6 +17,10 @@ export const EMOJI_ALIMENTO = {
   pepino: '🥒', berenjena: '🍆', wok_verduras: '🥗', pisto: '🍅', esparragos: '🥦', aguacate: '🥑', aceite: '🫒', nueces: '🌰',
   almendras: '🌰', crema_cacahuete: '🥜', chia: '🌱', leche_semi: '🥛', leche_desnatada: '🥛', bebida_soja: '🥛', miel: '🍯', cacao: '🍫',
   confitura: '🍓', salsa_soja: '🍶', caldo_pollo: '🍲', vinagre: '🍶', mostaza: '🌭',
+  lomo_embuchado: '🥓', cabecero_lomo: '🥓', lomo_pavo: '🦃', pollo_braseado_lonchas: '🍗', jamon_cocido_extra: '🍖',
+  almendra_tostada: '🌰', pistacho: '🌰', pipas_girasol: '🌱', pipas_calabaza: '🌱', arroz_microondas: '🍚', arroz_vasito: '🍚',
+  patata_microondas: '🥔', alubias_pintas: '🫘', aceitunas_negras: '🫒', pimientos_asados: '🫑', proteina_whey: '🥛',
+  bebida_avena: '🥛', bebida_almendra: '🥛', huevos_cocidos: '🥚', tortitas_maiz: '🍘',
 };
 export const emojiAlimento = (id) => EMOJI_ALIMENTO[id] || '🍽️';
 

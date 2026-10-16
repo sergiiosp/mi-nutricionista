@@ -1,6 +1,7 @@
 <script>
   import Icono from './Icono.svelte';
   import FotoReceta from './FotoReceta.svelte';
+  import ListaIngredientes from './ListaIngredientes.svelte';
   import { recetaPorId } from '../lib/planificador.js';
   import { macrosComida, costeComida, cantidadTexto, alimento, producto } from '../lib/nutricion.js';
   import { euros } from '../lib/formato.js';
@@ -25,16 +26,9 @@
     <div class="g"><b>{Math.round(m.g)} g</b><span>grasa</span></div>
   </div>
 
+  {#if receta.adaptada}<p class="adaptada"><Icono n="refresh-cw" tam={16} /> Adaptada a ti: {receta.adaptada.join(', ')}.</p>{/if}
   <h3><Icono e="🛒" tam={18} /> Ingredientes <small>(tu ración)</small></h3>
-  <ul class="ingredientes caja">
-    {#each ingredientes as i (i.a)}
-      {@const p = producto(i.a)}
-      <li>
-        <span class="ing-cant">{cantidadTexto(i.a, i.g)}</span>
-        <span>{#if p}<a href={p.url} target="_blank" rel="noopener">{alimento(i.a).nombre}</a>{:else}{alimento(i.a).nombre}{/if}</span>
-      </li>
-    {/each}
-  </ul>
+  <ListaIngredientes {ingredientes} enlaces caja />
   {#if receta.especias?.length}<p class="especias"><Icono e="🧂" tam={18} /> <b>Para condimentar:</b> {receta.especias.map((e) => ESPECIAS[e] || e).join(', ')}</p>{/if}
 
   <h3><Icono e="👨‍🍳" tam={18} /> Preparación</h3>
@@ -42,7 +36,7 @@
     {#each receta.pasos as p, i (i)}<li>{p}</li>{/each}
   </ol>
   {#if receta.consejo}<p class="consejo"><Icono e="💡" tam={18} /> {receta.consejo}</p>{/if}
-  <p class="pie-nota">Fibra: {Math.round(m.f)} g. Pesos en crudo; legumbres y conservas, escurridas.</p>
+  <p class="pie-nota">Fibra: {Math.round(m.f)} g.</p>
   {#if diaIdx !== undefined && franja}
     <button class="boton boton-sec ancho" onclick={() => abrirHoja('alternativas', { diaIdx, franja })}><Icono e="🔄" tam={18} /> Cambiar este plato</button>
   {/if}
@@ -59,6 +53,7 @@
   .grandes b { font-size: 1.1rem; font-weight: 800; }
   .grandes span { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
   .grandes .p { background: var(--coral-claro); } .grandes .c { background: var(--amarillo-claro); } .grandes .g { background: var(--azul-claro); }
-  .caja { background: var(--superficie); padding: 14px; border-radius: var(--radio-s); box-shadow: var(--sombra); }
   .ancho { width: 100%; margin-top: 12px; }
+  .adaptada { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: var(--superficie-2); font-size: 0.84rem; color: var(--texto-2); }
+  .adaptada :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
 </style>

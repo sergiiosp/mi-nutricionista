@@ -6,7 +6,8 @@
 //   kcal, p (proteína), c (hidratos disponibles), g (grasa), f (fibra)
 //   grupo: proteina | hidrato | fruta | verdura | grasa | lacteo | otros
 //   dieta: carne | cerdo | pescado | marisco | huevo | lacteo | vegetal  (para filtros de dieta)
-//   al: alérgenos / intolerancias (gluten, lactosa, huevo, pescado, marisco, frutos_secos, soja)
+//   al: alérgenos / intolerancias (gluten, lactosa, huevo, pescado, marisco, soja y cada fruto seco por separado:
+//       almendra, avellana, nueces, anacardo, pistacho, cacahuete; frutos_secos = mezcla o sin especificar)
 //   mercadona: id del producto en tienda.mercadona.es (precio y envase en data/precios.js)
 //   rendimiento: fracción comestible (piel, hueso, corazón...). Por defecto 1
 //   unidad: { n: nombre singular, pl: plural, g: gramos comestibles por unidad }
@@ -97,9 +98,11 @@ export const ALIMENTOS = {
 
   // ── Grasas ───────────────────────────────────────────────────────────────
   aceite: { nombre: 'Aceite de oliva virgen extra', kcal: 884, p: 0, c: 0, g: 100, f: 0, grupo: 'grasa', dieta: 'vegetal', al: [], mercadona: '4740', envaseG: 916, despensa: true },
-  nueces: { nombre: 'Nueces peladas', kcal: 654, p: 15, c: 7, g: 65, f: 6.5, grupo: 'grasa', dieta: 'vegetal', al: ['frutos_secos'], mercadona: '34024' },
-  almendras: { nombre: 'Almendras naturales', kcal: 600, p: 21, c: 7, g: 52, f: 12, grupo: 'grasa', dieta: 'vegetal', al: ['frutos_secos'], mercadona: '34865' },
-  crema_cacahuete: { nombre: 'Crema de cacahuete 100%', kcal: 595, p: 26, c: 10, g: 49, f: 8, grupo: 'grasa', dieta: 'vegetal', al: ['frutos_secos'], mercadona: '16883' },
+  nueces: { nombre: 'Nueces peladas', kcal: 654, p: 15, c: 7, g: 65, f: 6.5, grupo: 'grasa', dieta: 'vegetal', al: ['nueces'], mercadona: '34024' },
+  almendras: { nombre: 'Almendras naturales', kcal: 600, p: 21, c: 7, g: 52, f: 12, grupo: 'grasa', dieta: 'vegetal', al: ['almendra'], mercadona: '34865' },
+  crema_cacahuete: { nombre: 'Crema de cacahuete 100%', kcal: 595, p: 26, c: 10, g: 49, f: 8, grupo: 'grasa', dieta: 'vegetal', al: ['cacahuete'], mercadona: '16883' },
+  // Sin producto en Mercadona: solo para cerrar la proteína del día si usas suplemento
+  proteina_whey: { nombre: 'Proteína whey en polvo', kcal: 380, p: 75, c: 8, g: 6, f: 0, grupo: 'proteina', dieta: 'lacteo', al: ['lactosa'], unidad: { n: 'cacito', pl: 'cacitos', g: 30 } },
   chia: { nombre: 'Semillas de chía', kcal: 490, p: 17, c: 8, g: 31, f: 34, grupo: 'grasa', dieta: 'vegetal', al: [], mercadona: '5464' },
 
   // ── Lácteos y bebidas ────────────────────────────────────────────────────
@@ -134,13 +137,22 @@ export const ESPECIAS = {
   ajo_polvo: { nombre: 'Ajo granulado', mercadona: '86656' },
 };
 
+// Frutos secos: cada uno por separado (hay quien tolera unos y otros no)
+export const FRUTOS_SECOS = ['cacahuete', 'nueces', 'avellana', 'anacardo', 'almendra', 'pistacho'];
+
 export const ALERGENOS = {
   gluten: 'Gluten',
   lactosa: 'Lactosa',
   huevo: 'Huevo',
   pescado: 'Pescado',
   marisco: 'Marisco',
-  frutos_secos: 'Frutos secos / cacahuete',
+  cacahuete: 'Cacahuete',
+  nueces: 'Nueces',
+  avellana: 'Avellana',
+  anacardo: 'Anacardo',
+  almendra: 'Almendra',
+  pistacho: 'Pistacho',
+  frutos_secos: 'Todos los frutos secos',
   soja: 'Soja',
   verdura_cruda: 'Verdura cruda (salvo lechuga y pepino)',
   fruta_piel: 'Fruta con piel (manzana, pera, melocotón…)',

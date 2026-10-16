@@ -3,13 +3,20 @@
   import Emoji from '../../components/Emoji.svelte';
   import { estado, actualizar, nuevoId } from '../../stores/estado.js';
   import { avisar } from '../../stores/ui.js';
-  import { hoyISO } from '../../lib/planificador.js';
+  import { hoyISO, sumarDias } from '../../lib/planificador.js';
   import { guardarFoto, urlFoto, borrarFoto } from '../../lib/fotos.js';
   import { fechaCorta } from '../../lib/formato.js';
 
   let entrada;
+  let pose = $state('frente');
+  const POSES = [['frente', 'De frente'], ['lado', 'De lado'], ['espalda', 'De espaldas']];
+  let corte = $state(50); // posición del deslizador antes/ahora
   let urls = $state({});
   const fotos = $derived([...($estado.fotosProgreso || [])].sort((a, b) => a.fecha.localeCompare(b.fecha)));
+  // Se comparan fotos de la misma pose (las antiguas sin pose cuentan como «de frente»)
+  const dePose = $derived(fotos.filter((f) => (f.pose || 'frente') === pose));
+  const ultimaFecha = $derived(fotos.at(-1)?.fecha);
+  const proxima = $derived(ultimaFecha ? sumarDias(ultimaFecha, 14) : null);
 
   $effect(() => {
     for (const f of fotos) {
@@ -22,7 +29,7 @@
     if (!archivo) return;
     const id = nuevoId();
     await guardarFoto(id, archivo);
-    actualizar((e) => { (e.fotosProgreso ||= []).push({ id, fecha: hoyISO() }); });
+    actualizar((e) => { (e.fotosProgreso ||= []).push({ id, fecha: hoyISO(), pose }); });
     avisar('Foto guardada solo en este dispositivo', '📸');
     ev.currentTarget.value = '';
   }
@@ -34,17 +41,42 @@
   }
 </script>
 
-<div class="tarjeta intro"><Emoji e="🔒" tam={32} /><p>Tus fotos se guardan <b>solo en este dispositivo</b>; no se suben a ningún sitio. Hazlas siempre con la misma luz, ropa y postura (de frente, de lado y de espaldas).</p></div>
-<button class="boton ancho" onclick={() => entrada.click()}><Icono e="📸" tam={18} /> Añadir foto de hoy</button>
+<div class="tarjeta intro">
+  <Emoji e="📸" tam={32} />
+  <div>
+    <p><b>Para qué sirve:</b> el espejo engaña porque te ves cada día. Con una foto cada 2 semanas, misma pose y misma luz, aquí comparas el antes y el ahora deslizando una sobre otra.</p>
+    <p class="mini"><Icono n="lock" tam={13} /> Se guardan <b>solo en este dispositivo</b>; no se suben a ningún sitio ni se sincronizan.</p>
+  </div>
+</div>
+<div class="tarjeta como">
+  <b>Cómo hacerlas bien</b>
+  <ul>
+    <li>Por la mañana, en ayunas y con la misma ropa (bañador o ropa interior).</li>
+    <li>Misma luz y mismo sitio: delante de una pared lisa, luz de frente (no a contraluz).</li>
+    <li>Móvil a la altura del pecho, a unos 2 m, apoyado o con temporizador. Brazos relajados, sin apretar.</li>
+    <li>Tres fotos: de frente, de lado y de espaldas. Elige la pose antes de hacerla.</li>
+  </ul>
+  {#if proxima}<p class="pie-nota">Última foto el {fechaCorta(ultimaFecha)}. {proxima <= hoyISO() ? 'Ya toca la siguiente.' : `La siguiente, a partir del ${fechaCorta(proxima)}.`}</p>{/if}
+</div>
+<div class="poses" role="radiogroup" aria-label="Pose">
+  {#each POSES as [v, n] (v)}<button role="radio" aria-checked={pose === v} class:activo={pose === v} onclick={() => (pose = v)}>{n}</button>{/each}
+</div>
+<button class="boton ancho" onclick={() => entrada.click()}><Icono e="📸" tam={18} /> Añadir foto {POSES.find(([v]) => v === pose)[1].toLowerCase()}</button>
 <input bind:this={entrada} type="file" accept="image/*" capture="user" hidden onchange={añadir} />
 
-{#if fotos.length >= 2}
+{#if dePose.length >= 2}
+  {@const antes = dePose[0]}
+  {@const ahora = dePose.at(-1)}
   <h2 class="seccion">Antes y ahora</h2>
-  <div class="comparar">
-    {#each [fotos[0], fotos.at(-1)] as f, i (f.id + i)}
-      <figure>{#if urls[f.id]}<img src={urls[f.id]} alt="Foto de progreso del {fechaCorta(f.fecha)}" />{/if}<figcaption>{i ? 'Ahora' : 'Antes'} · {fechaCorta(f.fecha)}</figcaption></figure>
-    {/each}
+  <div class="deslizar">
+    {#if urls[antes.id]}<img src={urls[antes.id]} alt="Antes, {fechaCorta(antes.fecha)}" />{/if}
+    {#if urls[ahora.id]}<img class="encima" src={urls[ahora.id]} alt="Ahora, {fechaCorta(ahora.fecha)}" style="clip-path: inset(0 0 0 {corte}%)" />{/if}
+    <span class="raya" style="left:{corte}%"></span>
+    <span class="et izq">Antes · {fechaCorta(antes.fecha)}</span><span class="et der">Ahora · {fechaCorta(ahora.fecha)}</span>
   </div>
+  <input class="corte" type="range" min="0" max="100" bind:value={corte} aria-label="Deslizar entre antes y ahora" />
+{:else if fotos.length}
+  <p class="pie-nota">Cuando tengas dos fotos {POSES.find(([v]) => v === pose)[1].toLowerCase()}, aquí las podrás comparar.</p>
 {/if}
 
 {#if fotos.length}
@@ -61,7 +93,18 @@
 
 <style>
   .intro { display: flex; gap: 12px; align-items: flex-start; }
-  .intro p { margin: 0; font-size: 0.9rem; font-weight: 600; }
+  .intro p { margin: 0 0 6px; font-size: 0.9rem; font-weight: 600; }
+  .intro .mini { font-size: 0.78rem; color: var(--texto-2); display: flex; gap: 6px; align-items: center; }
+  .como ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.85rem; color: var(--texto-2); }
+  .poses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 10px; }
+  .poses button { min-height: 44px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .poses button.activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
+  .deslizar { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 3 / 4; background: var(--superficie-2); }
+  .deslizar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .raya { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 8px rgb(0 0 0 / 0.5); }
+  .et { position: absolute; bottom: 8px; padding: 3px 8px; border-radius: 999px; background: rgb(0 0 0 / 0.55); color: #fff; font-size: 0.72rem; font-weight: 700; }
+  .et.izq { left: 8px; } .et.der { right: 8px; }
+  .corte { width: 100%; margin: 10px 0 0; accent-color: var(--primario); }
   .ancho { width: 100%; }
   .comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }

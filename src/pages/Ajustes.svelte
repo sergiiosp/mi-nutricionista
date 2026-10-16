@@ -38,7 +38,7 @@
     const blob = new Blob([exportar()], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `mi-nutricionista-${hoyISO()}.json`;
+    a.download = `pulso-${hoyISO()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   }

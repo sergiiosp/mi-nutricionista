@@ -92,15 +92,33 @@ const RAPIDOS = [
   { a: 'jamon_serrano', g: 40 }, { a: 'queso_burgos_0', g: 125 }, { a: 'platano', g: 110 }, { a: 'manzana', g: 170 },
   { a: 'tortitas_arroz', g: 23 }, { a: 'pan_integral', g: 60 }, { a: 'avena', g: 40 }, { a: 'leche_semi', g: 250 },
   { a: 'almendras', g: 20 }, { a: 'nueces', g: 15 }, { a: 'crema_cacahuete', g: 15 }, { a: 'kiwi', g: 85 },
+  // Embutidos magros, más lácteos proteicos y frutos secos tostados
+  { a: 'lomo_embuchado', g: 40 }, { a: 'lomo_pavo', g: 60 }, { a: 'pollo_braseado_lonchas', g: 75 }, { a: 'jamon_cocido_extra', g: 60 },
+  { a: 'postre_proteinas_fresa', g: 120 }, { a: 'huevos_cocidos', g: 104 }, { a: 'almendra_tostada', g: 20 }, { a: 'pistacho', g: 20 },
+  { a: 'tortitas_maiz', g: 23 }, { a: 'bebida_soja', g: 250 }, { a: 'bebida_avena', g: 250 }, { a: 'arroz_vasito', g: 125 },
 ];
+// Proteína en polvo: solo si dices que la tienes
+const WHEY = [{ a: 'proteina_whey', g: 30 }, { a: 'proteina_whey', g: 45 }];
+
+/** Qué macros te faltan de verdad (para decírtelo en una frase). */
+export function faltas(hueco, entreno = false) {
+  const l = [];
+  if (hueco.p >= 10) l.push({ macro: 'p', nombre: 'proteína', g: Math.round(hueco.p) });
+  if (hueco.c >= (entreno ? 30 : 40)) l.push({ macro: 'c', nombre: 'hidratos', g: Math.round(hueco.c) });
+  if (hueco.g >= 15) l.push({ macro: 'g', nombre: 'grasa', g: Math.round(hueco.g) });
+  return l;
+}
 
 /**
  * Hasta 3 opciones (1 o 2 alimentos) que tapan el hueco de macros que queda, priorizando la proteína.
  * @param hueco macros que faltan { kcal, p, c, g }
  */
 export function sugerencias(hueco, perfil) {
-  if (hueco.kcal < 120 && hueco.p < 12) return [];
-  const opciones = RAPIDOS.filter((x) => alimentoPermitido(x.a, perfil)).map((x) => ({ items: [x], m: macrosDe(x.a, x.g) }));
+  if (hueco.kcal < 120 && hueco.p < 10 && hueco.c < 30 && hueco.g < 15) return [];
+  const vaca = !perfil.leche || perfil.leche === 'vaca';
+  const base = [...RAPIDOS, ...(perfil.whey ? WHEY : [])]
+    .filter((x) => alimento(x.a) && alimentoPermitido(x.a, perfil) && (vaca || !x.a.startsWith('leche_')));
+  const opciones = base.map((x) => ({ items: [x], m: macrosDe(x.a, x.g) }));
   const combinadas = [...opciones];
   for (let i = 0; i < opciones.length; i++) {
     for (let j = i + 1; j < opciones.length; j++) {
@@ -109,10 +127,14 @@ export function sugerencias(hueco, perfil) {
     }
   }
   const pesoP = hueco.p > 15 ? 3 : 1;
+  const pesoC = hueco.c > 30 ? 1.5 : 0.3;
+  const pesoG = hueco.g > 15 ? 1 : 0.2;
   const puntuar = ({ m, items }) => {
-    const exceso = Math.max(0, m.kcal - hueco.kcal * 1.1);
-    return Math.abs(m.kcal - hueco.kcal) / Math.max(hueco.kcal, 150)
+    const exceso = Math.max(0, m.kcal - Math.max(hueco.kcal, 150) * 1.1);
+    return Math.abs(m.kcal - Math.max(hueco.kcal, 0)) / Math.max(hueco.kcal, 150)
       + (pesoP * Math.abs(m.p - Math.max(hueco.p, 0))) / Math.max(hueco.p, 20)
+      + (pesoC * Math.abs(m.c - Math.max(hueco.c, 0))) / Math.max(hueco.c, 30)
+      + (pesoG * Math.abs(m.g - Math.max(hueco.g, 0))) / Math.max(hueco.g, 10)
       + exceso / 100 + (items.length - 1) * 0.15;
   };
   const vistas = new Set();

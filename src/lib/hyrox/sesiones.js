@@ -39,6 +39,16 @@ const EXIGENCIA = {
   exigente: { series: 1, rir: '1-2', duracion: 1.15, rpe: 1 },
   muy: { series: 1, rir: '0-1', duracion: 1.3, rpe: 2, tecnicas: true },
 };
+// Ejercicios con series para apuntar kilos y repeticiones (los de tiempo o sprints no se registran)
+function aRegistrables(lista, lesiones) {
+  return lista
+    .map(([id, series]) => {
+      const e = ejercicio(id, lesiones);
+      const m = /^(\d+) × (.+)$/.exec(series);
+      return { id: e.id, nombre: e.nombre, grupo: e.grupo, series: m ? Number(m[1]) : 3, reps: (m ? m[2] : series).replace(/\s*\(.*\)$/, '') };
+    })
+    .filter((x) => x.grupo && !/\d\s*(s|m)\b/.test(x.reps) && x.id !== 'sprint_cuesta');
+}
 const masSeries = (txt, k) => (k ? txt.replace(/^(\d+) ×/, (_, n) => `${Number(n) + k} ×`) : txt);
 
 const MEDIA = { ski: '500 m', push: '25 m', pull: '25 m', bbj: '40 m', row: '500 m', farmers: '100 m', lunges: '50 m', wallballs: '50 reps' };
@@ -86,6 +96,7 @@ export function construirSesion(ctx) {
   let distancia = 0;
   const bloques = [];
   const notas = [];
+  let ejercicios = [];
 
   switch (tipo) {
     case 'rodaje': {
@@ -177,6 +188,7 @@ export function construirSesion(ctx) {
           return `${e.nombre}: ${series}${e.alternativa ? ' (alternativa por tu lesión)' : ''}`;
         }),
       });
+      ejercicios = aRegistrables(lista, lesiones);
       notas.push(sinGym ? 'Sin máquinas: haz las repeticiones lentas y controladas (3 s al bajar) para que cueste de verdad. Descansa 60-90 s.' : `Termina cada serie con ${ex.rir} repeticiones en reserva. Descansa 90-120 s en los ejercicios grandes.`);
       if (ex.tecnicas && fase !== 'taper') notas.push('Muy exigente: en la última serie de los dos últimos ejercicios haz un dropset (baja el peso un 25-30 % y sigue hasta el fallo técnico).');
       duracion = fase === 'taper' ? 30 : Math.round(55 * ex.duracion * Math.min(1, factor + 0.1));
@@ -204,6 +216,7 @@ export function construirSesion(ctx) {
           return `${e.nombre}: ${series}${e.alternativa ? ' (alternativa por tu lesión)' : ''}`;
         }),
       });
+      ejercicios = aRegistrables(lista, lesiones);
       notas.push(`Hipertrofia: controla la bajada (2-3 s) y termina cada serie con ${ex.rir} repeticiones en reserva. Descansa 60-90 s (2 min en los primeros ejercicios).`);
       if (ex.tecnicas && fase !== 'taper' && !sinGym) notas.push('Muy exigente: haz los dos ejercicios de brazos en superserie (uno detrás de otro sin descanso) y un dropset en la última serie de elevaciones o face pull.');
       notas.push('Sube peso o repeticiones cada semana que puedas: es lo que hace crecer el músculo.');
@@ -284,6 +297,7 @@ export function construirSesion(ctx) {
     bloques,
     vueltaCalma: VUELTA_CALMA[T.clase] || [],
     notas,
+    ejercicios,
     sinGym,
   };
 }

@@ -33,7 +33,7 @@ export function racionesAlimento(id) {
     r.push({ nombre: '1 puñado', emoji: '🤲', g: 40 }, { nombre: '2 puñados', emoji: '🤲', g: 80 });
   } else if (id === 'aceite') {
     r.push({ nombre: '1 cucharadita', emoji: '🥄', g: 4 }, { nombre: '1 cucharada', emoji: '🥄', g: 10 }, { nombre: '2 cucharadas', emoji: '🥄', g: 20 });
-  } else if (['nueces', 'almendras'].includes(id)) {
+  } else if (['nueces', 'almendras', 'almendra_tostada', 'pistacho', 'pipas_girasol', 'pipas_calabaza', 'mezcla_semillas'].includes(id)) {
     r.push({ nombre: '1 puñadito', emoji: '🤏', g: 15 }, { nombre: '1 puñado', emoji: '🤲', g: 30 });
   } else if (['crema_cacahuete', 'miel', 'confitura', 'chia', 'cacao'].includes(id)) {
     r.push({ nombre: '1 cucharadita', emoji: '🥄', g: id === 'miel' ? 7 : 5 }, { nombre: '1 cucharada', emoji: '🥄', g: 15 });
@@ -50,6 +50,12 @@ export function racionesAlimento(id) {
   }
   r.push({ nombre: '100 g', emoji: '⚖️', g: 100 });
   return r;
+}
+
+/** Cantidad típica para añadir un alimento de una vez (la ración del medio). */
+export function racionTipica(id) {
+  const r = racionesAlimento(id);
+  return Math.round((r.length > 2 ? r[1] : r[0])?.g || 100);
 }
 
 /** Raciones para un producto de Open Food Facts. */

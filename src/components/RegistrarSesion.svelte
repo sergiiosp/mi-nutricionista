@@ -2,6 +2,9 @@
   // Registrar cómo fue una sesión: estado, duración, RPE, sensaciones y marcas según el tipo
   import { get } from 'svelte/store';
   import Emoji from './Emoji.svelte';
+  import Icono from './Icono.svelte';
+  import CampoTiempo from './CampoTiempo.svelte';
+  import { ultimaVez } from '../lib/hyrox/fuerza.js';
   import { estado } from '../stores/estado.js';
   import { cerrarHoja, avisar, celebrar } from '../stores/ui.js';
   import { planDe } from '../lib/hyrox/index.js';
@@ -27,6 +30,22 @@
   const estacionesSesion = s?.tipo === 'carrera' || /completo/i.test(s?.titulo || '') ? ESTACIONES
     : s?.tipo === 'simulacro' ? (/5-8/.test(s.titulo) ? ESTACIONES.slice(4) : ESTACIONES.slice(0, 4)) : [];
   let tiemposEst = $state(Object.fromEntries(estacionesSesion.map((x) => [x.id, previo.estaciones?.[x.id] ? mmss(previo.estaciones[x.id]) : ''])));
+  // Kilos y repeticiones por serie (opcional): solo se guardan los ejercicios que abras
+  const ejercicios = s?.ejercicios || [];
+  const ultimas = Object.fromEntries(ejercicios.map((ej) => [ej.id, ultimaVez(e.hyrox?.registros, ej.id, id, planDe(e))]));
+  let cargas = $state(Object.fromEntries(Object.entries(previo.series || {}).map(([k, l]) => [k, l.map((x) => ({ kg: x.kg ?? '', reps: x.reps ?? '' }))])));
+  const objetivoReps = (ej) => Number(/\d+/.exec(ej.reps)?.[0]) || '';
+  function abrir(ej) {
+    if (cargas[ej.id]) { delete cargas[ej.id]; return; }
+    const antes = ultimas[ej.id]?.series || [];
+    cargas[ej.id] = Array.from({ length: Math.max(ej.series, antes.length) }, (_, i) => {
+      const x = antes[i] || antes.at(-1);
+      return { kg: x?.kg ?? '', reps: x?.reps ?? objetivoReps(ej) };
+    });
+  }
+  const resumen = (u) => (u ? `${String(u.kg).replace('.', ',')} kg × ${u.reps}` : '');
+  const numero = (v) => Number(String(v).replace(',', '.')) || 0;
+
   const CARAS = ['😴', '😌', '🙂', '😊', '😐', '😅', '😤', '😰', '🥵', '💀'];
 
   function guardar() {
@@ -35,6 +54,14 @@
     if (['rodaje', 'largo'].includes(s.tipo) && Number(distancia) > 0) datos.distancia = Number(String(distancia).replace(',', '.'));
     if (['simulacro', 'compromised', 'estaciones', 'carrera'].includes(s.tipo) && aSegundos(tiempo)) datos.tiempo = aSegundos(tiempo);
     if (s.tipo === 'fuerza' && Number(peso) > 0) datos.peso = Number(peso);
+    datos.fecha = s.fecha;
+    const series = Object.fromEntries(Object.entries(cargas)
+      .map(([k, l]) => [k, l.map((x) => ({ kg: numero(x.kg), reps: Math.round(numero(x.reps)) })).filter((x) => x.kg > 0 || x.reps > 0)])
+      .filter(([, l]) => l.length));
+    if (situacion !== 'no' && Object.keys(series).length) {
+      datos.series = series;
+      if (series.sentadilla) datos.peso = Math.max(...series.sentadilla.map((x) => x.kg));
+    }
     if (conEstaciones) {
       datos.estaciones = Object.fromEntries(Object.entries(tiemposEst).map(([k, v]) => [k, aSegundos(v)]).filter(([, v]) => v > 0));
     }
@@ -69,20 +96,50 @@
     </fieldset>
 
     {#if ['series', 'umbral'].includes(s.tipo)}
-      <label class="campo"><span>Ritmo medio de las series (min/km)</span><input bind:value={ritmo} placeholder="4:55" inputmode="numeric" /></label>
+      <CampoTiempo etiqueta="Ritmo medio de las series (min/km)" bind:value={ritmo} ejemplo="4:55" />
     {:else if ['rodaje', 'largo'].includes(s.tipo)}
       <label class="campo"><span>Distancia (km)</span><input type="number" step="0.1" bind:value={distancia} inputmode="decimal" placeholder={String(s.distancia || '')} /></label>
-    {:else if s.tipo === 'fuerza'}
+    {:else if s.tipo === 'fuerza' && !ejercicios.length}
       <label class="campo"><span>Peso en la sentadilla (kg)</span><input type="number" step="2.5" bind:value={peso} inputmode="decimal" /></label>
     {/if}
+    {#if ejercicios.length}
+      <div class="pesos">
+        <p class="pesos-cab"><b>Pesos</b> <small>opcional: toca un ejercicio para apuntar kilos y repeticiones</small></p>
+        {#each ejercicios as ej (ej.id)}
+          {@const u = ultimas[ej.id]}
+          <div class="ej" class:abierto={cargas[ej.id]}>
+            <button class="ej-cab" onclick={() => abrir(ej)} aria-expanded={!!cargas[ej.id]}>
+              <span><b>{ej.nombre}</b><small>{ej.series} × {ej.reps}{#if u} · última vez {resumen(u)}{/if}</small></span>
+              <Icono n={cargas[ej.id] ? 'minus' : 'plus'} tam={18} />
+            </button>
+            {#if cargas[ej.id]}
+              {#each cargas[ej.id] as serie, i (i)}
+                <div class="serie">
+                  <span class="n">{i + 1}</span>
+                  <input type="number" step="0.5" min="0" inputmode="decimal" bind:value={serie.kg} placeholder="kg" aria-label="Kilos de la serie {i + 1}" />
+                  <i>kg ×</i>
+                  <input type="number" min="0" inputmode="numeric" bind:value={serie.reps} placeholder="reps" aria-label="Repeticiones de la serie {i + 1}" />
+                  <i>reps</i>
+                  {#if cargas[ej.id].length > 1}
+                    <button class="quitar" aria-label="Quitar la serie {i + 1}" onclick={() => cargas[ej.id].splice(i, 1)}><Icono n="x" tam={16} /></button>
+                  {/if}
+                </div>
+              {/each}
+              <button class="enlace" onclick={() => cargas[ej.id].push({ ...(cargas[ej.id].at(-1) || { kg: '', reps: '' }) })}>+ otra serie</button>
+            {/if}
+          </div>
+        {/each}
+        <p class="pie-nota">Con esto veo en Progreso → Entreno si subes de fuerza y qué zona va más floja.</p>
+      </div>
+    {/if}
     {#if ['simulacro', 'compromised', 'estaciones', 'carrera'].includes(s.tipo)}
-      <label class="campo"><span>Tiempo total (mm:ss o h:mm:ss)</span><input bind:value={tiempo} placeholder={s.tipo === 'carrera' ? '1:25:00' : '45:00'} inputmode="numeric" /></label>
+      <CampoTiempo etiqueta="Tiempo total" bind:value={tiempo} horas ejemplo={s.tipo === 'carrera' ? '1:25:00' : '0:45:00'} />
     {/if}
     {#if conEstaciones}
       <p class="pie-nota">Tiempo de cada estación (opcional): mejora tu estimación de carrera.</p>
       <div class="estaciones">
         {#each estacionesSesion as est (est.id)}
-          <label class="campo"><span>{est.emoji} {est.nombre}</span><input bind:value={tiemposEst[est.id]} placeholder="4:30" inputmode="numeric" /></label>
+          <CampoTiempo etiqueta={est.nombre} bind:value={tiemposEst[est.id]} ejemplo="4:30" />
         {/each}
       </div>
     {/if}
@@ -105,7 +162,20 @@
   .rpe input { width: 100%; accent-color: var(--primario); margin: 10px 0 2px; }
   .rpe-ley { display: flex; justify-content: space-between; color: var(--texto-2); font-weight: 700; }
   .estaciones { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
-  .estaciones .campo { margin: 6px 0; }
-  .estaciones .campo span { font-size: 0.8rem; }
+  .estaciones :global(.campo-tiempo) { margin: 6px 0; }
   .ancho { width: 100%; margin-top: 6px; }
+  .pesos { margin: 14px 0 4px; }
+  .pesos-cab { margin: 0 0 8px; display: grid; }
+  .pesos-cab small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
+  .ej { border-top: 1px solid var(--linea); }
+  .ej-cab { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 52px; padding: 8px 0; border: 0; background: none; color: var(--texto); text-align: left; cursor: pointer; font: inherit; }
+  .ej-cab span { display: grid; }
+  .ej-cab small { color: var(--texto-2); font-size: 0.78rem; font-weight: 600; }
+  .ej.abierto .ej-cab { color: var(--primario); }
+  .serie { display: grid; grid-template-columns: 20px 1fr auto 1fr auto 36px; gap: 6px; align-items: center; margin: 4px 0; }
+  .serie .n { font-weight: 800; color: var(--texto-3); font-size: 0.8rem; }
+  .serie input { width: 100%; min-height: 42px; padding: 6px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+  .serie i { font-style: normal; font-size: 0.78rem; color: var(--texto-2); font-weight: 600; }
+  .quitar { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--superficie-2); color: var(--texto-2); display: grid; place-items: center; cursor: pointer; }
+  .ej .enlace { margin: 2px 0 10px; }
 </style>

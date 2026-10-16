@@ -118,4 +118,36 @@ comprobar(planE.dias.every((d) => d.comidas.some((c) => c.franja === 'desayuno')
 const fav = 'combo:d:cereales_trigo_0+bebida_almendra+yogur_proteinas+platano';
 const planF = generarPlan(perfilD, calcularObjetivos(perfilD), { inicio: '2026-10-19', semilla: 5, favoritas: [fav] });
 comprobar(planF.dias.some((d) => d.comidas.some((c) => c.recetaId === fav)), 'Menú: usa tus comidas favoritas');
+
+// ── Alergias por fruto seco y recetas adaptadas ───────────────────────────
+const { alimentoPermitido } = await import('../src/lib/nutricion.js');
+const { adaptarReceta } = await import('../src/lib/sustituciones.js');
+const alergicoNueces = { ...perfilD, alergias: ['cacahuete', 'nueces', 'avellana', 'anacardo'], leche: 'avena' };
+comprobar(alimentoPermitido('almendra_tostada', alergicoNueces) && alimentoPermitido('pistacho', alergicoNueces)
+  && !alimentoPermitido('crema_cacahuete', alergicoNueces) && !alimentoPermitido('frutos_secos_mix', alergicoNueces),
+'Alergias: con cacahuete y nueces sí se permiten almendra y pistacho, pero no la mezcla de frutos secos');
+comprobar(!alimentoPermitido('pistacho', { ...perfilD, alergias: ['frutos_secos'] }), 'Alergias: «todos los frutos secos» bloquea también el pistacho');
+const porridge = adaptarReceta(RECETAS.find((r) => r.id === 'porridge-proteico'), alergicoNueces);
+comprobar(porridge.ingredientes.some((i) => i.a === 'almendra_tostada') && porridge.ingredientes.some((i) => i.a === 'bebida_avena')
+  && !/cacahuete|leche/i.test(porridge.pasos.join(' ')) && recetaPermitida(porridge, alergicoNueces),
+'Recetas: el porridge cambia la crema de cacahuete por almendra tostada y la leche por bebida de avena');
+const planN = generarPlan(alergicoNueces, calcularObjetivos(alergicoNueces), { inicio: '2026-10-19', semilla: 7 });
+comprobar(planN.dias.every((d) => d.comidas.every((c) => c.ingredientes.every((i) => alimentoPermitido(i.a, alergicoNueces) && !i.a.startsWith('leche_')))),
+  'Menú: con alergia a nueces y bebida vegetal no aparece nada prohibido ni leche de vaca');
+
+// ── Pesos por serie y progresión por zonas ────────────────────────────────
+const { historialFuerza, progresoGrupos } = await import('../src/lib/hyrox/fuerza.js');
+const regsF = {
+  a: { estado: 'completa', fecha: '2026-09-01', series: { press_banca: [{ kg: 60, reps: 8 }], sentadilla: [{ kg: 80, reps: 6 }] } },
+  b: { estado: 'completa', fecha: '2026-10-10', series: { press_banca: [{ kg: 65, reps: 8 }], sentadilla: [{ kg: 80, reps: 5 }] } },
+};
+const pg = progresoGrupos(historialFuerza(regsF), '2026-10-16');
+comprobar(pg.grupos.find((g) => g.grupo === 'pecho').cambio > 5 && pg.flojo?.grupo === 'pierna', 'Fuerza: el pecho sube y la pierna sale como la zona más floja');
+const torsoA = ph6.sesiones.find((s) => s.tipo === 'torso');
+comprobar(torsoA.ejercicios.length >= 5 && torsoA.ejercicios.every((x) => x.series > 0 && x.grupo), 'Fuerza: las sesiones de torso traen sus ejercicios para apuntar kilos');
+
+// ── Sugerencias para cerrar el día ────────────────────────────────────────
+const { sugerencias } = await import('../src/lib/dia.js');
+const sug = sugerencias({ kcal: 60, p: 30, c: 0, g: 0 }, { ...alergicoNueces, whey: true });
+comprobar(sug.length && sug[0].m.p >= 20, `Sugerencias: si solo falta proteína se propone algo proteico (${sug[0]?.nombre})`);
 if (fallosH) process.exitCode = 1;

@@ -9,6 +9,7 @@
   import { guardarHyrox } from '../../lib/acciones.js';
   import { hoyISO } from '../../lib/planificador.js';
   import { aSegundos, mmss } from '../../lib/hyrox/ritmos.js';
+  import CampoTiempo from '../../components/CampoTiempo.svelte';
 
   let { onguardado, oncancelar = null } = $props();
   const e = get(estado);
@@ -88,9 +89,9 @@
   <h2 class="seccion"><Emoji e="⏱️" tam={24} /> Tus marcas</h2>
   <p class="pie-nota">Con ellas calculo tus ritmos y tu tiempo estimado. Si no las sabes, déjalas vacías y uso las de tu nivel.</p>
   <div class="fila-campos">
-    <label class="campo"><span>5 km</span><input bind:value={t5k} placeholder="25:00" inputmode="numeric" /></label>
-    <label class="campo"><span>SkiErg 1.000 m</span><input bind:value={ski} placeholder="4:30" inputmode="numeric" /></label>
-    <label class="campo"><span>Remo 1.000 m</span><input bind:value={row} placeholder="4:10" inputmode="numeric" /></label>
+    <CampoTiempo etiqueta="5 km" bind:value={t5k} ejemplo="25:00" />
+    <CampoTiempo etiqueta="SkiErg 1.000 m" bind:value={ski} ejemplo="4:30" />
+    <CampoTiempo etiqueta="Remo 1.000 m" bind:value={row} ejemplo="4:10" />
   </div>
 
   <h2 class="seccion"><Emoji e="🗓️" tam={24} /> Disponibilidad</h2>

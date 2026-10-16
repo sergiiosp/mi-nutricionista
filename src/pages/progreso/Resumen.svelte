@@ -1,6 +1,7 @@
 <script>
   import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
+  import RepasoSemanal from '../../components/RepasoSemanal.svelte';
   import { estado } from '../../stores/estado.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
@@ -13,6 +14,8 @@
   const r = $derived(rachas($estado, objetivos, hoy));
   const maxKcal = $derived(Math.max(...s.porDia.map((d) => Math.max(d.r?.m.kcal || 0, d.r?.od.kcal || objetivos.kcal))) * 1.1);
 </script>
+
+<RepasoSemanal />
 
 <div class="rachas">
   <div><Emoji e="🔥" tam={30} /><b>{r.registro}</b><small>días registrando</small></div>

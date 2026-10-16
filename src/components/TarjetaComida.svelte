@@ -3,6 +3,9 @@
   import FotoReceta from './FotoReceta.svelte';
   import Macros from './Macros.svelte';
   import Icono from './Icono.svelte';
+  import ListaIngredientes from './ListaIngredientes.svelte';
+  import ElegirAlimento from './ElegirAlimento.svelte';
+  import { racionTipica } from '../lib/raciones.js';
   import { recetaPorId } from '../lib/planificador.js';
   import { macrosComida, costeComida, cantidadTexto, alimento } from '../lib/nutricion.js';
   import { marcarHecha, alternarSaltada, quitarRegistro } from '../lib/acciones.js';
@@ -28,6 +31,11 @@
   function empezarEdicion() {
     editando = Object.fromEntries(comidos.map((i) => [i.a, i.g]));
     mas = false;
+  }
+  let añadiendo = $state(false);
+  function añadirAlimento(id) {
+    editando = { ...editando, [id]: (editando[id] || 0) + racionTipica(id) };
+    añadiendo = false;
   }
   function cambiar(a, delta) {
     editando = { ...editando, [a]: Math.max(0, Math.round((editando[a] || 0) + delta)) };
@@ -89,6 +97,14 @@
           <button aria-label="Más {alimento(a).nombre}" onclick={() => cambiar(a, PASO(a))}><Icono n="plus" tam={16} /></button>
         </div>
       {/each}
+      {#if añadiendo}
+        <div class="editor-anadir" transition:slide={{ duration: 160 }}>
+          <ElegirAlimento excluir={Object.keys(editando)} onelegir={añadirAlimento} max={30} />
+          <button class="enlace" onclick={() => (añadiendo = false)}>Cerrar</button>
+        </div>
+      {:else}
+        <button class="editor-mas" onclick={() => (añadiendo = true)}><Icono n="plus" tam={16} /> Añadir otro alimento</button>
+      {/if}
       <p class="editor-total">{Math.round(mEdit.kcal)} kcal, {Math.round(mEdit.p)} g de proteína</p>
       <div class="editor-acciones">
         <button class="boton boton-peq" onclick={guardarEdicion}>Guardar</button>
@@ -96,19 +112,9 @@
       </div>
     </div>
   {:else if abierta}
-    <ul class="ingredientes" transition:slide={{ duration: 180 }}>
-      {#each comidos as i (i.a)}
-        <li>
-          <span class="ing-cant">{cantidadTexto(i.a, i.g)}</span>
-          <span>{alimento(i.a).nombre}
-            {#if comida.ajustada && comida.ingredientesOriginales}
-              {@const antes = comida.ingredientesOriginales.find((x) => x.a === i.a)?.g}
-              {#if antes && Math.abs(antes - i.g) >= 5}<small class="antes">antes {cantidadTexto(i.a, antes)}</small>{/if}
-            {/if}
-          </span>
-        </li>
-      {/each}
-    </ul>
+    <div class="ing-caja" transition:slide={{ duration: 180 }}>
+      <ListaIngredientes ingredientes={comidos} antes={comida.ajustada ? comida.ingredientesOriginales : null} />
+    </div>
   {/if}
 
   {#snippet botonCantidades()}
@@ -148,7 +154,7 @@
       <button class="principal activo" aria-pressed="true" aria-label="Hecha. Toca para desmarcar" onclick={() => marcarHecha(fecha, comida)}>
         <Icono n="check" tam={17} grosor={2.6} /> Hecha
       </button>
-      {#if comida.registro}<button onclick={empezarEdicion}><Icono n="pencil" tam={16} /> Ajustar</button>{/if}
+      {#if comida.registro}<button onclick={empezarEdicion}><Icono n="pencil" tam={16} /> Ajustar o añadir</button>{/if}
       {@render botonMas()}
     </footer>
     {#if mas}
@@ -189,7 +195,7 @@
   .otro-kcal { white-space: nowrap; }
   .borrar { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 12px; background: none; color: var(--texto-2); cursor: pointer; }
   .borrar:hover { color: var(--texto); }
-  .ingredientes { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--linea); }
+  .ing-caja { margin-top: 12px; padding-top: 4px; border-top: 1px solid var(--linea); }
   .editor { margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
   .editor-cab { margin: 0 0 8px; font-weight: 600; font-size: 0.88rem; }
   .editor-fila { display: grid; grid-template-columns: 1fr 44px 64px 44px; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px solid var(--linea); }
@@ -197,6 +203,8 @@
   .editor-nombre small { color: var(--texto-3); }
   .editor-fila button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie-2); color: var(--texto); cursor: pointer; }
   .editor-fila input { width: 100%; min-height: 44px; padding: 4px 6px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .editor-mas { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 6px; padding: 0 10px; border: 1px dashed var(--borde); border-radius: 12px; background: none; color: var(--primario); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .editor-anadir { margin-top: 8px; padding: 8px; border-radius: 14px; background: var(--fondo); max-height: 420px; overflow-y: auto; }
   .editor-total { margin: 10px 0 0; font-size: 0.82rem; color: var(--texto-2); }
   .editor-acciones { display: flex; gap: 8px; margin-top: 10px; }
   .antes { display: block; color: var(--lila); font-weight: 600; font-size: 0.78rem; }

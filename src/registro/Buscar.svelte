@@ -2,6 +2,8 @@
   // Buscador único: alimentos, recetas, comidas propias, productos escaneados y Open Food Facts
   import { get } from 'svelte/store';
   import Emoji from '../components/Emoji.svelte';
+  import ElegirAlimento from '../components/ElegirAlimento.svelte';
+  import { adaptarReceta } from '../lib/sustituciones.js';
   import { ALIMENTOS } from '../data/alimentos.js';
   import { RECETAS } from '../data/recetas.js';
   import { estado } from '../stores/estado.js';
@@ -24,12 +26,12 @@
 
   const locales = $derived.by(() => {
     const q = normal(texto.trim());
-    if (q.length < 2) return [];
+    if (q.length < 1) return [];
     const alimentos = Object.entries(ALIMENTOS)
       .filter(([id, a]) => coincide(a.nombre, q) && alimentoPermitido(id, e.perfil))
-      .slice(0, 8)
+      .slice(0, 15)
       .map(([id, a]) => ({ clave: `a:${id}`, item: { tipo: 'alimento', id }, nombre: a.nombre, sub: `${a.kcal} kcal · P ${a.p} g por 100 ${a.medida || 'g'}`, emoji: emojiAlimento(id) }));
-    const recetas = RECETAS.filter((r) => coincide(r.nombre, q)).slice(0, 5)
+    const recetas = RECETAS.map((r) => adaptarReceta(r, e.perfil)).filter((r) => coincide(r.nombre, q)).slice(0, 5)
       .map((r) => ({ clave: `r:${r.id}`, item: { tipo: 'receta', receta: r }, nombre: r.nombre, sub: 'Receta · ración ajustada a ti', emoji: r.emoji }));
     const propias = e.propias.filter((p) => coincide(p.nombre, q))
       .map((p) => ({ clave: `p:${p.id}`, item: { tipo: 'propia', propia: p }, nombre: p.nombre, sub: `Mi comida · ${Math.round(p.macros.kcal)} kcal la ración`, emoji: p.emoji || '🍱' }));
@@ -38,27 +40,28 @@
     return [...propias, ...alimentos, ...recetas, ...productos];
   });
 
-  let temporizador;
+  // Productos envasados de internet (Open Food Facts): solo si los pides, porque a veces tarda
+  let buscado = $state('');
   function alEscribir() {
-    clearTimeout(temporizador);
     online = [];
     errorOnline = '';
-    if (texto.trim().length < 3) return;
-    temporizador = setTimeout(async () => {
-      cargando = true;
-      try {
-        const q = texto.trim();
-        const res = await buscarOFF(q);
-        if (texto.trim() === q) online = res.slice(0, 12);
-      } catch {
-        errorOnline = 'El buscador de productos está saturado ahora mismo. Prueba en unos segundos o escanea el código de barras.';
-      } finally {
-        cargando = false;
-      }
-    }, 450);
+    buscado = '';
+  }
+  async function buscarFuera() {
+    const q = texto.trim();
+    buscado = q;
+    cargando = true;
+    errorOnline = '';
+    try {
+      const res = await buscarOFF(q);
+      if (texto.trim() === q) online = res.slice(0, 12);
+    } catch {
+      errorOnline = 'El buscador de productos de internet no responde ahora mismo. Prueba en un rato o escanea el código de barras.';
+    } finally {
+      cargando = false;
+    }
   }
 
-  $effect(() => { entrada?.focus(); });
 </script>
 
 <div class="buscador-caja">
@@ -66,8 +69,8 @@
   <input bind:this={entrada} bind:value={texto} oninput={alEscribir} type="search" placeholder="Pollo, yogur, macarrones, Hacendado…" aria-label="Buscar alimento" />
 </div>
 
-{#if texto.trim().length < 2}
-  <p class="pie-nota centro">Escribe al menos 2 letras. Busca en tus comidas, en los alimentos de la app, en las recetas y en miles de productos envasados.</p>
+{#if !texto.trim()}
+  <ElegirAlimento conBuscador={false} onelegir={(id) => onelegir?.({ tipo: 'alimento', id })} />
 {/if}
 
 {#if locales.length}
@@ -83,8 +86,14 @@
   </ul>
 {/if}
 
-{#if texto.trim().length >= 3}
-  <h3 class="grupo">Productos envasados {#if cargando}<small>· buscando…</small>{/if}</h3>
+{#if texto.trim() && !locales.length}
+  <p class="pie-nota centro">Nada con ese nombre en la app.</p>
+{/if}
+{#if texto.trim().length >= 3 && buscado !== texto.trim()}
+  <button class="boton boton-sec ancho" onclick={buscarFuera}>Buscar «{texto.trim()}» en productos envasados</button>
+  <p class="pie-nota centro">Miles de productos de supermercado (Open Food Facts). Tarda unos segundos.</p>
+{:else if buscado}
+  <h3 class="grupo">Productos envasados {#if cargando}<small>· buscando, puede tardar unos segundos…</small>{/if}</h3>
   {#if errorOnline}<p class="pie-nota">{errorOnline}</p>{/if}
   <ul class="resultados">
     {#each online as p (p.id)}
@@ -105,6 +114,7 @@
   input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: 16px; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
   input:focus { outline: 2px solid var(--primario); }
   .centro { text-align: center; }
+  .ancho { width: 100%; margin-top: 14px; }
   .grupo { font-size: 0.78rem; color: var(--texto-2); margin: 14px 4px 6px; }
   .grupo small { text-transform: none; letter-spacing: 0; font-weight: 600; }
   .resultados { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }

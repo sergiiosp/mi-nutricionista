@@ -9,6 +9,7 @@
   import { TIPOS } from '../lib/hyrox/sesiones.js';
   import { hoyISO, sumarDias } from '../lib/planificador.js';
   import { mmss } from '../lib/hyrox/ritmos.js';
+  import { EJERCICIOS } from '../data/hyrox.js';
   import { diaSemana, diaCorto, fechaLarga, capital, entero } from '../lib/formato.js';
 
   let { id } = $props();
@@ -51,6 +52,13 @@
     <div class="registro">
       <b>{ESTADO[reg.estado]}</b>{#if reg.rpe} · RPE {reg.rpe}{/if}{#if reg.sensacion} · {SENS[reg.sensacion]}{/if}
       {#if reg.tiempo}<br /><Icono e="⏱️" tam={18} /> Tiempo: {mmss(reg.tiempo)}{/if}{#if reg.ritmo} · Ritmo medio {mmss(reg.ritmo)}/km{/if}{#if reg.distancia} · {reg.distancia} km{/if}{#if reg.peso} · {reg.peso} kg{/if}
+      {#if reg.series}
+        <ul class="cargas">
+          {#each Object.entries(reg.series) as [ej, l] (ej)}
+            <li><span>{EJERCICIOS[ej]?.nombre || ej}</span><b>{l.map((x) => `${String(x.kg).replace('.', ',')}×${x.reps}`).join('  ')}</b></li>
+          {/each}
+        </ul>
+      {/if}
       {#if reg.notas}<p>“{reg.notas}”</p>{/if}
       <div class="acciones-fila">
         <button class="boton boton-sec boton-peq" onclick={() => abrirHoja('registrarSesion', { id })}><Icono e="✏️" tam={18} /> Editar</button>
@@ -113,6 +121,10 @@
   .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 800; font-size: 0.78rem; }
   .registro { margin-top: 12px; padding: 12px 14px; border-radius: 18px; background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
   .registro p { margin: 6px 0 0; font-style: italic; }
+  .cargas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.82rem; }
+  .cargas li { display: flex; justify-content: space-between; gap: 10px; }
+  .cargas span { color: var(--texto-2); font-weight: 600; }
+  .cargas b { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
   .lista.principal { font-weight: 800; }
   .nota { padding: 10px 12px; border-radius: 14px; background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 600; }

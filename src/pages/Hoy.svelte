@@ -9,7 +9,8 @@
   import { avisar } from '../stores/ui.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
   import { hoyISO } from '../lib/planificador.js';
-  import { estadoDia, sugerencias } from '../lib/dia.js';
+  import { estadoDia, sugerencias, faltas } from '../lib/dia.js';
+  import NotaDia from '../components/NotaDia.svelte';
   import { recomendaciones, recordatoriosDia } from '../lib/salud.js';
   import { esDiaEntreno, horarioDia } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
@@ -40,6 +41,7 @@
   }
   const recs = $derived(recomendaciones($estado.perfil, objetivos));
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
+  const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const r = $derived(rachas($estado, objetivos, hoy));
   const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
   const nombreFranja = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja]);
@@ -166,11 +168,11 @@
     <div class="aviso amarillo"><Icono n="thumbs-up" tam={18} /> <span><b>Te has pasado un poco.</b> No compenses mañana: sigue el menú normal.</span></div>
   {/if}
 
-  {#if opciones.length && d.huecoFinal.kcal > 120}
+  {#if d.dia && opciones.length && (d.huecoFinal.kcal > 120 || cortos.length)}
     <div class="tarjeta sugerencias">
       <div class="sug-cab">
         <Icono n="lightbulb" tam={20} />
-        <div><b>Te faltan unas {entero(d.huecoFinal.kcal)} kcal{#if d.huecoFinal.p > 8}{' y '}{Math.round(d.huecoFinal.p)} g de proteína{/if}</b><small>{d.pendientes.length ? 'Aunque hagas las comidas que quedan' : 'Para cerrar el día'}</small></div>
+        <div><b>{#if cortos.length}Vas corto de {cortos.map((x) => `${x.nombre} (${x.g} g)`).join(' y ')}{:else}Te faltan unas {entero(d.huecoFinal.kcal)} kcal{/if}</b><small>{d.pendientes.length ? 'Aunque hagas las comidas que quedan. Con esto llegas:' : 'Para cerrar el día, con esto llegas:'}</small></div>
       </div>
       {#each opciones as op (op.nombre)}
         <div class="sug">
@@ -214,6 +216,7 @@
     {#each d.dia?.consejos || [] as c (c)}<p class="nota-dia"><Icono n="info" tam={16} /> {c}</p>{/each}
   {/if}
 
+  <NotaDia fecha={hoy} />
   <div class="consejo"><Icono n="lightbulb" tam={18} /><p>{consejo}</p></div>
 </section>
 

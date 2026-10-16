@@ -18,7 +18,7 @@ const PERFIL_BASE = {
   compite: false, fechaCompeticion: '', categoriaPeso: false,
   objetivo: '', ritmo: 'moderado', pesoObjetivo: '',
   condiciones: [], medicacion: false, estres: 'medio', sueno: 'bien', cafes: 1, alcohol: 'ocasional',
-  comidas: 4, dieta: 'omnivora', alergias: [], noMeGusta: [], tiempoMax: 0, sobras: false, presupuesto: 'normal', ajusteKcal: 0,
+  comidas: 4, dieta: 'omnivora', alergias: [], noMeGusta: [], leche: 'vaca', whey: false, aparatos: ['microondas', 'airfryer', 'plancha', 'olla'], tiempoMax: 0, sobras: false, presupuesto: 'normal', ajusteKcal: 0,
 };
 
 let paso = 0;
@@ -39,7 +39,7 @@ const numero = (v) => Number(String(v ?? '').replace(',', '.'));
 const PASOS_CUESTIONARIO = [
   {
     emoji: '👋',
-    titulo: '¡Hola! Soy tu nutricionista',
+    titulo: '¡Hola! Soy Pulso, tu nutricionista y entrenador',
     burbuja: 'Te haré unas preguntas (unos 3 minutos) para calcular lo que necesitas, organizar tus comidas según tu horario y tus entrenos, y prepararte menús con productos de Mercadona.',
     html: (b) => `
       <label class="campo"><span>¿Cómo te llamas?</span>
@@ -228,20 +228,32 @@ const PASOS_CUESTIONARIO = [
       <fieldset class="chips-sel"><legend>Alergias o intolerancias</legend>
         ${Object.entries(ALERGENOS).map(([k, v]) => chipCheck('alergias', k, v, b.alergias.includes(k))).join('')}
       </fieldset>
+      <fieldset class="opciones dos"><legend>¿Qué tomas en el café, los cereales o el porridge?</legend>
+        ${opcion('leche', 'vaca', 'Leche de vaca', b.leche || 'vaca')}${opcion('leche', 'avena', 'Bebida de avena', b.leche)}
+        ${opcion('leche', 'almendra', 'Bebida de almendras', b.leche)}${opcion('leche', 'soja', 'Bebida de soja', b.leche, 'La que más proteína tiene')}
+      </fieldset>
+      <fieldset class="chips-sel"><legend>¿Con qué cocinas? Te explico cada receta con lo que tengas</legend>
+        ${[['microondas', 'Microondas'], ['airfryer', 'Air fryer'], ['plancha', 'Plancha o sartén'], ['horno', 'Horno'], ['olla', 'Olla (solo pasta y arroz)']].map(([k, v]) => chipCheck('aparatos', k, v, (b.aparatos || []).includes(k))).join('')}
+      </fieldset>
       <fieldset class="opciones tres"><legend>Tiempo máximo para cocinar</legend>
         ${opcion('tiempoMax', '20', '20 min', String(b.tiempoMax), '', '⚡')}${opcion('tiempoMax', '30', '30 min', String(b.tiempoMax), '', '⏱️')}${opcion('tiempoMax', '0', 'Sin límite', String(b.tiempoMax), '', '👨‍🍳')}
       </fieldset>
       <label class="interruptor"><input type="checkbox" name="sobras" ${b.sobras ? 'checked' : ''}>
         <span><b>Cocinar la comida para dos días</b><small>Cocinas una vez y te llevas táper al día siguiente</small></span></label>
+      <label class="interruptor"><input type="checkbox" name="whey" ${b.whey ? 'checked' : ''}>
+        <span><b>Tengo proteína en polvo</b><small>Si un día vas corto de proteína, te la propongo para cerrar el día</small></span></label>
       <label class="interruptor"><input type="checkbox" name="presupuesto" ${b.presupuesto === 'ajustado' ? 'checked' : ''}>
         <span><b>Priorizar recetas baratas</b><small>Menos salmón y ternera, más pollo, huevos y legumbres</small></span></label>`,
     leer: (f, b) => {
       b.comidas = Number(f.get('comidas'));
       b.dieta = f.get('dieta');
       b.alergias = f.getAll('alergias');
+      b.leche = f.get('leche') || 'vaca';
+      b.aparatos = f.getAll('aparatos');
       b.tiempoMax = Number(f.get('tiempoMax') || 0);
       b.sobras = f.get('sobras') === 'on';
       b.presupuesto = f.get('presupuesto') === 'on' ? 'ajustado' : 'normal';
+      b.whey = f.get('whey') === 'on';
     },
   },
   {

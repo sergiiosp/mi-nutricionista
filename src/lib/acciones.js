@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { estado, actualizar, registroDePlan, borrarRegistro } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos } from './nutricion.js';
-import { generarPlan, sustituir, reescalarPlan, completarPlan, hoyISO, sumarDias } from './planificador.js';
+import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias } from './planificador.js';
 import { estadoDia } from './dia.js';
 import { proveedorDe } from './hyrox/index.js';
 
@@ -55,7 +55,66 @@ export function crearPlan(inicio = hoyISO()) {
   actualizar((x) => {
     x.plan = generarPlan(x.perfil, calcularObjetivos(x.perfil), { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: proveedorDe(x), favoritas: x.favoritas || [] });
     x.compra.marcados = {};
+    x.compra.quitados = {};
+    x.compra.envases = {};
   });
+}
+
+/**
+ * No vas a comprar un alimento: sale de la lista y las comidas que quedan por hacer y lo usan
+ * se cambian por otras que cuadren igual tus macros. Devuelve cuántas comidas han cambiado.
+ */
+export function quitarDeCompra(id) {
+  const e = get(estado);
+  if (!e.plan) return 0;
+  const hoy = hoyISO();
+  const fuera = [...(e.perfil.noMeGusta || []), ...Object.keys(e.compra.quitados || {}), id];
+  const perfil = { ...e.perfil, noMeGusta: fuera };
+  const objetivos = calcularObjetivos(e.perfil);
+  const prov = proveedorDe(e);
+  const copia = structuredClone(e.plan);
+  let n = 0;
+  copia.dias.forEach((d, i) => {
+    if (d.fecha < hoy) return;
+    for (const c of [...d.comidas]) {
+      if (!c.ingredientes.some((x) => x.a === id)) continue;
+      if ((e.registros[d.fecha] || []).some((r) => r.tipo === 'plan' && r.franja === c.franja)) continue; // ya la comiste
+      const alt = alternativas(copia, i, c.franja, perfil, objetivos, prov, e.favoritas || [])
+        .find((x) => !x.comida.ingredientes.some((y) => fuera.includes(y.a)));
+      if (alt) { sustituir(copia, i, c.franja, alt.comida); n++; }
+    }
+  });
+  actualizar((x) => {
+    x.plan = copia;
+    x.compra.quitados = { ...(x.compra.quitados || {}), [id]: true };
+  });
+  return n;
+}
+
+/** Vuelve a poner en la lista algo que habías quitado (el menú no se toca). */
+export function devolverACompra(id) {
+  actualizar((x) => { if (x.compra.quitados) delete x.compra.quitados[id]; });
+}
+
+/** Cuántos envases vas a coger de verdad (null = los que pide el menú). */
+export function cambiarEnvases(id, n) {
+  actualizar((x) => {
+    x.compra.envases ||= {};
+    if (n == null) delete x.compra.envases[id];
+    else x.compra.envases[id] = Math.max(0, n);
+  });
+}
+
+/** Algo que quieres comprar aunque no esté en el menú. */
+export function añadirACompra(id, delta = 1) {
+  actualizar((x) => {
+    x.compra.extra ||= {};
+    x.compra.extra[id] = (x.compra.extra[id] || 0) + delta;
+    if (x.compra.extra[id] <= 0) delete x.compra.extra[id];
+  });
+}
+export function quitarExtra(id) {
+  actualizar((x) => { if (x.compra.extra) delete x.compra.extra[id]; });
 }
 
 /** Guarda o quita una comida (receta o montada) de tus favoritas. Devuelve si queda guardada. */

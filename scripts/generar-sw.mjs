@@ -67,7 +67,7 @@ self.addEventListener('fetch', (ev) => {
 self.addEventListener('push', (ev) => {
   let d = {};
   try { d = ev.data.json(); } catch { d = { cuerpo: ev.data ? ev.data.text() : '' }; }
-  ev.waitUntil(self.registration.showNotification(d.titulo || 'Mi Nutricionista', {
+  ev.waitUntil(self.registration.showNotification(d.titulo || 'Pulso', {
     body: d.cuerpo || '',
     icon: 'icons/icon-192.png',
     badge: 'icons/icon-192.png',

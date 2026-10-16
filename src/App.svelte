@@ -73,7 +73,7 @@
   <Cuestionario perfil={editando ? $estado.perfil : null} onterminar={terminarCuestionario} oncancelar={() => (editando = false)} />
 {:else}
   <header class="cabecera">
-    <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Mi <span>Nutricionista</span></a>
+    <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Pulso</a>
     <a href="#ajustes" class="boton-plan" class:activo={$ruta.pagina === 'ajustes'} aria-label="Mi plan y ajustes"><Icono n="user" tam={20} /></a>
   </header>
 

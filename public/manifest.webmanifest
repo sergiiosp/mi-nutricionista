@@ -1,7 +1,7 @@
 {
-  "name": "Mi Nutricionista",
-  "short_name": "Nutricionista",
-  "description": "Objetivos, menús semanales y lista de la compra con productos de Mercadona.",
+  "name": "Pulso",
+  "short_name": "Pulso",
+  "description": "Tu nutricionista y entrenador: menús con productos de Mercadona, registro de comidas y entreno HYROX y de fuerza.",
   "lang": "es",
   "start_url": "./#hoy",
   "scope": "./",

@@ -6,13 +6,15 @@ import { escalarReceta, recetaPermitida, costeComida, macrosComida, objetivosDia
 import { REPARTOS, horarioDia, objetivoFranja, esDiaEntreno } from './horario.js';
 import { preferenciasAlimentos } from './salud.js';
 import { comboDesdeId, esCombo, combosAleatorios, familiaDe } from './combos.js';
+import { adaptarReceta, adaptarActiva } from './sustituciones.js';
 
 export { REPARTOS, objetivoFranja };
 
 // Recetas del recetario y, además, las comidas montadas por ingredientes (ids «combo:…»)
 const RECETARIO = Object.fromEntries(RECETAS.map((r) => [r.id, r]));
 export const recetaPorId = new Proxy(RECETARIO, {
-  get: (t, k) => t[k] ?? (esCombo(k) ? comboDesdeId(k) : undefined),
+  // Las recetas salen ya adaptadas a tu perfil (frutos secos o leche que no tomas cambiados por otros)
+  get: (t, k) => (t[k] ? adaptarActiva(t[k]) : esCombo(k) ? comboDesdeId(k) : undefined),
 });
 
 // Generador pseudoaleatorio con semilla (mulberry32) para que un plan sea reproducible
@@ -34,7 +36,8 @@ function proteinaPrincipal(receta) {
 }
 
 export function candidatas(perfil, franja, { favoritas = [] } = {}) {
-  let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && recetaPermitida(r, perfil));
+  const no = new Set(perfil.recetasNo || []); // platos que dijiste que no repetirías
+  let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && !no.has(r.id)).map((r) => adaptarReceta(r, perfil)).filter((r) => recetaPermitida(r, perfil));
   if (perfil.tiempoMax) {
     const rapidas = lista.filter((r) => r.tiempo <= perfil.tiempoMax);
     if (rapidas.length >= 3) lista = rapidas;
@@ -42,7 +45,7 @@ export function candidatas(perfil, franja, { favoritas = [] } = {}) {
   // Tus comidas favoritas (recetas o montadas por ti) también entran en el menú
   const ids = new Set(lista.map((r) => r.id));
   for (const id of favoritas) {
-    const r = recetaPorId[id];
+    const r = adaptarReceta(recetaPorId[id], perfil);
     if (r && !ids.has(id) && r.tipos.includes(franja.tipo) && recetaPermitida(r, perfil)) { lista.push(r); ids.add(id); }
   }
   // Si con tus alergias y gustos no queda ninguna receta, se monta una con lo que sí comes
