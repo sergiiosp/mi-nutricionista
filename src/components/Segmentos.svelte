@@ -21,6 +21,6 @@
   button { position: relative; }
   button::after { content: ""; position: absolute; inset: -4px 0; }
   button:hover { color: var(--texto-2); }
-  button.activo { background: var(--superficie-3); color: var(--texto); }
+  button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
   button.activo :global(.icono) { color: var(--primario); }
 </style>

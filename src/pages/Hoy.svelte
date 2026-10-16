@@ -187,12 +187,12 @@
     <h2 class="seccion">Tu día</h2>
     <ol class="timeline">
       {#each linea as it, i (it.tipo + (it.c?.franja || it.s?.id || it.x?.id || it.x?.texto || i))}
-        <li class="tl tl-{it.tipo}" class:hecho={it.c?.situacion === 'hecha'}>
+        <li class="tl tl-{it.tipo} {it.tipo === 'comida' ? 's-comida' : ['hyrox', 'entreno'].includes(it.tipo) ? 's-entreno' : ''}" class:hecho={it.c?.situacion === 'hecha'}>
           <div class="tl-hora cifra">{it.tipo === 'sup' ? '' : it.hora}</div>
           <div class="tl-linea"><span></span></div>
           <div class="tl-contenido">
             {#if it.tipo === 'comida'}
-              <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={it.c.franja === siguiente} />
+              <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={it.c.franja === siguiente} plegable />
             {:else if it.tipo === 'hyrox'}
               <TarjetaSesion sesion={it.s} registro={$estado.hyrox?.registros?.[it.s.id]} />
             {:else if it.tipo === 'entreno'}
@@ -224,7 +224,7 @@
   .saludo p { margin: 8px 0 0; color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .saludo h1 { margin: 2px 0 16px; }
 
-  .resumen { padding: 16px; border-radius: 24px; background: var(--superficie); box-shadow: var(--sombra); }
+  .resumen { padding: 16px; border-radius: 24px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip-hoy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: var(--superficie-2); font-size: 0.78rem; font-weight: 600; color: var(--texto-2); max-width: 100%; }
   .chip-hoy.naranja { background: var(--primario-claro); color: var(--primario-fuerte); }

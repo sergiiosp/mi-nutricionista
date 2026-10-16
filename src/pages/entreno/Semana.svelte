@@ -17,6 +17,12 @@
   const registros = $derived($estado.hyrox?.registros || {});
   const diasSemana = $derived(semana ? Array.from({ length: 7 }, (_, i) => sumarDias(semana.lunes, i)) : []);
   const hechas = $derived(semana ? semana.sesiones.filter((s) => registros[s.id]?.estado === 'completa').length : 0);
+  // Lo ya pasado de la semana en curso se pliega en una línea: lo importante es hoy y lo que viene
+  let verPasados = $state(false);
+  const pasados = $derived(w === actual ? diasSemana.filter((f) => f < hoy) : []);
+  const sesPasadas = $derived(semana ? semana.sesiones.filter((s) => pasados.includes(s.fecha) && s.tipo !== 'carrera') : []);
+  const hechasPasadas = $derived(sesPasadas.filter((s) => ['completa', 'parcial'].includes(registros[s.id]?.estado)).length);
+  const visibles = $derived(verPasados ? diasSemana : diasSemana.filter((f) => !pasados.includes(f)));
   const diasCarrera = $derived(plan?.carrera ? Math.round((new Date(`${plan.carrera}T12:00`) - new Date(`${hoy}T12:00`)) / 86400000) : null);
 </script>
 
@@ -45,7 +51,13 @@
   {/if}
 
   <div class="dias">
-    {#each diasSemana as f (f)}
+    {#if pasados.length}
+      <button class="pasados" class:abierto={verPasados} onclick={() => (verPasados = !verPasados)} aria-expanded={verPasados}>
+        <span class="p-txt"><b>{capital(diaSemana(pasados[0]))}{pasados.length > 1 ? ` a ${diaSemana(pasados.at(-1))}` : ''}</b><small>{sesPasadas.length ? `${hechasPasadas} de ${sesPasadas.length} sesiones hechas` : 'Descanso'}{sesPasadas.length - hechasPasadas > 0 ? ' · toca para registrarlas' : ''}</small></span>
+        <Icono n={verPasados ? 'chevron-up' : 'chevron-down'} tam={18} />
+      </button>
+    {/if}
+    {#each visibles as f (f)}
       {@const ses = semana.sesiones.filter((s) => s.fecha === f)}
       <div class="dia" class:hoy={f === hoy}>
         <div class="dia-cab"><b>{capital(diaSemana(f))}</b><small>{fechaCorta(f)}{f === hoy ? ' · hoy' : ''}{plan.diasCarga.includes(f) ? ' · carga de hidratos' : ''}</small></div>
@@ -74,8 +86,12 @@
   .ajuste { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 18px; background: var(--lila-claro); margin-bottom: 12px; font-size: 0.9rem; font-weight: 600; }
   .ajuste b { display: block; }
   .dias { display: grid; gap: 14px; }
+  .pasados { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 14px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .pasados > :global(svg) { color: var(--texto-3); flex-shrink: 0; }
+  .p-txt { flex: 1; display: grid; }
+  .p-txt small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
   .dia { display: grid; gap: 8px; }
-  .dia.hoy { padding: 10px; margin: 0 -10px; border-radius: 22px; background: color-mix(in srgb, var(--primario-claro) 55%, transparent); }
+  .dia.hoy { padding: 12px; margin: 0 -12px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 70%), color-mix(in srgb, var(--primario-claro) 50%, transparent); }
   .dia-cab { display: flex; align-items: baseline; gap: 8px; }
   .dia-cab small { color: var(--texto-2); font-weight: 700; }
   .descanso { padding: 12px 14px; border-radius: 16px; border: 2px dashed var(--borde); color: var(--texto-2); font-weight: 700; font-size: 0.88rem; }

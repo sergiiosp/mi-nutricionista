@@ -4,7 +4,7 @@
   import { fly, fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
 
-  let { titulo = '', onclose, children, ancho = false } = $props();
+  let { titulo = '', onclose, children, ancho = false, seccion = 'hoy' } = $props();
   let cuerpo = $state();
   let arrastre = $state(0);
   let inicio = null;
@@ -40,7 +40,7 @@
 
 <svelte:window onkeydown={tecla} />
 
-<div class="hoja-capa">
+<div class="hoja-capa s-{seccion}">
   <button class="hoja-fondo" aria-label="Cerrar" onclick={() => onclose?.()} transition:fade={{ duration: 180 }}></button>
   <div class="hoja-caja" class:ancho class:arrastrando={arrastre > 0} role="dialog" aria-modal="true" aria-label={titulo || 'Detalle'}
     style:transform={arrastre ? `translateY(${arrastre}px)` : null} transition:fly={{ y: 420, duration: 260, easing: cubicOut }}>

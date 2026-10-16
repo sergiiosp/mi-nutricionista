@@ -15,7 +15,9 @@
 
   /** comida: elemento de estadoDia().comidas (o del plan si editable=false) */
   /** destacada: es la próxima comida pendiente (su botón «Hecha» va en naranja) */
-  let { comida, fecha, diaIdx, franjaNombre, nota = '', editable = true, destacada = true } = $props();
+  /** plegable: si ya está hecha, se ve en una línea y se despliega al tocar (para no llenar Hoy) */
+  let { comida, fecha, diaIdx, franjaNombre, nota = '', editable = true, destacada = true, plegable = false } = $props();
+  let desplegada = $state(false);
 
   const receta = $derived(recetaPorId[comida.recetaId]);
   const situacion = $derived(comida.situacion || 'pendiente');
@@ -53,7 +55,15 @@
   }
 </script>
 
-<article class="comida-card s-{situacion}" class:ajustada={comida.ajustada}>
+<article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada={plegable && situacion !== 'pendiente' && !desplegada}>
+{#if plegable && situacion !== 'pendiente' && !desplegada}
+  <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
+    <span class="pl-ok"><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' ? 'skip-forward' : 'repeat'} tam={15} grosor={2.6} /></span>
+    <span class="pl-txt"><small>{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
+    {#if situacion !== 'saltada'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
+    <Icono n="chevron-down" tam={18} />
+  </button>
+{:else}
   <div class="fila">
     <button class="miniatura" onclick={verReceta} aria-label="Ver receta">
       <FotoReceta {receta} alto={84} redondeo={16} tamEmoji={44} />
@@ -168,10 +178,26 @@
       {#if diaIdx !== undefined}{@render botonCambiar()}{/if}
     </footer>
   {/if}
+{#if plegable && situacion !== 'pendiente'}
+  <button class="replegar" onclick={() => (desplegada = false)}><Icono n="chevron-up" tam={16} /> Plegar</button>
+{/if}
+{/if}
 </article>
 
 <style>
-  .comida-card { padding: 10px 0 14px; border-bottom: 1px solid var(--linea); transition: opacity 0.25s; }
+  /* Cada comida es su propio bloque, con el tinte de la sección */
+  .comida-card { margin: 0 0 10px; padding: 12px; border-radius: 18px; background: radial-gradient(130% 90% at 0% 0%, color-mix(in srgb, var(--tinte, transparent) 70%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); transition: opacity 0.25s; }
+  .comida-card.plegada { padding: 0; background: none; box-shadow: none; }
+  .fila-plegada { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--primario-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .fila-plegada > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
+  .pl-ok { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
+  .s-saltada .pl-ok { background: var(--superficie-3); color: var(--texto-2); }
+  .pl-txt { flex: 1; min-width: 0; display: grid; }
+  .pl-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
+  .pl-txt b { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pl-kcal { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+  .pl-kcal small { font-weight: 600; color: var(--texto-3); font-size: 0.72rem; }
+  .replegar { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin-top: 4px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; }
   .fila { position: relative; display: flex; gap: 12px; align-items: flex-start; }
   .miniatura { padding: 0; border: 0; background: none; cursor: pointer; width: 84px; flex-shrink: 0; }
   .cuerpo { flex: 1; min-width: 0; display: grid; gap: 1px; }
