@@ -88,15 +88,54 @@ function puntuar(receta, ctx) {
   return s;
 }
 
-function crearComida(receta, franja, objDia) {
-  const escalada = escalarReceta(receta, objetivoFranja(objDia, franja));
+function crearComida(receta, franja, objDia, obj = objetivoFranja(objDia, franja)) {
+  const escalada = escalarReceta(receta, obj);
   return { franja: franja.id, recetaId: receta.id, ingredientes: escalada.ingredientes, hora: franja.horaTexto, etiqueta: franja.etiqueta };
 }
 
-// Desviación relativa de una comida respecto al objetivo de su franja
+/**
+ * Lleva la cuenta del día comida a comida: si las anteriores se quedaron cortas (o se pasaron)
+ * de kcal o proteína, las siguientes compensan una parte, para que el total del día cuadre.
+ */
+function balanceDia(objDia, franjas) {
+  const objs = franjas.map((f) => objetivoFranja(objDia, f));
+  const hecho = { kcal: 0, p: 0, objKcal: 0, objP: 0 };
+  return {
+    objetivo(idx) {
+      const base = objs[idx];
+      const quedan = objs.slice(idx).reduce((s, o) => s + o.kcal, 0);
+      const parte = base.kcal / Math.max(quedan, 1);
+      const acotar = (v, min, max) => Math.min(max, Math.max(min, v));
+      const dKcal = acotar((hecho.objKcal - hecho.kcal) * parte, -0.25 * base.kcal, 0.25 * base.kcal);
+      const dP = acotar((hecho.objP - hecho.p) * parte, -0.25 * base.p, 0.4 * base.p);
+      // El resto del cambio de kcal se reparte entre hidratos y grasa en su proporción
+      const resto = base.c * 4 + base.g * 9;
+      const k = Math.max(0.5, 1 + (dKcal - dP * 4) / Math.max(resto, 1));
+      const p = base.p + dP;
+      const c = base.c * k;
+      const g = base.g * k;
+      // Redondeado para que comidas escaladas con objetivos casi iguales se reaprovechen
+      return { kcal: Math.round(p * 4 + c * 4 + g * 9), p: Math.round(p), c: Math.round(c), g: Math.round(g) };
+    },
+    anotar(idx, ingredientes) {
+      const m = macrosComida(ingredientes);
+      hecho.kcal += m.kcal;
+      hecho.p += m.p;
+      hecho.objKcal += objs[idx].kcal;
+      hecho.objP += objs[idx].p;
+    },
+  };
+}
+
+// Desviación relativa de una comida respecto al objetivo de su franja.
+// Quedarse corto de proteína pesa más que pasarse, y mucho más si falta más de un 25 %:
+// con pocas recetas (dietas con restricciones) es mejor repetir plato que, por no repetir,
+// elegir uno que no llega a la proteína del día.
 function errorComida(ingredientes, obj) {
   const m = macrosComida(ingredientes);
-  return Math.abs(m.kcal - obj.kcal) / obj.kcal + (0.8 * Math.abs(m.p - obj.p)) / Math.max(obj.p, 1);
+  const dp = (m.p - obj.p) / Math.max(obj.p, 1);
+  const prot = dp < 0 ? -1.6 * dp + 4 * Math.max(0, -dp - 0.25) : 0.8 * dp;
+  return Math.abs(m.kcal - obj.kcal) / obj.kcal + prot;
 }
 
 /** Datos de un día: si se entrena, su horario y su objetivo. */
@@ -130,13 +169,13 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   const medio = Object.values(costes).reduce((a, b) => a + b, 0) / RECETAS.length;
   const costeRelativo = (r) => (costes[r.id] ?? costeComida(r.ingredientes)) / medio - 1;
 
-  // Cada receta se escala una vez por franja y tipo de día
+  // Cada receta se escala una vez por franja y objetivo
   const escaladas = {};
-  const comidaEscalada = (receta, franja, objDia, tipoDia) => {
-    const k = `${tipoDia}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}`;
+  const comidaEscalada = (receta, franja, objDia, obj) => {
+    const k = `${obj.p}|${obj.c}|${obj.g}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}`;
     if (!escaladas[k]) {
-      const comida = crearComida(receta, franja, objDia);
-      escaladas[k] = { comida, error: errorComida(comida.ingredientes, objetivoFranja(objDia, franja)) };
+      const comida = crearComida(receta, franja, objDia, obj);
+      escaladas[k] = { comida, error: errorComida(comida.ingredientes, obj) };
     }
     return escaladas[k];
   };
@@ -146,10 +185,11 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   for (let d = 0; d < dias; d++) {
     const fecha = sumarDias(inicio, d);
     const { entreno, horario, objDia } = contextoDia(perfil, objetivos, fecha, proveedor);
-    const tipoDia = `${objDia.kcal}-${objDia.hidratos}`;
+    const balance = balanceDia(objDia, horario.franjas);
     const proteinasDia = [];
     const comidas = [];
-    for (const franja of horario.franjas) {
+    for (const [idx, franja] of horario.franjas.entries()) {
+      const obj = balance.objetivo(idx);
       let receta;
       const anterior = resultado[d - 1]?.comidas.find((c) => c.franja === franja.id);
       if (perfil.sobras && franja.tipo === 'comida' && d % 2 === 1 && anterior) {
@@ -157,7 +197,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       } else {
         const lista = candidatas(perfil, franja, { favoritas });
         if (lista.length) {
-          const errorAjuste = (r) => comidaEscalada(r, franja, objDia, tipoDia).error;
+          const errorAjuste = (r) => comidaEscalada(r, franja, objDia, obj).error;
           const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas) };
           receta = lista.map((r) => [r, puntuar(r, ctx)]).sort((a, b) => b[1] - a[1])[0][0];
         }
@@ -167,7 +207,9 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       const prot = proteinaPrincipal(receta);
       if (prot) proteinasDia.push(prot);
       for (const i of receta.ingredientes) enUso.add(i.a);
-      comidas.push(structuredClone(comidaEscalada(receta, franja, objDia, tipoDia).comida));
+      const comida = structuredClone(comidaEscalada(receta, franja, objDia, obj).comida);
+      balance.anotar(idx, comida.ingredientes);
+      comidas.push(comida);
     }
     resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, objetivo: objDia, comidas });
   }
@@ -239,11 +281,16 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null) {
     dia.objetivo = objDia;
     dia.sesion = horario.entreno;
     dia.consejos = horario.consejos;
-    dia.comidas = dia.comidas
-      .map((c) => {
-        const receta = recetaPorId[c.recetaId];
-        const franja = horario.franjas.find((f) => f.id === c.franja);
-        return receta && franja ? crearComida(receta, franja, objDia) : null;
+    // Mismo reparto que al generar: en orden del día, compensando lo que va quedando
+    const balance = balanceDia(objDia, horario.franjas);
+    const porFranja = Object.fromEntries(dia.comidas.map((c) => [c.franja, c]));
+    dia.comidas = horario.franjas
+      .map((franja, idx) => {
+        const receta = recetaPorId[porFranja[franja.id]?.recetaId];
+        if (!receta) return null;
+        const comida = crearComida(receta, franja, objDia, balance.objetivo(idx));
+        balance.anotar(idx, comida.ingredientes);
+        return comida;
       })
       .filter(Boolean);
   }
