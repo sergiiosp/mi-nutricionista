@@ -53,7 +53,7 @@
 </div>
 
 <style>
-  .campo-tiempo { display: grid; gap: 6px; margin: 12px 0; }
+  .campo-tiempo { display: grid; gap: 6px; margin: 12px 0; min-width: 0; }
   .et { font-weight: 600; font-size: 0.84rem; color: var(--texto-2); }
   .casillas { display: flex; align-items: center; gap: 4px; }
   .casillas input {
