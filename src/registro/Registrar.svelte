@@ -4,12 +4,13 @@
   import { get } from 'svelte/store';
   import { fly } from 'svelte/transition';
   import Emoji from '../components/Emoji.svelte';
+  import Macros from '../components/Macros.svelte';
   import Cantidad from './Cantidad.svelte';
   import Escaner from './Escaner.svelte';
   import Buscar from './Buscar.svelte';
   import Fuera from './Fuera.svelte';
   import MisComidas from './MisComidas.svelte';
-  import { estado, añadirRegistro, nuevoId, horaActual } from '../stores/estado.js';
+  import { estado, añadirRegistro, nuevoId, horaActual, actualizar } from '../stores/estado.js';
   import { cerrarHoja, avisar } from '../stores/ui.js';
   import { crearRegistro } from '../lib/registro.js';
   import { guardarFoto } from '../lib/fotos.js';
@@ -41,12 +42,38 @@
     vista = 'cantidad';
   }
 
-  function añadir(cantidad) {
-    const hora = franjaSel?.hora && franjaSel.hora < horaActual() ? franjaSel.hora : horaActual();
-    const r = crearRegistro({ item, cantidad, fecha, franja, hora, foto, ctx });
-    añadirRegistro(fecha, r);
-    avisar(`${r.nombre} · ${Math.round(r.macros.kcal)} kcal`, '✅');
+  // Tu plato: varias cosas sueltas (la sopa, la pasta, el pollo…) que se guardan juntas en la misma comida
+  let plato = $state([]);
+  let comoMia = $state(false);
+  let nombreMia = $state('');
+  const totalPlato = $derived(plato.reduce((t, r) => ({ kcal: t.kcal + r.macros.kcal, p: t.p + r.macros.p, c: t.c + r.macros.c, g: t.g + r.macros.g, f: t.f + (r.macros.f || 0) }), { kcal: 0, p: 0, c: 0, g: 0, f: 0 }));
+  const horaComida = () => (franjaSel?.hora && franjaSel.hora < horaActual() ? franjaSel.hora : horaActual());
+
+  function alPlato(cantidad) {
+    plato = [...plato, crearRegistro({ item, cantidad, fecha, franja, hora: horaComida(), foto, ctx })];
+    item = null;
+    vista = 'buscar';
+  }
+  function quitarDelPlato(id) {
+    plato = plato.filter((r) => r.id !== id);
+  }
+
+  function guardarPlato() {
+    if (!plato.length) return;
+    const hora = horaComida();
+    for (const r of plato) añadirRegistro(fecha, { ...r, hora, franja, foto: foto || undefined });
+    if (comoMia && plato.length > 1) {
+      const ingredientes = plato.every((r) => r.tipo === 'alimento') ? plato.map((r) => ({ a: r.ref, g: Math.round(r.cantidad.valor) })) : null;
+      const nombre = nombreMia.trim() || plato.map((r) => r.nombre).join(' + ');
+      actualizar((x) => { x.propias.unshift({ id: nuevoId(), nombre, emoji: '🍲', macros: { ...totalPlato }, ingredientes }); });
+    }
+    avisar(plato.length > 1 ? `${plato.length} cosas · ${Math.round(totalPlato.kcal)} kcal` : `${plato[0].nombre} · ${Math.round(plato[0].macros.kcal)} kcal`, '✅');
     cerrarHoja();
+  }
+
+  function añadir(cantidad) {
+    plato = [...plato, crearRegistro({ item, cantidad, fecha, franja, hora: horaComida(), foto, ctx })];
+    guardarPlato();
   }
 
   function repetir(rec) {
@@ -87,6 +114,27 @@
 
   {#if fotoUrl}
     <div class="foto-adjunta"><img src={fotoUrl} alt="Foto del plato" /><span><Icono e="📸" tam={18} /> Foto adjunta: ahora dime qué es</span></div>
+  {/if}
+
+  {#if plato.length && vista !== 'cantidad'}
+    <section class="plato" aria-label="Tu plato">
+      <div class="plato-cab"><b>Tu plato</b><span class="cifra">{Math.round(totalPlato.kcal)} kcal</span></div>
+      <ul>
+        {#each plato as r (r.id)}
+          <li>
+            <span class="pl-n"><b>{r.nombre}</b><small>{r.cantidad?.texto || ''} · {Math.round(r.macros.kcal)} kcal</small></span>
+            <button class="papelera" aria-label="Quitar {r.nombre}" onclick={() => quitarDelPlato(r.id)}><Icono n="trash" tam={17} /></button>
+          </li>
+        {/each}
+      </ul>
+      <Macros m={totalPlato} kcal={false} />
+      {#if plato.length > 1}
+        <label class="mia"><input type="checkbox" bind:checked={comoMia} /> Guardarlo también en Mis comidas para repetirlo</label>
+        {#if comoMia}<input class="mia-nombre" bind:value={nombreMia} placeholder={plato.map((r) => r.nombre).join(' + ').slice(0, 60)} aria-label="Nombre del plato" />{/if}
+      {/if}
+      <button class="boton" onclick={guardarPlato}>Guardar en {franjaSel.nombre.toLowerCase()} ({plato.length})</button>
+      <p class="pie-nota">O busca abajo lo siguiente que quieras añadir.</p>
+    </section>
   {/if}
 
   {#key vista}
@@ -130,7 +178,7 @@
       {:else if vista === 'propias'}
         <MisComidas onelegir={elegir} />
       {:else if vista === 'cantidad' && item}
-        <Cantidad {item} {ctx} franjaNombre={franjaSel.nombre} onañadir={añadir} />
+        <Cantidad {item} {ctx} franjaNombre={franjaSel.nombre} onañadir={añadir} onmas={alPlato} enPlato={plato.length} />
       {/if}
     </div>
   {/key}
@@ -164,6 +212,20 @@
   .txt b { font-size: 0.92rem; }
   .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
   .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; }
+  .plato { margin: 0 0 14px; padding: 12px 14px; border-radius: 18px; background: var(--primario-claro); }
+  .plato-cab { display: flex; justify-content: space-between; align-items: baseline; }
+  .plato-cab .cifra { font-weight: 800; color: var(--primario-fuerte); }
+  .plato ul { list-style: none; margin: 8px 0; padding: 0; }
+  .plato li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--linea); }
+  .pl-n { flex: 1; min-width: 0; display: grid; }
+  .pl-n b { font-size: 0.88rem; line-height: 1.25; }
+  .pl-n small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
+  .papelera { flex-shrink: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 12px; background: none; color: var(--texto-3); cursor: pointer; }
+  .papelera:active { color: var(--peligro); background: var(--superficie); }
+  .mia { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-weight: 600; font-size: 0.84rem; }
+  .mia-nombre { width: 100%; min-height: 44px; margin-top: 8px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; }
+  .plato .boton { width: 100%; margin-top: 10px; }
+  .plato .pie-nota { margin: 8px 0 0; text-align: center; }
   .foto-adjunta { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 16px; background: var(--primario-claro); margin-bottom: 10px; font-weight: 600; font-size: 0.84rem; }
   .foto-adjunta img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; }
 </style>

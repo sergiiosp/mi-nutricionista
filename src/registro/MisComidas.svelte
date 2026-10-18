@@ -9,6 +9,7 @@
   import { macrosComida, cantidadTexto } from '../lib/nutricion.js';
   import { emojiAlimento } from '../lib/registro.js';
   import { avisar } from '../stores/ui.js';
+  import { coincide, textoAlimento } from '../lib/buscar.js';
 
   let { onelegir } = $props();
   let propias = $state(get(estado).propias);
@@ -23,8 +24,8 @@
   let manual = $state({ kcal: '', p: '', c: '', g: '' });
 
   const sugeridos = $derived(busca.trim().length < 2 ? [] : Object.entries(ALIMENTOS)
-    .filter(([, a]) => a.nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').includes(busca.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')))
-    .slice(0, 6));
+    .filter(([, a]) => coincide(textoAlimento(a), busca))
+    .slice(0, 8));
   const macros = $derived(modo === 'ingredientes'
     ? macrosComida(ingredientes.filter((i) => i.g > 0))
     : { kcal: +manual.kcal || 0, p: +manual.p || 0, c: +manual.c || 0, g: +manual.g || 0, f: 0 });

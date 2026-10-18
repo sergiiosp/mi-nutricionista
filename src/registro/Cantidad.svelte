@@ -7,7 +7,8 @@
   import { racionesAlimento, racionesProducto } from '../lib/raciones.js';
   import { TAMANOS } from '../data/fuera.js';
 
-  let { item, ctx, franjaNombre, onañadir } = $props();
+  /** enPlato: cuántas cosas llevas ya en el plato · onmas: añadir esto y seguir con otra cosa */
+  let { item, ctx, franjaNombre, onañadir, onmas, enPlato = 0 } = $props();
   const d = $derived(describir(item, ctx));
 
   const raciones = $derived(
@@ -75,8 +76,14 @@
 </div>
 
 <button class="boton ancho" disabled={!(cantidad > 0)} onclick={() => onañadir?.(cantidad)}>
-  Añadir {franjaNombre ? `a ${franjaNombre.toLowerCase()}` : ''}
+  {enPlato ? `Guardar el plato (${enPlato + 1})` : `Guardar en ${franjaNombre ? franjaNombre.toLowerCase() : 'el día'}`}
 </button>
+{#if onmas}
+  <button class="boton boton-sec ancho mas" disabled={!(cantidad > 0)} onclick={() => onmas(cantidad)}>
+    + Añadir algo más al plato
+  </button>
+  {#if !enPlato}<p class="pie-nota centro">Por ejemplo: la sopa, luego la pasta y luego el pollo, cada uno con su cantidad.</p>{/if}
+{/if}
 
 <style>
   .cant-cab { display: flex; gap: 14px; align-items: center; margin: 4px 0 14px; }
@@ -101,4 +108,6 @@
   .kcal b { font-size: 1.6rem; font-weight: 800; color: var(--texto); }
   .ancho { width: 100%; }
   .boton:disabled { opacity: 0.5; cursor: not-allowed; }
+  .mas { margin-top: 8px; }
+  .centro { text-align: center; }
 </style>

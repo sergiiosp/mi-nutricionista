@@ -1,7 +1,11 @@
 // Raciones visuales para registrar sin báscula (método de la mano), convertidas a gramos.
 import { ALIMENTOS } from '../data/alimentos.js';
 
-const CRUDOS_SECOS = ['arroz', 'arroz_integral', 'pasta', 'pasta_larga', 'pasta_integral', 'cuscus'];
+const CRUDOS_SECOS = ['arroz', 'arroz_integral', 'pasta', 'pasta_larga', 'pasta_integral', 'cuscus', 'spaghetti_integral', 'pasta_lentejas',
+  'noodles_arroz', 'noodles_ramen', 'arroz_basmati', 'arroz_vaporizado', 'fideua'];
+// Pasta para sopa: va mucha menos que en un plato de pasta
+const PASTA_SOPA = ['fideo_mediano', 'fideo_cabello_angel', 'fideo_grueso', 'pasta_estrellas', 'pasta_maravilla'];
+const es_sopa = (id) => /^(caldo|crema_|sopa_hortelana)/.test(id);
 const LEGUMBRES = ['garbanzos', 'lentejas', 'alubias'];
 
 /** @returns {{ nombre: string, emoji: string, g: number, nota?: string }[]} */
@@ -19,7 +23,11 @@ export function racionesAlimento(id) {
       r.push({ nombre: `2 ${u.pl}`, emoji: '2️⃣', g: u.g * 2 }, { nombre: `3 ${u.pl}`, emoji: '3️⃣', g: u.g * 3 }, { nombre: `5 ${u.pl}`, emoji: '5️⃣', g: u.g * 5 });
     }
   }
-  if (CRUDOS_SECOS.includes(id)) {
+  if (PASTA_SOPA.includes(id)) {
+    r.push({ nombre: 'Poca pasta', emoji: '🤏', g: 30 }, { nombre: '1 plato de sopa', emoji: '🍜', g: 50 }, { nombre: 'Con mucha pasta', emoji: '🍝', g: 80 });
+  } else if (es_sopa(id) && a.medida === 'ml') {
+    r.push({ nombre: 'Una taza', emoji: '☕', g: 200 }, { nombre: '1 plato de sopa', emoji: '🍲', g: 300 }, { nombre: 'El brik entero', emoji: '🧃', g: 500 });
+  } else if (CRUDOS_SECOS.includes(id)) {
     r.push({ nombre: '1 puño cocido', emoji: '✊', g: 50, nota: '≈150 g cocido' });
     r.push({ nombre: '1 plato normal', emoji: '🍽️', g: 80, nota: '≈240 g cocido' });
     r.push({ nombre: '1 plato grande', emoji: '🍝', g: 110, nota: '≈330 g cocido' });
