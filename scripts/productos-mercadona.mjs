@@ -1,12 +1,14 @@
 // Productos envasados de Mercadona para montar comidas: código de barras y alérgenos de la
 // tienda online de Mercadona, macros de la etiqueta vía Open Food Facts (si falta o no cuadra,
 // se usan los valores de referencia de esta lista). Escribe src/data/productos.js.
-// Uso: node scripts/productos-mercadona.mjs
+// Uso: node scripts/productos-mercadona.mjs [--nuevos]   (--nuevos: solo descarga los que aún no están)
 import { writeFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const NUEVOS = process.argv.includes('--nuevos');
+const PREVIOS = NUEVOS ? (await import(pathToFileURL(path.join(RAIZ, 'src/data/productos.js')).href)).PRODUCTOS : {};
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // clave, id Mercadona, grupo, dieta, macros de referencia por 100 g [kcal, p, c, g, fibra], extra
@@ -251,6 +253,38 @@ const LISTA_AMPLIA = [
   ['ketchup', '23579', 'otros', 'vegetal', [110, 1.2, 25, 0.1, 0.5], {}],
   ['salsa_barbacoa', '17346', 'otros', 'vegetal', [150, 1, 35, 0.3, 0.5], {}],
   ['chocolate_negro_85', '12524', 'grasa', 'vegetal', [590, 11, 14, 51, 14], {}],
+  // Cremas listas (brik o bol): se calientan en el microondas
+  ['crema_verduras', '60308', 'verdura', 'vegetal', [40, 0.8, 5, 1.8, 1], { nombre: 'Crema de verduras Hacendado (brik)', medida: 'ml', alias: 'pure sopa' }],
+  ['crema_verduras_bol', '8722', 'verdura', 'vegetal', [45, 1, 5, 2.2, 1.2], { nombre: 'Crema de verduras Hacendado (bol)', ...U('bol', 'boles', 350), alias: 'pure sopa' }],
+  ['crema_calabaza', '13499', 'verdura', 'vegetal', [40, 0.7, 5.5, 1.6, 0.8], { medida: 'ml', alias: 'pure sopa' }],
+  ['crema_calabaza_zanahoria', '23225', 'verdura', 'vegetal', [42, 0.8, 5.5, 1.8, 1], { ...U('bol', 'boles', 350), alias: 'pure sopa' }],
+  ['crema_calabacin', '14930', 'verdura', 'vegetal', [35, 0.7, 3.5, 2, 0.7], { nombre: 'Crema de calabacín Hacendado (brik)', medida: 'ml', alias: 'pure sopa' }],
+  ['crema_calabacin_bol', '35870', 'verdura', 'vegetal', [40, 0.9, 4, 2.2, 0.8], { nombre: 'Crema de calabacín Hacendado (bol)', ...U('bol', 'boles', 350), alias: 'pure sopa' }],
+  ['crema_lentejas', '11628', 'hidrato', 'vegetal', [75, 4, 9, 2.2, 2.5], { ...U('bol', 'boles', 350), alias: 'pure sopa' }],
+  ['crema_esparragos', '86587', 'verdura', 'vegetal', [45, 1, 4, 2.8, 0.8], { ...U('bol', 'boles', 350), alias: 'pure sopa' }],
+  ['crema_pollo_verduras', '8448', 'verdura', 'carne', [45, 1.5, 5, 2, 0.4], { medida: 'ml', alias: 'pure sopa' }],
+  ['crema_marisco', '8447', 'verdura', 'marisco', [55, 1.5, 6, 2.7, 0.3], { medida: 'ml', alias: 'pure sopa' }],
+  ['crema_setas', '35662', 'verdura', 'vegetal', [45, 0.8, 5, 2.3, 0.5], { medida: 'ml', alias: 'pure sopa champiñon' }],
+  ['sopa_hortelana', '19882', 'verdura', 'vegetal', [30, 1.2, 4, 1, 1], { ...U('bol', 'boles', 350), alias: 'sopa verduras' }],
+  // Sopas de sobre: los macros son del polvo; 1 plato (unos 250 ml) = ¼ de sobre
+  ['sopa_pollo_fideos', '11646', 'hidrato', 'carne', [350, 12, 62, 5, 2], { unidad: { n: 'plato', pl: 'platos', g: 18 }, alias: 'sobre' }],
+  ['sopa_cocido', '52956', 'hidrato', 'carne', [350, 12, 62, 5, 2], { unidad: { n: 'plato', pl: 'platos', g: 18 }, alias: 'sobre' }],
+  ['sopa_maravilla', '60587', 'hidrato', 'carne', [355, 12, 64, 4.5, 2], { unidad: { n: 'plato', pl: 'platos', g: 21 }, alias: 'sobre' }],
+  ['sopa_cebolla', '60595', 'verdura', 'vegetal', [330, 7, 55, 8, 4], { unidad: { n: 'plato', pl: 'platos', g: 11 }, alias: 'sobre' }],
+  // Caldos (base de sopas caseras)
+  ['caldo_pollo_bajo_sal', '7031', 'otros', 'carne', [5, 0.6, 0.3, 0.2, 0], { medida: 'ml', alias: 'sopa' }],
+  ['caldo_cocido', '52768', 'otros', 'carne', [8, 0.8, 0.5, 0.3, 0], { medida: 'ml', alias: 'sopa' }],
+  ['caldo_verduras', '18480', 'otros', 'vegetal', [5, 0.2, 0.8, 0.1, 0.2], { medida: 'ml', alias: 'sopa' }],
+  ['caldo_pescado', '7325', 'otros', 'pescado', [5, 0.7, 0.2, 0.2, 0], { medida: 'ml', alias: 'sopa' }],
+  ['caldo_carne', '13998', 'otros', 'carne', [10, 0.6, 0.8, 0.5, 0], { medida: 'ml', alias: 'sopa sofrito' }],
+  // Pasta para sopa
+  ['fideo_mediano', '6256', 'hidrato', 'vegetal', [355, 12.5, 71, 1.5, 3], { alias: 'pasta sopa' }],
+  ['fideo_cabello_angel', '13577', 'hidrato', 'vegetal', [355, 12.5, 71, 1.5, 3], { alias: 'fino pasta sopa' }],
+  ['fideo_grueso', '6261', 'hidrato', 'vegetal', [355, 12.5, 71, 1.5, 3], { alias: 'pasta sopa' }],
+  ['pasta_estrellas', '6363', 'hidrato', 'vegetal', [355, 12.5, 71, 1.5, 3], { alias: 'fideos sopa' }],
+  ['pasta_maravilla', '6258', 'hidrato', 'vegetal', [355, 12.5, 71, 1.5, 3], { alias: 'fideos sopa' }],
+  ['fideua', '6253', 'hidrato', 'vegetal', [355, 12.5, 71, 1.5, 3], { alias: 'fideos' }],
+  ['pure_patata_copos', '23264', 'hidrato', 'vegetal', [350, 8, 75, 1, 6], { alias: 'pure de patatas' }],
 ];
 
 const FRUTOS_SECOS = ['almendra', 'avellana', 'nueces', 'anacardo', 'pistacho', 'cacahuete'];
@@ -291,6 +325,7 @@ const redondea = (x) => Math.round(x * 10) / 10;
 const productos = {};
 const informe = [];
 for (const [clave, id, grupo, dieta, ref, { al: alExtra = [], ...resto }] of [...LISTA, ...LISTA_AMPLIA.map(([k, i, g, d, r, x = {}]) => [k, i, g, d, r, { ...x, catalogo: true }])]) {
+  if (PREVIOS[clave]) { productos[clave] = PREVIOS[clave]; continue; }
   const m = await json(`https://tienda.mercadona.es/api/products/${id}/?lang=es&wh=mad1`);
   let macros = { kcal: ref[0], p: ref[1], c: ref[2], g: ref[3], f: ref[4] };
   let fuente = 'referencia';

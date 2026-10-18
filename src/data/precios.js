@@ -1,5 +1,5 @@
 // Generado por scripts/actualizar-precios.mjs — no editar a mano.
-export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-18T18:57:02.814Z"};
+export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-18T19:06:06.304Z"};
 export const PRECIOS = {
  "2622": {
   "nombre": "Burger de pollo",
@@ -616,6 +616,96 @@ export const PRECIOS = {
   "subcategoria": "Pasta y fideos",
   "disponible": true
  },
+ "6253": {
+  "nombre": "Fideuá Hacendado",
+  "formato": "Paquete · 0.5 kg",
+  "precio": 0.8,
+  "precioRef": 1.6,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/e5b402647751a7b60f87b4663bdc86e5.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/6253/fideua-hacendado-paquete",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Pasta y fideos",
+  "disponible": true
+ },
+ "6256": {
+  "nombre": "Fideo mediano Hacendado",
+  "formato": "Paquete · 0.5 kg",
+  "precio": 0.8,
+  "precioRef": 1.6,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/1af340d1ed092fc1cae6c712c683edfb.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/6256/fideo-mediano-hacendado-paquete",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Pasta y fideos",
+  "disponible": true
+ },
+ "6258": {
+  "nombre": "Pasta maravilla Hacendado",
+  "formato": "Paquete · 0.5 kg",
+  "precio": 0.8,
+  "precioRef": 1.6,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/dbd6fee787fb1be15b95c11e1ba3787b.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/6258/pasta-maravilla-hacendado-sopa-paquete",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Pasta y fideos",
+  "disponible": true
+ },
+ "6261": {
+  "nombre": "Fideo grueso Hacendado",
+  "formato": "Paquete · 0.5 kg",
+  "precio": 0.8,
+  "precioRef": 1.6,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/0778f8e6272f1c743d1da88f16c4d978.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/6261/fideo-grueso-hacendado-paquete",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Pasta y fideos",
+  "disponible": true
+ },
+ "6363": {
+  "nombre": "Pasta estrellas Hacendado",
+  "formato": "Paquete · 0.5 kg",
+  "precio": 0.8,
+  "precioRef": 1.6,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/6c418320c51659907a16ff4f9192a2cf.jpeg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/6363/pasta-estrellas-hacendado-sopa-paquete",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Pasta y fideos",
+  "disponible": true
+ },
+ "7031": {
+  "nombre": "Caldo de pollo Hacendado bajo en sal",
+  "formato": "Brik · 1 l",
+  "precio": 1.2,
+  "precioRef": 1.2,
+  "unidadRef": "L",
+  "contenido": 1000,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/42add0a8d4db36dfc601f6150309664c.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/7031/caldo-pollo-hacendado-bajo-sal-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
+  "disponible": true
+ },
  "7313": {
   "nombre": "Caldo de pollo Hacendado",
   "formato": "Brik · 1 l",
@@ -627,6 +717,21 @@ export const PRECIOS = {
   "aproximado": false,
   "imagen": "https://prod-mercadona.imgix.net/images/6c57497fe4619d585d742041fcc9436e.jpg?fit=crop&h=300&w=300",
   "url": "https://tienda.mercadona.es/product/7313/caldo-pollo-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
+  "disponible": true
+ },
+ "7325": {
+  "nombre": "Caldo de pescado Hacendado",
+  "formato": "Brik · 1 l",
+  "precio": 0.95,
+  "precioRef": 0.95,
+  "unidadRef": "L",
+  "contenido": 1000,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/449bcde120352282518671422bce0c82.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/7325/caldo-pescado-hacendado-brick",
   "categoria": "Conservas, caldos y cremas",
   "subcategoria": "Sopa y caldo",
   "disponible": true
@@ -676,6 +781,36 @@ export const PRECIOS = {
   "subcategoria": "Aceitunas y encurtidos",
   "disponible": true
  },
+ "8447": {
+  "nombre": "Crema de marisco Hacendado",
+  "formato": "Brik · 0.5 l",
+  "precio": 2,
+  "precioRef": 4,
+  "unidadRef": "L",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/0d8342773ae2a6bae230564c9ea13e55.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/8447/crema-marisco-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
+ "8448": {
+  "nombre": "Crema de pollo Hacendado con verduras",
+  "formato": "Brik · 0.5 l",
+  "precio": 1,
+  "precioRef": 2,
+  "unidadRef": "L",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/e7dd64a7791cb538c4d48e8a333cdbc8.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/8448/crema-pollo-hacendado-con-verduras-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
  "8667": {
   "nombre": "Pechuga de pollo 92% Hacendado lonchas",
   "formato": "Paquete · 0.2 kg",
@@ -689,6 +824,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/8667/pechuga-pollo-92-hacendado-lonchas-paquete",
   "categoria": "Charcutería y quesos",
   "subcategoria": "Aves y jamón cocido",
+  "disponible": true
+ },
+ "8722": {
+  "nombre": "Crema de verduras Hacendado",
+  "formato": "Bol · 0.35 kg",
+  "precio": 1.7,
+  "precioRef": 4.858,
+  "unidadRef": "kg",
+  "contenido": 350,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/84004f26c61b916e664619ebaa88a44f.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/8722/crema-verduras-hacendado-bol",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
   "disponible": true
  },
  "8936": {
@@ -886,6 +1036,21 @@ export const PRECIOS = {
   "subcategoria": "Fruta y verdura",
   "disponible": true
  },
+ "11628": {
+  "nombre": "Crema de lentejas Hacendado",
+  "formato": "Bol · 0.35 kg",
+  "precio": 1.7,
+  "precioRef": 4.858,
+  "unidadRef": "kg",
+  "contenido": 350,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/c75cd6195526f2bfecb9f1783f39297a.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/11628/crema-lentejas-hacendado-bol",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
  "11630": {
   "nombre": "Crema de avellanas y cacao Hacendado",
   "formato": "Bote · 0.4 kg",
@@ -899,6 +1064,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/11630/crema-avellanas-cacao-hacendado-bote",
   "categoria": "Azúcar, caramelos y chocolate",
   "subcategoria": "Chocolate",
+  "disponible": true
+ },
+ "11646": {
+  "nombre": "Sopa de pollo Hacendado con fideos finos",
+  "formato": "Sobre · 0.072 kg",
+  "precio": 0.55,
+  "precioRef": 7.639,
+  "unidadRef": "kg",
+  "contenido": 72,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/b7376490fee7a26c553ee656f233aef0.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/11646/sopa-pollo-hacendado-con-fideos-finos",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
   "disponible": true
  },
  "12282": {
@@ -991,6 +1171,21 @@ export const PRECIOS = {
   "subcategoria": "Pan tostado y rallado",
   "disponible": true
  },
+ "13499": {
+  "nombre": "Crema de calabaza Hacendado",
+  "formato": "Brik · 0.5 l",
+  "precio": 1,
+  "precioRef": 2,
+  "unidadRef": "L",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/bac2668c48c9709038fd8723a17488c9.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/13499/crema-calabaza-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
  "13568": {
   "nombre": "Cebolla troceada Hacendado ultracongelada",
   "formato": "Paquete · 0.45 kg",
@@ -1004,6 +1199,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/13568/cebolla-troceada-hacendado-ultracongelada-paquete",
   "categoria": "Congelados",
   "subcategoria": "Fruta y verdura",
+  "disponible": true
+ },
+ "13577": {
+  "nombre": "Fideo cabello de ángel Hacendado",
+  "formato": "Paquete · 0.5 kg",
+  "precio": 0.8,
+  "precioRef": 1.6,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/66992393aeb518b19a12b4844845ac21.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/13577/fideo-cabello-angel-hacendado-paquete",
+  "categoria": "Arroz, legumbres y pasta",
+  "subcategoria": "Pasta y fideos",
   "disponible": true
  },
  "13628": {
@@ -1094,6 +1304,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/13926/soja-texturizada-luengo-paquete",
   "categoria": "Arroz, legumbres y pasta",
   "subcategoria": "Legumbres",
+  "disponible": true
+ },
+ "13998": {
+  "nombre": "Caldo de carne con sofrito Hacendado",
+  "formato": "Brik · 1 l",
+  "precio": 1.8,
+  "precioRef": 1.8,
+  "unidadRef": "L",
+  "contenido": 1000,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/4a02eea762459978bc3a5439935a732e.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/13998/caldo-carne-con-sofrito-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
   "disponible": true
  },
  "14013": {
@@ -1229,6 +1454,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/14786/tortitas-maiz-campestre-hacendado-paquete",
   "categoria": "Cereales y galletas",
   "subcategoria": "Tortitas",
+  "disponible": true
+ },
+ "14930": {
+  "nombre": "Crema de calabacín Hacendado",
+  "formato": "Brik · 0.5 l",
+  "precio": 1,
+  "precioRef": 2,
+  "unidadRef": "L",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/21e1acdab6e7f290087759fa1f7eef1d.jpeg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/14930/crema-calabacin-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
   "disponible": true
  },
  "14961": {
@@ -1801,6 +2041,21 @@ export const PRECIOS = {
   "subcategoria": "Pan de molde y otras especialidades",
   "disponible": true
  },
+ "18480": {
+  "nombre": "Caldo de verduras casero Gallina blanca",
+  "formato": "Brik · 1 l",
+  "precio": 1.8,
+  "precioRef": 1.8,
+  "unidadRef": "L",
+  "contenido": 1000,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/b283b11cc154409be6e4f6e21bc191b1.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/18480/caldo-verduras-casero-gallina-blanca-brik",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
+  "disponible": true
+ },
  "18619": {
   "nombre": "Mejillones en escabeche Hacendado pequeños",
   "formato": "Lata · 0.111 kg",
@@ -1829,6 +2084,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/18620/mejillones-natural-hacendado-pequenos-15-20-piezas-lata",
   "categoria": "Conservas, caldos y cremas",
   "subcategoria": "Berberechos y mejillones",
+  "disponible": true
+ },
+ "19882": {
+  "nombre": "Sopa hortelana Hacendado",
+  "formato": "Bol · 0.35 kg",
+  "precio": 1.7,
+  "precioRef": 4.858,
+  "unidadRef": "kg",
+  "contenido": 350,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/f20673acff2cbe0ea39175ad3bdc3f15.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/19882/sopa-hortelana-hacendado-bol",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
   "disponible": true
  },
  "19974": {
@@ -2386,6 +2656,36 @@ export const PRECIOS = {
   "subcategoria": "Frutos secos y fruta desecada",
   "disponible": true
  },
+ "23225": {
+  "nombre": "Crema de calabaza y zanahoria Hacendado",
+  "formato": "Bol · 0.35 kg",
+  "precio": 1.7,
+  "precioRef": 4.858,
+  "unidadRef": "kg",
+  "contenido": 350,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/c4f8572501d428cdb9583b35db56e690.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/23225/crema-calabaza-zanahoria-hacendado-bol",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
+ "23264": {
+  "nombre": "Puré de patatas Hacendado en copos",
+  "formato": "Caja · 0.5 kg",
+  "precio": 2,
+  "precioRef": 4,
+  "unidadRef": "kg",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/cda62d9b1f3870ff9cac3193caae188d.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/23264/pure-patatas-hacendado-copos-caja",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
  "23579": {
   "nombre": "Ketchup Hacendado",
   "formato": "Bote · 0.6 kg",
@@ -2821,6 +3121,21 @@ export const PRECIOS = {
   "subcategoria": "Fruta y verdura",
   "disponible": true
  },
+ "35662": {
+  "nombre": "Crema de setas Starlux con champiñones",
+  "formato": "Brik · 0.5 l",
+  "precio": 1.7,
+  "precioRef": 3.4,
+  "unidadRef": "L",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/d61df99aaace37a242ffdef145f78d7c.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/35662/crema-setas-starlux-con-champinones-knorr-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
  "35683": {
   "nombre": "Gelatina 0% azúcar sabores fresa, mandarina y limón Hacendado",
   "formato": "Pack-6 · 0.6 kg",
@@ -2939,6 +3254,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/35847/bebida-lactea-desnatada-proteinas-sabor-acai-platano-hacendado-0-mg-20-g-proteinas-botella",
   "categoria": "Postres y yogures",
   "subcategoria": "Yogures líquidos",
+  "disponible": true
+ },
+ "35870": {
+  "nombre": "Crema de calabacín Hacendado",
+  "formato": "Bol · 0.35 kg",
+  "precio": 1.7,
+  "precioRef": 4.858,
+  "unidadRef": "kg",
+  "contenido": 350,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/97b7de306a37508ef279a8369118736e.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/35870/crema-calabacin-hacendado-bol",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
   "disponible": true
  },
  "35900": {
@@ -3286,6 +3616,21 @@ export const PRECIOS = {
   "subcategoria": "Leche y bebidas vegetales",
   "disponible": true
  },
+ "52768": {
+  "nombre": "Caldo de cocido Hacendado",
+  "formato": "Brik · 1 l",
+  "precio": 0.9,
+  "precioRef": 0.9,
+  "unidadRef": "L",
+  "contenido": 1000,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/762a051f468a2dced13c644370dd5978.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/52768/caldo-cocido-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
+  "disponible": true
+ },
  "52855": {
   "nombre": "Postre lácteo sabor coco +Proteínas 10 g 0% MG",
   "formato": "0.48 kg",
@@ -3299,6 +3644,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/52855/postre-lacteo-sabor-coco-proteinas-hacendado-0-mg-10-g-proteinas",
   "categoria": "Postres y yogures",
   "subcategoria": "Yogures desnatados",
+  "disponible": true
+ },
+ "52956": {
+  "nombre": "Sopa de cocido Hacendado",
+  "formato": "Sobre · 0.072 kg",
+  "precio": 0.65,
+  "precioRef": 9.028,
+  "unidadRef": "kg",
+  "contenido": 72,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/0fdc9524c1c6acf402ad7e60ec64e483.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/52956/sopa-cocido-hacendado",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
   "disponible": true
  },
  "53140": {
@@ -3421,6 +3781,21 @@ export const PRECIOS = {
   "subcategoria": "Aves y jamón cocido",
   "disponible": true
  },
+ "60308": {
+  "nombre": "Crema de verduras Hacendado",
+  "formato": "Brik · 0.5 l",
+  "precio": 1,
+  "precioRef": 2,
+  "unidadRef": "L",
+  "contenido": 500,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/2ae243e8f790af2975eacc75f302b24d.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/60308/crema-verduras-hacendado-brick",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
+  "disponible": true
+ },
  "60329": {
   "nombre": "Jamón cocido extra Hacendado finas lonchas",
   "formato": "Paquete · 0.2 kg",
@@ -3434,6 +3809,36 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/60329/jamon-cocido-extra-hacendado-finas-lonchas-paquete",
   "categoria": "Charcutería y quesos",
   "subcategoria": "Aves y jamón cocido",
+  "disponible": true
+ },
+ "60587": {
+  "nombre": "Sopa maravilla Hacendado",
+  "formato": "Sobre · 0.085 kg",
+  "precio": 0.65,
+  "precioRef": 7.648,
+  "unidadRef": "kg",
+  "contenido": 85,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/02e4829c0ea5f934de794478b17cef65.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/60587/sopa-maravilla-hacendado",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
+  "disponible": true
+ },
+ "60595": {
+  "nombre": "Sopa de cebolla Hacendado",
+  "formato": "Sobre · 0.043 kg",
+  "precio": 0.65,
+  "precioRef": 1.512,
+  "unidadRef": "100 g",
+  "contenido": 43,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/3710c6b818e96b68ab0385ca35d8627a.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/60595/sopa-cebolla-hacendado",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Sopa y caldo",
   "disponible": true
  },
  "60956": {
@@ -4484,6 +4889,21 @@ export const PRECIOS = {
   "url": "https://tienda.mercadona.es/product/86483/tortitas-legumbres-arroz-hacendado-paquete",
   "categoria": "Cereales y galletas",
   "subcategoria": "Tortitas",
+  "disponible": true
+ },
+ "86587": {
+  "nombre": "Crema de espárragos Hacendado",
+  "formato": "Bol · 0.35 kg",
+  "precio": 1.7,
+  "precioRef": 4.858,
+  "unidadRef": "kg",
+  "contenido": 350,
+  "unidadContenido": "g",
+  "aproximado": false,
+  "imagen": "https://prod-mercadona.imgix.net/images/2518e0e73630e79f2af039da7d3dc822.jpg?fit=crop&h=300&w=300",
+  "url": "https://tienda.mercadona.es/product/86587/crema-esparragos-hacendado-bol",
+  "categoria": "Conservas, caldos y cremas",
+  "subcategoria": "Gazpacho y cremas",
   "disponible": true
  },
  "86656": {

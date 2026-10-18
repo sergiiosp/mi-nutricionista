@@ -1,13 +1,15 @@
 // Actualiza precios y envases de los productos de Mercadona usados en data/alimentos.js.
 // Escribe data/precios.js (lo carga la app). Uso:
-//   node scripts/actualizar-precios.mjs [almacen]
+//   node scripts/actualizar-precios.mjs [almacen] [--nuevos]   (--nuevos: solo los que aún no tienen precio)
 // El almacén por defecto es "mad1" (Madrid). Los precios pueden variar ligeramente por zona.
 
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 
-const ALMACEN = process.argv[2] || 'mad1';
+const ARGS = process.argv.slice(2);
+const ALMACEN = ARGS.find((a) => !a.startsWith('--')) || 'mad1';
+const NUEVOS = ARGS.includes('--nuevos');
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { ALIMENTOS, ESPECIAS } = await import(pathToFileURL(path.join(RAIZ, 'src', 'data', 'alimentos.js')).href);
 
@@ -43,9 +45,10 @@ const ids = new Set();
 for (const a of Object.values(ALIMENTOS)) if (a.mercadona) ids.add(a.mercadona);
 for (const e of Object.values(ESPECIAS)) if (e.mercadona) ids.add(e.mercadona);
 
-const precios = {};
+const precios = NUEVOS ? { ...(await import(pathToFileURL(path.join(RAIZ, 'src', 'data', 'precios.js')).href)).PRECIOS } : {};
 const fallidos = [];
 for (const id of ids) {
+  if (precios[id]) continue;
   const p = await producto(id);
   if (!p || !p.price_instructions) { fallidos.push(id); continue; }
   const pi = p.price_instructions;

@@ -3468,5 +3468,496 @@ export const PRODUCTOS = {
   ],
   "mercadona": "12524",
   "catalogo": true
+ },
+ "crema_verduras": {
+  "nombre": "Crema de verduras Hacendado (brik)",
+  "kcal": 33,
+  "p": 0.5,
+  "c": 4.9,
+  "g": 1.3,
+  "f": 0.6,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "60308",
+  "medida": "ml",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_verduras_bol": {
+  "nombre": "Crema de verduras Hacendado (bol)",
+  "kcal": 30,
+  "p": 0.7,
+  "c": 4.6,
+  "g": 0.8,
+  "f": 1,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "8722",
+  "unidad": {
+   "n": "bol",
+   "pl": "boles",
+   "g": 350
+  },
+  "redondeo": "unidad",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_calabaza": {
+  "nombre": "Crema de calabaza Hacendado",
+  "kcal": 36,
+  "p": 0.7,
+  "c": 4.9,
+  "g": 1.3,
+  "f": 0.7,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [
+   "lactosa"
+  ],
+  "mercadona": "13499",
+  "medida": "ml",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_calabaza_zanahoria": {
+  "nombre": "Crema de calabaza y zanahoria Hacendado",
+  "kcal": 48,
+  "p": 0.9,
+  "c": 4.2,
+  "g": 2.8,
+  "f": 1.4,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "23225",
+  "unidad": {
+   "n": "bol",
+   "pl": "boles",
+   "g": 350
+  },
+  "redondeo": "unidad",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_calabacin": {
+  "nombre": "Crema de calabacín Hacendado (brik)",
+  "kcal": 42,
+  "p": 0.8,
+  "c": 6.1,
+  "g": 1.4,
+  "f": 0.7,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [
+   "lactosa"
+  ],
+  "mercadona": "14930",
+  "medida": "ml",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_calabacin_bol": {
+  "nombre": "Crema de calabacín Hacendado (bol)",
+  "kcal": 36,
+  "p": 0.3,
+  "c": 5.5,
+  "g": 1,
+  "f": 1.8,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "35870",
+  "unidad": {
+   "n": "bol",
+   "pl": "boles",
+   "g": 350
+  },
+  "redondeo": "unidad",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_lentejas": {
+  "nombre": "Crema de lentejas Hacendado",
+  "kcal": 70,
+  "p": 4.6,
+  "c": 6,
+  "g": 2.2,
+  "f": 0,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "11628",
+  "unidad": {
+   "n": "bol",
+   "pl": "boles",
+   "g": 350
+  },
+  "redondeo": "unidad",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_esparragos": {
+  "nombre": "Crema de espárragos Hacendado",
+  "kcal": 47,
+  "p": 0.9,
+  "c": 6.3,
+  "g": 1.9,
+  "f": 0.8,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "86587",
+  "unidad": {
+   "n": "bol",
+   "pl": "boles",
+   "g": 350
+  },
+  "redondeo": "unidad",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_pollo_verduras": {
+  "nombre": "Crema de pollo Hacendado con verduras",
+  "kcal": 47,
+  "p": 1,
+  "c": 4,
+  "g": 2.6,
+  "f": 1.6,
+  "grupo": "verdura",
+  "dieta": "carne",
+  "al": [
+   "lactosa"
+  ],
+  "mercadona": "8448",
+  "medida": "ml",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_marisco": {
+  "nombre": "Crema de marisco Hacendado",
+  "kcal": 36,
+  "p": 1.8,
+  "c": 3.7,
+  "g": 1.6,
+  "f": 0.5,
+  "grupo": "verdura",
+  "dieta": "marisco",
+  "al": [
+   "pescado",
+   "marisco"
+  ],
+  "mercadona": "8447",
+  "medida": "ml",
+  "alias": "pure sopa",
+  "catalogo": true
+ },
+ "crema_setas": {
+  "nombre": "Crema de setas Starlux con champiñones",
+  "kcal": 42,
+  "p": 0.9,
+  "c": 4.7,
+  "g": 2.2,
+  "f": 0.5,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [
+   "lactosa"
+  ],
+  "mercadona": "35662",
+  "medida": "ml",
+  "alias": "pure sopa champiñon",
+  "catalogo": true
+ },
+ "sopa_hortelana": {
+  "nombre": "Sopa hortelana Hacendado",
+  "kcal": 30,
+  "p": 1.2,
+  "c": 4,
+  "g": 1,
+  "f": 1,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "19882",
+  "unidad": {
+   "n": "bol",
+   "pl": "boles",
+   "g": 350
+  },
+  "redondeo": "unidad",
+  "alias": "sopa verduras",
+  "catalogo": true
+ },
+ "sopa_pollo_fideos": {
+  "nombre": "Sopa de pollo Hacendado con fideos finos",
+  "kcal": 350,
+  "p": 12,
+  "c": 62,
+  "g": 5,
+  "f": 2,
+  "grupo": "hidrato",
+  "dieta": "carne",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "11646",
+  "unidad": {
+   "n": "plato",
+   "pl": "platos",
+   "g": 18
+  },
+  "alias": "sobre",
+  "catalogo": true
+ },
+ "sopa_cocido": {
+  "nombre": "Sopa de cocido Hacendado",
+  "kcal": 350,
+  "p": 12,
+  "c": 62,
+  "g": 5,
+  "f": 2,
+  "grupo": "hidrato",
+  "dieta": "carne",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "52956",
+  "unidad": {
+   "n": "plato",
+   "pl": "platos",
+   "g": 18
+  },
+  "alias": "sobre",
+  "catalogo": true
+ },
+ "sopa_maravilla": {
+  "nombre": "Sopa maravilla Hacendado",
+  "kcal": 325,
+  "p": 14.5,
+  "c": 61.6,
+  "g": 1.6,
+  "f": 3.2,
+  "grupo": "hidrato",
+  "dieta": "carne",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "60587",
+  "unidad": {
+   "n": "plato",
+   "pl": "platos",
+   "g": 21
+  },
+  "alias": "sobre",
+  "catalogo": true
+ },
+ "sopa_cebolla": {
+  "nombre": "Sopa de cebolla Hacendado",
+  "kcal": 330,
+  "p": 7,
+  "c": 55,
+  "g": 8,
+  "f": 4,
+  "grupo": "verdura",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "60595",
+  "unidad": {
+   "n": "plato",
+   "pl": "platos",
+   "g": 11
+  },
+  "alias": "sobre",
+  "catalogo": true
+ },
+ "caldo_pollo_bajo_sal": {
+  "nombre": "Caldo de pollo Hacendado bajo en sal",
+  "kcal": 5,
+  "p": 0.6,
+  "c": 0.3,
+  "g": 0.2,
+  "f": 0,
+  "grupo": "otros",
+  "dieta": "carne",
+  "al": [],
+  "mercadona": "7031",
+  "medida": "ml",
+  "alias": "sopa",
+  "catalogo": true
+ },
+ "caldo_cocido": {
+  "nombre": "Caldo de cocido Hacendado",
+  "kcal": 8,
+  "p": 0.8,
+  "c": 0.5,
+  "g": 0.3,
+  "f": 0,
+  "grupo": "otros",
+  "dieta": "carne",
+  "al": [],
+  "mercadona": "52768",
+  "medida": "ml",
+  "alias": "sopa",
+  "catalogo": true
+ },
+ "caldo_verduras": {
+  "nombre": "Caldo de verduras casero Gallina blanca",
+  "kcal": 3,
+  "p": 0.1,
+  "c": 0.2,
+  "g": 0.2,
+  "f": 0,
+  "grupo": "otros",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "18480",
+  "medida": "ml",
+  "alias": "sopa",
+  "catalogo": true
+ },
+ "caldo_pescado": {
+  "nombre": "Caldo de pescado Hacendado",
+  "kcal": 5,
+  "p": 0.7,
+  "c": 0.2,
+  "g": 0.2,
+  "f": 0,
+  "grupo": "otros",
+  "dieta": "pescado",
+  "al": [
+   "pescado",
+   "marisco"
+  ],
+  "mercadona": "7325",
+  "medida": "ml",
+  "alias": "sopa",
+  "catalogo": true
+ },
+ "caldo_carne": {
+  "nombre": "Caldo de carne con sofrito Hacendado",
+  "kcal": 10,
+  "p": 0.6,
+  "c": 0.8,
+  "g": 0.5,
+  "f": 0,
+  "grupo": "otros",
+  "dieta": "carne",
+  "al": [],
+  "mercadona": "13998",
+  "medida": "ml",
+  "alias": "sopa sofrito",
+  "catalogo": true
+ },
+ "fideo_mediano": {
+  "nombre": "Fideo mediano Hacendado",
+  "kcal": 366,
+  "p": 12,
+  "c": 74,
+  "g": 1.5,
+  "f": 4,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "6256",
+  "alias": "pasta sopa",
+  "catalogo": true
+ },
+ "fideo_cabello_angel": {
+  "nombre": "Fideo cabello de ángel Hacendado",
+  "kcal": 355,
+  "p": 12.5,
+  "c": 71,
+  "g": 1.5,
+  "f": 3,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "13577",
+  "alias": "fino pasta sopa",
+  "catalogo": true
+ },
+ "fideo_grueso": {
+  "nombre": "Fideo grueso Hacendado",
+  "kcal": 361,
+  "p": 13,
+  "c": 72,
+  "g": 1.5,
+  "f": 3.5,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "6261",
+  "alias": "pasta sopa",
+  "catalogo": true
+ },
+ "pasta_estrellas": {
+  "nombre": "Pasta estrellas Hacendado",
+  "kcal": 361,
+  "p": 13,
+  "c": 72,
+  "g": 1.5,
+  "f": 3.5,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "6363",
+  "alias": "fideos sopa",
+  "catalogo": true
+ },
+ "pasta_maravilla": {
+  "nombre": "Pasta maravilla Hacendado",
+  "kcal": 361,
+  "p": 13,
+  "c": 72,
+  "g": 1.5,
+  "f": 3.5,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "6258",
+  "alias": "fideos sopa",
+  "catalogo": true
+ },
+ "fideua": {
+  "nombre": "Fideuá Hacendado",
+  "kcal": 366,
+  "p": 12,
+  "c": 74,
+  "g": 1.5,
+  "f": 4,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [
+   "gluten"
+  ],
+  "mercadona": "6253",
+  "alias": "fideos",
+  "catalogo": true
+ },
+ "pure_patata_copos": {
+  "nombre": "Puré de patatas Hacendado en copos",
+  "kcal": 349,
+  "p": 8.3,
+  "c": 74,
+  "g": 0.6,
+  "f": 7.4,
+  "grupo": "hidrato",
+  "dieta": "vegetal",
+  "al": [],
+  "mercadona": "23264",
+  "alias": "pure de patatas",
+  "catalogo": true
  }
 };
