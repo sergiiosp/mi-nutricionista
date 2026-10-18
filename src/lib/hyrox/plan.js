@@ -2,6 +2,7 @@
 import { construirSesion, TIPOS, kcalSesionHyrox } from './sesiones.js';
 import { ritmos } from './ritmos.js';
 import { sumarDias } from '../planificador.js';
+import { EJERCICIOS } from '../../data/hyrox.js';
 
 export const FASES = {
   base: { nombre: 'Base', desc: 'Base aeróbica, fuerza general y técnica de estaciones', color: '#4da3ff' },
@@ -159,6 +160,30 @@ export function generarPlanHyrox(hyrox, perfil, hoy) {
     semanas.push(semana);
     sesiones.push(...semana.sesiones);
   }
+
+  // Lo que ya registraste no cambia ni desaparece: la sesión se queda como la hiciste aunque luego
+  // cambies los días, el enfoque o la app se actualice (si ese día ya no está en el plan, se añade tal cual)
+  const porId = new Map(sesiones.map((s) => [s.id, s]));
+  for (const [id, r] of Object.entries(registros)) {
+    if (!r) continue;
+    const actual = porId.get(id);
+    if (actual) {
+      if (r.sesion) Object.assign(actual, structuredClone(r.sesion));
+      continue;
+    }
+    const fecha = r.fecha || r.fechaRegistro;
+    if (!fecha) continue;
+    const contenido = r.sesion ? structuredClone(r.sesion) : { tipo: 'registrada', titulo: TIPOS.registrada.nombre, emoji: TIPOS.registrada.emoji, color: 'gris', rpe: r.rpe || 6, duracion: r.duracion || 60, distancia: 0, calentamiento: [], bloques: [], vueltaCalma: [], notas: [], ejercicios: Object.keys(r.series || {}).map((ej) => ({ id: ej, nombre: EJERCICIOS[ej]?.nombre || ej, grupo: EJERCICIOS[ej]?.grupo, series: r.series[ej].length, reps: '' })) };
+    const semana = semanas.find((x) => fecha >= x.lunes && fecha <= sumarDias(x.lunes, 6));
+    const s = { id, semana: semana?.w ?? -1, fase: semana?.fase || 'base', fecha, fechaOriginal: fecha, hora: config.hora || '19:00', ...contenido, historica: true };
+    sesiones.push(s);
+    if (semana) {
+      semana.sesiones.push(s);
+      semana.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
+      semana.volumen += s.duracion;
+    }
+  }
+  sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
 
   for (const s of sesiones) s.kcal = kcalSesionHyrox(s, perfil?.peso || 75);
   const porFecha = {};

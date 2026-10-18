@@ -150,4 +150,25 @@ comprobar(torsoA.ejercicios.length >= 5 && torsoA.ejercicios.every((x) => x.seri
 const { sugerencias } = await import('../src/lib/dia.js');
 const sug = sugerencias({ kcal: 60, p: 30, c: 0, g: 0 }, { ...alergicoNueces, whey: true });
 comprobar(sug.length && sug[0].m.p >= 20, `Sugerencias: si solo falta proteína se propone algo proteico (${sug[0]?.nombre})`);
+
+// ── Que no se pierda nada al cambiar el plan o actualizar la app ──────────
+const { copiaSesion } = await import('../src/lib/hyrox/sesiones.js');
+const sesF = ph.sesiones.find((s) => s.tipo === 'fuerza' && s.fecha < '2026-10-19');
+const regsC = { [sesF.id]: { estado: 'completa', rpe: 7, fecha: sesF.fecha, series: { sentadilla: [{ kg: 80, reps: 6 }] }, sesion: copiaSesion(sesF) } };
+// Cambias los días de entreno: ese día ya no está en el plan, pero tu sesión sigue ahí tal cual
+const phDias = generarPlanHyrox({ config: { ...configH, dias: [3, 0] }, registros: regsC }, perfilH, '2026-10-20');
+const sigue = phDias.sesiones.find((s) => s.id === sesF.id);
+comprobar(sigue && sigue.fecha === sesF.fecha && sigue.titulo === sesF.titulo && sigue.ejercicios.length === sesF.ejercicios.length, 'Registros: una sesión hecha no desaparece al cambiar los días de entreno');
+comprobar(phDias.porFecha[sesF.fecha]?.some((s) => s.id === sesF.id), 'Registros: y sigue saliendo en su día');
+// Sesión registrada sin copia (versiones anteriores) en un día que ya no existe: sale como «Entreno registrado»
+const phViejo = generarPlanHyrox({ config: { ...configH, dias: [3, 0] }, registros: { 's0-9': { estado: 'completa', fechaRegistro: '2026-10-14', duracion: 50 } } }, perfilH, '2026-10-20');
+comprobar(phViejo.sesiones.some((s) => s.id === 's0-9' && s.tipo === 'registrada' && s.fecha === '2026-10-14'), 'Registros: los antiguos sin copia también se ven');
+// Si el plan cambia el contenido de una sesión ya hecha, se mantiene lo que hiciste
+const otra = generarPlanHyrox({ config: { ...configH, exigencia: 'muy' }, registros: regsC }, perfilH, '2026-10-20').sesiones.find((s) => s.id === sesF.id);
+comprobar(otra.duracion === sesF.duracion && JSON.stringify(otra.bloques) === JSON.stringify(sesF.bloques), 'Registros: una sesión hecha no cambia aunque cambie la exigencia');
+
+const { coincide, textoAlimento } = await import('../src/lib/buscar.js');
+comprobar(coincide(textoAlimento(ALIMENTOS.confitura), 'mermelada 0 fresa') && coincide(textoAlimento(ALIMENTOS.batata), 'boniato')
+  && coincide(textoAlimento(ALIMENTOS.yogur_proteinas), 'yogures proteina'), 'Buscador: mermelada → confitura, boniato → batata, «yogures proteina» → postre +Proteínas');
+
 if (fallosH) process.exitCode = 1;

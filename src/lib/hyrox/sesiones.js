@@ -15,7 +15,15 @@ export const TIPOS = {
   recuperacion: { nombre: 'Recuperación activa', emoji: '🧘', color: 'gris', rpe: 2, met: 2.5, carbos: 0, clase: 'suave' },
   activacion: { nombre: 'Activación pre-carrera', emoji: '🔋', color: 'primario', rpe: 4, met: 6, carbos: 7, clase: 'hyrox' },
   carrera: { nombre: 'HYROX', emoji: '🏆', color: 'primario', rpe: 10, met: 10, carbos: 6, clase: 'hyrox' },
+  // Sesión que registraste en un día que el plan ya no tiene (cambiaste de días) y de la que no queda copia
+  registrada: { nombre: 'Entreno registrado', emoji: '✅', color: 'gris', rpe: 6, met: 6, carbos: 3, clase: 'suave' },
 };
+
+/** Lo que se guarda de una sesión al registrarla, para que no cambie aunque cambie el plan. */
+export function copiaSesion(s) {
+  const { tipo, titulo, emoji, color, rpe, duracion, distancia, calentamiento, bloques, vueltaCalma, notas, ejercicios, sinGym } = s;
+  return structuredClone({ tipo, titulo, emoji, color, rpe, duracion, distancia, calentamiento, bloques, vueltaCalma, notas, ejercicios, sinGym });
+}
 
 const MATERIAL_DE = { ski: 'ski', push: 'sled', pull: 'sled', row: 'row', wallballs: 'wallball', farmers: 'kettlebell', lunges: 'sandbag' };
 const SUSTITUTO_CORTO = {

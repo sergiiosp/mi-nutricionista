@@ -39,7 +39,7 @@
   }
 
   function nuevo(desdeInicio) {
-    if (!confirm(desdeInicio ? '¿Generar otro menú para las mismas fechas?' : '¿Crear una semana nueva empezando hoy?')) return;
+    if (!confirm(`${desdeInicio ? '¿Generar otro menú para las mismas fechas?' : '¿Crear una semana nueva empezando hoy?'} El menú de hoy se queda como está.`)) return;
     crearPlan(desdeInicio ? plan.inicio : hoy);
     sel = 0;
     avisar('Menú nuevo listo', '🥗');

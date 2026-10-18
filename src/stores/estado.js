@@ -61,17 +61,26 @@ function cargar() {
 
 export const estado = writable(cargar());
 
-let pendiente;
-estado.subscribe((e) => {
+let pendiente = null;
+function guardarYa() {
+  if (!pendiente) return;
   clearTimeout(pendiente);
-  pendiente = setTimeout(() => {
-    try {
-      localStorage.setItem(CLAVE, JSON.stringify(e));
-    } catch {
-      // sin almacenamiento (modo privado): la app funciona pero no recuerda nada
-    }
-  }, 150);
+  pendiente = null;
+  try {
+    localStorage.setItem(CLAVE, JSON.stringify(get(estado)));
+  } catch {
+    // sin almacenamiento (modo privado): la app funciona pero no recuerda nada
+  }
+}
+estado.subscribe(() => {
+  clearTimeout(pendiente);
+  pendiente = setTimeout(guardarYa, 150);
 });
+// Al salir de la app (o cerrarla) se guarda al momento, sin esperar
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', guardarYa);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') guardarYa(); });
+}
 
 /** Modifica el estado con una función que muta un borrador. */
 export function actualizar(fn) {

@@ -10,6 +10,7 @@
   import { emojiAlimento } from '../lib/registro.js';
   import { alimentoPermitido } from '../lib/nutricion.js';
   import { buscar as buscarOFF } from '../lib/off.js';
+  import { coincide, normal, textoAlimento } from '../lib/buscar.js';
 
   let { onelegir } = $props();
   const e = get(estado);
@@ -19,17 +20,15 @@
   let errorOnline = $state('');
   let entrada;
 
-  const normal = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  // Las marcas no cuentan al buscar en la app (los alimentos de la app ya son de Mercadona)
-  const MARCAS = ['hacendado', 'mercadona'];
-  const coincide = (nombre, q) => q.split(/\s+/).filter((p) => p && !MARCAS.includes(p)).every((p) => normal(nombre).includes(p));
 
   const locales = $derived.by(() => {
     const q = normal(texto.trim());
     if (q.length < 1) return [];
+    const orden = (a) => (normal(a.nombre).startsWith(q) ? 0 : normal(a.nombre).includes(q) ? 1 : 2) + (a.catalogo ? 0.5 : 0);
     const alimentos = Object.entries(ALIMENTOS)
-      .filter(([id, a]) => coincide(a.nombre, q) && alimentoPermitido(id, e.perfil))
-      .slice(0, 15)
+      .filter(([id, a]) => coincide(textoAlimento(a), q) && alimentoPermitido(id, e.perfil))
+      .sort(([, a], [, b]) => orden(a) - orden(b))
+      .slice(0, 20)
       .map(([id, a]) => ({ clave: `a:${id}`, item: { tipo: 'alimento', id }, nombre: a.nombre, sub: `${a.kcal} kcal · P ${a.p} g por 100 ${a.medida || 'g'}`, emoji: emojiAlimento(id) }));
     const recetas = RECETAS.map((r) => adaptarReceta(r, e.perfil)).filter((r) => coincide(r.nombre, q)).slice(0, 5)
       .map((r) => ({ clave: `r:${r.id}`, item: { tipo: 'receta', receta: r }, nombre: r.nombre, sub: 'Receta · ración ajustada a ti', emoji: r.emoji }));

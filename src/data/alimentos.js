@@ -103,7 +103,7 @@ export const ALIMENTOS = {
   crema_cacahuete: { nombre: 'Crema de cacahuete 100%', kcal: 595, p: 26, c: 10, g: 49, f: 8, grupo: 'grasa', dieta: 'vegetal', al: ['cacahuete'], mercadona: '16883' },
   // Sin producto en Mercadona: solo para cerrar la proteína del día si usas suplemento
   proteina_whey: { nombre: 'Proteína whey en polvo', kcal: 380, p: 75, c: 8, g: 6, f: 0, grupo: 'proteina', dieta: 'lacteo', al: ['lactosa'], unidad: { n: 'cacito', pl: 'cacitos', g: 30 } },
-  chia: { nombre: 'Semillas de chía', kcal: 490, p: 17, c: 8, g: 31, f: 34, grupo: 'grasa', dieta: 'vegetal', al: [], mercadona: '5464' },
+  chia: { nombre: 'Semillas de chía', kcal: 490, p: 17, c: 8, g: 31, f: 34, grupo: 'grasa', dieta: 'vegetal', al: [], mercadona: '24561' },
 
   // ── Lácteos y bebidas ────────────────────────────────────────────────────
   leche_semi: { nombre: 'Leche semidesnatada', kcal: 46, p: 3.2, c: 4.7, g: 1.6, f: 0, grupo: 'lacteo', dieta: 'lacteo', al: ['lactosa'], mercadona: '10382', medida: 'ml' },

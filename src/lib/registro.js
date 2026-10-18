@@ -22,7 +22,8 @@ export const EMOJI_ALIMENTO = {
   patata_microondas: '🥔', alubias_pintas: '🫘', aceitunas_negras: '🫒', pimientos_asados: '🫑', proteina_whey: '🥛',
   bebida_avena: '🥛', bebida_almendra: '🥛', huevos_cocidos: '🥚', tortitas_maiz: '🍘',
 };
-export const emojiAlimento = (id) => EMOJI_ALIMENTO[id] || '🍽️';
+const EMOJI_GRUPO = { proteina: '🍗', hidrato: '🍚', lacteo: '🥛', fruta: '🍎', verdura: '🥦', grasa: '🫒', otros: '🍽️' };
+export const emojiAlimento = (id) => EMOJI_ALIMENTO[id] || EMOJI_GRUPO[ALIMENTOS[id]?.grupo] || '🍽️';
 
 /** Ración de una receta ajustada a tu objetivo para esa franja (día de descanso). */
 export function racionReceta(receta, perfil, objetivos, franjaId) {

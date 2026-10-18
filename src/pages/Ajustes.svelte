@@ -14,7 +14,8 @@
   import { FOTOS_RECETAS } from '../data/fotos.js';
   import { RECETAS } from '../data/recetas.js';
   import { ALERGENOS } from '../data/alimentos.js';
-  import { num } from '../lib/formato.js';
+  import { num, fechaLarga, capital } from '../lib/formato.js';
+  import { listarCopiasLocales, restaurarCopiaLocal } from '../lib/copias.js';
 
   let { oneditar, sub = '' } = $props();
   const PESTAÑAS = [{ id: 'plan', nombre: 'Plan', emoji: '🎯' }, { id: 'salud', nombre: 'Salud', emoji: '💊' }, { id: 'conectar', nombre: 'Conectar', emoji: '🔗' }, { id: 'ajustes', nombre: 'Ajustes', emoji: '⚙️' }];
@@ -47,6 +48,15 @@
     if (!f) return;
     try { importar(await f.text()); avisar('Copia restaurada', '💾'); } catch (e) { avisar(`No se pudo restaurar: ${e.message}`, '⚠️'); }
   }
+  // Copias automáticas de cada día en este móvil
+  let copias = $state([]);
+  $effect(() => { if (pestaña === 'ajustes') listarCopiasLocales().then((l) => (copias = l)); });
+  const nombreCopia = (c) => (c.fecha === 'antes-de-restaurar' ? 'Justo antes de tu última restauración' : c.fecha === hoyISO() ? 'Hoy, al abrir la app' : capital(fechaLarga(c.fecha)));
+  async function volverA(c) {
+    if (!confirm(`¿Volver a como estaba todo: ${nombreCopia(c).toLowerCase()}? Lo que hayas hecho después se sustituye (se guarda antes una copia de cómo está ahora).`)) return;
+    try { await restaurarCopiaLocal(c.fecha); avisar('Datos recuperados', '💾'); copias = await listarCopiasLocales(); } catch (e) { avisar(`No se pudo recuperar: ${e.message}`, '⚠️'); }
+  }
+
   function borrarTodo() {
     if (confirm('Se borrarán tu perfil, menús, registros y medidas de este dispositivo. ¿Seguro?')) { reiniciar(); location.hash = '#hoy'; }
   }
@@ -125,6 +135,20 @@
     </div>
   </div>
 
+  {#if copias.length}
+    <details class="tarjeta copias">
+      <summary><b>Copias en este móvil</b><small>Una por día, al abrir la app. Si algo desaparece, vuelve a una de ellas.</small></summary>
+      <ul>
+        {#each copias as c (c.fecha)}
+          <li>
+            <span><b>{nombreCopia(c)}</b><small>{c.resumen?.comidas ?? 0} comidas · {c.resumen?.sesiones ?? 0} sesiones · {c.resumen?.pesos ?? 0} pesos</small></span>
+            <button class="boton boton-sec boton-peq" onclick={() => volverA(c)}>Volver aquí</button>
+          </li>
+        {/each}
+      </ul>
+    </details>
+  {/if}
+
   <details class="tarjeta creditos">
     <summary><Icono e="📜" tam={18} /> Créditos e información</summary>
     <p>Precios y productos: tienda online de Mercadona (datos públicos). Productos envasados: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL). Iconos: Lucide (ISC). Tipografía: Manrope (OFL).</p>
@@ -154,6 +178,13 @@
   .sup dd { margin: 0; }
   .consejo-item { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0; }
   .consejo-item p { margin: 3px 0 0; font-size: 0.92rem; }
+  .copias summary { display: grid; gap: 2px; cursor: pointer; }
+  .copias summary small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
+  .copias ul { list-style: none; margin: 10px 0 0; padding: 0; }
+  .copias li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--linea); }
+  .copias li span { display: grid; min-width: 0; }
+  .copias li small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
+  .copias li .boton { flex-shrink: 0; }
   .creditos { font-size: 0.85rem; }
   .creditos ul { padding-left: 18px; color: var(--texto-2); }
   .creditos li { margin: 2px 0; }

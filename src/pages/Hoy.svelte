@@ -259,7 +259,7 @@
             <span class="f-ic ok"><Icono n="check" tam={15} grosor={2.4} /></span>
             <span class="f-txt"><small>{it.x.hora || ''} · {it.x.franja ? NOMBRES[it.x.franja] : 'Picoteo'}</small><b>{it.x.nombre}</b></span>
             <span class="f-dato">{entero(it.x.macros.kcal)} kcal</span>
-            <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="x" tam={16} /></button>
+            <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="trash" tam={16} /></button>
           </div>
         {/if}
       {/each}

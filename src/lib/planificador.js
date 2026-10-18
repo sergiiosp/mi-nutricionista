@@ -278,7 +278,9 @@ export function completarPlan(plan, perfil, objetivos, proveedor = null, favorit
 
 /** Recalcula horario y cantidades de todo el plan (mismas recetas) tras cambiar el perfil. */
 export function reescalarPlan(plan, perfil, objetivos, proveedor = null) {
+  const hoy = hoyISO();
   for (const dia of plan.dias) {
+    if (dia.fecha < hoy) continue; // los días pasados se quedan como fueron
     const { entreno, horario, objDia } = contextoDia(perfil, objetivos, dia.fecha, proveedor);
     dia.entreno = entreno;
     dia.objetivo = objDia;

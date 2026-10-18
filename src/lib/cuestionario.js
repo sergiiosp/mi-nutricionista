@@ -262,7 +262,7 @@ const PASOS_CUESTIONARIO = [
     burbuja: 'Toca lo que no quieras ver en tus menús. Lo podrás cambiar cuando quieras.',
     html: (b) => {
       const grupos = {};
-      for (const [id, a] of Object.entries(ALIMENTOS)) (grupos[a.grupo] ||= []).push([id, a]);
+      for (const [id, a] of Object.entries(ALIMENTOS)) if (!a.catalogo || b.noMeGusta.includes(id)) (grupos[a.grupo] ||= []).push([id, a]);
       return Object.entries(GRUPOS_NOMBRE)
         .filter(([g]) => grupos[g])
         .map(([g, nombre]) => `<fieldset class="chips-sel"><legend>${nombre}</legend>

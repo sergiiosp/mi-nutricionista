@@ -6,25 +6,25 @@
   import { estado } from '../stores/estado.js';
   import { alimentoPermitido } from '../lib/nutricion.js';
   import { emojiAlimento } from '../lib/registro.js';
+  import { coincide, normal, textoAlimento } from '../lib/buscar.js';
 
   let { onelegir, excluir = [], texto = $bindable(''), conBuscador = true, max = 60 } = $props();
   const perfil = get(estado).perfil || {};
   const GRUPOS = [['todo', 'Todo'], ['proteina', 'Proteína'], ['hidrato', 'Hidratos'], ['lacteo', 'Lácteos y bebidas'], ['fruta', 'Fruta'], ['verdura', 'Verdura'], ['grasa', 'Grasas y frutos secos'], ['otros', 'Otros']];
   let grupo = $state('todo');
 
-  const normal = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  const MARCAS = ['hacendado', 'mercadona'];
   const todos = Object.entries(ALIMENTOS)
     .filter(([id]) => alimentoPermitido(id, perfil))
-    .map(([id, a]) => ({ id, a, n: normal(a.nombre) }))
+    .map(([id, a]) => ({ id, a, n: normal(a.nombre), t: textoAlimento(a) }))
     .sort((x, y) => x.a.nombre.localeCompare(y.a.nombre));
 
+  // Primero lo que empieza por lo que escribes, luego lo que lo contiene; los básicos antes que el catálogo
+  const orden = (x, q) => (x.n.startsWith(q) ? 0 : x.n.includes(q) ? 1 : 2) + (x.a.catalogo ? 0.5 : 0);
   const lista = $derived.by(() => {
-    const partes = normal(texto.trim()).split(/\s+/).filter((p) => p && !MARCAS.includes(p));
-    return todos
-      .filter((x) => !excluir.includes(x.id))
-      .filter((x) => (partes.length ? partes.every((p) => x.n.includes(p)) : grupo === 'todo' || x.a.grupo === grupo))
-      .slice(0, max);
+    const q = normal(texto.trim());
+    const base = todos.filter((x) => !excluir.includes(x.id));
+    if (!q) return base.filter((x) => grupo === 'todo' || x.a.grupo === grupo).slice(0, max);
+    return base.filter((x) => coincide(x.t, q)).sort((x, y) => orden(x, q) - orden(y, q)).slice(0, max);
   });
   const unidad = (a) => a.medida || 'g';
 </script>

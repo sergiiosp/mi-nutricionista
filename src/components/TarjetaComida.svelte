@@ -44,10 +44,21 @@
   function cambiar(a, delta) {
     editando = { ...editando, [a]: Math.max(0, Math.round((editando[a] || 0) + delta)) };
   }
+  function quitarAlimento(a) {
+    const { [a]: _, ...resto } = editando;
+    editando = resto;
+  }
   function guardarEdicion() {
-    editarRegistro(fecha, comida.registro.id, Object.entries(editando).map(([a, g]) => ({ a, g })));
+    const lista = Object.entries(editando).map(([a, g]) => ({ a, g: Math.round(g) })).filter((i) => i.g > 0);
+    if (!lista.length) { avisar('Deja al menos un alimento, o desmarca la comida', '⚠️'); return; }
+    if (comida.registro) {
+      editarRegistro(fecha, comida.registro.id, lista);
+      avisar('Cantidades guardadas: el día se recalcula', '✅');
+    } else {
+      // Aún sin hacer: se registra ya con tus cambios
+      marcarHecha(fecha, { ...comida, ingredientes: lista });
+    }
     editando = null;
-    avisar('Cantidades guardadas: el día se recalcula', '✅');
   }
   const mEdit = $derived(editando ? macrosComida(Object.entries(editando).map(([a, g]) => ({ a, g }))) : null);
   const ETQ = { pre: 'Pre-entreno', post: 'Post-entreno' };
@@ -92,7 +103,7 @@
         <Icono n="utensils" tam={16} />
         <span class="otro-nombre">{r.nombre}{#if r.cantidad?.texto}<small>{' · '}{r.cantidad.texto}</small>{/if}</span>
         <span class="otro-kcal">{Math.round(r.macros.kcal)} kcal</span>
-        <button class="borrar" aria-label="Borrar {r.nombre}" onclick={() => quitarRegistro(fecha, r.id)}><Icono n="x" tam={16} /></button>
+        <button class="borrar" aria-label="Borrar {r.nombre}" onclick={() => quitarRegistro(fecha, r.id)}><Icono n="trash" tam={16} /></button>
       </div>
     {/each}
   {/if}
@@ -101,13 +112,16 @@
     <div class="editor" transition:slide={{ duration: 180 }}>
       <p class="editor-cab">¿Cuánto comiste de cada cosa?</p>
       {#each Object.entries(editando) as [a, g] (a)}
-        <div class="editor-fila">
+        <div class="editor-fila" transition:slide={{ duration: 160 }}>
           <span class="editor-nombre">{alimento(a).nombre}<small>{g > 0 ? cantidadTexto(a, g) : 'nada'}</small></span>
           <button aria-label="Menos {alimento(a).nombre}" onclick={() => cambiar(a, -PASO(a))}><Icono n="minus" tam={16} /></button>
           <input type="number" inputmode="decimal" min="0" value={g} aria-label="Gramos de {alimento(a).nombre}"
             onchange={(ev) => (editando = { ...editando, [a]: Math.max(0, Number(ev.currentTarget.value) || 0) })} />
           <button aria-label="Más {alimento(a).nombre}" onclick={() => cambiar(a, PASO(a))}><Icono n="plus" tam={16} /></button>
+          <button class="papelera" aria-label="Quitar {alimento(a).nombre}" onclick={() => quitarAlimento(a)}><Icono n="trash" tam={17} /></button>
         </div>
+      {:else}
+        <p class="pie-nota">No queda nada: añade un alimento o cancela.</p>
       {/each}
       {#if añadiendo}
         <div class="editor-anadir" transition:slide={{ duration: 160 }}>
@@ -119,7 +133,7 @@
       {/if}
       <p class="editor-total">{Math.round(mEdit.kcal)} kcal, {Math.round(mEdit.p)} g de proteína</p>
       <div class="editor-acciones">
-        <button class="boton boton-peq" onclick={guardarEdicion}>Guardar</button>
+        <button class="boton boton-peq" onclick={guardarEdicion}>{comida.registro ? 'Guardar' : 'Guardar como hecha'}</button>
         <button class="boton boton-sec boton-peq" onclick={() => (editando = null)}>Cancelar</button>
       </div>
     </div>
@@ -140,7 +154,7 @@
   {/snippet}
 
   <!-- Una acción principal por estado; el resto, tras «⋯» -->
-  {#if editable && fecha && situacion === 'pendiente'}
+  {#if editable && fecha && situacion === 'pendiente' && !editando}
     <footer class="acciones">
       {#if comida.pasada}<p class="pregunta"><Icono n="clock" tam={14} /> ¿Ya la has comido?</p>{/if}
       <button class="principal" class:suave={!destacada && !comida.pasada} aria-label="Marcar {franjaNombre.toLowerCase()} como comida" onclick={() => marcarHecha(fecha, comida)}>
@@ -157,6 +171,7 @@
       <div class="acciones secundarias" transition:slide={{ duration: 160 }}>
         {@render botonCantidades()}
         {#if comida.pasada}{@render botonCambiar()}{/if}
+        <button onclick={empezarEdicion}><Icono n="pencil" tam={16} /> Ajustar o quitar algo</button>
         <button onclick={() => abrirHoja('registrar', { fecha, franja: comida.franja })}><Icono n="repeat" tam={16} /> Comí otra cosa</button>
         {#if !comida.pasada}<button onclick={() => alternarSaltada(fecha, comida.franja)}><Icono n="skip-forward" tam={16} /> Saltar</button>{/if}
       </div>
@@ -228,10 +243,12 @@
   .ing-caja { margin-top: 12px; padding-top: 4px; border-top: 1px solid var(--linea); }
   .editor { margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
   .editor-cab { margin: 0 0 8px; font-weight: 600; font-size: 0.88rem; }
-  .editor-fila { display: grid; grid-template-columns: 1fr 44px 64px 44px; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px solid var(--linea); }
+  .editor-fila { display: grid; grid-template-columns: minmax(0, 1fr) 40px 58px 40px 40px; gap: 5px; align-items: center; padding: 6px 0; border-top: 1px solid var(--linea); }
   .editor-nombre { display: grid; font-size: 0.82rem; line-height: 1.25; min-width: 0; }
   .editor-nombre small { color: var(--texto-3); }
-  .editor-fila button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie-2); color: var(--texto); cursor: pointer; }
+  .editor-fila button { display: grid; place-items: center; width: 40px; height: 44px; border-radius: 12px; border: 0; background: var(--superficie-2); color: var(--texto); cursor: pointer; }
+  .editor-fila .papelera { background: none; color: var(--texto-3); }
+  .editor-fila .papelera:hover, .editor-fila .papelera:active { color: var(--peligro, #ff6b5b); background: var(--superficie-2); }
   .editor-fila input { width: 100%; min-height: 44px; padding: 4px 6px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
   .editor-mas { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 6px; padding: 0 10px; border: 1px dashed var(--borde); border-radius: 12px; background: none; color: var(--primario); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
   .editor-anadir { margin-top: 8px; padding: 8px; border-radius: 14px; background: var(--fondo); max-height: 420px; overflow-y: auto; }

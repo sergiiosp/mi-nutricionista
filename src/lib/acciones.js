@@ -2,10 +2,11 @@
 import { get } from 'svelte/store';
 import { estado, actualizar, registroDePlan, borrarRegistro } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
-import { calcularObjetivos } from './nutricion.js';
+import { calcularObjetivos, alimentoPermitido } from './nutricion.js';
 import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias } from './planificador.js';
 import { estadoDia } from './dia.js';
-import { proveedorDe } from './hyrox/index.js';
+import { proveedorDe, planDe } from './hyrox/index.js';
+import { copiaSesion } from './hyrox/sesiones.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 
@@ -51,11 +52,30 @@ export function alternarSaltada(fecha, franja) {
   });
 }
 
+/**
+ * Menú nuevo. Hoy y los días pasados se quedan como estaban (el plan del día no cambia por sorpresa);
+ * solo se cambia una comida de hoy, aún sin hacer, si ahora lleva algo que ya no puedes o no quieres comer.
+ */
 export function crearPlan(inicio = hoyISO()) {
   actualizar((x) => {
-    x.plan = generarPlan(x.perfil, calcularObjetivos(x.perfil), { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: proveedorDe(x), favoritas: x.favoritas || [] });
-    x.compra.marcados = {};
-    x.compra.quitados = {};
+    const hoy = hoyISO();
+    const objetivos = calcularObjetivos(x.perfil);
+    const prov = proveedorDe(x);
+    const nuevo = generarPlan(x.perfil, objetivos, { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: x.favoritas || [] });
+    const previos = x.plan?.dias || [];
+    nuevo.dias = nuevo.dias.map((d) => (d.fecha <= hoy && previos.find((v) => v.fecha === d.fecha)) || d);
+    const i = nuevo.dias.findIndex((d) => d.fecha === hoy);
+    if (i >= 0 && previos.some((v) => v.fecha === hoy)) {
+      const hechas = new Set((x.registros[hoy] || []).filter((r) => r.tipo === 'plan').map((r) => r.franja));
+      for (const c of [...nuevo.dias[i].comidas]) {
+        if (hechas.has(c.franja) || c.ingredientes.every((ing) => alimentoPermitido(ing.a, x.perfil))) continue;
+        const alt = alternativas(nuevo, i, c.franja, x.perfil, objetivos, prov, x.favoritas || [])[0];
+        if (alt) sustituir(nuevo, i, c.franja, alt.comida);
+      }
+    }
+    // La compra marcada solo se reinicia al empezar semana (si el menú anterior ya terminó)
+    if (!previos.length || previos[previos.length - 1].fecha < hoy) x.compra.marcados = {};
+    x.plan = nuevo;
     x.compra.envases = {};
   });
 }
@@ -173,6 +193,23 @@ export function guardarHyrox(config) {
     x.perfil = { ...x.perfil, entrena: true, deportes: [...deportes], diasEntreno: config.dias, horaEntreno: config.hora, duracionEntreno: 60, intensidad: 'moderada', compite: true, fechaCompeticion: config.fechaCarrera || '' };
   });
   reajustarPlan();
+}
+
+/** Guarda una copia de cada sesión ya registrada que aún no la tenga (datos de versiones anteriores). */
+export function congelarSesiones() {
+  const e = get(estado);
+  const regs = e.hyrox?.registros || {};
+  const faltan = Object.keys(regs).filter((id) => regs[id] && !regs[id].sesion);
+  const plan = faltan.length ? planDe(e) : null;
+  if (!plan) return;
+  actualizar((x) => {
+    for (const id of faltan) {
+      const s = plan.sesiones.find((y) => y.id === id && !y.historica);
+      if (!s) continue;
+      x.hyrox.registros[id].sesion = copiaSesion(s);
+      x.hyrox.registros[id].fecha ||= s.fecha;
+    }
+  });
 }
 
 export function registrarSesion(id, datos) {

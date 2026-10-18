@@ -11,11 +11,21 @@
   import { registrarSesion } from '../lib/acciones.js';
   import { ESTACIONES } from '../data/hyrox.js';
   import { aSegundos, mmss } from '../lib/hyrox/ritmos.js';
+  import { copiaSesion } from '../lib/hyrox/sesiones.js';
 
   let { id } = $props();
   const e = get(estado);
   const s = planDe(e)?.sesiones.find((x) => x.id === id);
-  const previo = e.hyrox?.registros?.[id] || {};
+  // Borrador: lo que vas apuntando se guarda al momento en el móvil, por si la app se cierra a mitad
+  // del entreno (cambias de app entre series, el iPhone la cierra…). Dura dos días.
+  const CLAVE_BORRADOR = `pulso:borrador-sesion:${id}`;
+  let borrador = null;
+  try {
+    const b = JSON.parse(localStorage.getItem(CLAVE_BORRADOR));
+    if (b && Date.now() - b.t < 2 * 86400000) borrador = b.v;
+  } catch { /* sin borrador */ }
+  const recuperado = !!borrador;
+  const previo = borrador || e.hyrox?.registros?.[id] || {};
 
   let situacion = $state(previo.estado || 'completa');
   let duracion = $state(previo.duracion || s?.duracion || 60);
@@ -33,7 +43,19 @@
   // Kilos y repeticiones por serie (opcional): solo se guardan los ejercicios que abras
   const ejercicios = s?.ejercicios || [];
   const ultimas = Object.fromEntries(ejercicios.map((ej) => [ej.id, ultimaVez(e.hyrox?.registros, ej.id, id, planDe(e))]));
-  let cargas = $state(Object.fromEntries(Object.entries(previo.series || {}).map(([k, l]) => [k, l.map((x) => ({ kg: x.kg ?? '', reps: x.reps ?? '', hecha: true, phKg: '', phReps: '' }))])));
+  let cargas = $state(borrador?.cargas || Object.fromEntries(Object.entries(previo.series || {}).map(([k, l]) => [k, l.map((x) => ({ kg: x.kg ?? '', reps: x.reps ?? '', hecha: true, phKg: '', phReps: '' }))])));
+  if (borrador) { ritmo = borrador.ritmoTxt ?? ritmo; tiempo = borrador.tiempoTxt ?? tiempo; tiemposEst = { ...tiemposEst, ...(borrador.tiemposEst || {}) }; }
+  let guardado = false;
+  let inicial = null; // solo hay borrador si cambias algo
+  $effect(() => {
+    const v = JSON.stringify({ estado: situacion, duracion, rpe, sensacion, distancia, peso, notas, ritmoTxt: ritmo, tiempoTxt: tiempo, tiemposEst: $state.snapshot(tiemposEst), cargas: $state.snapshot(cargas) });
+    inicial ??= v;
+    if (guardado || (v === inicial && !recuperado)) return;
+    try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({ t: Date.now(), v: JSON.parse(v) })); } catch { /* sin espacio */ }
+  });
+  function descartarBorrador() {
+    try { localStorage.removeItem(CLAVE_BORRADOR); } catch { /* nada */ }
+  }
   const objetivoReps = (ej) => Number(/\d+/.exec(ej.reps)?.[0]) || '';
   function abrir(ej) {
     if (cargas[ej.id]) { delete cargas[ej.id]; return; }
@@ -67,6 +89,7 @@
     if (['simulacro', 'compromised', 'estaciones', 'carrera'].includes(s.tipo) && aSegundos(tiempo)) datos.tiempo = aSegundos(tiempo);
     if (s.tipo === 'fuerza' && Number(peso) > 0) datos.peso = Number(peso);
     datos.fecha = s.fecha;
+    datos.sesion = copiaSesion(s); // la sesión se queda tal como la hiciste aunque luego cambie el plan
     const series = Object.fromEntries(Object.entries(cargas)
       .map(([k, l]) => [k, l.filter((x) => x.hecha || x.kg !== '' || x.reps !== '').map((x) => ({ kg: numero(x.kg), reps: Math.round(numero(x.reps)) })).filter((x) => x.kg > 0 || x.reps > 0)])
       .filter(([, l]) => l.length));
@@ -78,6 +101,8 @@
       datos.estaciones = Object.fromEntries(Object.entries(tiemposEst).map(([k, v]) => [k, aSegundos(v)]).filter(([, v]) => v > 0));
     }
     registrarSesion(id, datos);
+    guardado = true;
+    descartarBorrador();
     cerrarHoja();
     if (situacion === 'completa') { celebrar(); avisar('¡Sesión completada!', '💪'); } else avisar('Sesión registrada', '📝');
   }
@@ -85,6 +110,9 @@
 
 {#if s}
   <div class="cab"><Emoji e={s.emoji} tam={40} /><div><b>{s.titulo}</b><small>Objetivo: {s.duracion} min · RPE {s.rpe}</small></div></div>
+  {#if recuperado}
+    <p class="recuperado"><Icono n="notebook-pen" tam={16} /> Recuperado lo que estabas apuntando. <button class="enlace" onclick={() => { descartarBorrador(); guardado = true; cerrarHoja(); }}>Descartar</button></p>
+  {/if}
 
   <div class="estado">
     {#each [['completa', '✅', 'La hice'], ['parcial', '◐', 'A medias'], ['no', '❌', 'No la hice']] as [v, em, n] (v)}
@@ -197,4 +225,6 @@
   .serie input { width: 100%; min-height: 42px; padding: 6px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
   .serie i { font-style: normal; font-size: 0.78rem; color: var(--texto-2); font-weight: 600; }
   .ej .enlace { margin: 2px 0 10px; }
+  .recuperado { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.84rem; }
+  .recuperado .enlace { margin-left: auto; }
 </style>
