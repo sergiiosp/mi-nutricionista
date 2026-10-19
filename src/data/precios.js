@@ -1,5 +1,5 @@
 // Generado por scripts/actualizar-precios.mjs — no editar a mano.
-export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-18T19:06:06.304Z"};
+export const PRECIOS_INFO = {"almacen":"mad1","actualizado":"2026-10-19T10:23:13.599Z"};
 export const PRECIOS = {
  "2622": {
   "nombre": "Burger de pollo",
@@ -79,8 +79,8 @@ export const PRECIOS = {
  "2794": {
   "nombre": "Filetes pechuga de pavo",
   "formato": "Bandeja · 0.58 kg",
-  "precio": 4.9,
-  "precioRef": 8.45,
+  "precio": 5.07,
+  "precioRef": 8.75,
   "unidadRef": "kg",
   "contenido": 580,
   "unidadContenido": "g",
@@ -4009,8 +4009,8 @@ export const PRECIOS = {
  "61215": {
   "nombre": "Guisante fino Hacendado ultracongelado",
   "formato": "Paquete · 1 kg",
-  "precio": 1.5,
-  "precioRef": 1.5,
+  "precio": 1.55,
+  "precioRef": 1.55,
   "unidadRef": "kg",
   "contenido": 1000,
   "unidadContenido": "g",
@@ -4099,8 +4099,8 @@ export const PRECIOS = {
  "61279": {
   "nombre": "Espinaca en porciones Hacendado ultracongelada",
   "formato": "Paquete · 0.45 kg",
-  "precio": 0.9,
-  "precioRef": 2,
+  "precio": 0.95,
+  "precioRef": 2.112,
   "unidadRef": "kg",
   "contenido": 450,
   "unidadContenido": "g",
@@ -4399,8 +4399,8 @@ export const PRECIOS = {
  "69338": {
   "nombre": "Calabacín verde",
   "formato": "Pieza · 0.39 kg",
-  "precio": 0.74,
-  "precioRef": 1.9,
+  "precio": 0.55,
+  "precioRef": 1.4,
   "unidadRef": "kg",
   "contenido": 390,
   "unidadContenido": "g",
@@ -4939,8 +4939,8 @@ export const PRECIOS = {
  "86820": {
   "nombre": "Relleno fajitas pollo, pimientos y cebolla Hacendado ultracongelado",
   "formato": "Paquete · 0.3 kg",
-  "precio": 1.9,
-  "precioRef": 6.334,
+  "precio": 1.95,
+  "precioRef": 6.5,
   "unidadRef": "kg",
   "contenido": 300,
   "unidadContenido": "g",
