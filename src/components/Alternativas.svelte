@@ -127,7 +127,7 @@
           <div class="rm rm-{k}">
             <span>{n}</span>
             <b>{Math.round(montado.macros[k])}<small>/{Math.round(obj[k])}{u}</small></b>
-            <div class="pista"><div class="relleno" style="width:{pct(montado.macros[k], obj[k])}%"></div></div>
+            <div class="pista"><div class="relleno" style="--p:{pct(montado.macros[k], obj[k])}%"></div></div>
           </div>
         {/each}
       </div>
@@ -163,7 +163,7 @@
   .g-cab b { color: var(--texto); font-size: 0.92rem; }
   .g-cab small { margin-left: auto; color: var(--texto-3); font-size: 0.76rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip-montar { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto-2); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+  .chip-montar { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto-2); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), border-color 0.15s var(--ease-out); }
   .chip-montar.activo { background: var(--primario); border-color: var(--primario); color: var(--sobre-primario); }
   .resultado { position: sticky; bottom: 0; margin-top: 12px; padding: 12px 14px; border-radius: 20px; background: color-mix(in srgb, var(--superficie-2) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 -10px 30px rgb(0 0 0 / 0.35); }
   .resultado p { margin: 0; color: var(--texto-2); font-size: 0.86rem; }
@@ -174,7 +174,7 @@
   .rm b { font-size: 0.9rem; color: var(--texto); font-variant-numeric: tabular-nums; }
   .rm small { font-size: 0.68rem; color: var(--texto-3); font-weight: 600; }
   .pista { height: 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; margin-top: 3px; }
-  .relleno { height: 100%; border-radius: 999px; background: var(--primario); transition: width 0.3s; }
+  .relleno { width: 100%; height: 100%; border-radius: 999px; background: var(--primario); transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.3s var(--ease-out); }
   .rm-p .relleno { background: var(--coral); } .rm-c .relleno { background: var(--amarillo); } .rm-g .relleno { background: var(--azul); }
   .aviso-montar { display: flex; gap: 6px; align-items: flex-start; margin: 10px 0 0; font-size: 0.8rem; color: var(--aviso-texto); }
   .r-acciones { display: flex; gap: 8px; margin-top: 10px; }

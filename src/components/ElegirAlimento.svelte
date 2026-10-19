@@ -32,7 +32,7 @@
 {#if conBuscador}
   <div class="buscador-caja">
     <svg class="lupa" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-    <input bind:value={texto} type="search" placeholder="Pollo, avena, lomo, tortitas…" aria-label="Buscar alimento" />
+    <input bind:value={texto} type="search" enterkeyhint="search" placeholder="Pollo, avena, lomo, tortitas…" aria-label="Buscar alimento" />
   </div>
 {/if}
 {#if !texto.trim()}

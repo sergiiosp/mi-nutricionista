@@ -64,7 +64,7 @@
   .grafico { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 170px; margin-top: 12px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; gap: 2px; }
   .zona { position: relative; width: 100%; height: 100%; }
-  .barra { position: absolute; bottom: 0; left: 20%; right: 20%; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #ffd56b, var(--amarillo)); transition: height 0.5s; min-height: 3px; }
+  .barra { position: absolute; bottom: 0; left: 20%; right: 20%; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #ffd56b, var(--amarillo)); transition: height 0.5s var(--ease-out); min-height: 3px; }
   .barra.ok { background: var(--hero); box-shadow: 0 0 14px rgb(255 91 31 / 0.4); }
   .barra.alto { background: linear-gradient(180deg, #ffd56b, var(--amarillo)); opacity: 0.75; }
   .barra.sin { background: var(--superficie-3); }

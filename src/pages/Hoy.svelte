@@ -126,7 +126,7 @@
       <span class="b-cab"><Icono n="utensils" tam={15} grosor={2.2} /> Comida</span>
       <b class="b-num cifra">{entero(d.consumido.kcal)}</b>
       <span class="b-sub">de {entero(d.objetivo.kcal)} kcal</span>
-      <span class="b-pista" aria-hidden="true"><span style="width:{listo ? Math.min(100, (d.consumido.kcal / d.objetivo.kcal) * 100) : 0}%"></span></span>
+      <span class="b-pista" aria-hidden="true"><span style="--p:{listo ? Math.min(100, (d.consumido.kcal / d.objetivo.kcal) * 100) : 0}%"></span></span>
       <span class="b-sub">P {Math.round(d.consumido.p)}/{Math.round(d.objetivo.p)} g</span>
     </button>
     <button class="bloque s-entreno" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} onclick={() => alternar('entreno')}>
@@ -162,7 +162,7 @@
         {#each tramos as t, i (t.id)}
           {@const pct = Math.min(100, (t.comido / t.plan) * 100)}
           <div class="tramo" role="listitem" style="flex:{t.plan}" class:siguiente={t.siguiente} class:saltada={t.saltada} class:extra={t.extra}>
-            <div class="pista"><div class="relleno" class:sobra={t.comido > t.plan * 1.15} style="width:{listo ? pct : 0}%;transition-delay:{i * 140}ms"></div></div>
+            <div class="pista"><div class="relleno" class:sobra={t.comido > t.plan * 1.15} style="--p:{listo ? pct : 0}%;transition-delay:{i * 140}ms"></div></div>
             <span class="t-nombre">{t.nombre}</span>
             <span class="t-kcal cifra" class:pendiente={!t.comido}>{t.saltada ? 'saltada' : entero(t.comido || t.plan)}</span>
           </div>
@@ -174,7 +174,7 @@
           <div class="macro {cl}">
             <span>{n}</span>
             <b class="cifra">{Math.round(d.consumido[k])}<small>/{Math.round(d.objetivo[k])} g</small></b>
-            <div class="pista"><div class="relleno" style="width:{listo ? Math.min(100, (d.consumido[k] / d.objetivo[k]) * 100) : 0}%"></div></div>
+            <div class="pista"><div class="relleno" style="--p:{listo ? Math.min(100, (d.consumido[k] / d.objetivo[k]) * 100) : 0}%"></div></div>
           </div>
         {/each}
       </div>
@@ -298,7 +298,7 @@
   .chip-hoy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: var(--superficie-2); font-size: 0.78rem; font-weight: 600; color: var(--texto-2); max-width: 100%; }
   .chip-hoy.naranja { background: var(--primario-claro); color: var(--primario-fuerte); }
   .tipo-dia { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--superficie-2); }
-  .tipo-dia button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border: 0; border-radius: 999px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .tipo-dia button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border: 0; border-radius: 999px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
   /* Zona táctil de 44 px sin cambiar el aspecto de la píldora */
   .tipo-dia button { position: relative; }
   .tipo-dia button::after { content: ""; position: absolute; inset: -8px 0; }
@@ -316,7 +316,7 @@
   .tramo .pista { height: 12px; border-radius: 4px; background: var(--superficie-3); overflow: hidden; }
   .tramo:first-child .pista { border-radius: 8px 4px 4px 8px; }
   .tramo:last-child .pista { border-radius: 4px 8px 8px 4px; }
-  .tramo .relleno { height: 100%; background: var(--hero); transition: width 0.7s cubic-bezier(0.25, 0.9, 0.3, 1); }
+  .tramo .relleno { width: 100%; height: 100%; background: var(--hero); transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.7s var(--ease-out); }
   .tramo .relleno.sobra { background: var(--amarillo); }
   .tramo.siguiente .pista { box-shadow: inset 0 0 0 1.5px var(--primario); }
   .tramo.saltada { opacity: 0.45; }
@@ -331,7 +331,7 @@
   .macro b { font-size: 1rem; }
   .macro small { font-size: 0.74rem; font-weight: 600; color: var(--texto-3); letter-spacing: 0; }
   .macro .pista { height: 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; margin-top: 4px; }
-  .macro .relleno { height: 100%; border-radius: 999px; transition: width 0.9s cubic-bezier(0.25, 0.9, 0.3, 1) 0.4s; }
+  .macro .relleno { width: 100%; height: 100%; border-radius: 999px; transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.9s var(--ease-out) 0.4s; }
   .b-p .relleno { background: var(--coral); } .b-c .relleno { background: var(--amarillo); } .b-g .relleno { background: var(--azul); }
 
   .aviso { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; margin: 12px 0; font-size: 0.85rem; color: var(--texto-2); background: var(--lila-claro); }
@@ -348,7 +348,7 @@
   .sug-txt { flex: 1; min-width: 0; display: grid; font-size: 0.86rem; }
   .sug-txt b { font-weight: 600; }
   .sug-txt small { color: var(--texto-2); font-size: 0.74rem; }
-  .sug-mas, .borrar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--primario); color: var(--sobre-primario); cursor: pointer; flex-shrink: 0; transition: transform 0.15s; }
+  .sug-mas, .borrar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--primario); color: var(--sobre-primario); cursor: pointer; flex-shrink: 0; transition: transform 0.15s var(--ease-out); }
   .sug-mas:active { transform: scale(0.9); }
   .borrar { background: var(--superficie-2); color: var(--texto-2); }
 

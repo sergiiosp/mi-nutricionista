@@ -93,20 +93,20 @@
       <div class="ing">
         <Emoji e={emojiAlimento(ing.a)} tam={24} />
         <span class="ing-n">{ALIMENTOS[ing.a].nombre}</span>
-        <input type="number" min="0" bind:value={ing.g} aria-label="Gramos" /><small>{ALIMENTOS[ing.a].medida || 'g'}</small>
+        <input enterkeyhint="done" type="number" min="0" bind:value={ing.g} aria-label="Gramos" /><small>{ALIMENTOS[ing.a].medida || 'g'}</small>
         <button class="borrar" aria-label="Quitar" onclick={() => (ingredientes = ingredientes.filter((_, j) => j !== i))}><Icono e="✕" tam={18} /></button>
       </div>
     {/each}
-    <input class="busca" bind:value={busca} placeholder="Añadir ingrediente: pan, jamón, aceite…" aria-label="Buscar ingrediente" />
+    <input class="busca" enterkeyhint="search" bind:value={busca} placeholder="Añadir ingrediente: pan, jamón, aceite…" aria-label="Buscar ingrediente" />
     {#each sugeridos as [id, a] (id)}
       <button class="sug" onclick={() => añadirIngrediente(id)}><Emoji e={emojiAlimento(id)} tam={22} /> {a.nombre}</button>
     {/each}
   {:else}
     <div class="manual">
-      <label class="campo"><span>kcal</span><input type="number" bind:value={manual.kcal} /></label>
-      <label class="campo"><span>Proteína (g)</span><input type="number" bind:value={manual.p} /></label>
-      <label class="campo"><span>Hidratos (g)</span><input type="number" bind:value={manual.c} /></label>
-      <label class="campo"><span>Grasa (g)</span><input type="number" bind:value={manual.g} /></label>
+      <label class="campo"><span>kcal</span><input enterkeyhint="done" type="number" bind:value={manual.kcal} /></label>
+      <label class="campo"><span>Proteína (g)</span><input enterkeyhint="done" type="number" bind:value={manual.p} /></label>
+      <label class="campo"><span>Hidratos (g)</span><input enterkeyhint="done" type="number" bind:value={manual.c} /></label>
+      <label class="campo"><span>Grasa (g)</span><input enterkeyhint="done" type="number" bind:value={manual.g} /></label>
     </div>
   {/if}
   <div class="total"><b>Una ración:</b> <Macros m={macros} /></div>

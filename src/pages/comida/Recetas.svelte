@@ -29,7 +29,7 @@
 
 <div class="buscador-caja">
   <svg class="lupa" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-  <input class="buscador" type="search" placeholder="Busca receta o ingrediente…" bind:value={texto} aria-label="Buscar recetas" />
+  <input class="buscador" type="search" enterkeyhint="search" placeholder="Busca receta o ingrediente…" bind:value={texto} aria-label="Buscar recetas" />
 </div>
 <div class="filtros">
   {#each FILTROS as [id, n] (id)}<button class="filtro" class:activo={tipo === id} onclick={() => (tipo = id)}>{n}</button>{/each}
@@ -59,8 +59,8 @@
   .lupa { position: absolute; left: 15px; top: 15px; color: var(--texto-2); }
   .buscador { width: 100%; padding-left: 44px; border-color: transparent; box-shadow: var(--sombra); }
   .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 8px; }
-  .card { display: flex; flex-direction: column; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: left; color: var(--texto); transition: transform 0.12s; }
-  .card:hover { transform: translateY(-2px); }
+  .card { display: flex; flex-direction: column; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: left; color: var(--texto); transition: transform 0.12s var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .card:hover { transform: translateY(-2px); } }
   .imagen { position: relative; display: block; }
   .chips-img { position: absolute; left: 8px; top: 8px; display: flex; gap: 4px; }
   .chip-img { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: rgb(10 10 12 / 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #fff; font-size: 0.68rem; font-weight: 700; }

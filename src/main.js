@@ -29,6 +29,9 @@ copiarHoy().finally(() => {
   completarMenu();
 });
 
+// iOS solo aplica :active (la respuesta al pulsar) si la página escucha toques
+document.addEventListener('touchstart', () => {}, { passive: true });
+
 const app = mount(App, { target: document.getElementById('app') });
 
 // Fuera la pantalla de carga

@@ -84,7 +84,7 @@
   <div class="panel">
     <div class="bloque bajo"><span class="b-cab"><Icono n="receipt" tam={15} grosor={2.2} /> Ticket</span><b class="b-num medio cifra">{euros(ticket)}</b><span class="b-sub">estimado</span></div>
     <div class="bloque bajo"><span class="b-cab"><Icono n="shopping-cart" tam={15} grosor={2.2} /> Te falta</span><b class="b-num medio cifra">{euros(falta)}</b><span class="b-sub">por coger</span></div>
-    <div class="bloque bajo"><span class="b-cab"><Icono n="check" tam={15} grosor={2.4} /> Cogido</span><b class="b-num medio cifra">{progreso} %</b><span class="b-pista" aria-hidden="true"><span style="width:{progreso}%"></span></span></div>
+    <div class="bloque bajo"><span class="b-cab"><Icono n="check" tam={15} grosor={2.4} /> Cogido</span><b class="b-num medio cifra">{progreso} %</b><span class="b-pista" aria-hidden="true"><span style="--p:{progreso}%"></span></span></div>
   </div>
   <div class="tarjeta resumen">
     <p class="coste-real">Lo que comes de verdad esta semana cuesta <b>{euros(lista.costeConsumo)}</b>: el resto del ticket queda en la despensa.</p>

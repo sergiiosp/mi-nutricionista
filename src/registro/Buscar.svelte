@@ -65,7 +65,7 @@
 
 <div class="buscador-caja">
   <svg class="lupa" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-  <input bind:this={entrada} bind:value={texto} oninput={alEscribir} type="search" placeholder="Pollo, yogur, macarrones, Hacendado…" aria-label="Buscar alimento" />
+  <input bind:this={entrada} bind:value={texto} oninput={alEscribir} type="search" enterkeyhint="search" placeholder="Pollo, yogur, macarrones, Hacendado…" aria-label="Buscar alimento" />
 </div>
 
 {#if !texto.trim()}
@@ -118,7 +118,7 @@
   .grupo small { text-transform: none; letter-spacing: 0; font-weight: 600; }
   .resultados { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
-  .resultados button:hover { box-shadow: var(--sombra), inset 0 0 0 2px var(--primario); }
+  @media (hover: hover) and (pointer: fine) { .resultados button:hover { box-shadow: var(--sombra), inset 0 0 0 2px var(--primario); } }
   .resultados img, .ic { width: 46px; height: 46px; border-radius: 12px; object-fit: contain; background: #fff; flex-shrink: 0; display: grid; place-items: center; }
   .ic { background: var(--superficie-2); }
   .txt { flex: 1; min-width: 0; display: grid; }

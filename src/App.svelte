@@ -1,5 +1,6 @@
 <script>
   import { fly, fade } from 'svelte/transition';
+  import { salida } from './lib/curvas.js';
   import Hoja from './components/Hoja.svelte';
   import Emoji from './components/Emoji.svelte';
   import Icono from './components/Icono.svelte';
@@ -124,7 +125,7 @@
 
 {#if $aviso}
   {#key $aviso.clave}
-    <div class="toast-nuevo" role="status" in:fly={{ y: 20, duration: 200 }} out:fly={{ y: 20, duration: 200 }}>
+    <div class="toast-nuevo" role="status" in:fly={{ y: 24, duration: 220, easing: salida }} out:fly={{ y: 16, duration: 140, easing: salida }}>
       <Emoji e={$aviso.emoji} tam={22} /> <span class="toast-texto">{$aviso.texto}</span>
       {#if $aviso.deshacer}<button class="toast-deshacer" onclick={deshacerAviso}>Deshacer</button>{/if}
     </div>

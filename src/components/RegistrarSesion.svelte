@@ -121,7 +121,7 @@
   </div>
 
   {#if situacion !== 'no'}
-    <label class="campo"><span>Duración real (min)</span><input type="number" min="5" max="300" bind:value={duracion} inputmode="numeric" /></label>
+    <label class="campo"><span>Duración real (min)</span><input enterkeyhint="done" type="number" min="5" max="300" bind:value={duracion} inputmode="numeric" /></label>
 
     <div class="rpe">
       <div class="rpe-cab"><span>Esfuerzo percibido (RPE)</span><b><Emoji e={CARAS[rpe - 1]} tam={22} /> {rpe}/10</b></div>
@@ -138,9 +138,9 @@
     {#if ['series', 'umbral'].includes(s.tipo)}
       <div class="lista-tiempos"><CampoTiempo etiqueta="Ritmo medio de las series (min/km)" bind:value={ritmo} ejemplo="4:55" /></div>
     {:else if ['rodaje', 'largo'].includes(s.tipo)}
-      <label class="campo"><span>Distancia (km)</span><input type="number" step="0.1" bind:value={distancia} inputmode="decimal" placeholder={String(s.distancia || '')} /></label>
+      <label class="campo"><span>Distancia (km)</span><input enterkeyhint="done" type="number" step="0.1" bind:value={distancia} inputmode="decimal" placeholder={String(s.distancia || '')} /></label>
     {:else if s.tipo === 'fuerza' && !ejercicios.length}
-      <label class="campo"><span>Peso en la sentadilla (kg)</span><input type="number" step="2.5" bind:value={peso} inputmode="decimal" /></label>
+      <label class="campo"><span>Peso en la sentadilla (kg)</span><input enterkeyhint="done" type="number" step="2.5" bind:value={peso} inputmode="decimal" /></label>
     {/if}
     {#if ejercicios.length}
       <div class="pesos">
@@ -159,9 +159,9 @@
               {#each cargas[ej.id] as serie, i (i)}
                 <div class="serie" class:hecha={serie.hecha}>
                   <span class="n">{i + 1}</span>
-                  <input type="number" step="0.5" min="0" inputmode="decimal" bind:value={serie.kg} placeholder={serie.phKg !== '' ? String(serie.phKg) : 'kg'} aria-label="Kilos de la serie {i + 1}" />
+                  <input enterkeyhint="done" type="number" step="0.5" min="0" inputmode="decimal" bind:value={serie.kg} placeholder={serie.phKg !== '' ? String(serie.phKg) : 'kg'} aria-label="Kilos de la serie {i + 1}" />
                   <i>kg ×</i>
-                  <input type="number" min="0" inputmode="numeric" bind:value={serie.reps} placeholder={serie.phReps !== '' ? String(serie.phReps) : 'reps'} aria-label="Repeticiones de la serie {i + 1}" />
+                  <input enterkeyhint="done" type="number" min="0" inputmode="numeric" bind:value={serie.reps} placeholder={serie.phReps !== '' ? String(serie.phReps) : 'reps'} aria-label="Repeticiones de la serie {i + 1}" />
                   <button class="hecha-btn" class:activo={serie.hecha} aria-pressed={serie.hecha} aria-label="Serie {i + 1} hecha" onclick={() => marcar(serie)}><Icono n="check" tam={18} grosor={2.8} /></button>
                 </div>
               {/each}
@@ -213,11 +213,12 @@
   .ej-cab span { display: grid; }
   .ej-cab small { color: var(--texto-2); font-size: 0.78rem; font-weight: 600; }
   .ej.abierto .ej-cab { color: var(--primario); }
-  .serie { display: grid; grid-template-columns: 20px 1fr auto 1fr 44px; gap: 6px; align-items: center; margin: 4px 0; padding: 3px; border-radius: 14px; transition: background 0.15s; }
+  .serie { display: grid; grid-template-columns: 20px 1fr auto 1fr 44px; gap: 6px; align-items: center; margin: 4px 0; padding: 3px; border-radius: 14px; transition: background 0.15s var(--ease-out); }
   .serie.hecha { background: var(--primario-claro); }
   .serie.hecha input { border-color: transparent; background: transparent; }
-  .hecha-btn { width: 44px; height: 42px; border-radius: 12px; border: 0; background: var(--superficie-3); color: var(--texto-3); display: grid; place-items: center; cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .hecha-btn { width: 44px; height: 42px; border-radius: 12px; border: 0; background: var(--superficie-3); color: var(--texto-3); display: grid; place-items: center; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out); }
   .hecha-btn.activo { background: var(--primario); color: var(--sobre-primario); }
+  .hecha-btn.activo :global(.icono) { animation: pop 260ms var(--ease-out); }
   .repetir { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; margin: -4px 0 8px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--primario-claro); color: var(--primario-fuerte); font: inherit; font-weight: 700; font-size: 0.78rem; cursor: pointer; }
   .serie-acciones { display: flex; justify-content: space-between; }
   .quitar-ult { color: var(--texto-3); }

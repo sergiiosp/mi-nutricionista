@@ -84,7 +84,7 @@
 <form class="tarjeta form" onsubmit={guardar}>
   <b class="tit"><Emoji e="⚖️" tam={24} /> Registrar peso</b>
   <label class="campo"><span>Fecha</span><input type="date" bind:value={fecha} max={hoy} required /></label>
-  <label class="campo"><span>Peso</span><input type="number" step="0.1" min="35" max="250" inputmode="decimal" bind:value={peso} placeholder={actual ? num(actual, 1) : ''} required /><small>kg</small></label>
+  <label class="campo"><span>Peso</span><input enterkeyhint="done" type="number" step="0.1" min="35" max="250" inputmode="decimal" bind:value={peso} placeholder={actual ? num(actual, 1) : ''} required /><small>kg</small></label>
   <button class="boton" type="submit">Guardar</button>
 </form>
 {/if}

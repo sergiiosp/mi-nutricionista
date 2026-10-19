@@ -63,7 +63,7 @@
   <div class="ajuste">
     <button class="mas-menos" aria-label="Menos" onclick={() => cambiar(-paso)}>−</button>
     <label>
-      <input type="number" inputmode="decimal" min="0" step={paso} bind:value={cantidad} aria-label="Cantidad" />
+      <input enterkeyhint="done" type="number" inputmode="decimal" min="0" step={paso} bind:value={cantidad} aria-label="Cantidad" />
       <span>{d.raciones ? (cantidad === 1 ? 'ración' : 'raciones') : d.unidad}</span>
     </label>
     <button class="mas-menos" aria-label="Más" onclick={() => cambiar(paso)}>+</button>

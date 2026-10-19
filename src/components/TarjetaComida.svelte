@@ -115,7 +115,7 @@
         <div class="editor-fila" transition:slide={{ duration: 160 }}>
           <span class="editor-nombre">{alimento(a).nombre}<small>{g > 0 ? cantidadTexto(a, g) : 'nada'}</small></span>
           <button aria-label="Menos {alimento(a).nombre}" onclick={() => cambiar(a, -PASO(a))}><Icono n="minus" tam={16} /></button>
-          <input type="number" inputmode="decimal" min="0" value={g} aria-label="Gramos de {alimento(a).nombre}"
+          <input enterkeyhint="done" type="number" inputmode="decimal" min="0" value={g} aria-label="Gramos de {alimento(a).nombre}"
             onchange={(ev) => (editando = { ...editando, [a]: Math.max(0, Number(ev.currentTarget.value) || 0) })} />
           <button aria-label="Más {alimento(a).nombre}" onclick={() => cambiar(a, PASO(a))}><Icono n="plus" tam={16} /></button>
           <button class="papelera" aria-label="Quitar {alimento(a).nombre}" onclick={() => quitarAlimento(a)}><Icono n="trash" tam={17} /></button>
@@ -203,7 +203,7 @@
 
 <style>
   /* Cada comida es su propio bloque, con el tinte de la sección */
-  .comida-card { margin: 0 0 10px; padding: 12px; border-radius: 18px; background: radial-gradient(130% 90% at 0% 0%, color-mix(in srgb, var(--tinte, transparent) 70%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); transition: opacity 0.25s; }
+  .comida-card { margin: 0 0 10px; padding: 12px; border-radius: 18px; background: radial-gradient(130% 90% at 0% 0%, color-mix(in srgb, var(--tinte, transparent) 70%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); transition: opacity 0.25s var(--ease-out); }
   .comida-card.plegada { padding: 0; background: none; box-shadow: none; }
   .fila-plegada { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--primario-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .fila-plegada > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
@@ -233,13 +233,13 @@
   .s-saltada .fila, .s-sustituida .fila { opacity: 0.45; }
   .estado-linea { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
   .boton-linea { min-height: 44px; padding: 0 10px; border: 0; border-radius: 12px; background: none; color: var(--primario); font-weight: 700; font-size: 0.82rem; cursor: pointer; }
-  .boton-linea:hover { background: var(--primario-claro); }
+  @media (hover: hover) and (pointer: fine) { .boton-linea:hover { background: var(--primario-claro); } }
   .otro { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 0 0 0 10px; min-height: 44px; border-radius: 12px; background: var(--superficie-2); font-size: 0.84rem; font-weight: 600; color: var(--texto-2); }
   .otro-nombre { flex: 1; min-width: 0; color: var(--texto); }
   .otro-nombre small { color: var(--texto-2); font-weight: 500; }
   .otro-kcal { white-space: nowrap; }
   .borrar { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 12px; background: none; color: var(--texto-2); cursor: pointer; }
-  .borrar:hover { color: var(--texto); }
+  @media (hover: hover) and (pointer: fine) { .borrar:hover { color: var(--texto); } }
   .ing-caja { margin-top: 12px; padding-top: 4px; border-top: 1px solid var(--linea); }
   .editor { margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
   .editor-cab { margin: 0 0 8px; font-weight: 600; font-size: 0.88rem; }
@@ -248,7 +248,8 @@
   .editor-nombre small { color: var(--texto-3); }
   .editor-fila button { display: grid; place-items: center; width: 40px; height: 44px; border-radius: 12px; border: 0; background: var(--superficie-2); color: var(--texto); cursor: pointer; }
   .editor-fila .papelera { background: none; color: var(--texto-3); }
-  .editor-fila .papelera:hover, .editor-fila .papelera:active { color: var(--peligro, #ff6b5b); background: var(--superficie-2); }
+  .editor-fila .papelera:active { color: var(--peligro, #ff6b5b); background: var(--superficie-2); }
+  @media (hover: hover) and (pointer: fine) { .editor-fila .papelera:hover { color: var(--peligro, #ff6b5b); background: var(--superficie-2); } }
   .editor-fila input { width: 100%; min-height: 44px; padding: 4px 6px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
   .editor-mas { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 6px; padding: 0 10px; border: 1px dashed var(--borde); border-radius: 12px; background: none; color: var(--primario); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
   .editor-anadir { margin-top: 8px; padding: 8px; border-radius: 14px; background: var(--fondo); max-height: 420px; overflow-y: auto; }
@@ -259,16 +260,18 @@
   .acciones button {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 12px;
     border-radius: 12px; border: 0; background: var(--superficie-2); font-weight: 600; font-size: 0.8rem; cursor: pointer; color: var(--texto-2);
-    transition: background 0.15s, color 0.15s, transform 0.12s;
+    transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), transform 0.12s var(--ease-out);
   }
-  .acciones button:hover, .acciones button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
+  .acciones button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
+  @media (hover: hover) and (pointer: fine) { .acciones button:hover { background: var(--primario-claro); color: var(--primario-fuerte); } }
   .acciones button:active { transform: scale(0.97); }
   .acciones .principal { min-width: 92px; background: var(--primario); color: var(--sobre-primario); font-weight: 700; }
-  .acciones .principal:hover { background: var(--primario-fuerte); color: var(--sobre-primario); }
+  @media (hover: hover) and (pointer: fine) { .acciones .principal:hover { background: var(--primario-fuerte); color: var(--sobre-primario); } }
   .acciones .principal.suave { background: var(--superficie-2); color: var(--texto); }
   .acciones .principal.suave :global(.icono) { color: var(--primario); }
-  .acciones .principal.suave:hover { background: var(--primario-claro); color: var(--primario-fuerte); }
+  @media (hover: hover) and (pointer: fine) { .acciones .principal.suave:hover { background: var(--primario-claro); color: var(--primario-fuerte); } }
   .acciones .principal.activo { background: var(--primario-claro); color: var(--primario-fuerte); box-shadow: inset 0 0 0 1.5px var(--primario); }
+  .acciones .principal.activo :global(.icono) { animation: pop 260ms var(--ease-out); }
   .acciones .solo-icono { width: 44px; padding: 0; margin-left: auto; }
   .pregunta { flex-basis: 100%; display: flex; align-items: center; gap: 6px; margin: 0 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--aviso-texto); }
   .secundarias { margin-top: 6px; }

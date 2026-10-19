@@ -96,7 +96,7 @@
   <div class="campos">
     {#each CAMPOS as c (c.id)}
       <label class="campo"><span><Emoji e={c.emoji} tam={18} /> {c.nombre}</span>
-        <input type="number" step="0.5" min="20" max="200" inputmode="decimal" bind:value={valores[c.id]} placeholder={ultima?.[c.id] ? num(ultima[c.id], 1) : ''} /><small>cm</small></label>
+        <input enterkeyhint="done" type="number" step="0.5" min="20" max="200" inputmode="decimal" bind:value={valores[c.id]} placeholder={ultima?.[c.id] ? num(ultima[c.id], 1) : ''} /><small>cm</small></label>
     {/each}
   </div>
   <button class="boton ancho" type="submit">Guardar medidas</button>

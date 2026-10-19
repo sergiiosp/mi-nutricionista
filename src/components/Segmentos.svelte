@@ -42,10 +42,10 @@
     button :global(.icono) { display: none; }
     button { padding: 9px 10px; font-size: 0.8rem; }
   }
-  button { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; border: 0; border-radius: 10px; background: transparent; font-weight: 700; font-size: 0.82rem; color: var(--texto-3); cursor: pointer; white-space: nowrap; transition: background 0.2s, color 0.2s; }
+  button { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; border: 0; border-radius: 10px; background: transparent; font-weight: 700; font-size: 0.82rem; color: var(--texto-3); cursor: pointer; white-space: nowrap; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
   button { position: relative; }
   button::after { content: ""; position: absolute; inset: -4px 0; }
-  button:hover { color: var(--texto-2); }
+  @media (hover: hover) and (pointer: fine) { button:hover { color: var(--texto-2); } }
   button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
   button.activo :global(.icono) { color: var(--primario); }
 </style>

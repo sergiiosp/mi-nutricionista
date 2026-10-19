@@ -2,7 +2,7 @@
   import Icono from '../components/Icono.svelte';
   // Centro de registro (botón ➕): escanear, buscar, comer fuera, mis comidas, foto y recientes
   import { get } from 'svelte/store';
-  import { fly } from 'svelte/transition';
+  import { fly, slide } from 'svelte/transition';
   import Emoji from '../components/Emoji.svelte';
   import Macros from '../components/Macros.svelte';
   import Cantidad from './Cantidad.svelte';
@@ -121,7 +121,7 @@
       <div class="plato-cab"><b>Tu plato</b><span class="cifra">{Math.round(totalPlato.kcal)} kcal</span></div>
       <ul>
         {#each plato as r (r.id)}
-          <li>
+          <li transition:slide={{ duration: 200 }}>
             <span class="pl-n"><b>{r.nombre}</b><small>{r.cantidad?.texto || ''} · {Math.round(r.macros.kcal)} kcal</small></span>
             <button class="papelera" aria-label="Quitar {r.nombre}" onclick={() => quitarDelPlato(r.id)}><Icono n="trash" tam={17} /></button>
           </li>
@@ -195,7 +195,7 @@
   .franjas small { font-size: 0.7rem; color: var(--texto-2); font-weight: 700; }
   .franjas button.activa { border-color: var(--primario); background: var(--primario-claro); }
   .opciones-grandes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; }
-  .op { display: grid; justify-items: start; gap: 2px; padding: 16px; border: 0; border-radius: 20px; cursor: pointer; text-align: left; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); transition: transform 0.15s, background 0.2s; }
+  .op { display: grid; justify-items: start; gap: 2px; padding: 16px; border: 0; border-radius: 20px; cursor: pointer; text-align: left; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); transition: transform 0.15s var(--ease-out), background 0.2s var(--ease-out); }
   .op:active { transform: scale(0.97); }
   .op :global(.icono) { color: var(--primario); }
   .op b { font-size: 0.98rem; margin-top: 8px; }
