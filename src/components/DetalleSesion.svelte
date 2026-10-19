@@ -36,15 +36,20 @@
     moviendo = false;
     avisar(`Movida al ${diaSemana(f)}`, '🔀');
   }
+  // «Sentadilla con barra: 4 × 8» → nombre a la izquierda y series × reps a la derecha
+  function partir(l) {
+    const i = l.indexOf(': ');
+    return i > 0 && i < 60 ? [l.slice(0, i), l.slice(i + 2)] : [l, ''];
+  }
 </script>
 
 {#if s}
   <div class="cab c-{s.color}">
     <Emoji e={s.emoji} tam={64} />
     <div>
-      <p class="sobre">{capital(fechaLarga(s.fecha))} · {s.hora}</p>
       <h2>{s.titulo}</h2>
-      <div class="datos"><span><Icono e="⏱️" tam={18} /> {s.duracion} min</span>{#if s.distancia}<span><Icono e="📍" tam={18} /> {String(s.distancia).replace('.', ',')} km</span>{/if}<span><Icono e="💥" tam={18} /> RPE {s.rpe}/10</span></div>
+      <p class="sobre">{capital(fechaLarga(s.fecha))} · {s.hora}</p>
+      <div class="datos"><span><Icono e="⏱️" tam={18} /> {s.duracion} min</span>{#if s.distancia}<span><Icono e="📍" tam={18} /> {String(s.distancia).replace('.', ',')} km</span>{/if}<span><Icono e="💥" tam={18} /> Esfuerzo {s.rpe}/10</span></div>
     </div>
   </div>
 
@@ -73,7 +78,12 @@
   {/if}
   {#each s.bloques as b (b.titulo)}
     <h3><Icono e="💪" tam={18} /> {b.titulo}</h3>
-    <ul class="lista principal">{#each b.lineas as l, i (i)}<li>{l}</li>{/each}</ul>
+    <ul class="ejercicios">
+      {#each b.lineas as l, i (i)}
+        {@const [n, d] = partir(l)}
+        <li><span>{n}</span>{#if d}<b class="cifra">{d}</b>{/if}</li>
+      {/each}
+    </ul>
   {/each}
   {#each s.notas as n (n)}<p class="nota"><Icono e="💡" tam={18} /> {n}</p>{/each}
   {#if s.vueltaCalma.length}
@@ -115,8 +125,8 @@
   .cab { display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 24px; background: var(--superficie-2); }
   .c-azul { background: var(--azul-claro); } .c-coral { background: var(--coral-claro); } .c-lila { background: var(--lila-claro); }
   .c-amarillo { background: var(--amarillo-claro); } .c-primario { background: var(--primario-claro); }
-  .sobre { margin: 0; font-size: 0.78rem; font-weight: 800; color: var(--texto-2); }
-  h2 { margin: 2px 0 6px; font-size: 1.3rem; }
+  .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
+  h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
   .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 800; font-size: 0.78rem; }
   .registro { margin-top: 12px; padding: 12px 14px; border-radius: 18px; background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
@@ -125,9 +135,14 @@
   .cargas li { display: flex; justify-content: space-between; gap: 10px; }
   .cargas span { color: var(--texto-2); font-weight: 600; }
   .cargas b { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
-  .lista.principal { font-weight: 800; }
-  .nota { padding: 10px 12px; border-radius: 14px; background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 600; }
+  .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 500; font-size: 0.92rem; color: var(--texto-2); }
+  /* Ejercicios: filas con el nombre y las series × reps alineadas, en cifras */
+  .ejercicios { list-style: none; margin: 0; padding: 2px 14px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
+  .ejercicios li { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 11px 0; font-size: 0.92rem; }
+  .ejercicios li + li { border-top: 1px solid var(--linea); }
+  .ejercicios span { font-weight: 600; color: var(--texto); }
+  .ejercicios b { flex-shrink: 0; max-width: 48%; text-align: right; font-weight: 700; color: var(--texto); }
+  .nota { padding: 10px 12px; border-radius: 14px; background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 500; }
   .comida { display: flex; gap: 12px; align-items: center; margin-top: 14px; padding: 12px 14px; border-radius: 18px; background: linear-gradient(135deg, var(--primario-claro), var(--superficie)); }
   .comida small { display: block; color: var(--texto-2); font-weight: 600; }
   .botones { display: flex; gap: 8px; margin-top: 16px; }

@@ -18,9 +18,9 @@
 <RepasoSemanal />
 
 <div class="panel">
-  <div class="bloque bajo"><span class="b-cab"><Icono n="flame" tam={15} grosor={2.2} /> Racha</span><b class="b-num cifra">{r.registro}</b><span class="b-sub">días registrando</span></div>
-  <div class="bloque bajo"><span class="b-cab"><Icono n="biceps-flexed" tam={15} grosor={2.2} /> Proteína</span><b class="b-num cifra">{r.proteina}</b><span class="b-sub">días seguidos llegando</span></div>
-  <div class="bloque bajo"><span class="b-cab"><Icono n="target" tam={15} grosor={2.2} /> Kcal</span><b class="b-num cifra">{r.calorias}</b><span class="b-sub">días en tu objetivo</span></div>
+  <div class="bloque bajo"><span class="b-cab"><Icono n="flame" tam={15} grosor={2.2} /> Racha</span><b class="b-num cifra">{r.registro}</b><span class="b-sub">{r.registro === 1 ? 'día registrando' : 'días registrando'}</span></div>
+  <div class="bloque bajo"><span class="b-cab"><Icono n="biceps-flexed" tam={15} grosor={2.2} /> Proteína</span><b class="b-num cifra">{r.proteina}</b><span class="b-sub">{r.proteina === 1 ? 'día llegando' : 'días seguidos llegando'}</span></div>
+  <div class="bloque bajo"><span class="b-cab"><Icono n="target" tam={15} grosor={2.2} /> Kcal</span><b class="b-num cifra">{r.calorias}</b><span class="b-sub">{r.calorias === 1 ? 'día en tu objetivo' : 'días en tu objetivo'}</span></div>
 </div>
 
 {#if s.porDia.some((d) => d.r)}
@@ -44,12 +44,17 @@
 </div>
 
 <h2 class="seccion">Medias de la semana</h2>
+{#if !s.diasRegistrados}
+  <!-- Sin días cerrados aún: nada de «objetivo 0» -->
+  <div class="tarjeta vacia-semana"><Icono n="calendar-days" tam={24} /><p>Las medias salen con los días ya terminados. Mañana verás la de hoy.</p></div>
+{:else}
 <div class="panel dos">
   <div class="bloque bajo"><span class="b-cab">Kcal al día</span><b class="b-num cifra">{entero(s.kcal)}</b><span class="b-sub">objetivo {entero(s.objetivoKcal)}</span></div>
   <div class="bloque bajo"><span class="b-cab">Proteína al día</span><b class="b-num cifra">{Math.round(s.p)} g</b><span class="b-sub">objetivo {Math.round(s.objetivoP)} g</span></div>
   <div class="bloque bajo"><span class="b-cab">Días registrados</span><b class="b-num cifra">{s.diasRegistrados}/6</b><span class="b-sub">{s.diasKcal} dentro de kcal</span></div>
   <div class="bloque bajo"><span class="b-cab">Peso</span><b class="b-num cifra">{s.tendencia ? `${s.tendencia.kgSemana > 0 ? '+' : ''}${num(s.tendencia.kgSemana, 2)}` : '—'}</b><span class="b-sub">kg por semana</span></div>
 </div>
+{/if}
 
 {:else}
 <div class="tarjeta vacia-semana"><Icono n="chart-column" tam={26} /><p>Cuando registres tus comidas verás aquí tus calorías y tu proteína de cada día.</p></div>

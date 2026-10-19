@@ -335,7 +335,7 @@ export function resumenObjetivos(perfil, { conHorario = false } = {}) {
   }
 
   return `
-    <div class="burbuja">${perfil.nombre ? `${esc(perfil.nombre)}, ` : ''}esto es lo que he calculado para ti. Objetivo: <b>${obj.nombre.toLowerCase()}</b>.</div>
+    <div class="burbuja">${perfil.nombre ? `${esc(perfil.nombre)}, esto` : 'Esto'} es lo que he calculado para ti. Objetivo: <b>${obj.nombre.toLowerCase()}</b>.</div>
     <div class="tarjeta resumen-obj">
       ${entrena
         ? `<div class="dias-obj">${tarjetaDia(o.porTipo.entreno, 'Día de entreno', '💪', 'entreno')}${tarjetaDia(o.porTipo.descanso, 'Día de descanso', '😌', 'descanso')}</div>

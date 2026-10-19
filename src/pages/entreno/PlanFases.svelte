@@ -80,7 +80,9 @@
   .barra.deload { opacity: 0.45; }
   .leyenda { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 0.78rem; font-weight: 800; color: var(--texto-2); }
   .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
-  .fase { margin: 8px 0; padding: 12px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); border-left: 5px solid var(--c); }
+  .fase { margin: 8px 0; padding: 12px 14px; border-radius: 18px; box-shadow: var(--sombra);
+    background: linear-gradient(100deg, color-mix(in srgb, var(--c) 12%, var(--superficie)) 0%, var(--superficie) 70%); }
+  .fase > b::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--c); vertical-align: 1px; }
   .fase small { color: var(--texto-2); font-weight: 700; }
   .fase p { margin: 4px 0 0; font-size: 0.88rem; font-weight: 600; color: var(--texto-2); }
   .ritmos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }

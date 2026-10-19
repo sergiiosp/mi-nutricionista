@@ -59,9 +59,9 @@
 
   <h2 class="seccion"><Icono n="medal" tam={20} /> Récords</h2>
   <div class="panel">
-    <div class="bloque bajo"><span class="b-cab">Simulacro</span><b class="b-num b-texto cifra">{st.records.mejorSimulacro ? hms(st.records.mejorSimulacro.tiempo) : '—'}</b><span class="b-sub">mejor completo</span></div>
-    <div class="bloque bajo"><span class="b-cab">Series</span><b class="b-num b-texto cifra">{st.records.mejorSerie ? `${mmss(st.records.mejorSerie)}` : '—'}</b><span class="b-sub">min/km más rápido</span></div>
-    <div class="bloque bajo"><span class="b-cab">Sentadilla</span><b class="b-num b-texto cifra">{st.records.maxSentadilla ? `${st.records.maxSentadilla} kg` : '—'}</b><span class="b-sub">máximo</span></div>
+    <div class="bloque bajo"><span class="b-cab">Simulacro</span><b class="b-num b-texto cifra" class:sin-dato={!st.records.mejorSimulacro}>{st.records.mejorSimulacro ? hms(st.records.mejorSimulacro.tiempo) : 'Aún no'}</b><span class="b-sub">{st.records.mejorSimulacro ? 'mejor completo' : 'apunta el tiempo de tu primer simulacro'}</span></div>
+    <div class="bloque bajo"><span class="b-cab">Series</span><b class="b-num b-texto cifra" class:sin-dato={!st.records.mejorSerie}>{st.records.mejorSerie ? `${mmss(st.records.mejorSerie)}` : 'Aún no'}</b><span class="b-sub">{st.records.mejorSerie ? 'min/km más rápido' : 'apunta tu ritmo en las series'}</span></div>
+    <div class="bloque bajo"><span class="b-cab">Sentadilla</span><b class="b-num b-texto cifra" class:sin-dato={!st.records.maxSentadilla}>{st.records.maxSentadilla ? `${st.records.maxSentadilla} kg` : 'Aún no'}</b><span class="b-sub">{st.records.maxSentadilla ? 'máximo' : 'apunta los kilos en una sesión de pierna'}</span></div>
   </div>
 
   <div class="tarjeta">

@@ -6,17 +6,19 @@
   import { macrosComida, costeComida, cantidadTexto, alimento, producto } from '../lib/nutricion.js';
   import { euros } from '../lib/formato.js';
   import { abrirHoja } from '../stores/ui.js';
+  import { FOTOS_RECETAS } from '../data/fotos.js';
 
   let { recetaId, ingredientes, titulo = '', diaIdx, franja } = $props();
   const receta = $derived(recetaPorId[recetaId]);
+  const tieneFotoReceta = $derived(!!FOTOS_RECETAS[recetaId] && !receta?.sinFoto);
   const m = $derived(macrosComida(ingredientes));
   const ESPECIAS = { sal: 'sal', pimienta: 'pimienta', pimenton: 'pimentón', comino: 'comino', curry: 'curry', oregano: 'orégano', canela: 'canela', perejil: 'perejil', limon: 'limón', ajo_polvo: 'ajo en polvo' };
 </script>
 
 <div class="detalle">
-  <FotoReceta {receta} alto={210} redondeo={24} tamEmoji={110} />
-  <p class="sobre">{titulo || receta.tipos.join(' · ')}</p>
+  <FotoReceta receta={{ ...receta, ingredientes: ingredientes || receta.ingredientes }} alto={tieneFotoReceta ? 210 : 150} redondeo={24} tamEmoji={110} />
   <h2>{receta.nombre}</h2>
+  <p class="sobre">{titulo || receta.tipos.join(' · ')}</p>
   <div class="meta"><span><Icono n="clock" tam={16} /> {receta.tiempo} min</span><span><Icono n="euro" tam={16} /> {euros(costeComida(ingredientes))} por ración</span>{#if receta.batch}<span><Icono n="package" tam={16} /> Aguanta en táper</span>{/if}</div>
 
   <div class="grandes">
@@ -45,8 +47,8 @@
 <style>
   .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; }
   .meta span { display: inline-flex; align-items: center; gap: 5px; }
-  .sobre { margin: 14px 0 0; font-size: 0.74rem; font-weight: 800; color: var(--primario-fuerte); }
-  h2 { margin: 2px 0 4px; font-size: 1.4rem; }
+  .sobre { margin: 0 0 6px; font-size: 0.84rem; font-weight: 700; color: var(--primario-fuerte); }
+  h2 { margin: 16px 0 2px; font-size: 1.4rem; line-height: 1.2; }
   .meta { color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .grandes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 4px; }
   .grandes div { display: grid; text-align: center; padding: 10px 4px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }

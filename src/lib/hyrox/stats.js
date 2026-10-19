@@ -40,7 +40,8 @@ export function estadisticas(plan, registros = {}, hoy) {
     records: {
       estaciones: mejoresEstaciones(registros),
       mejorSerie: series.length ? Math.min(...series.map((x) => x.ritmo)) : null,
-      maxSentadilla: fuerza.length ? Math.max(...fuerza.map((x) => x.peso)) : null,
+      // La sentadilla también cuenta si la apuntaste serie a serie
+      maxSentadilla: (() => { const kg = [...fuerza.map((x) => x.peso), ...(hist.sentadilla || []).map((x) => x.kg)].filter((x) => x > 0); return kg.length ? Math.max(...kg) : null; })(),
       mejorSimulacro: simulacros.filter((x) => x.completo).sort((a, b) => a.tiempo - b.tiempo)[0] || null,
     },
     simulacros,

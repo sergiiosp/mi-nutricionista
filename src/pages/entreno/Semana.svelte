@@ -23,6 +23,8 @@
   const sesPasadas = $derived(semana ? semana.sesiones.filter((s) => pasados.includes(s.fecha) && s.tipo !== 'carrera') : []);
   const hechasPasadas = $derived(sesPasadas.filter((s) => ['completa', 'parcial'].includes(registros[s.id]?.estado)).length);
   const visibles = $derived(verPasados ? diasSemana : diasSemana.filter((f) => !pasados.includes(f)));
+  // El consejo de descanso solo una vez (el primer día libre que queda), no en cada día
+  const primerDescanso = $derived(visibles.find((f) => f >= hoy && semana && !semana.sesiones.some((s) => s.fecha === f)));
   const diasCarrera = $derived(plan?.carrera ? Math.round((new Date(`${plan.carrera}T12:00`) - new Date(`${hoy}T12:00`)) / 86400000) : null);
 </script>
 
@@ -59,13 +61,13 @@
     {/if}
     {#each visibles as f (f)}
       {@const ses = semana.sesiones.filter((s) => s.fecha === f)}
-      <div class="dia" class:hoy={f === hoy}>
-        <div class="dia-cab"><b>{capital(diaSemana(f))}</b><small>{fechaCorta(f)}{f === hoy ? ' · hoy' : ''}{plan.diasCarga.includes(f) ? ' · carga de hidratos' : ''}</small></div>
+      <div class="dia" class:hoy={f === hoy} class:libre={!ses.length}>
+        <div class="dia-cab"><b>{capital(diaSemana(f))}</b><small>{fechaCorta(f)}{f === hoy ? ' · hoy' : ''}{plan.diasCarga.includes(f) ? ' · carga de hidratos' : ''}</small>
+          {#if !ses.length}<span class="descanso"><Icono n="moon" tam={14} /> Descanso</span>{/if}</div>
         {#each ses as s (s.id)}
           <TarjetaSesion sesion={s} registro={registros[s.id]} />
-        {:else}
-          <div class="descanso"><Icono e="😌" tam={18} /> Descanso{f < hoy ? '' : ': camina, estira y duerme bien'}</div>
         {/each}
+        {#if !ses.length && f === primerDescanso}<p class="consejo-descanso">Camina, estira y duerme bien: hoy también cuenta.</p>{/if}
       </div>
     {/each}
   </div>
@@ -94,5 +96,7 @@
   .dia.hoy { padding: 12px; margin: 0 -12px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 70%), color-mix(in srgb, var(--primario-claro) 50%, transparent); }
   .dia-cab { display: flex; align-items: baseline; gap: 8px; }
   .dia-cab small { color: var(--texto-2); font-weight: 700; }
-  .descanso { padding: 12px 14px; border-radius: 16px; border: 2px dashed var(--borde); color: var(--texto-2); font-weight: 700; font-size: 0.88rem; }
+  /* Día libre: una línea tranquila en la cabecera del día, sin caja */
+  .descanso { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; color: var(--texto-3); font-weight: 600; font-size: 0.8rem; }
+  .consejo-descanso { margin: -2px 0 0; color: var(--texto-3); font-size: 0.8rem; }
 </style>

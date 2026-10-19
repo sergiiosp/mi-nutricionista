@@ -17,6 +17,8 @@
     { id: 'estaciones', nombre: 'Estaciones', emoji: '🛷' },
   ];
   let pestaña = $state(OPCIONES.some((o) => o.id === sub) ? sub : 'semana');
+  // Si un enlace lleva a otra pestaña de esta misma sección (#seccion/pestaña), se cambia
+  $effect(() => { if (OPCIONES.some((o) => o.id === sub)) pestaña = sub; });
   let configurando = $state(false);
 </script>
 

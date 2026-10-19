@@ -14,6 +14,8 @@
     { id: 'batch', nombre: 'Batch', emoji: '🥡' },
   ];
   let pestaña = $state(OPCIONES.some((o) => o.id === sub) ? sub : 'semana');
+  // Si un enlace lleva a otra pestaña de esta misma sección (#seccion/pestaña), se cambia
+  $effect(() => { if (OPCIONES.some((o) => o.id === sub)) pestaña = sub; });
 </script>
 
 <h1 class="titulo">Comida</h1>

@@ -45,8 +45,8 @@
   .datos .mejor { background: var(--amarillo-claro); }
   .desc { font-weight: 600; }
   .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
-  .lista.ok { border-left: 4px solid var(--primario); }
-  .lista.mal { border-left: 4px solid var(--coral); }
+  .lista.ok { background: linear-gradient(100deg, color-mix(in srgb, var(--primario) 10%, var(--superficie)), var(--superficie) 70%); }
+  .lista.mal { background: linear-gradient(100deg, color-mix(in srgb, var(--coral) 10%, var(--superficie)), var(--superficie) 70%); }
   .consejo { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
   .consejo.sust { background: var(--superficie-2); }
 </style>

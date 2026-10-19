@@ -137,8 +137,9 @@
     </button>
     <a class="bloque s-progreso" href="#progreso">
       <span class="b-cab"><Icono n="chart-column" tam={15} grosor={2.2} /> Semana</span>
-      <b class="b-num cifra">{semanaEntreno ? `${semanaEntreno.hechas}/${semanaEntreno.total}` : r.registro}</b>
-      <span class="b-sub">{semanaEntreno ? 'sesiones' : 'días seguidos'}</span>
+      <!-- Semana recién empezada: lo que toca, no un «0/4» que parece un suspenso -->
+      <b class="b-num cifra">{semanaEntreno ? (semanaEntreno.hechas ? `${semanaEntreno.hechas}/${semanaEntreno.total}` : semanaEntreno.total) : r.registro}</b>
+      <span class="b-sub">{semanaEntreno ? (semanaEntreno.hechas ? 'sesiones hechas' : 'sesiones esta semana') : r.registro === 1 ? 'día seguido' : 'días seguidos'}</span>
       {#if tend}<span class="b-sub">{tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem</span>{/if}
     </a>
   </div>

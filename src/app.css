@@ -360,9 +360,12 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding: 0; }
   position: relative; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); padding: 13px 16px;
   border-radius: 6px 18px 18px 18px; margin-bottom: 10px; font-size: 0.92rem; font-weight: 500;
 }
+/* Botones del cuestionario: barra fija abajo con fondo, para que no tapen los campos al hacer scroll */
 .botones-paso {
-  position: sticky; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 5;
-  display: flex; justify-content: space-between; gap: 10px; margin-top: 20px;
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; justify-content: space-between; gap: 10px;
+  margin: 20px -16px 0; padding: 24px 16px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--fondo) 24px);
 }
 .botones-paso .boton { flex: 1; max-width: 240px; }
 .botones-paso .boton:last-child { margin-left: auto; }
@@ -387,9 +390,12 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding: 0; }
 .dia-obj-kcal small { font-size: 0.85rem; font-weight: 700; color: var(--texto-2); }
 .dia-obj-macros { display: flex; justify-content: center; gap: 8px; font-size: 0.8rem; font-weight: 800; }
 .t-p { color: var(--coral); } .t-c { color: var(--amarillo); } .t-g { color: var(--azul); }
-.explicacion, .datos-perfil { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; font-size: 0.92rem; margin: 16px 0; }
-.explicacion dt, .datos-perfil dt { font-weight: 800; color: var(--texto-2); }
-.explicacion dd, .datos-perfil dd { margin: 0; }
+/* Datos en filas separadas por una línea fina: etiqueta tranquila a la izquierda, dato a la derecha */
+.explicacion, .datos-perfil { display: grid; grid-template-columns: auto 1fr; gap: 0 16px; font-size: 0.92rem; margin: 12px 0; }
+.explicacion dt, .datos-perfil dt { font-weight: 600; color: var(--texto-2); padding: 10px 0; }
+.explicacion dd, .datos-perfil dd { margin: 0; padding: 10px 0; line-height: 1.45; }
+.explicacion dt:not(:first-of-type), .explicacion dt:not(:first-of-type) + dd,
+.datos-perfil dt:not(:first-of-type), .datos-perfil dt:not(:first-of-type) + dd { border-top: 1px solid var(--linea); }
 .horario-mini { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
 .horario-mini li { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border-radius: 12px; background: var(--superficie-2); font-weight: 600; }
 .horario-mini li > b:first-child { min-width: 44px; font-variant-numeric: tabular-nums; }
@@ -413,6 +419,7 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding: 0; }
 .b-cab { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 6px; font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
 .b-num { font-size: 1.55rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; }
 .b-num.medio { font-size: 1.2rem; white-space: nowrap; }
+.b-num.sin-dato { color: var(--texto-3); }
 .b-num.b-texto { font-size: 1.05rem; line-height: 1.2; letter-spacing: -0.02em; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .b-sub { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
 .b-pista { width: 100%; height: 5px; margin: 6px 0 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }

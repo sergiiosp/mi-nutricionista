@@ -31,11 +31,12 @@
 </article>
 
 <style>
-  .sesion { position: relative; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); overflow: hidden; --c: var(--primario); }
-  .sesion::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+  /* El color del tipo de sesión va en el icono y en un leve tinte de la tarjeta (sin raya lateral) */
+  .sesion { position: relative; border-radius: 18px; overflow: hidden; --c: var(--primario); box-shadow: var(--sombra);
+    background: linear-gradient(100deg, color-mix(in srgb, var(--c) 10%, var(--superficie)) 0%, var(--superficie) 62%); }
   .c-azul { --c: var(--azul); } .c-coral { --c: var(--coral); } .c-lila { --c: var(--lila); }
   .c-amarillo { --c: var(--amarillo); } .c-primario { --c: var(--primario); } .c-gris { --c: var(--texto-3); }
-  .cuerpo { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; border: 0; background: none; text-align: left; cursor: pointer; color: var(--texto); }
+  .cuerpo { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px; border: 0; background: none; text-align: left; cursor: pointer; color: var(--texto); }
   .ic { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0; color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--superficie)); }
   .compacta .ic { width: 42px; height: 42px; }
   .txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
