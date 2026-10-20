@@ -111,7 +111,7 @@
 
   {#if $hoja}
     {#key $hoja.clave}
-      <Hoja titulo={TITULOS[$hoja.tipo] ?? ''} onclose={cerrarHoja} seccion={SECCION_HOJA[$hoja.tipo] || seccion}>
+      <Hoja titulo={$hoja.tipo === 'registrarSesion' && $hoja.props.entreno ? 'Tu entreno' : TITULOS[$hoja.tipo] ?? ''} onclose={cerrarHoja} seccion={SECCION_HOJA[$hoja.tipo] || seccion}>
         {#if $hoja.tipo === 'registrar'}<Registrar {...$hoja.props} />
         {:else if $hoja.tipo === 'receta'}<DetalleReceta {...$hoja.props} />
         {:else if $hoja.tipo === 'alternativas'}<Alternativas {...$hoja.props} />

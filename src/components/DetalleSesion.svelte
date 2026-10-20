@@ -122,9 +122,14 @@
 {/if}
 
 <style>
-  .cab { display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 24px; background: var(--superficie-2); }
-  .c-azul { background: var(--azul-claro); } .c-coral { background: var(--coral-claro); } .c-lila { background: var(--lila-claro); }
-  .c-amarillo { background: var(--amarillo-claro); } .c-primario { background: var(--primario-claro); }
+  /* Cabecera en el color del tipo de sesión, como la portada de Entreno */
+  .cab { --c: var(--lila); display: flex; gap: 14px; align-items: center; padding: 18px 56px 18px 16px; border-radius: 24px; color: #fff;
+    background: radial-gradient(130% 90% at 100% 0%, color-mix(in srgb, var(--c) 50%, transparent), transparent 60%),
+      linear-gradient(160deg, color-mix(in srgb, var(--c) 40%, #121218), color-mix(in srgb, var(--c) 14%, #0b0b0e)); }
+  .c-azul { --c: var(--azul); } .c-coral { --c: var(--coral); } .c-lila { --c: var(--lila); }
+  .c-amarillo { --c: var(--amarillo); } .c-primario { --c: var(--primario); } .c-gris { --c: var(--texto-3); }
+  .cab .sobre { color: rgb(255 255 255 / 0.72); }
+  .cab .datos span { background: rgb(255 255 255 / 0.14); color: #fff; }
   .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }

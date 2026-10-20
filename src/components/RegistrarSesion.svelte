@@ -13,7 +13,8 @@
   import { aSegundos, mmss } from '../lib/hyrox/ritmos.js';
   import { copiaSesion } from '../lib/hyrox/sesiones.js';
 
-  let { id } = $props();
+  /** entreno: abierto desde «Empezar entreno» → primero las series (todas abiertas) y al final cómo ha ido */
+  let { id, entreno = false } = $props();
   const e = get(estado);
   const s = planDe(e)?.sesiones.find((x) => x.id === id);
   // Borrador: lo que vas apuntando se guarda al momento en el móvil, por si la app se cierra a mitad
@@ -59,6 +60,9 @@
   const objetivoReps = (ej) => Number(/\d+/.exec(ej.reps)?.[0]) || '';
   function abrir(ej) {
     if (cargas[ej.id]) { delete cargas[ej.id]; return; }
+    preparar(ej);
+  }
+  function preparar(ej) {
     const antes = ultimas[ej.id]?.series || [];
     // Como en Hevy: lo de la última vez queda de sugerencia y cada serie se confirma con un toque
     cargas[ej.id] = Array.from({ length: Math.max(ej.series, antes.length) }, (_, i) => {
@@ -77,6 +81,9 @@
     if (!cargas[ej.id]) abrir(ej);
     for (const s of cargas[ej.id]) { s.kg = s.phKg; s.reps = s.phReps; s.hecha = true; }
   }
+  // Modo entreno: todos los ejercicios abiertos desde el principio, con lo de la última vez de sugerencia
+  if (entreno) for (const ej of ejercicios) if (!cargas[ej.id]) preparar(ej);
+  const ejHechos = $derived(ejercicios.filter((ej) => (cargas[ej.id] || []).length && cargas[ej.id].every((x) => x.hecha)).length);
   const resumen = (u) => (u ? `${String(u.kg).replace('.', ',')} kg × ${u.reps}` : '');
   const numero = (v) => Number(String(v).replace(',', '.')) || 0;
 
@@ -108,43 +115,11 @@
   }
 </script>
 
-{#if s}
-  <div class="cab"><Emoji e={s.emoji} tam={40} /><div><b>{s.titulo}</b><small>Objetivo: {s.duracion} min · RPE {s.rpe}</small></div></div>
-  {#if recuperado}
-    <p class="recuperado"><Icono n="notebook-pen" tam={16} /> Recuperado lo que estabas apuntando. <button class="enlace" onclick={() => { descartarBorrador(); guardado = true; cerrarHoja(); }}>Descartar</button></p>
-  {/if}
-
-  <div class="estado">
-    {#each [['completa', '✅', 'La hice'], ['parcial', '◐', 'A medias'], ['no', '❌', 'No la hice']] as [v, em, n] (v)}
-      <button class:activo={situacion === v} onclick={() => (situacion = v)}><Emoji e={em} tam={24} /><span>{n}</span></button>
-    {/each}
-  </div>
-
-  {#if situacion !== 'no'}
-    <label class="campo"><span>Duración real (min)</span><input enterkeyhint="done" type="number" min="5" max="300" bind:value={duracion} inputmode="numeric" /></label>
-
-    <div class="rpe">
-      <div class="rpe-cab"><span>Esfuerzo percibido (RPE)</span><b><Emoji e={CARAS[rpe - 1]} tam={22} /> {rpe}/10</b></div>
-      <input type="range" min="1" max="10" step="1" bind:value={rpe} aria-label="RPE de 1 a 10" />
-      <div class="rpe-ley"><small>Muy suave</small><small>Máximo</small></div>
-    </div>
-
-    <fieldset class="opciones tres"><legend>¿Cómo te encontraste?</legend>
-      {#each [['bien', 'Bien'], ['normal', 'Normal'], ['mal', 'Mal']] as [v, n] (v)}
-        <label class="opcion"><input type="radio" name="sens" value={v} bind:group={sensacion} /><span><b>{n}</b></span></label>
-      {/each}
-    </fieldset>
-
-    {#if ['series', 'umbral'].includes(s.tipo)}
-      <div class="lista-tiempos"><CampoTiempo etiqueta="Ritmo medio de las series (min/km)" bind:value={ritmo} ejemplo="4:55" /></div>
-    {:else if ['rodaje', 'largo'].includes(s.tipo)}
-      <label class="campo"><span>Distancia (km)</span><input enterkeyhint="done" type="number" step="0.1" bind:value={distancia} inputmode="decimal" placeholder={String(s.distancia || '')} /></label>
-    {:else if s.tipo === 'fuerza' && !ejercicios.length}
-      <label class="campo"><span>Peso en la sentadilla (kg)</span><input enterkeyhint="done" type="number" step="2.5" bind:value={peso} inputmode="decimal" /></label>
-    {/if}
-    {#if ejercicios.length}
+{#snippet pesos()}
+  {#if ejercicios.length}
       <div class="pesos">
-        <p class="pesos-cab"><b>Pesos</b> <small>opcional: abre un ejercicio y marca cada serie con ✓ (si no cambias nada, se guarda lo de la última vez)</small></p>
+        {#if entreno}<p class="pesos-cab"><small>Marca cada serie con ✓ al terminarla. Si no cambias nada, se apunta lo de la última vez.</small></p>
+        {:else}<p class="pesos-cab"><b>Pesos</b> <small>opcional: abre un ejercicio y marca cada serie con ✓ (si no cambias nada, se guarda lo de la última vez)</small></p>{/if}
         {#each ejercicios as ej (ej.id)}
           {@const u = ultimas[ej.id]}
           <div class="ej" class:abierto={cargas[ej.id]}>
@@ -174,7 +149,57 @@
         {/each}
         <p class="pie-nota">Con esto veo en Progreso → Entreno si subes de fuerza y qué zona va más floja.</p>
       </div>
+  {/if}
+{/snippet}
+
+{#if s}
+  {#if entreno}
+    <div class="cab-entreno">
+      <b>{s.titulo}</b>
+      <span class="cifra">{ejHechos} de {ejercicios.length} ejercicios · objetivo {s.duracion} min</span>
+      <span class="progreso-ej" aria-hidden="true"><i style="--p:{ejercicios.length ? (ejHechos / ejercicios.length) * 100 : 0}%"></i></span>
+    </div>
+  {:else}
+    <div class="cab"><Emoji e={s.emoji} tam={40} /><div><b>{s.titulo}</b><small>Objetivo: {s.duracion} min · esfuerzo {s.rpe}/10</small></div></div>
+  {/if}
+  {#if recuperado}
+    <p class="recuperado"><Icono n="notebook-pen" tam={16} /> Recuperado lo que estabas apuntando. <button class="enlace" onclick={() => { descartarBorrador(); guardado = true; cerrarHoja(); }}>Descartar</button></p>
+  {/if}
+
+  {#if entreno}
+    {@render pesos()}
+    <h3 class="al-terminar">Al terminar</h3>
+  {/if}
+
+  <div class="estado">
+    {#each [['completa', '✅', 'La hice'], ['parcial', '◐', 'A medias'], ['no', '❌', 'No la hice']] as [v, em, n] (v)}
+      <button class:activo={situacion === v} onclick={() => (situacion = v)}><Emoji e={em} tam={24} /><span>{n}</span></button>
+    {/each}
+  </div>
+
+  {#if situacion !== 'no'}
+    <label class="campo"><span>Duración real (min)</span><input enterkeyhint="done" type="number" min="5" max="300" bind:value={duracion} inputmode="numeric" /></label>
+
+    <div class="rpe">
+      <div class="rpe-cab"><span>Esfuerzo percibido (de 1 a 10)</span><b><Emoji e={CARAS[rpe - 1]} tam={22} /> {rpe}/10</b></div>
+      <input type="range" min="1" max="10" step="1" bind:value={rpe} aria-label="RPE de 1 a 10" />
+      <div class="rpe-ley"><small>Muy suave</small><small>Máximo</small></div>
+    </div>
+
+    <fieldset class="opciones tres"><legend>¿Cómo te encontraste?</legend>
+      {#each [['bien', 'Bien'], ['normal', 'Normal'], ['mal', 'Mal']] as [v, n] (v)}
+        <label class="opcion"><input type="radio" name="sens" value={v} bind:group={sensacion} /><span><b>{n}</b></span></label>
+      {/each}
+    </fieldset>
+
+    {#if ['series', 'umbral'].includes(s.tipo)}
+      <div class="lista-tiempos"><CampoTiempo etiqueta="Ritmo medio de las series (min/km)" bind:value={ritmo} ejemplo="4:55" /></div>
+    {:else if ['rodaje', 'largo'].includes(s.tipo)}
+      <label class="campo"><span>Distancia (km)</span><input enterkeyhint="done" type="number" step="0.1" bind:value={distancia} inputmode="decimal" placeholder={String(s.distancia || '')} /></label>
+    {:else if s.tipo === 'fuerza' && !ejercicios.length}
+      <label class="campo"><span>Peso en la sentadilla (kg)</span><input enterkeyhint="done" type="number" step="2.5" bind:value={peso} inputmode="decimal" /></label>
     {/if}
+    {#if !entreno}{@render pesos()}{/if}
     {#if ['simulacro', 'compromised', 'estaciones', 'carrera'].includes(s.tipo)}
       <div class="lista-tiempos"><CampoTiempo etiqueta="Tiempo total" bind:value={tiempo} horas ejemplo={s.tipo === 'carrera' ? '1:25:00' : '0:45:00'} /></div>
     {/if}
@@ -189,7 +214,7 @@
   {/if}
 
   <label class="campo"><span>Notas <small>(opcional)</small></span><input bind:value={notas} maxlength="140" placeholder="Molestia en el gemelo, buen día…" /></label>
-  <button class="boton ancho" onclick={guardar}>Guardar</button>
+  <button class="boton ancho" onclick={guardar}>{entreno ? 'Terminar entreno' : 'Guardar'}</button>
   <p class="pie-nota">Con tus registros ajusto automáticamente la carga de las semanas siguientes.</p>
 {/if}
 
@@ -226,6 +251,13 @@
   .serie input { width: 100%; min-height: 42px; padding: 6px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
   .serie i { font-style: normal; font-size: 0.78rem; color: var(--texto-2); font-weight: 600; }
   .ej .enlace { margin: 2px 0 10px; }
+  /* Modo entreno */
+  .cab-entreno { display: grid; gap: 4px; margin-bottom: 14px; }
+  .cab-entreno b { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+  .cab-entreno span { color: var(--texto-2); font-weight: 600; font-size: 0.84rem; }
+  .progreso-ej { display: block; height: 6px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .progreso-ej i { display: block; width: 100%; height: 100%; border-radius: 999px; background: var(--primario); transform: translateX(calc(var(--p) - 100%)); transition: transform 0.4s var(--ease-out); }
+  .al-terminar { margin: 22px 0 10px; font-size: 1.05rem; font-weight: 800; }
   .recuperado { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.84rem; }
   .recuperado .enlace { margin-left: auto; }
 </style>
