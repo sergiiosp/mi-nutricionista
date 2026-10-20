@@ -13,8 +13,10 @@
   import { proveedorDe } from '../lib/hyrox/index.js';
   import { proponerCombos, montarCombo, gruposPermitidos, familiaDe, esCombo, textoIngrediente } from '../lib/combos.js';
   import { macrosComida } from '../lib/nutricion.js';
+  import { ALIMENTOS } from '../data/alimentos.js';
+  import { corto } from '../lib/composicion.js';
 
-  let { diaIdx, franja } = $props();
+  let { diaIdx, franja, nevera = false } = $props();
   const e = get(estado);
   const actual = e.plan.dias[diaIdx]?.comidas.find((c) => c.franja === franja);
   const info = objetivoComida(e.plan, diaIdx, franja, e.perfil, objetivosActuales(), proveedorDe(e));
@@ -22,7 +24,10 @@
   const fam = familiaDe(info?.franja.tipo);
   const favoritas = $derived($estado.favoritas || []);
 
-  let pestaña = $state(actual && esCombo(actual.recetaId) ? 'montar' : 'opciones');
+  let pestaña = $state(nevera ? 'nevera' : actual && esCombo(actual.recetaId) ? 'montar' : 'opciones');
+  // Con lo que tengo: recetas que usan lo de tu despensa, de más a menos
+  const enCasa = Object.keys(e.despensa || {});
+  const nombreCorto = (id) => corto(id);
 
   // ── Opciones ───────────────────────────────────────────────────────────
   const recetas = alternativas(e.plan, diaIdx, franja, e.perfil, objetivosActuales(), proveedorDe(e), e.favoritas || [], e.agenda?.viajes || []);
@@ -54,13 +59,24 @@
     sel = [...sel.filter((x) => x !== fuera), id];
   }
   const pct = (v, o) => Math.min(100, (v / Math.max(o, 1)) * 100);
+  const conLoQueTengo = recetas.filter((a) => a.enCasa?.length).sort((a, b) => b.enCasa.length - a.enCasa.length || a.orden - b.orden).slice(0, 8);
+  // Montar con lo que tengo: lo de la despensa que entra en los grupos de esta comida (respetando el máximo)
+  function montarConLoQueTengo() {
+    const elegidos = [];
+    for (const g of grupos) {
+      const ids = g.items.map(([i]) => i).filter((i) => enCasa.includes(i)).slice(0, g.maximo);
+      elegidos.push(...ids);
+    }
+    sel = elegidos;
+    pestaña = 'montar';
+  }
 </script>
 
 {#if obj}
   <p class="objetivo">Esta comida: <b>{Math.round(obj.kcal)} kcal</b> y <b>{Math.round(obj.p)} g de proteína</b>. Todo lo que elijas se ajusta a eso.</p>
 {/if}
 
-<Segmentos opciones={[{ id: 'opciones', nombre: 'Opciones', icono: 'list' }, { id: 'montar', nombre: 'Montar la mía', icono: 'chef-hat' }]} bind:valor={pestaña} />
+<Segmentos opciones={[{ id: 'opciones', nombre: 'Opciones', icono: 'list' }, { id: 'nevera', nombre: 'Lo que tengo', icono: 'package' }, { id: 'montar', nombre: 'Montar', icono: 'chef-hat' }]} bind:valor={pestaña} />
 
 {#snippet fila(recetaId, ingredientes, nota)}
   {@const r = recetaPorId[recetaId]}
@@ -82,7 +98,18 @@
   </div>
 {/snippet}
 
-{#if pestaña === 'opciones'}
+{#if pestaña === 'nevera'}
+  {#if !enCasa.length}
+    <p class="pie-nota nevera-vacia">Tu despensa está vacía: se llena sola al marcar lo que coges en la compra. Mientras tanto, elige en «Montar» lo que tengas y te digo cuánto poner.</p>
+  {:else}
+    <p class="pie-nota">En casa tienes: {enCasa.filter((id) => ALIMENTOS[id]).map(nombreCorto).join(', ')}.</p>
+    {#if conLoQueTengo.length}
+      <h3>Recetas con lo que tienes</h3>
+      <div class="lista">{#each conLoQueTengo as a (a.comida.recetaId)}{@render fila(a.comida.recetaId, a.comida.ingredientes, `Usa lo que tienes: ${a.enCasa.map(nombreCorto).join(', ')}`)}{/each}</div>
+    {/if}
+    <button class="boton boton-sec ancho-n" onclick={montarConLoQueTengo}><Icono n="chef-hat" tam={18} /> Montar un plato con lo que tengo</button>
+  {/if}
+{:else if pestaña === 'opciones'}
   {#if deFavoritas.length}
     <h3>Tus favoritas</h3>
     <div class="lista">{#each deFavoritas as a (a.comida.recetaId)}{@render fila(a.comida.recetaId, a.comida.ingredientes)}{/each}</div>
@@ -180,4 +207,6 @@
   .r-acciones { display: flex; gap: 8px; margin-top: 10px; }
   .r-acciones .boton:first-child { flex: 1; }
   .estrella-btn { width: 50px; padding: 0; }
+  .nevera-vacia { margin-top: 14px; }
+  .ancho-n { width: 100%; margin-top: 14px; }
 </style>

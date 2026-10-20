@@ -8,7 +8,8 @@
   import { hoyISO } from '../../lib/planificador.js';
   import { listaCompra, textoEnvases, formatoEnvase } from '../../lib/compra.js';
   import { producto, gramosPorEnvase } from '../../lib/nutricion.js';
-  import { quitarDeCompra, devolverACompra, cambiarEnvases, añadirACompra, quitarExtra } from '../../lib/acciones.js';
+  import { quitarDeCompra, devolverACompra, cambiarEnvases, añadirACompra, quitarExtra, ajustarDespensa, quitarDeDespensa } from '../../lib/acciones.js';
+  import { cantidadTexto } from '../../lib/nutricion.js';
   import ElegirAlimento from '../../components/ElegirAlimento.svelte';
   import { slide } from 'svelte/transition';
   import { euros } from '../../lib/formato.js';
@@ -54,6 +55,15 @@
   const falta = $derived(comprar.filter((i) => !marcados[i.id]).reduce((s, i) => s + i.coste, 0));
   const progreso = $derived(comprar.length ? Math.round((comprar.filter((i) => marcados[i.id]).length / comprar.length) * 100) : 0);
 
+  // Lo que coges entra en tu despensa (y sale si lo desmarcas)
+  function coger(it) {
+    const ya = !!marcados[it.id];
+    const g = it.envases && gramosPorEnvase(it.id) ? it.envases * gramosPorEnvase(it.id) : it.bruto || 0;
+    alternar('marcados', it.id);
+    if (g) ajustarDespensa(it.id, ya ? -g : g);
+  }
+  const despensa = $derived(Object.entries($estado.despensa || {}).filter(([id]) => ALIMENTOS[id]).sort((a, b) => ALIMENTOS[a[0]].nombre.localeCompare(ALIMENTOS[b[0]].nombre)));
+  const diasDesde = (f) => Math.round((new Date(`${hoy}T12:00`) - new Date(`${f}T12:00`)) / 86400000);
   const alternar = (campo, id) => actualizar((e) => {
     e.compra[campo] ||= {};
     if (e.compra[campo][id]) delete e.compra[campo][id];
@@ -96,6 +106,19 @@
     </div>
   </section>
 
+  {#if despensa.length}
+    <details class="tarjeta despensa">
+      <summary><Icono n="package" tam={18} /> <span><b>En tu despensa</b><small>{despensa.length} {despensa.length === 1 ? 'alimento' : 'alimentos'}: el menú tira antes de ellos</small></span> <Icono n="chevron-down" tam={18} /></summary>
+      <ul>
+        {#each despensa as [id, d] (id)}
+          <li><span><b>{ALIMENTOS[id].nombre}</b><small>{cantidadTexto(id, d.g)} · {diasDesde(d.fecha) === 0 ? 'de hoy' : `hace ${diasDesde(d.fecha)} ${diasDesde(d.fecha) === 1 ? 'día' : 'días'}`}</small></span>
+            <button class="borrar-d" aria-label="Ya no tengo {ALIMENTOS[id].nombre}" onclick={() => quitarDeDespensa(id)}><Icono n="trash" tam={16} /></button></li>
+        {/each}
+      </ul>
+      <p class="pie-nota">Entra lo que marcas como cogido y sale lo que comes del menú. Bórralo si se acaba antes.</p>
+    </details>
+  {/if}
+
   {#each [...grupos, ...(extras.length ? [{ nombre: 'Añadido por ti', items: extras }] : []), ...(lista.despensa.length ? [{ nombre: 'Despensa · revisa si te queda', items: lista.despensa }] : [])] as g (g.nombre)}
     {@const hechos = g.items.filter((i) => marcados[i.id] || enCasa[i.id]).length}
     {@const plegado = g.nombre in plegados ? plegados[g.nombre] : hechos === g.items.length}
@@ -110,7 +133,7 @@
         {@const casa = !!enCasa[it.id]}
         {@const cogido = !!marcados[it.id]}
         <li class="item" class:cogido class:casa>
-          <button class="check" class:activo={cogido} aria-pressed={cogido} aria-label="Cogido: {it.producto?.nombre || it.nombre}" onclick={() => alternar('marcados', it.id)} disabled={casa}>
+          <button class="check" class:activo={cogido} aria-pressed={cogido} aria-label="Cogido: {it.producto?.nombre || it.nombre}" onclick={() => coger(it)} disabled={casa}>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
           </button>
           {#if it.producto?.imagen}<img src={it.producto.imagen} alt="" loading="lazy" />{:else}<span class="img"><Emoji e="🛒" tam={24} /></span>{/if}
@@ -216,4 +239,18 @@
   .cogido img, .casa img { opacity: 0.4; }
   .casa { background: color-mix(in srgb, var(--superficie) 60%, var(--fondo)); }
   .vacia { text-align: center; }
+  .despensa { margin-top: 12px; padding: 0; overflow: hidden; }
+  .despensa summary { display: flex; align-items: center; gap: 10px; padding: 14px 16px; list-style: none; cursor: pointer; }
+  .despensa summary::-webkit-details-marker { display: none; }
+  .despensa summary > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
+  .despensa summary > :global(svg:last-child) { margin-left: auto; color: var(--texto-3); flex-shrink: 0; }
+  .despensa summary span { display: grid; }
+  .despensa summary small { font-size: 0.76rem; color: var(--texto-2); }
+  .despensa ul { list-style: none; margin: 0; padding: 0 16px; }
+  .despensa li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--linea); }
+  .despensa li span { flex: 1; min-width: 0; display: grid; }
+  .despensa li b { font-size: 0.88rem; font-weight: 600; }
+  .despensa li small { font-size: 0.74rem; color: var(--texto-2); }
+  .despensa .pie-nota { padding: 0 16px 12px; margin: 4px 0 0; }
+  .borrar-d { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 10px; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
 </style>

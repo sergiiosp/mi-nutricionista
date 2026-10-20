@@ -150,6 +150,8 @@ await ir('#hoy');
 await hoja('registrar', `{ fecha: '2026-10-20', franja: 'merienda' }`); await foto('hoja-registrar', 2); await cerrar();
 await hoja('receta', `(() => { const e = JSON.parse(localStorage.getItem('mi-nutricionista:v1')); const c = e.plan.dias[0].comidas[1]; return { recetaId: c.recetaId, ingredientes: c.ingredientes, titulo: c.hora + ' · Comida', diaIdx: 0, franja: c.franja }; })()`); await foto('hoja-receta', 2); await cerrar();
 await hoja('alternativas', `{ diaIdx: 0, franja: 'cena' }`); await foto('hoja-alternativas', 1); await cerrar();
+await js(`(await import('/src/stores/estado.js')).actualizar((x) => { x.despensa = { pechuga_pollo: { g: 800, fecha: '2026-10-18' }, arroz: { g: 900, fecha: '2026-10-18' }, merluza: { g: 400, fecha: '2026-10-19' } }; }); await new Promise((r) => setTimeout(r, 200));`);
+await hoja('alternativas', `{ diaIdx: 0, franja: 'cena', nevera: true }`); await foto('hoja-nevera', 1); await cerrar();
 await hoja('sesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20').id }`); await foto('hoja-sesion', 2); await cerrar();
 await hoja('registrarSesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20' && s.ejercicios?.length).id, entreno: true }`); await foto('hoja-entreno', 2); await cerrar();
 await hoja('estacion', `{ id: 'push' }`); await foto('hoja-estacion', 1); await cerrar();

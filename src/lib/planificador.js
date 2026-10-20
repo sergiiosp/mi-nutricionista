@@ -70,6 +70,10 @@ function grasaRelativa(r) {
   return grasaRelativaCache[r.id];
 }
 
+// Lo que tienes en casa (despensa): el menú y las alternativas tiran antes de ello
+let DESPENSA = new Set();
+export function fijarDespensa(ids) { DESPENSA = new Set(ids || []); }
+
 function puntuar(receta, ctx) {
   const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas } = ctx;
   let s = aleatorio() * 3;
@@ -91,6 +95,7 @@ function puntuar(receta, ctx) {
   for (const i of receta.ingredientes) {
     // Reaprovechar ingredientes ya comprados abarata la cesta y evita desperdicio
     if (!ALIMENTOS[i.a].despensa) s += enUso.has(i.a) ? 0.4 : -0.4;
+    if (DESPENSA.has(i.a) && !ALIMENTOS[i.a].despensa) s += 1.2;
     // Ajustes por salud (hierro, sal, colesterol…)
     if (prefs.bonus.has(i.a)) s += 0.5;
     if (prefs.penal.has(i.a)) s -= 1;
@@ -257,7 +262,8 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
       const m = macrosComida(comida.ingredientes);
       const desvio = Math.abs(m.kcal - obj.kcal) / obj.kcal + Math.abs(m.p - obj.p) / Math.max(obj.p, 1);
       const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa(r).grasa - 0.25) : 0;
-      return { comida, macros: m, usos: usos[r.id] || 0, orden: desvio + (usos[r.id] || 0) * 0.15 + pre };
+      const enCasa = r.ingredientes.filter((i) => DESPENSA.has(i.a) && !ALIMENTOS[i.a]?.despensa).map((i) => i.a);
+      return { comida, macros: m, usos: usos[r.id] || 0, enCasa, orden: desvio + (usos[r.id] || 0) * 0.15 + pre - enCasa.length * 0.08 };
     })
     .sort((a, b) => a.orden - b.orden);
 }

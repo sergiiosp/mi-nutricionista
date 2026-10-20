@@ -9,6 +9,7 @@ import { estado } from './stores/estado.js';
 import { hoja } from './stores/ui.js';
 import { copiarHoy, pedirAlmacenamientoPersistente } from './lib/copias.js';
 import { fijarPerfilRecetas } from './lib/sustituciones.js';
+import { fijarDespensa } from './lib/planificador.js';
 
 // Enlace del QR para vincular este dispositivo (#vincular=CLAVE): se guarda y se quita de la barra
 const vincular = location.hash.match(/^#vincular=([\w-]{32})$/);
@@ -18,7 +19,7 @@ if (vincular) {
 }
 
 // Las recetas se adaptan a tu perfil (frutos secos o leche que no tomas)
-estado.subscribe((e) => fijarPerfilRecetas(e.perfil));
+estado.subscribe((e) => { fijarPerfilRecetas(e.perfil); fijarDespensa(Object.keys(e.despensa || {})); });
 
 // Copia del día antes de tocar nada (Ajustes → Copias en este móvil) y que el móvil no borre los datos
 pedirAlmacenamientoPersistente();

@@ -2,7 +2,8 @@
 import { get } from 'svelte/store';
 import { estado, actualizar, registroDePlan, borrarRegistro } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
-import { calcularObjetivos, alimentoPermitido } from './nutricion.js';
+import { calcularObjetivos, alimentoPermitido, alimento } from './nutricion.js';
+const alimentoBruto = (id) => { try { return alimento(id).rendimiento || 1; } catch { return 1; } };
 import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias } from './planificador.js';
 import { estadoDia } from './dia.js';
 import { crearRegistro } from './registro.js';
@@ -39,6 +40,7 @@ export function marcarHecha(fecha, comida) {
     delete x.saltadas[`${fecha}|${comida.franja}`];
     (x.registros[fecha] ||= []).push(registroDePlan(comida, fecha, comida.ingredientes));
   });
+  if (!comida.libre) consumirDespensa(comida.ingredientes);
   // ¿Día completo? pequeña celebración
   const d = estadoDia(get(estado), objetivosActuales(), fecha);
   if (d.comidas.length && d.comidas.every((c) => c.situacion !== 'pendiente')) {
@@ -295,6 +297,33 @@ export function guardarForma(fecha, datos) {
 }
 export function borrarForma(fecha) {
   actualizar((x) => { if (x.hyrox?.forma) delete x.hyrox.forma[fecha]; });
+}
+
+// ── Despensa: lo cogido en la compra entra; lo que comes del menú sale ─────────
+
+/** Suma (o resta) gramos de un alimento en tu despensa. */
+export function ajustarDespensa(id, gramos) {
+  actualizar((x) => {
+    x.despensa ||= {};
+    const g = Math.round((x.despensa[id]?.g || 0) + gramos);
+    if (g <= 0) delete x.despensa[id];
+    else x.despensa[id] = { g, fecha: gramos > 0 ? hoyISO() : x.despensa[id]?.fecha || hoyISO() };
+  });
+}
+/** Lo que te comes sale de la despensa (en crudo, tal como se compra). */
+export function consumirDespensa(ingredientes) {
+  actualizar((x) => {
+    for (const i of ingredientes || []) {
+      const d = x.despensa?.[i.a];
+      if (!d) continue;
+      const g = d.g - i.g / (alimentoBruto(i.a) || 1);
+      if (g <= 5) delete x.despensa[i.a];
+      else d.g = Math.round(g);
+    }
+  });
+}
+export function quitarDeDespensa(id) {
+  actualizar((x) => { if (x.despensa) delete x.despensa[id]; });
 }
 
 /** Rellena las comidas que le falten al menú actual (sin tocar las demás). */
