@@ -10,6 +10,7 @@
   import { hoyISO, sumarDias } from '../../lib/planificador.js';
   import { diaSemana, fechaCorta } from '../../lib/formato.js';
   import { FOTOS_SESIONES } from '../../data/fotos.js';
+  import PropuestaSemana from '../../components/PropuestaSemana.svelte';
 
   const hoy = hoyISO();
   const plan = $derived(planDe($estado));
@@ -46,6 +47,7 @@
 </script>
 
 {#if plan && semana}
+  <PropuestaSemana />
   <!-- Dónde estás en el plan -->
   <div class="plan-cab">
     <span><b>Semana {actual + 1}</b> de {plan.N} · {FASES[plan.semanas[actual].fase].nombre}{plan.semanas[actual].deload ? ' · descarga' : ''}</span>

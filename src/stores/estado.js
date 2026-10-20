@@ -25,7 +25,8 @@ export const VACIO = () => ({
   entrenoDia: {}, // fecha → 'si' | 'no' cuando cambias si ese día entrenas
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
   feedback: { dias: {}, semanas: {} }, // notas del día (hambre, energía…) y repasos semanales (clave: lunes)
-  agenda: { eventos: [], viajes: [] }, // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }
+  agenda: { eventos: [], viajes: [] },
+  propuestasVistas: {}, // propuestas de un toque ya respondidas // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }
 });
 
 /** Convierte datos de la versión 1 (hechas: fecha|franja → true) al formato de registros. */

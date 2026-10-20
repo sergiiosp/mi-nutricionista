@@ -20,6 +20,7 @@
   import { tendencia } from '../lib/progreso.js';
   import { semanaDe } from '../lib/hyrox/plan.js';
   import { rachas } from '../lib/logros.js';
+  import PropuestaSemana from '../components/PropuestaSemana.svelte';
 
   const hoy = hoyISO();
   const objetivos = $derived(calcularObjetivos($estado.perfil));
@@ -119,6 +120,8 @@
     <p>{capital(fechaLarga(hoy))}</p>
     <h1>{saludo()}{$estado.perfil.nombre ? `, ${$estado.perfil.nombre}` : ''}</h1>
   </header>
+
+  <PropuestaSemana />
 
   <!-- Panel: lo esencial de un vistazo; cada bloque se toca para ver el detalle -->
   <div class="panel">
