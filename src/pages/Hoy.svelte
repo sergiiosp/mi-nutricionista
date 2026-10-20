@@ -24,6 +24,7 @@
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
   import ComoLlegas from '../components/ComoLlegas.svelte';
+  import { retosSemana } from '../lib/retos.js';
   import FotoReceta from '../components/FotoReceta.svelte';
   import { sumarDias } from '../lib/planificador.js';
 
@@ -52,6 +53,7 @@
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const r = $derived(rachas($estado, objetivos, hoy));
+  const retos = $derived(retosSemana($estado, objetivos, hoy));
   // Panel: qué bloque está abierto (ninguno al entrar: lo esencial ya se ve)
   let abierto = $state(null);
   const alternar = (k) => (abierto = abierto === k ? null : k);
@@ -215,7 +217,7 @@
     </div>
     <a class="r-semana s-progreso" href="#progreso">
       <Icono n="chart-column" tam={14} grosor={2.2} />
-      {#if semanaEntreno}{semanaEntreno.hechas}/{semanaEntreno.total} sesiones esta semana{:else}{r.registro} {r.registro === 1 ? 'día' : 'días'} seguidos{/if}{#if tend} · {tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem{/if}
+      Retos {retos.completados}/{retos.lista.length}{#if retos.racha} · racha de {retos.racha} {retos.racha === 1 ? 'semana' : 'semanas'}{/if}{#if semanaEntreno} · {semanaEntreno.hechas}/{semanaEntreno.total} sesiones{/if}{#if tend} · {tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem{/if}
       <Icono n="chevron-right" tam={14} />
     </a>
   </section>

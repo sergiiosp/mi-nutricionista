@@ -157,6 +157,8 @@ await hoja('registrarSesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '20
 await hoja('estacion', `{ id: 'push' }`); await foto('hoja-estacion', 1); await cerrar();
 await hoja('guiaFuera', `{ sitio: 'asiatico' }`); await foto('hoja-guia-fuera', 2); await cerrar();
 await hoja('informe', '{}'); await foto('hoja-informe', 3); await cerrar();
+await hoja('cocina', `(() => { const e = JSON.parse(localStorage.getItem('mi-nutricionista:v1')); const c = e.plan.dias[0].comidas[1]; return { recetaId: c.recetaId, ingredientes: c.ingredientes }; })()`); await foto('hoja-cocina', 1);
+await js(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('Empezar'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-cocina-paso', 1); await cerrar();
 await hoja('camara', `{ pose: 'frente' }`); await foto('hoja-camara', 1); await cerrar();
 
 // Día cerrado: todas las comidas de hoy hechas (al final, porque cambia los datos)

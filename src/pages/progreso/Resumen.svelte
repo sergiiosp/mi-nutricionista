@@ -5,6 +5,7 @@
   import Anillos from '../../components/Anillos.svelte';
   import RepasoSemanal from '../../components/RepasoSemanal.svelte';
   import { abrirHoja } from '../../stores/ui.js';
+  import { retosSemana } from '../../lib/retos.js';
   import { estado } from '../../stores/estado.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
@@ -43,6 +44,7 @@
     return { cifra: `${k > 0 ? '+' : ''}${num(k, 2)} kg/sem`, texto, bien };
   });
 
+  const retos = $derived(retosSemana($estado, objetivos, hoy));
   const maxKcal = $derived(Math.max(...s.porDia.map((d) => Math.max(d.r?.m.kcal || 0, d.r?.od.kcal || objetivos.kcal))) * 1.05);
 </script>
 
@@ -61,6 +63,18 @@
     <span>{titular.texto}</span>
   </div>
   {#if r.registro > 1}<p class="racha"><Icono n="flame" tam={15} grosor={2.2} /> {r.registro} días seguidos apuntando</p>{/if}
+</section>
+
+<section class="tarjeta retos" aria-label="Retos de la semana">
+  <div class="rt-cab"><b>Retos de la semana</b>{#if retos.racha}<span class="rt-racha"><Icono n="flame" tam={14} grosor={2.2} /> {retos.racha} {retos.racha === 1 ? 'semana' : 'semanas'} seguidas</span>{/if}</div>
+  {#each retos.lista as x (x.id)}
+    <div class="rt" class:hecho={x.hecho}>
+      <span class="rt-ic">{#if x.hecho}<Icono n="check" tam={15} grosor={3} />{:else}<Icono n={x.icono} tam={15} grosor={2.2} />{/if}</span>
+      <span class="rt-txt"><b>{x.nombre} <span class="cifra">{x.valor}/{x.meta}</span></b><small>{x.detalle}</small></span>
+      <span class="rt-pista" aria-hidden="true"><i style="width:{Math.min(100, (x.valor / x.meta) * 100)}%"></i></span>
+    </div>
+  {/each}
+  <p class="pie-nota">Cumpliendo 2 de 3 cada semana sumas racha.</p>
 </section>
 
 <RepasoSemanal />
@@ -132,6 +146,19 @@
   .informe-btn > :global(svg:last-child) { margin-left: auto; color: var(--texto-3); flex-shrink: 0; }
   .informe-btn span { display: grid; }
   .informe-btn small { font-size: 0.76rem; color: var(--texto-2); }
+  .retos { margin-top: 12px; }
+  .rt-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .rt-racha { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--amarillo); font-size: 0.74rem; font-weight: 800; }
+  .rt { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; padding: 8px 0; }
+  .rt + .rt { border-top: 1px solid var(--linea); }
+  .rt-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
+  .rt.hecho .rt-ic { background: var(--primario); color: var(--sobre-primario); }
+  .rt-txt { display: grid; }
+  .rt-txt b { font-size: 0.9rem; font-weight: 700; }
+  .rt-txt b span { margin-left: 4px; color: var(--primario-fuerte); }
+  .rt-txt small { font-size: 0.74rem; color: var(--texto-2); }
+  .rt-pista { height: 5px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .rt-pista i { display: block; height: 100%; border-radius: 999px; background: var(--primario); }
   /* Cada día */
   .d-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .d-ley { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: var(--texto-3); }

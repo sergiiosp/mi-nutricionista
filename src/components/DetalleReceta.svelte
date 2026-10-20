@@ -33,7 +33,7 @@
   <ListaIngredientes {ingredientes} enlaces caja />
   {#if receta.especias?.length}<p class="especias"><Icono e="🧂" tam={18} /> <b>Para condimentar:</b> {receta.especias.map((e) => ESPECIAS[e] || e).join(', ')}</p>{/if}
 
-  <h3><Icono e="👨‍🍳" tam={18} /> Preparación</h3>
+  <h3 class="prep"><Icono e="👨‍🍳" tam={18} /> Preparación {#if receta.pasos?.length && !receta.fuera}<button class="boton boton-peq cocinar" onclick={() => abrirHoja('cocina', { recetaId, ingredientes })}><Icono n="chef-hat" tam={16} /> Modo cocina</button>{/if}</h3>
   <ol class="pasos">
     {#each receta.pasos as p, i (i)}<li>{p}</li>{/each}
   </ol>
@@ -56,6 +56,8 @@
   .grandes span { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
   .grandes .p { background: var(--coral-claro); } .grandes .c { background: var(--amarillo-claro); } .grandes .g { background: var(--azul-claro); }
   .ancho { width: 100%; margin-top: 12px; }
+  .prep { display: flex; align-items: center; gap: 8px; }
+  .cocinar { margin-left: auto; }
   .adaptada { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: var(--superficie-2); font-size: 0.84rem; color: var(--texto-2); }
   .adaptada :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
 </style>
