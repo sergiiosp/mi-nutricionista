@@ -27,7 +27,9 @@ copiarHoy().finally(() => {
   congelarSesiones();
   // Si al menú le falta alguna comida (p. ej. el desayuno o la de antes de dormir), se completa al abrir
   // y se recalculan las cantidades para que el reparto del día siga cuadrando
-  if (completarMenu()) reajustarPlan();
+  // (y siempre se recalculan cantidades: si el plan de entreno cambió con una versión nueva, el menú lo sigue)
+  completarMenu();
+  reajustarPlan();
 });
 
 // iOS solo aplica :active (la respuesta al pulsar) si la página escucha toques

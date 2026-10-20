@@ -253,12 +253,31 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
     const antes = (s) => diasEntre(s.fecha, F);
     if (km >= 15) {
       // Puesta a punto: de 6 a 4 días antes, más corto y suave; los 3 últimos días, descanso
-      for (const w of semanas) for (const s of w.sesiones) {
-        if (s.tipo === 'carrera' || antes(s) < 4 || antes(s) > 6) continue;
-        s.duracion = Math.round(s.duracion * 0.7);
-        s.rpe = Math.max(3, s.rpe - 2);
-        s.titulo = `${s.titulo} · suave`;
-        s.notas = [`Semana de tu ${(ev.nombre || KM_NOMBRE(km)).toLowerCase()}: hoy más corto y sin apretar.`, ...(s.notas || [])];
+      const nombreEv = (ev.nombre || KM_NOMBRE(km)).toLowerCase();
+      for (const w of semanas) {
+        w.sesiones = w.sesiones.map((s) => {
+          if (s.tipo === 'carrera' || antes(s) < 4 || antes(s) > 6) return s;
+          // Fuerza: mismos ejercicios, una serie menos y menos peso
+          if (s.ejercicios?.length) {
+            const menos = (t) => t.replace(/(\d+) × /g, (_, n) => `${Math.max(2, Number(n) - 1)} × `);
+            return {
+              ...s, titulo: `${s.titulo} · ligera`, duracion: Math.round(s.duracion * 0.65), rpe: Math.max(4, s.rpe - 2),
+              ejercicios: s.ejercicios.map((x) => ({ ...x, series: Math.max(2, x.series - 1) })),
+              bloques: s.bloques.map((b) => ({ ...b, lineas: b.lineas.map(menos) })),
+              notas: [`Semana de tu ${nombreEv}: una serie menos en cada ejercicio y un 70 % del peso de siempre. Nada de pierna pesada.`, ...(s.notas || [])],
+            };
+          }
+          // Carrera, series, umbral, estaciones…: rodaje suave corto para llegar fresco
+          const dur = 30;
+          return {
+            ...s, tipo: 'rodaje', titulo: 'Rodaje suave de semana de carrera', emoji: TIPOS.rodaje.emoji, color: TIPOS.rodaje.color, rpe: 3,
+            duracion: dur, distancia: Math.round((dur * 60 / rit.z2) * 10) / 10, ejercicios: [],
+            calentamiento: ['5 min caminando o trotando muy suave'],
+            bloques: [{ titulo: `${dur} min suaves`, lineas: [`Ritmo ${mmss(rit.z2)}/km o más lento: debes poder hablar`, 'Al final, 4 progresiones de 80 m para soltar piernas'] }],
+            vueltaCalma: ['Estira suave 5 min'],
+            notas: [`Semana de tu ${nombreEv}: hoy toca soltar piernas, no entrenar fuerte.`],
+          };
+        });
       }
       quitar((s) => antes(s) >= 0 && antes(s) <= 3);
       // Al día siguiente, recuperación
