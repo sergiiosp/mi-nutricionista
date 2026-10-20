@@ -84,14 +84,18 @@
 <article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada class:con-portada={portada && !plegada}>
 {#if plegada}
   <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
-    <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
+    {#if receta && (situacion === 'pendiente' || situacion === 'hecha')}
+      <span class="pl-foto"><FotoReceta {receta} alto={42} redondeo={11} />{#if situacion === 'hecha'}<span class="pl-check"><Icono n="check" tam={11} grosor={3} /></span>{/if}</span>
+    {:else}
+      <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
+    {/if}
     <span class="pl-txt"><small>{comida.hora && !compacta ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sobra' ? ' · hoy no hace falta' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
     {#if situacion !== 'saltada' && situacion !== 'sobra'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
     <Icono n="chevron-down" tam={18} />
   </button>
 {:else}
   {#if portada}
-    <Portada foto={tieneFoto ? `img/recetas/${receta.id}.webp` : ''} color="var(--primario)" alto={tieneFoto ? 300 : 240} duotono={false} etiqueta="Comida que toca ahora">
+    <Portada foto={tieneFoto ? `img/recetas/${receta.id}.webp` : ''} color="var(--primario)" alto={tieneFoto ? 270 : 230} duotono={false} etiqueta="Comida que toca ahora">
       <div class="pc-sup">
         <span class="pc-tipo"><Icono n="utensils" tam={14} grosor={2.2} /> {franjaNombre}{comida.hora ? ` · ${comida.hora}` : ''}</span>
         {#if comida.etiqueta}<span class="pc-etq">{ETQ[comida.etiqueta]}</span>{/if}
@@ -107,6 +111,7 @@
         {#if receta?.tiempo}<div><b class="cifra">{receta.tiempo}<span>min</span></b><small>preparar</small></div>{/if}
         <div><b class="cifra">{euros(costeComida(comida.ingredientes))}</b><small>coste</small></div>
       </div>
+      {#if editable && fecha && situacion === 'pendiente' && !editando}<div class="pc-acciones">{@render pieP()}</div>{/if}
     </Portada>
   {:else}
     <div class="fila">
@@ -188,12 +193,7 @@
   {#snippet botonCambiar()}
     <button onclick={() => abrirHoja('alternativas', { diaIdx, franja: comida.franja })}><Icono n="shuffle" tam={16} /> Cambiar</button>
   {/snippet}
-  {#snippet botonMas()}
-    <button class="solo-icono" class:activo={mas} aria-expanded={mas} aria-label="Más opciones" onclick={() => (mas = !mas)}><Icono n="ellipsis" tam={18} /></button>
-  {/snippet}
-
-  <!-- Una acción principal por estado; el resto, tras «⋯» -->
-  {#if editable && fecha && situacion === 'pendiente' && !editando}
+  {#snippet pieP()}
     <footer class="acciones">
       {#if comida.pasada}<p class="pregunta"><Icono n="clock" tam={14} /> ¿Ya la has comido?</p>{/if}
       <button class="principal" class:suave={!destacada && !comida.pasada} aria-label="Marcar {franjaNombre.toLowerCase()} como comida" onclick={() => marcarHecha(fecha, comida)}>
@@ -206,6 +206,14 @@
       {/if}
       {@render botonMas()}
     </footer>
+  {/snippet}
+  {#snippet botonMas()}
+    <button class="solo-icono" class:activo={mas} aria-expanded={mas} aria-label="Más opciones" onclick={() => (mas = !mas)}><Icono n="ellipsis" tam={18} /></button>
+  {/snippet}
+
+  <!-- Una acción principal por estado; el resto, tras «⋯» -->
+  {#if editable && fecha && situacion === 'pendiente' && !editando}
+    {#if !portada}{@render pieP()}{/if}
     {#if mas}
       <div class="acciones secundarias" transition:slide={{ duration: 160 }}>
         {@render botonCantidades()}
@@ -256,9 +264,9 @@
   .pc-etq { padding: 6px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.72rem; font-weight: 800; }
   /* Sin foto: el plato en anillo, grande y medio fuera por la derecha, de fondo (no compite con el título) */
   .pc-anillo { position: absolute; top: 50%; right: -78px; width: 210px; aspect-ratio: 1; border-radius: 50%; transform: translateY(-58%); opacity: 0.38; -webkit-mask: radial-gradient(circle, transparent 50%, #000 51.5%); mask: radial-gradient(circle, transparent 50%, #000 51.5%); }
-  .pc-titulo { margin-top: auto; padding: 18px 0 0; border: 0; background: none; color: #fff; font: inherit; font-size: 1.6rem; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; text-align: left; text-wrap: balance; cursor: pointer; position: relative; }
+  .pc-titulo { margin-top: auto; padding: 18px 0 0; border: 0; background: none; color: #fff; font: inherit; font-size: 1.42rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; text-align: left; text-wrap: balance; cursor: pointer; position: relative; }
   .pc-porque { margin: 6px 0 0; font-size: 0.84rem; font-weight: 600; color: color-mix(in srgb, var(--primario) 70%, #fff); }
-  .pc-cifras { display: flex; gap: 18px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgb(255 255 255 / 0.16); }
+  .pc-cifras { display: flex; gap: 18px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgb(255 255 255 / 0.16); }
   .pc-cifras div { display: grid; }
   .pc-cifras b { font-size: 1.3rem; line-height: 1.1; color: #fff; }
   .pc-cifras b span { font-size: 0.8rem; font-weight: 700; margin-left: 1px; color: rgb(255 255 255 / 0.7); }
@@ -271,7 +279,11 @@
   .s-pendiente .fila-plegada { background: var(--superficie); box-shadow: var(--sombra); }
   .pl-txt { flex: 1; min-width: 0; display: grid; }
   .pl-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
-  .pl-txt b { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pl-txt b { font-weight: 600; font-size: 0.9rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pl-foto { position: relative; width: 42px; flex-shrink: 0; }
+  .pl-foto :global(.foto) { width: 100%; }
+  .pl-check { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--primario); color: var(--sobre-primario); box-shadow: 0 0 0 2px var(--superficie); }
+  .s-hecha .pl-foto :global(.foto) { opacity: 0.7; }
   .pl-kcal { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
   .pl-kcal small { font-weight: 600; color: var(--texto-3); font-size: 0.72rem; }
   .replegar { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin-top: 4px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; }
@@ -334,4 +346,8 @@
   .pregunta { flex-basis: 100%; display: flex; align-items: center; gap: 6px; margin: 0 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--aviso-texto); }
   .secundarias { margin-top: 6px; }
   .batido { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; margin-top: 8px; padding: 0 12px; border: 1px dashed var(--borde); border-radius: 12px; background: none; color: var(--primario); font: inherit; font-weight: 700; font-size: 0.86rem; cursor: pointer; }
+  /* Botones dentro de la portada */
+  .pc-acciones :global(.acciones) { margin-top: 14px; }
+  .pc-acciones :global(.acciones button:not(.principal)) { background: rgb(255 255 255 / 0.14); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .pc-acciones :global(.pregunta) { color: #ffd27a; }
 </style>

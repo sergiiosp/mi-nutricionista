@@ -22,6 +22,9 @@
   import { rachas } from '../lib/logros.js';
   import PropuestaSemana from '../components/PropuestaSemana.svelte';
   import Valorar from '../components/Valorar.svelte';
+  import Anillos from '../components/Anillos.svelte';
+  import FotoReceta from '../components/FotoReceta.svelte';
+  import { sumarDias } from '../lib/planificador.js';
 
   const hoy = hoyISO();
   const objetivos = $derived(calcularObjetivos($estado.perfil));
@@ -115,16 +118,62 @@
   }
   const POR_QUE_SESION = { caminar: 'Suma pasos sin cargar las piernas', popular: 'Tu carrera: sal a tu ritmo objetivo', recuperacion: 'Movilidad suave para soltar' };
 
-  const CONSEJOS = [
-    'Llena medio plato de verdura: aporta volumen, fibra y casi nada de calorías.',
-    'Si un día te sales del plan, no compenses al siguiente: vuelve al menú y listo.',
-    'Reparte la proteína entre todas las comidas: tu músculo la aprovecha mejor.',
-    'Mide el aceite con cuchara: es sano, pero muy calórico.',
-    'Duerme 7-8 horas: dormir poco dispara el hambre y empeora la recuperación.',
-    'Las verduras congeladas son tan nutritivas como las frescas y te ahorran tiempo.',
-    'Camina: 8.000-10.000 pasos al día suman mucho gasto sin darte más hambre.',
-  ];
-  const consejo = CONSEJOS[new Date().getDate() % CONSEJOS.length];
+  // Momento del día: Hoy cambia por la mañana, por la tarde y por la noche
+  const momento = $derived(ahora < '12:00' ? 'manana' : ahora < '20:30' ? 'tarde' : 'noche');
+  const cerrado = $derived(d.comidas.length > 0 && d.comidas.every((c) => c.situacion !== 'pendiente'));
+  const sesPrincipal = $derived(sesionesHoy.find((s) => !['carrera'].includes(s.tipo)) || null);
+  const regPrincipal = $derived(sesPrincipal ? $estado.hyrox?.registros?.[sesPrincipal.id] : null);
+  const minus = (t) => (t ? t[0].toLowerCase() + t.slice(1) : t);
+  const COLOR = { kcal: '#b4e35a', p: 'var(--coral)', e: '#a08cff' };
+
+  // Una frase que resume el día (lo que un coach te diría al abrir la app)
+  const titular = $derived.by(() => {
+    const pre = d.comidas.find((c) => c.etiqueta === 'pre' && c.situacion === 'pendiente');
+    const post = d.comidas.find((c) => c.etiqueta === 'post' && c.situacion === 'pendiente');
+    const pOk = d.consumido.p >= d.objetivo.p * 0.9;
+    if (cerrado && entrenoHoy && sesPrincipal && !regPrincipal && sesPrincipal.tipo !== 'caminar') return { t: 'Comidas hechas: te queda la sesión', s: `${capital(minus(sesPrincipal.titulo.split(':')[0]))} a las ${sesPrincipal.hora}` };
+    if (cerrado) return { t: pOk ? 'Día cerrado y proteína cumplida' : 'Día cerrado', s: `${entero(d.consumido.kcal)} kcal y ${Math.round(d.consumido.p)} g de proteína de ${Math.round(d.objetivo.p)} g` };
+    const carrera = sesionesHoy.find((x) => x.tipo === 'popular');
+    if (carrera) return { t: 'Hoy es tu carrera', s: `Sales a las ${carrera.hora}: desayuno de siempre 2-3 h antes y a disfrutar` };
+    if (d.dia?.viaje) return { t: 'Día de viaje', s: 'Come fuera con cabeza: mira qué pedir según el sitio' };
+    if (entrenoHoy && sesPrincipal && !regPrincipal && sesPrincipal.tipo !== 'caminar') {
+      const partes = [pre && `${nombreFranja(pre).toLowerCase()} pre a las ${pre.hora}`, post && `${nombreFranja(post).toLowerCase()} de recuperación a las ${post.hora}`].filter(Boolean);
+      return { t: `Hoy toca ${minus(sesPrincipal.titulo.split(':')[0])} a las ${sesPrincipal.hora}`, s: partes.length ? capital(partes.join(' y ')) : `${sesPrincipal.duracion} min` };
+    }
+    if (entrenoHoy && regPrincipal) return { t: 'Sesión hecha: toca recuperar', s: 'Proteína en lo que queda y a dormir pronto' };
+    if (sesPrincipal?.tipo === 'caminar') return { t: 'Hoy toca caminar', s: 'Suma pasos sin cargar las piernas' };
+    if (entrenoHoy) return { t: 'Hoy entrenas', s: sesion ? `A las ${sesion.inicio}` : 'Más hidratos y kcal que un día de descanso' };
+    return { t: 'Día de descanso', s: 'Camina, estira y llega a tu proteína' };
+  });
+  const anillos = $derived([
+    { valor: d.consumido.kcal, meta: d.objetivo.kcal, color: COLOR.kcal },
+    { valor: d.consumido.p, meta: d.objetivo.p, color: COLOR.p },
+    ...(entrenoHoy && sesPrincipal ? [{ valor: regPrincipal ? 1 : 0, meta: 1, color: COLOR.e }] : []),
+  ]);
+
+  // Mañana: lo primero que toca (para la noche y el cierre del día)
+  const manana = $derived.by(() => {
+    const f = sumarDias(hoy, 1);
+    const dia = $estado.plan?.dias.find((x) => x.fecha === f);
+    const ses = sesionesDia($estado, f).find((x) => x.tipo !== 'carrera');
+    return { primera: dia?.comidas[0], ses };
+  });
+
+  // Lo ya hecho antes de «Ahora» se pliega en una fila (se despliega al tocar)
+  let verHechas = $state(false);
+  const esHecho = (it) => (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || (it.tipo === 'hyrox' && $estado.hyrox?.registros?.[it.s.id]?.estado === 'completa') || (it.tipo === 'sup' && !!tomadas[it.x.id]);
+  const hechasAntes = $derived(resto.filter((it, i) => i < posAhora && esHecho(it)));
+  const plegarHechas = $derived(hechasAntes.length >= 2 && !verHechas);
+  const kcalHechas = $derived(Math.round(hechasAntes.reduce((t, it) => t + (it.tipo === 'comida' ? macrosComida(it.c.situacion === 'hecha' && it.c.registro?.ingredientes ? it.c.registro.ingredientes : it.c.ingredientes || []).kcal * (it.c.situacion === 'saltada' || it.c.situacion === 'sobra' ? 0 : 1) : it.tipo === 'extra' ? it.x.macros.kcal : 0), 0)));
+  // Solo se pregunta «¿Qué tal estaba?» por la última comida hecha sin valorar (una cada vez)
+  const sinValorar = $derived(resto.filter((it) => it.tipo === 'comida' && it.c.situacion === 'hecha' && recetaPorId[it.c.recetaId] && !($estado.favoritas || []).includes(it.c.recetaId) && !($estado.perfil.recetasNo || []).includes(it.c.recetaId)).at(-1));
+  const nombreHecho = (it) => (it.tipo === 'comida' ? nombreFranja(it.c) : it.tipo === 'sup' ? it.x.texto.split(' ')[0] : it.tipo === 'hyrox' ? 'entreno' : it.x.nombre);
+  const resumenHechas = $derived.by(() => {
+    const n = hechasAntes.map(nombreHecho);
+    const txt = n.length > 3 ? `${n.slice(0, 3).join(', ')} y ${n.length - 3} más` : n.length > 1 ? `${n.slice(0, -1).join(', ')} y ${n.at(-1)}` : n[0];
+    return capital(txt.toLowerCase());
+  });
+
 
   function añadirSugerencia(op) {
     for (const it of op.items) {
@@ -135,36 +184,35 @@
 </script>
 
 <section class="hoy">
-  <header class="saludo">
-    <p>{capital(fechaLarga(hoy))}</p>
-    <h1>{saludo()}{$estado.perfil.nombre ? `, ${$estado.perfil.nombre}` : ''}</h1>
+  <header class="cab-dia">
+    <p class="fecha">{capital(fechaLarga(hoy))} · {saludo().toLowerCase()}{$estado.perfil.nombre ? `, ${$estado.perfil.nombre}` : ''}</p>
+    <h1 class="titular">{titular.t}</h1>
+    {#if titular.s}<p class="sub-titular">{titular.s}</p>{/if}
   </header>
 
   <PropuestaSemana />
 
-  <!-- Panel: lo esencial de un vistazo; cada bloque se toca para ver el detalle -->
-  <div class="panel">
-    <button class="bloque s-comida" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} onclick={() => alternar('comida')}>
-      <span class="b-cab"><Icono n="utensils" tam={15} grosor={2.2} /> Comida</span>
-      <b class="b-num cifra">{entero(d.consumido.kcal)}</b>
-      <span class="b-sub">de {entero(d.objetivo.kcal)} kcal</span>
-      <span class="b-pista" aria-hidden="true"><span style="--p:{listo ? Math.min(100, (d.consumido.kcal / d.objetivo.kcal) * 100) : 0}%"></span></span>
-      <span class="b-sub">P {Math.round(d.consumido.p)}/{Math.round(d.objetivo.p)} g</span>
-    </button>
-    <button class="bloque s-entreno" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} onclick={() => alternar('entreno')}>
-      <span class="b-cab"><Icono n="dumbbell" tam={15} grosor={2.2} /> Entreno</span>
-      <b class="b-num b-texto">{entrenoHoy ? (sesionesHoy[0]?.titulo.split(':')[0] || 'Entreno') : 'Descanso'}</b>
-      <span class="b-sub">{#if !entrenoHoy}recupera y camina{:else if sesionesHoy[0]}{sesionesHoy[0].hora} · {sesionesHoy[0].duracion} min{:else if sesion}a las {sesion.inicio}{/if}</span>
-      {#if sesionHecha}<span class="b-ok"><Icono n="check" tam={13} grosor={2.8} /> hecha</span>{/if}
-    </button>
-    <a class="bloque s-progreso" href="#progreso">
-      <span class="b-cab"><Icono n="chart-column" tam={15} grosor={2.2} /> Semana</span>
-      <!-- Semana recién empezada: lo que toca, no un «0/4» que parece un suspenso -->
-      <b class="b-num cifra">{semanaEntreno ? (semanaEntreno.hechas ? `${semanaEntreno.hechas}/${semanaEntreno.total}` : semanaEntreno.total) : r.registro}</b>
-      <span class="b-sub">{semanaEntreno ? (semanaEntreno.hechas ? 'sesiones hechas' : 'sesiones esta semana') : r.registro === 1 ? 'día seguido' : 'días seguidos'}</span>
-      {#if tend}<span class="b-sub">{tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem</span>{/if}
+  <!-- El día en anillos: kcal, proteína y entreno; cada fila se toca para ver el detalle -->
+  <section class="resumen-dia s-comida" aria-label="Tu día en cifras">
+    <Anillos {anillos} tam={124} grosor={13} />
+    <div class="r-filas">
+      <button class="r-fila" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} style="--c:{COLOR.kcal}" onclick={() => alternar('comida')}>
+        <small>Kcal</small><b class="cifra">{entero(d.consumido.kcal)}<span>/{entero(d.objetivo.kcal)}</span></b>
+      </button>
+      <button class="r-fila" class:activo={abierto === 'comida'} style="--c:{COLOR.p}" onclick={() => alternar('comida')}>
+        <small>Proteína</small><b class="cifra">{Math.round(d.consumido.p)}<span>/{Math.round(d.objetivo.p)} g</span></b>
+      </button>
+      <button class="r-fila" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} style="--c:{COLOR.e}" onclick={() => alternar('entreno')}>
+        <small>{entrenoHoy ? 'Entreno' : 'Descanso'}</small>
+        <b class="r-texto">{#if !entrenoHoy}recupera y camina{:else if regPrincipal}hecho{:else if sesPrincipal}{sesPrincipal.hora} · {sesPrincipal.duracion} min{:else if sesion}a las {sesion.inicio}{:else}hoy{/if}</b>
+      </button>
+    </div>
+    <a class="r-semana s-progreso" href="#progreso">
+      <Icono n="chart-column" tam={14} grosor={2.2} />
+      {#if semanaEntreno}{semanaEntreno.hechas}/{semanaEntreno.total} sesiones esta semana{:else}{r.registro} {r.registro === 1 ? 'día' : 'días'} seguidos{/if}{#if tend} · {tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem{/if}
+      <Icono n="chevron-right" tam={14} />
     </a>
-  </div>
+  </section>
 
   {#if abierto === 'comida'}
     <section class="detalle s-comida" aria-label="Detalle de la comida de hoy" transition:slide={{ duration: 200 }}>
@@ -254,13 +302,37 @@
       <div class="s-entreno"><TarjetaSesion sesion={proximo.s} registro={$estado.hyrox?.registros?.[proximo.s.id]} /></div>
     {/if}
   {:else if d.comidas.length}
-    <div class="tarjeta completo s-comida"><Icono n="circle-check" tam={22} /> <span><b>Día completado.</b> Todas las comidas registradas.</span></div>
+    <section class="cierre" aria-label="Cierre del día">
+      <div class="ci-cab"><Icono n="moon" tam={18} grosor={2.2} /> <b>Cierre del día</b></div>
+      <div class="ci-datos">
+        <div style="--c:{COLOR.kcal}"><small>Kcal</small><b class="cifra">{entero(d.consumido.kcal)}</b><span>{Math.abs(d.consumido.kcal - d.objetivo.kcal) <= d.objetivo.kcal * 0.07 ? 'en tu objetivo' : d.consumido.kcal > d.objetivo.kcal ? `+${entero(d.consumido.kcal - d.objetivo.kcal)} sobre el objetivo` : `${entero(d.objetivo.kcal - d.consumido.kcal)} por debajo`}</span></div>
+        <div style="--c:{COLOR.p}"><small>Proteína</small><b class="cifra">{Math.round(d.consumido.p)} g</b><span>{d.consumido.p >= d.objetivo.p * 0.9 ? 'cumplida' : `faltan ${Math.round(d.objetivo.p - d.consumido.p)} g`}</span></div>
+      </div>
+      {#if manana.primera || manana.ses}
+        <p class="ci-manana"><b>Mañana:</b> {#if manana.ses}{minus(manana.ses.titulo.split(':')[0])} a las {manana.ses.hora}{manana.primera ? ' · ' : ''}{/if}{#if manana.primera}desayuno a las {manana.primera.hora}: {recetaPorId[manana.primera.recetaId]?.nombre}{/if}</p>
+      {/if}
+    </section>
   {/if}
 
   {#if resto.length}
     <h2 class="seccion">Tu día</h2>
     <ol class="linea-dia">
+      {#if plegarHechas}
+        <li class="paso hecho plegadas">
+          <span class="t-hora cifra">{hechasAntes[0].hora}</span>
+          <span class="t-nodo" aria-hidden="true"><Icono n="check" tam={11} grosor={3} /></span>
+          <div class="t-cuerpo">
+            <button class="fila hechas" onclick={() => (verHechas = true)} aria-expanded="false">
+              <span class="f-fotos">{#each hechasAntes.filter((it) => it.tipo === 'comida').slice(0, 3) as it (it.c.franja)}<FotoReceta receta={recetaPorId[it.c.recetaId]} alto={30} redondeo={9} />{/each}</span>
+              <span class="f-txt"><small>Hecho · {entero(kcalHechas)} kcal</small><b>{resumenHechas}</b></span>
+              <Icono n="chevron-down" tam={18} />
+            </button>
+            {#if sinValorar && hechasAntes.includes(sinValorar)}<Valorar id={sinValorar.c.recetaId} compacto />{/if}
+          </div>
+        </li>
+      {/if}
       {#each resto as it, i (it.tipo + (it.c?.franja || it.s?.id || it.x?.id || it.x?.texto || i))}
+        {#if !(plegarHechas && hechasAntes.includes(it))}
         {#if i === posAhora}<li class="ahora" aria-label="Ahora, {ahora}"><span class="t-hora cifra">{ahora}</span><span class="t-ahora">Ahora</span></li>{/if}
         {@const reg = it.tipo === 'hyrox' ? $estado.hyrox?.registros?.[it.s.id] : null}
         {@const hecho = (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || reg?.estado === 'completa' || (it.tipo === 'sup' && !!tomadas[it.x.id])}
@@ -271,7 +343,7 @@
             {#if it.tipo === 'comida'}
               <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={false} compacta />
               {#if !hecho && porQue(it.c)}<p class="t-porque">{porQue(it.c)}</p>
-              {:else if it.c.situacion === 'hecha' && recetaPorId[it.c.recetaId]}<Valorar id={it.c.recetaId} compacto />{/if}
+              {:else if it === sinValorar}<Valorar id={it.c.recetaId} compacto />{/if}
             {:else if it.tipo === 'hyrox'}
               <button class="fila" onclick={() => abrirHoja('sesion', { id: it.s.id })}>
                 <span class="f-ic" class:ok={reg?.estado === 'completa'}><Icono n={reg?.estado === 'completa' ? 'check' : 'dumbbell'} tam={15} grosor={2.4} /></span>
@@ -285,12 +357,10 @@
                 <span class="f-txt"><small>Entreno</small><b>{deportes.map((x) => x.nombre).join(', ') || 'Tu sesión'}</b></span>
               </div>
             {:else if it.tipo === 'sup'}
-              <button class="fila toma" class:tomado={tomadas[it.x.id]} aria-pressed={!!tomadas[it.x.id]} onclick={() => alternarToma(hoy, it.x.id)}>
-                <span class="f-ic" class:ok={tomadas[it.x.id]}>{#if tomadas[it.x.id]}<Icono n="check" tam={15} grosor={2.4} />{:else}<Icono e={it.x.emoji} tam={15} grosor={2.4} />{/if}</span>
-                <span class="f-txt"><small>Suplemento</small><b>{it.x.texto}</b></span>
-                <span class="f-dato">{tomadas[it.x.id] ? 'Tomado' : 'Marcar'}</span>
+              <button class="chip-toma" class:tomado={tomadas[it.x.id]} aria-pressed={!!tomadas[it.x.id]} title={it.x.porque} onclick={() => alternarToma(hoy, it.x.id)}>
+                {#if tomadas[it.x.id]}<Icono n="check" tam={14} grosor={2.6} />{:else}<Icono n="pill" tam={14} grosor={2.2} />{/if}
+                {it.x.texto}<small>{tomadas[it.x.id] ? 'tomado' : 'toca para marcar'}</small>
               </button>
-              {#if !hecho && it.x.porque}<p class="t-porque">{it.x.porque}</p>{/if}
             {:else if it.tipo === 'extra'}
               <div class="fila">
                 <span class="f-ic ok"><Icono n="check" tam={15} grosor={2.4} /></span>
@@ -301,19 +371,64 @@
             {/if}
           </div>
         </li>
+        {/if}
       {/each}
+      {#if verHechas && hechasAntes.length >= 2}<li class="replegar-li"><button class="replegar-hechas" onclick={() => (verHechas = false)}><Icono n="chevron-up" tam={15} /> Plegar lo hecho</button></li>{/if}
       {#if posAhora === resto.length}<li class="ahora" aria-label="Ahora, {ahora}"><span class="t-hora cifra">{ahora}</span><span class="t-ahora">Ahora</span></li>{/if}
     </ol>
     {#each d.dia?.consejos || [] as c (c)}<p class="nota-dia"><Icono n="info" tam={16} /> {c}</p>{/each}
   {/if}
 
-  <NotaDia fecha={hoy} />
-  <div class="consejo"><Icono n="lightbulb" tam={18} /><p>{consejo}</p></div>
+  {#if momento === 'noche' || cerrado}<NotaDia fecha={hoy} />{/if}
 </section>
 
 <style>
-  .saludo p { margin: 8px 0 0; color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
-  .saludo h1 { margin: 2px 0 16px; }
+  /* Cabecera: la fecha pequeña y el titular del día */
+  .cab-dia { margin: 6px 0 16px; }
+  .fecha { margin: 0; color: var(--texto-2); font-weight: 600; font-size: 0.84rem; }
+  .titular { margin: 4px 0 0; font-size: 1.7rem; line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
+  .sub-titular { margin: 6px 0 0; color: var(--texto-2); font-size: 0.92rem; line-height: 1.35; }
+
+  /* El día en anillos */
+  .resumen-dia { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 18px; padding: 16px; border-radius: 26px; background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 16%, transparent); }
+  .r-filas { display: grid; gap: 4px; min-width: 0; }
+  .r-fila { display: grid; justify-items: start; padding: 4px 8px; margin-left: -8px; border: 0; border-radius: 10px; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .r-fila.activo { background: var(--superficie-2); }
+  .r-fila small { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
+  .r-fila small::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+  .r-fila b { font-size: 1.25rem; line-height: 1.1; color: var(--c); }
+  .r-fila b span { font-size: 0.78rem; font-weight: 700; color: var(--texto-3); margin-left: 1px; }
+  .r-fila .r-texto { font-size: 0.95rem; font-weight: 700; }
+  .r-semana { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--linea); color: var(--texto-2); font-size: 0.8rem; font-weight: 600; text-decoration: none; }
+  .r-semana :global(svg:first-child) { color: var(--primario); }
+  .r-semana :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
+
+  /* Cierre del día */
+  .cierre { margin-top: 12px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--lila) 22%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
+  .ci-cab { display: flex; align-items: center; gap: 8px; color: var(--lila); }
+  .ci-cab b { color: var(--texto); }
+  .ci-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .ci-datos div { display: grid; }
+  .ci-datos small { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
+  .ci-datos b { font-size: 1.5rem; color: var(--c); line-height: 1.1; }
+  .ci-datos span { font-size: 0.78rem; color: var(--texto-2); }
+  .ci-manana { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--linea); font-size: 0.86rem; color: var(--texto-2); }
+  .ci-manana b { color: var(--texto); }
+
+  /* Lo hecho, plegado */
+  .fila.hechas { cursor: pointer; }
+  .fila.hechas > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
+  .f-fotos { display: flex; flex-shrink: 0; padding-left: 4px; }
+  .f-fotos :global(.foto) { width: 30px; box-shadow: 0 0 0 2px var(--superficie); }
+  .f-fotos :global(.foto + .foto) { margin-left: -10px; }
+  .replegar-li { list-style: none; padding: 0 0 10px 68px; }
+  .replegar-hechas { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--texto-3); font: inherit; font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+
+  /* Suplementos: un chip pequeño en su hora */
+  .chip-toma { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 8px; padding: 0 14px 0 12px; border: 1px dashed color-mix(in srgb, var(--primario) 45%, transparent); border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
+  .chip-toma :global(svg) { color: var(--primario); }
+  .chip-toma small { font-weight: 600; font-size: 0.72rem; color: var(--texto-3); }
+  .chip-toma.tomado { border-style: solid; border-color: transparent; background: var(--primario-claro); color: var(--primario-fuerte); }
 
   .detalle { margin-top: 10px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .detalle .marcador { margin-top: 0; }
@@ -336,9 +451,6 @@
   .t-ahora { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 800; color: var(--primario); }
   .t-ahora::before { content: ""; width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 25%, transparent); }
   .t-ahora::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--primario), transparent); }
-  .fila.toma { cursor: pointer; }
-  .fila.toma .f-dato { font-size: 0.78rem; color: var(--primario-fuerte); }
-  .fila.toma.tomado .f-dato { color: var(--texto-3); }
   .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
   .f-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
@@ -425,9 +537,6 @@
   .txt small:first-child { font-weight: 700; font-size: 0.74rem; color: var(--texto-3); }
   .nota-dia { display: flex; gap: 8px; align-items: flex-start; }
   .nota-dia :global(.icono) { color: var(--primario); margin-top: 2px; }
-  .consejo { display: flex; gap: 10px; align-items: flex-start; margin: 18px 0 0; padding: 14px; border-radius: 18px; border: 1px dashed var(--borde); color: var(--texto-2); font-size: 0.84rem; }
-  .consejo :global(.icono) { color: var(--amarillo); margin-top: 1px; }
-  .consejo p { margin: 0; }
   .vacia { text-align: center; }
   .vacia-ic { display: inline-grid; place-items: center; width: 60px; height: 60px; border-radius: 20px; background: var(--primario-claro); color: var(--primario); }
 </style>
