@@ -18,7 +18,7 @@ const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = process.argv[2] === 'base';
 const FILTRO = BASE ? process.argv[3] : process.argv[2];
 const DIR = path.join(RAIZ, 'pantallas');
-const SALIDA = path.join(DIR, BASE ? 'base' : 'actual');
+const SALIDA = path.join(DIR, (process.env.TEMA === 'claro' ? 'claro-' : '') + (BASE ? 'base' : 'actual'));
 const UMBRAL = 0.002; // más de un 0,2 % de píxeles distintos = la pantalla ha cambiado
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.rmSync(SALIDA, { recursive: true, force: true });
@@ -72,7 +72,7 @@ await cdp('Page.addScriptToEvaluateOnNewDocument', { source: `
   })();` });
 await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
 await cdp('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
-await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }, { name: 'prefers-color-scheme', value: 'dark' }] });
+await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }, { name: 'prefers-color-scheme', value: process.env.TEMA === 'claro' ? 'light' : 'dark' }] });
 await cdp('Page.enable');
 await cdp('Page.navigate', { url: `${URL_APP}#hoy` });
 await espera(2500);
@@ -84,7 +84,7 @@ await js(`
   localStorage.clear();
   const datos = JSON.stringify({ version: 2, perfil, plan: null, registros: {}, saltadas: {}, pesos, medidas: [{ fecha: '2026-09-21', cintura: 86 }, { fecha: '2026-10-12', cintura: 84.5 }],
     hyrox: { config: { inicio: '2026-09-22', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1440 }, enfoque: 'equilibrado', exigencia: 'normal' }, registros: {}, movidas: {} },
-    propuestasVistas: { 'media-2026-10-25': true } });
+    propuestasVistas: { 'media-2026-10-25': true }, tema: ${JSON.stringify(process.env.TEMA || 'oscuro')} });
   // La app guarda su estado al salir de la página: los datos de ejemplo se escriben después
   localStorage.setItem('mi-nutricionista:v1', datos);
   addEventListener('pagehide', () => localStorage.setItem('mi-nutricionista:v1', datos));
@@ -172,7 +172,7 @@ await ir('#hoy'); await foto('hoy-cerrado', 3);
 // ── Comparación con la base (en el propio navegador, con un canvas) ───────
 let cambiadas = [];
 if (!BASE) {
-  const dirBase = path.join(DIR, 'base');
+  const dirBase = path.join(DIR, (process.env.TEMA === 'claro' ? 'claro-' : '') + 'base');
   const dirDif = path.join(DIR, 'diferencias');
   fs.rmSync(dirDif, { recursive: true, force: true });
   fs.mkdirSync(dirDif, { recursive: true });
