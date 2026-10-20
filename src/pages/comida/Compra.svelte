@@ -81,21 +81,20 @@
 {#if !lista}
   <div class="tarjeta vacia"><Emoji e="🛒" tam={56} /><p>Crea un menú y te preparo la lista.</p></div>
 {:else}
-  <div class="panel">
-    <div class="bloque bajo"><span class="b-cab"><Icono n="receipt" tam={15} grosor={2.2} /> Ticket</span><b class="b-num medio cifra">{euros(ticket)}</b><span class="b-sub">estimado</span></div>
-    <div class="bloque bajo"><span class="b-cab"><Icono n="shopping-cart" tam={15} grosor={2.2} /> Te falta</span><b class="b-num medio cifra">{euros(falta)}</b><span class="b-sub">por coger</span></div>
-    <div class="bloque bajo"><span class="b-cab"><Icono n="check" tam={15} grosor={2.4} /> Cogido</span><b class="b-num medio cifra">{progreso} %</b><span class="b-pista" aria-hidden="true"><span style="--p:{progreso}%"></span></span></div>
-  </div>
-  <div class="tarjeta resumen">
-    <p class="coste-real">Lo que comes de verdad esta semana cuesta <b>{euros(lista.costeConsumo)}</b>: el resto del ticket queda en la despensa.</p>
-    <label class="interruptor"><input type="checkbox" checked={$estado.compra.soloRestantes} onchange={(ev) => actualizar((e) => { e.compra.soloRestantes = ev.currentTarget.checked; })} />
-      <span><b>Solo lo que queda de semana</b><small>Desde hoy hasta el final del menú</small></span></label>
-    <div class="acciones-fila">
-      <button class="boton boton-peq" onclick={compartir}><Icono n="share" tam={16} /> Compartir lista</button>
-      <button class="boton boton-sec boton-peq" onclick={() => actualizar((e) => { e.compra.marcados = {}; })}><Icono n="refresh-cw" tam={16} /> Desmarcar</button>
+  <!-- El ticket: una cifra, lo que llevas cogido y las dos acciones; lo demás, al tocar -->
+  <section class="ticket">
+    <div class="tk-cab">
+      <span class="tk-lbl"><Icono n="receipt" tam={15} grosor={2.2} /> {progreso && progreso < 100 ? 'Te falta por coger' : 'Ticket estimado'}</span>
+      <label class="tk-solo"><input type="checkbox" checked={$estado.compra.soloRestantes} onchange={(ev) => actualizar((e) => { e.compra.soloRestantes = ev.currentTarget.checked; })} /> Solo lo que queda</label>
     </div>
-    <p class="pie-nota">Toca <Icono n="house" tam={14} /> en lo que ya tengas en casa y no se sumará al ticket. Precios de Mercadona online del {new Date(PRECIOS_INFO.actualizado).toLocaleDateString('es-ES')}.</p>
-  </div>
+    <b class="tk-total cifra">{euros(progreso && progreso < 100 ? falta : ticket)}</b>
+    <div class="tk-pista" aria-hidden="true"><span style="--p:{progreso}%"></span></div>
+    <p class="tk-sub"><span class="cifra">{comprar.filter((i) => marcados[i.id]).length}/{comprar.length}</span> cogidos{#if progreso && progreso < 100} · ticket {euros(ticket)}{/if} · comes <b class="cifra">{euros(lista.costeConsumo)}</b> esta semana</p>
+    <div class="tk-acciones">
+      <button class="boton" onclick={compartir}><Icono n="share" tam={17} /> Compartir lista</button>
+      <button class="boton boton-sec tk-icono" aria-label="Desmarcar todo" onclick={() => actualizar((e) => { e.compra.marcados = {}; })}><Icono n="refresh-cw" tam={17} /></button>
+    </div>
+  </section>
 
   {#each [...grupos, ...(extras.length ? [{ nombre: 'Añadido por ti', items: extras }] : []), ...(lista.despensa.length ? [{ nombre: 'Despensa · revisa si te queda', items: lista.despensa }] : [])] as g (g.nombre)}
     {@const hechos = g.items.filter((i) => marcados[i.id] || enCasa[i.id]).length}
@@ -163,14 +162,28 @@
     <h2 class="pasillo">Especias y condimentos</h2>
     <div class="chips-lista">{#each lista.especias as e (e.id)}<span class="chip-sup">{e.nombre}</span>{/each}</div>
   {/if}
+  <p class="pie-nota fuente-precios">Toca <Icono n="house" tam={13} /> en lo que ya tengas y no suma al ticket · precios de Mercadona del {new Date(PRECIOS_INFO.actualizado).toLocaleDateString('es-ES')}</p>
 {/if}
 
 <style>
   /* Pasillos y lista (antes en app.css) */
   .pasillo { font-size: 0.8rem; color: var(--texto-2); margin: 22px 4px 8px; font-weight: 800; }
   .lista-compra { list-style: none; margin: 0; padding: 4px 0; background: var(--superficie); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
-  .coste-real { margin: 0 0 6px; font-size: 0.86rem; color: var(--texto-2); }
-  .coste-real b { color: var(--texto); }
+  /* Ticket */
+  .ticket { padding: 16px; border-radius: 24px; background: radial-gradient(120% 100% at 100% 0%, var(--halo), transparent 65%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 20%, transparent); }
+  .tk-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .tk-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--primario-fuerte); }
+  .tk-solo { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; font-size: 0.76rem; font-weight: 600; color: var(--texto-2); cursor: pointer; }
+  .tk-solo input { width: 18px; height: 18px; accent-color: var(--primario); }
+  .tk-total { display: block; margin: 2px 0 10px; font-size: 3rem; line-height: 1; font-weight: 800; letter-spacing: -0.05em; }
+  .tk-pista { height: 8px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .tk-pista span { display: block; width: 100%; height: 100%; border-radius: 999px; background: var(--hero); transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.6s var(--ease-out); }
+  .tk-sub { margin: 8px 0 14px; font-size: 0.8rem; color: var(--texto-2); }
+  .tk-sub b { color: var(--texto); font-weight: 700; }
+  .tk-acciones { display: flex; gap: 8px; }
+  .tk-acciones .boton:first-child { flex: 1; }
+  .tk-icono { width: 52px; padding: 0; flex-shrink: 0; }
+  .fuente-precios { margin-top: 18px; text-align: center; }
   .pasillo-cab { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 48px; margin: 18px 0 6px; padding: 0 4px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .pc-nombre { flex: 1; display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.95rem; }
   .pc-nombre :global(svg) { color: var(--primario); }

@@ -191,9 +191,11 @@ if (!BASE) {
 }
 
 ws.close();
+const cerrado = new Promise((r) => nav.once('exit', r));
 nav.kill();
+await Promise.race([cerrado, espera(5000)]);
 await servidor.close();
-fs.rmSync(perfil, { recursive: true, force: true });
+try { fs.rmSync(perfil, { recursive: true, force: true, maxRetries: 8, retryDelay: 400 }); } catch { /* Edge aún suelta el perfil: lo limpia Windows */ }
 if (BASE) console.log(`${hechas.length} capturas de base en pantallas/base/`);
 else {
   console.log(`${hechas.length} capturas comparadas: ${cambiadas.length ? `${cambiadas.length} han cambiado → pantallas/informe.html` : 'todo igual'}`);

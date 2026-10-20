@@ -229,6 +229,131 @@ export const FOTOS_RECETAS = {
   "autor": "Tamorlan",
   "licencia": "CC BY-SA 3.0",
   "fuente": "https://commons.wikimedia.org/wiki/File:Bocadillo_Chorizo_-_Madrid.JPG"
+ },
+ "ensalada-alubias-atun-huevo": {
+  "autor": "Katrin Gilger",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Insalata_di_Fagioli_e_Tonno_%E2%80%93_Bohnensalat_mit_Thunfisch_(7327273414).jpg"
+ },
+ "pollo-airfryer-arroz-brocoli": {
+  "autor": "Discover Lehigh Valley, PA",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_And_Broccoli_@_Bamboo_Asian_Cuisine.jpg"
+ },
+ "lomo-patata-microondas-judias": {
+  "autor": "Peachyeung316",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Black_porkchops_with_beans_and_baked_tomato_and_baked_potato.jpg"
+ },
+ "salmon-airfryer-arroz-esparragos": {
+  "autor": "Daderot",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Grilled_salmon_and_asparagus_on_rice_-_Boston,_Massachusetts.jpg"
+ },
+ "tostada-lomo-embuchado": {
+  "autor": "Ewan Munro from London, UK",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Lomo_ib%C3%A9rico_cebo.jpg"
+ },
+ "yogur-pistachos-frutos-rojos": {
+  "autor": "Missvain",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Granola_and_yogurt_-_Bubbles_%2B_Brunch_2018_-_Sarah_Stierch_02.jpg"
+ },
+ "porridge-microondas-almendra": {
+  "autor": "Ella Olsson from Stockholm, Sweden",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Banana_Oatmeal_Breakfast_Bowl_(44302857265).jpg"
+ },
+ "sopa-pollo-fideos": {
+  "autor": "Daderot",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_noodle_soup_-_Massachusetts_2.jpg"
+ },
+ "sopa-cocido-garbanzos": {
+  "autor": "Javier Lastras from España/Spain",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Sopa_de_Cocido_Madrile%C3%B1o_(4334544132).jpg"
+ },
+ "crema-verduras-pollo-huevo": {
+  "autor": "The Spanish Food",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Crema_de_calabaza_asada.jpg"
+ },
+ "crema-calabaza-pavo": {
+  "autor": "SoHome Jacaranda Lilau, So Home Recreation Club (蘇戶康樂會) / PropLuxurians Health S",
+  "licencia": "CC BY-SA 3.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Pumpkin_Cream_Soup.jpg"
+ },
+ "recena-yogur-proteico": {
+  "autor": "Urci dream",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Yogurt_vainilla_soja.jpg"
+ },
+ "recena-cottage-frutos-rojos": {
+  "autor": "Anna",
+  "licencia": "CC BY 3.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Summer_Desert_(176103799).jpeg"
+ },
+ "batido-whey-tortitas": {
+  "autor": "Sandstein",
+  "licencia": "CC BY 3.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Protein_shake.jpg"
+ },
+ "fuera-plancha-patatas": {
+  "autor": "PattayaPatrol",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:DFC_2244_Juicy_grilled_steak_smothered_in_savory_brown_gravy_served_with_roasted_potatoes_saut%C3%A9ed_vegetables_and_a_crisp_mixed_salad.jpg"
+ },
+ "fuera-pasta-arroz-pollo": {
+  "autor": "Jpatokal",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Good_Meat_Cultivated_Chicken_pasta_dish.jpg"
+ },
+ "fuera-pescado-verduras": {
+  "autor": "Luca.favorido",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Grilled_fish_with_vegetables_and_lemon.jpg"
+ },
+ "fuera-tortilla-jamon": {
+  "autor": "Juan Emilio Prades Bel",
+  "licencia": "CC BY 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Bocadillo_de_tortilla_francesa,_pan_con_tomate_y_loncha_de_jam%C3%B3n_serrano_(Espa%C3%B1a).jpg"
+ },
+ "fuera-desayuno-cafeteria": {
+  "autor": "Jorge Gonzalez",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Caf%C3%A9_con_leche_and_tostadas.jpg"
+ },
+ "viaje-yogur-platano-tortitas": {
+  "autor": "Daderot",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Yogurt_with_raisins_and_banana_-_Massachusetts.jpg"
+ },
+ "viaje-wrap-pollo-hummus": {
+  "autor": "Takeaway",
+  "licencia": "CC BY-SA 3.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Smoked_chicken_and_avocado_wrap.jpg"
+ },
+ "yogur-nueces-manzana": {
+  "autor": "Annabelle.Joseph",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Mid-day_snack.JPG"
+ },
+ "tofu-wok-arroz": {
+  "autor": "Andy Li",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Tofu_Kee_Mao_Fried_Rice_-_Nok_Nok_Kitchen_at_The_Cow_2025-03-15.jpg"
+ },
+ "albondigas-pollo-tomate": {
+  "autor": "USDAgov",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:MyPlate_gov_Cultural_Food_(20241025-USDA-FNS-UNK-0055).jpg"
+ },
+ "tortitas-aguacate-huevo": {
+  "autor": "Andy Li",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:NOT_avocado_on_toast_with_fried_egg_-_Black_Mocha_2025-08-12.jpg"
  }
 };
 

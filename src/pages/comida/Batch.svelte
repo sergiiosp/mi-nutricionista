@@ -24,7 +24,7 @@
   <div class="tarjeta intro">
     <div class="intro-cab">
       <b>Cocina una vez, come {batch.dias.length} días</b>
-      <small>Del {fechaCorta(batch.dias[0])} al {fechaCorta(batch.dias.at(-1))}: comidas y cenas. Los desayunos y meriendas se hacen en un momento.</small>
+      <small>{fechaCorta(batch.dias[0])} – {fechaCorta(batch.dias.at(-1))} · comidas y cenas</small>
     </div>
     <div class="cifras">
       <div><b>~{batch.minutos < 60 ? `${batch.minutos} min` : `${Math.floor(batch.minutos / 60)} h ${String(Math.round((batch.minutos % 60) / 5) * 5).padStart(2, '0')}`}</b><small>de cocina</small></div>
@@ -36,8 +36,7 @@
     </div>
   </div>
 
-  <h2 class="seccion">En este orden</h2>
-  <p class="pie-nota">Empieza por lo que más tarda. Mientras se hace, preparas lo siguiente.</p>
+  <h2 class="seccion">En este orden <small class="sec-sub">primero lo que más tarda</small></h2>
   <ol class="b-pasos">
     {#each batch.tareas as t, i (t.titulo + i)}
       <li class="b-paso" class:hecha={hechas[t.titulo]}>
@@ -53,12 +52,13 @@
           <button class="titulo" onclick={() => (abierta = abierta === i ? null : i)} aria-expanded={abierta === i}>
             <b>{t.titulo}</b>
             <small>{t.tipo === 'receta' ? t.detalle : t.lineas.map((l) => l.texto).join(' · ')}</small>
+            <span class="ver">{abierta === i ? 'Ocultar' : 'Cómo hacerlo'} <Icono n={abierta === i ? 'chevron-up' : 'chevron-down'} tam={14} /></span>
           </button>
           <button class="check" class:activo={hechas[t.titulo]} aria-label="Hecho: {t.titulo}" onclick={() => (hechas = { ...hechas, [t.titulo]: !hechas[t.titulo] })}>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
           </button>
         </div>
-        {#if abierta === i || i === 0 && abierta === null}
+        {#if abierta === i}
           <div class="paso-cuerpo">
             {#if t.tipo === 'receta'}
               <p class="ings">{t.ingredientes.map((x) => `${cantidadTexto(x.a, x.g)} ${alimento(x.a).nombre.toLowerCase()}`).join(' · ')}</p>
@@ -93,14 +93,16 @@
     </ul>
   {/if}
 
-  <h2 class="seccion">Conservar y recalentar</h2>
-  <ul class="reglas">
-    {#each CONSERVAR as r (r.texto)}<li><Icono n={r.icono} tam={18} /> <span>{r.texto}</span></li>{/each}
-  </ul>
+  <details class="tarjeta conservar">
+    <summary><Icono n="snowflake" tam={18} /> Conservar y recalentar <Icono n="chevron-down" tam={18} /></summary>
+    <ul class="reglas">
+      {#each CONSERVAR as r (r.texto)}<li><Icono n={r.icono} tam={18} /> <span>{r.texto}</span></li>{/each}
+    </ul>
+  </details>
 {/if}
 
 <style>
-  .intro { display: grid; gap: 12px; background: radial-gradient(120% 100% at 0% 0%, rgb(255 91 31 / 0.18), transparent 65%), var(--superficie); }
+  .intro { display: grid; gap: 12px; background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 65%), var(--superficie); }
   .intro-cab { display: grid; gap: 2px; }
   .intro-cab b { font-size: 1.05rem; }
   .intro-cab small { color: var(--texto-2); font-weight: 600; }
@@ -138,4 +140,13 @@
   .reglas li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; font-size: 0.86rem; line-height: 1.45; color: var(--texto-2); }
   .reglas :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
   .vacia { text-align: center; }
+  .sec-sub { margin-left: 6px; font-size: 0.78rem; font-weight: 600; color: var(--texto-3); }
+  .ver { display: inline-flex; align-items: center; gap: 3px; margin-top: 3px; font-size: 0.74rem; font-weight: 700; color: var(--primario); }
+  .conservar { margin-top: 18px; }
+  .conservar summary { display: flex; align-items: center; gap: 10px; min-height: 28px; font-weight: 700; list-style: none; cursor: pointer; }
+  .conservar summary::-webkit-details-marker { display: none; }
+  .conservar summary :global(svg:first-child) { color: var(--primario); }
+  .conservar summary :global(svg:last-child) { margin-left: auto; color: var(--texto-3); transition: transform 0.2s var(--ease-out); }
+  .conservar[open] summary :global(svg:last-child) { transform: rotate(180deg); }
+  .conservar .reglas { margin-top: 8px; padding: 0; background: none; box-shadow: none; border-radius: 0; }
 </style>

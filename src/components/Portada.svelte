@@ -23,5 +23,5 @@
   .tinte { position: absolute; inset: 0; z-index: 1; background: var(--c); mix-blend-mode: color; opacity: 0.85; }
   .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.3) 0%, rgb(8 8 12 / 0.1) 28%, rgb(8 8 12 / 0.8) 66%, rgb(8 8 12 / 0.94) 100%); }
   .color-real .velo { background: linear-gradient(180deg, rgb(8 8 12 / 0.35) 0%, rgb(8 8 12 / 0) 30%, rgb(8 8 12 / 0.7) 62%, rgb(8 8 12 / 0.92) 100%); }
-  .dentro { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; padding: 18px; }
+  .dentro { position: relative; z-index: 2; flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 18px; }
 </style>

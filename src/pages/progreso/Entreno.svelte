@@ -58,11 +58,21 @@
   </div>
 
   <h2 class="seccion"><Icono n="medal" tam={20} /> Récords</h2>
-  <div class="panel">
-    <div class="bloque bajo"><span class="b-cab">Simulacro</span><b class="b-num b-texto cifra" class:sin-dato={!st.records.mejorSimulacro}>{st.records.mejorSimulacro ? hms(st.records.mejorSimulacro.tiempo) : 'Aún no'}</b><span class="b-sub">{st.records.mejorSimulacro ? 'mejor completo' : 'apunta el tiempo de tu primer simulacro'}</span></div>
-    <div class="bloque bajo"><span class="b-cab">Series</span><b class="b-num b-texto cifra" class:sin-dato={!st.records.mejorSerie}>{st.records.mejorSerie ? `${mmss(st.records.mejorSerie)}` : 'Aún no'}</b><span class="b-sub">{st.records.mejorSerie ? 'min/km más rápido' : 'apunta tu ritmo en las series'}</span></div>
-    <div class="bloque bajo"><span class="b-cab">Sentadilla</span><b class="b-num b-texto cifra" class:sin-dato={!st.records.maxSentadilla}>{st.records.maxSentadilla ? `${st.records.maxSentadilla} kg` : 'Aún no'}</b><span class="b-sub">{st.records.maxSentadilla ? 'máximo' : 'apunta los kilos en una sesión de pierna'}</span></div>
-  </div>
+  {@const recs = [
+    { n: 'Simulacro', v: st.records.mejorSimulacro ? hms(st.records.mejorSimulacro.tiempo) : null, sub: 'mejor completo', falta: 'tiempo de un simulacro' },
+    { n: 'Series', v: st.records.mejorSerie ? mmss(st.records.mejorSerie) : null, sub: 'min/km más rápido', falta: 'ritmo en las series' },
+    { n: 'Sentadilla', v: st.records.maxSentadilla ? `${st.records.maxSentadilla} kg` : null, sub: 'máximo', falta: 'kilos en una sesión de pierna' },
+  ]}
+  {#if recs.some((x) => x.v)}
+    <div class="panel" style="grid-template-columns: repeat({recs.filter((x) => x.v).length}, minmax(0, 1fr))">
+      {#each recs.filter((x) => x.v) as x (x.n)}
+        <div class="bloque bajo"><span class="b-cab">{x.n}</span><b class="b-num b-texto cifra">{x.v}</b><span class="b-sub">{x.sub}</span></div>
+      {/each}
+    </div>
+  {/if}
+  {#if recs.some((x) => !x.v)}
+    <p class="por-estrenar"><Icono n="target" tam={16} /> <span><b>Por estrenar:</b> {recs.filter((x) => !x.v).map((x) => x.n.toLowerCase()).join(' y ')}. Apunta el {recs.filter((x) => !x.v).map((x) => x.falta).join(' o el ')} al registrar.</span></p>
+  {/if}
 
   <div class="tarjeta">
     <b>Tus estaciones</b>
@@ -153,4 +163,7 @@
   .g-ej li { display: flex; justify-content: space-between; gap: 10px; }
   .g-ej span { display: grid; font-weight: 600; }
   .g-ej small { color: var(--texto-2); font-size: 0.74rem; }
+  .por-estrenar { display: flex; gap: 8px; align-items: flex-start; margin: 10px 2px 0; font-size: 0.82rem; color: var(--texto-2); }
+  .por-estrenar b { color: var(--texto); }
+  .por-estrenar :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 1px; }
 </style>
