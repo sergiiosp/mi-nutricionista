@@ -44,6 +44,27 @@ export function estimarCarrera(config, perfil, registros = {}) {
   return { tramos, carreras, estaciones, roxzone, total: carreras + estaciones + roxzone, ritmoCarrera: rit.hyrox, basadoEnMarcas: !rit.estimado || Object.keys(mejores).length > 0 };
 }
 
+/**
+ * Dónde ganas más tiempo: cada estación, las carreras y la roxzone frente al nivel siguiente
+ * (o un 10 % mejor si ya eres avanzado). Devuelve los tramos con más margen, de más a menos.
+ */
+export function oportunidades(config, perfil, est) {
+  const orden = ['principiante', 'intermedio', 'avanzado'];
+  const nivel = NIVELES[config.nivel] || NIVELES.intermedio;
+  const sig = NIVELES[orden[orden.indexOf(config.nivel) + 1]] || null;
+  const ref = sig || { k: nivel.k * 0.9, carrera: nivel.carrera * 0.95, roxzone: nivel.roxzone * 0.8 };
+  const mujer = perfil?.sexo === 'm';
+  const kCat = config.categoria === 'pro' ? PRO : config.categoria === 'doubles' ? DOUBLES : 1;
+  const lista = est.tramos.filter((t) => t.tipo === 'estacion').map((t) => {
+    const objetivo = TIEMPOS_BASE[t.id] * ref.k * (mujer ? 1.05 : 1) * kCat;
+    return { id: t.id, nombre: t.nombre, emoji: t.emoji, seg: t.seg, objetivo, gana: Math.max(0, t.seg - objetivo), real: t.real };
+  });
+  const carreraObj = est.carreras * (ref.carrera / nivel.carrera);
+  lista.push({ id: 'carrera', nombre: 'Los 8 km corriendo', emoji: '🏃', seg: est.carreras, objetivo: carreraObj, gana: Math.max(0, est.carreras - carreraObj) });
+  lista.push({ id: 'roxzone', nombre: 'Transiciones (roxzone)', emoji: '🔁', seg: est.roxzone, objetivo: ref.roxzone * 8, gana: Math.max(0, est.roxzone - ref.roxzone * 8) });
+  return { nivelRef: sig ? sig.nombre : 'un 10 % mejor', lista: lista.filter((x) => x.gana >= 5).sort((a, b) => b.gana - a.gana) };
+}
+
 const BLOQUES_WB = { principiante: '10 bloques de 10 con 3-4 respiraciones de pausa', intermedio: '25-20-20-20-15 con pausas de 5 respiraciones', avanzado: '34-33-33 o del tirón si vas fresco' };
 
 export function estrategia(config, est) {

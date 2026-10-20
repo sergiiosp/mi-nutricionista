@@ -208,23 +208,47 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
 
 const KM_NOMBRE = (km) => (km >= 40 ? 'Maratón' : km >= 20 ? 'Media maratón' : km >= 14 ? `${Math.round(km)} km` : km >= 9 ? '10 km' : `${Math.round(km)} km`);
 
-/** Sesión de una carrera popular con su objetivo (Riegel desde tu 5 km) y cómo repartirla. */
-function sesionCarrera(ev, km, rit) {
+/**
+ * Sesión de una carrera popular con su objetivo (Riegel desde tu 5 km), los pasos por km,
+ * el desayuno, los geles y la bebida: el plan completo del día.
+ */
+function sesionCarrera(ev, km, rit, perfil = null) {
   const seg = Math.round(rit.t5k * Math.pow(km / 5, 1.06));
   const ritmo = seg / km;
+  // Salida 6 s/km más lenta los 3 primeros km y el resto al ritmo que compensa
+  const r1 = ritmo + 6;
+  const r2 = (seg - 3 * r1) / Math.max(1, km - 3);
+  const tiempoEn = (k) => (k <= 3 ? k * r1 : 3 * r1 + (k - 3) * r2);
+  const pasos = [5, 10, 15, 20].filter((k) => k < km).map((k) => `Km ${k}: ${hms(Math.round(tiempoEn(k)))}`).concat(`Meta (${String(km).replace('.', ',')} km): ${hms(seg)}`);
+  // Geles cada 40 min a partir del minuto 40 (si queda carrera para tomarlos)
+  const geles = [];
+  for (let t = 40 * 60; t < seg - 10 * 60; t += 40 * 60) geles.push(Math.round(t / ritmo));
+  const peso = perfil?.peso || 75;
+  const [h, m] = (ev.hora || '09:00').split(':').map(Number);
+  const minDesayuno = (h * 60 + m - 165 + 1440) % 1440;
+  const horaDesayuno = `${String(Math.floor(minDesayuno / 60)).padStart(2, '0')}:${String(minDesayuno % 60).padStart(2, '0')}`;
+  const comer = seg >= 3600 ? [
+    `Desayuno a las ${horaDesayuno} (2 h 45 antes): unos ${Math.round(peso * 1.5)} g de hidratos, poca fibra y poca grasa. Por ejemplo: 2 tostadas con mermelada, un plátano y café`,
+    'De 30 a 15 min antes: medio plátano o un gel y unos sorbos de agua',
+    ...(geles.length ? [`Durante: ${geles.length === 1 ? 'un gel' : `${geles.length} geles`} en el km ${geles.join(' y ')} (cada ~40 min), siempre con agua`] : []),
+    'Bebe un poco en cada avituallamiento, sobre todo si hace calor',
+  ] : ['Desayuno ligero 2 h antes (tostada con mermelada o un plátano) y agua'];
   return {
     tipo: 'popular', titulo: ev.nombre || KM_NOMBRE(km), emoji: '🏁', color: 'primario', rpe: 8,
     duracion: Math.round(seg / 60), distancia: km,
     calentamiento: ['10 min trotando muy suave', '3-4 rectas progresivas de 80 m', 'Movilidad de cadera y tobillos'],
-    bloques: [{ titulo: 'La carrera', lineas: [
-      `Objetivo: ${hms(seg)} (${mmss(ritmo)}/km)`,
-      `Primeros 3 km a ${mmss(ritmo + 6)}/km: la salida engaña`,
-      `Hasta el km ${Math.max(3, Math.round(km - 4))}: estable a ${mmss(ritmo)}/km`,
-      'Los últimos km: si vas bien, aprieta poco a poco',
-      km >= 15 ? 'Bebe en cada avituallamiento y toma un gel o dátiles cada 40-45 min' : 'Bebe un poco en el avituallamiento si hace calor',
-    ] }],
+    bloques: [
+      { titulo: 'La carrera', lineas: [
+        `Objetivo: ${hms(seg)} (${mmss(ritmo)}/km)`,
+        `Primeros 3 km a ${mmss(r1)}/km: la salida engaña`,
+        `Hasta el km ${Math.max(3, Math.round(km - 4))}: estable a ${mmss(r2)}/km`,
+        'Los últimos km: si vas bien, aprieta poco a poco',
+      ] },
+      { titulo: 'Por dónde deberías pasar', lineas: pasos },
+      { titulo: 'Comer y beber', lineas: comer },
+    ],
     vueltaCalma: ['Camina 10 min', 'Estira suave', 'En la primera hora, algo con hidratos y proteína'],
-    notas: ['La noche antes, cena de siempre con algo más de hidratos y nada nuevo. Desayuna 2-3 h antes.'],
+    notas: [km >= 15 ? 'El día antes, carga de hidratos (tu menú ya la lleva) y cena pronto: nada nuevo ni muy graso. Deja ropa, dorsal y geles preparados la noche antes.' : 'La noche antes, cena de siempre con algo más de hidratos y nada nuevo.'],
     ejercicios: [], sinGym: false,
   };
 }
@@ -292,7 +316,7 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
     } else {
       quitar((s) => s.fecha === F);
     }
-    poner({ id: `ev-${ev.id}`, fecha: F, fechaOriginal: F, hora: ev.hora || '09:00', ...sesionCarrera(ev, km, rit) });
+    poner({ id: `ev-${ev.id}`, fecha: F, fechaOriginal: F, hora: ev.hora || '09:00', ...sesionCarrera(ev, km, rit, perfil) });
   }
   // Viajes: cada día, caminar en lugar del entreno (la carrera, si cae en el viaje, se mantiene)
   for (const v of agenda.viajes || []) {

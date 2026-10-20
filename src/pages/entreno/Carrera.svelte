@@ -5,7 +5,7 @@
   import { estado } from '../../stores/estado.js';
   import { abrirHoja } from '../../stores/ui.js';
   import { planDe } from '../../lib/hyrox/index.js';
-  import { estimarCarrera, estrategia, nutricionDiaCarrera, semanaCarrera } from '../../lib/hyrox/carrera.js';
+  import { estimarCarrera, estrategia, nutricionDiaCarrera, semanaCarrera, oportunidades } from '../../lib/hyrox/carrera.js';
   import { ESTACIONES, pesoEstacion, CATEGORIAS } from '../../data/hyrox.js';
   import { hms, mmss } from '../../lib/hyrox/ritmos.js';
   import { hoyISO } from '../../lib/planificador.js';
@@ -16,6 +16,9 @@
   const perfil = $derived($estado.perfil);
   const est = $derived(estimarCarrera(config, perfil, $estado.hyrox.registros));
   const estr = $derived(estrategia(config, est));
+  const opo = $derived(oportunidades(config, perfil, est));
+  const maxGana = $derived(Math.max(1, ...opo.lista.map((x) => x.gana)));
+  const corto = (s) => (s >= 60 ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}` : `${Math.round(s)} s`);
   const sinCafeina = $derived((perfil.condiciones || []).includes('hipertension') || perfil.estres === 'alto');
   const nutri = $derived(nutricionDiaCarrera(perfil, config.horaCarrera || '10:00', est.total / 60, { sinCafeina }));
   const semana = $derived(semanaCarrera(perfil));
@@ -38,6 +41,21 @@
   </div>
 </Portada>
 <p class="pie-nota">{est.basadoEnMarcas ? 'Calculado con tus marcas y tus mejores tiempos registrados.' : 'Estimación según tu nivel: registra tus simulacros con tiempos por estación para afinarla.'}{config.categoria === 'relay' ? ' (Como si hicieras tú todo el recorrido.)' : ''}</p>
+
+{#if opo.lista.length}
+  <h3 class="cab">Dónde ganas más minutos<small>Frente al nivel {opo.nivelRef.toLowerCase()}: entrena primero lo de arriba</small></h3>
+  <ol class="ganas">
+    {#each opo.lista.slice(0, 5) as x (x.id)}
+      <li>
+        <span class="g-ic"><Emoji e={x.emoji} tam={18} /></span>
+        <span class="g-txt"><b>{x.nombre}</b><small>{x.id === 'carrera' ? hms(x.seg) : mmss(x.seg)} ahora → {x.id === 'carrera' ? hms(x.objetivo) : mmss(x.objetivo)}{x.real ? ' · con tu marca' : ''}</small></span>
+        <span class="g-barra" aria-hidden="true"><i style="width:{(x.gana / maxGana) * 100}%"></i></span>
+        <b class="g-gana cifra">−{corto(x.gana)}</b>
+      </li>
+    {/each}
+  </ol>
+  <p class="pie-nota">En total podrías bajar unos {Math.round(opo.lista.reduce((s, x) => s + x.gana, 0) / 60)} min. Registra tus simulacros con tiempos por estación para afinarlo.</p>
+{/if}
 
 <h3 class="cab">Estrategia</h3>
 <ul class="estrategia">{#each estr.general as g (g)}<li>{g}</li>{/each}</ul>
@@ -124,4 +142,14 @@
   .peso { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--linea); }
   .peso span { color: var(--texto-2); font-weight: 600; }
   .peso b { font-weight: 800; }
+  .ganas { list-style: none; margin: 0; padding: 4px 14px; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); }
+  .ganas li { display: grid; grid-template-columns: 34px minmax(0, 1fr) 56px; grid-template-rows: auto auto; align-items: center; column-gap: 10px; padding: 10px 0; }
+  .ganas li + li { border-top: 1px solid var(--linea); }
+  .g-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
+  .g-txt { display: grid; min-width: 0; }
+  .g-txt b { font-size: 0.9rem; font-weight: 600; }
+  .g-txt small { font-size: 0.74rem; color: var(--texto-2); }
+  .g-gana { grid-row: 1 / 3; grid-column: 3; text-align: right; font-size: 1rem; color: var(--primario-fuerte); }
+  .g-barra { grid-column: 2; height: 5px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .g-barra i { display: block; height: 100%; border-radius: 999px; background: var(--hero); }
 </style>
