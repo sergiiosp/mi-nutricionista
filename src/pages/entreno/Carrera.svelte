@@ -1,6 +1,7 @@
 <script>
   import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
+  import Portada from '../../components/Portada.svelte';
   import { estado } from '../../stores/estado.js';
   import { abrirHoja } from '../../stores/ui.js';
   import { planDe } from '../../lib/hyrox/index.js';
@@ -19,47 +20,48 @@
   const nutri = $derived(nutricionDiaCarrera(perfil, config.horaCarrera || '10:00', est.total / 60, { sinCafeina }));
   const semana = $derived(semanaCarrera(perfil));
   const dias = $derived(plan?.carrera ? Math.round((new Date(`${plan.carrera}T12:00`) - new Date(`${hoyISO()}T12:00`)) / 86400000) : null);
-  let verTramos = $state(false);
 </script>
 
-<div class="hero-carrera">
-  <p>{plan?.carrera ? `${capital(fechaLarga(plan.carrera))} · ${config.horaCarrera || ''}` : 'Sin fecha de carrera'}</p>
-  <h2>{dias !== null ? (dias > 0 ? `Faltan ${dias} días` : dias === 0 ? '¡Hoy es el día!' : 'Carrera completada') : 'Tu HYROX'}</h2>
-  <div class="estimado"><span>Tiempo estimado</span><b>{hms(est.total)}</b><small>HYROX {CATEGORIAS[config.categoria].nombre}{config.categoria === 'relay' ? ' (si hicieras tú todo el recorrido)' : ''}</small></div>
-  <div class="partes">
-    <div><b>{hms(est.carreras)}</b><small>8 km corriendo</small></div>
-    <div><b>{hms(est.estaciones)}</b><small>estaciones</small></div>
-    <div><b>{mmss(est.roxzone)}</b><small>roxzone</small></div>
+<Portada foto="img/sesiones/carrera.webp" color="var(--primario)" alto={340} etiqueta="Tu carrera">
+  <div class="sup">
+    <span class="chip">{plan?.carrera ? `${capital(fechaLarga(plan.carrera))}${config.horaCarrera ? ` · ${config.horaCarrera}` : ''}` : 'Sin fecha de carrera'}</span>
+    {#if dias !== null && dias >= 0}<span class="chip fuerte cifra">{dias > 0 ? `${dias} días` : '¡Hoy!'}</span>{/if}
   </div>
-</div>
-<p class="pie-nota">{est.basadoEnMarcas ? 'Calculado con tus marcas y tus mejores tiempos registrados.' : 'Estimación según tu nivel: registra tus simulacros con tiempos por estación para afinarla.'}</p>
-
-<button class="tramos-btn" onclick={() => (verTramos = !verTramos)}>{verTramos ? 'Ocultar' : 'Ver'} tiempos objetivo por tramo</button>
-{#if verTramos}
-  <div class="tabla">
-    {#each est.tramos as t, i (i)}
-      <div class="fila" class:run={t.tipo === 'run'}>
-        <span class="n"><Icono e={t.tipo === 'run' ? '🏃' : t.emoji} tam={18} /></span>
-        <span class="nom">{t.nombre}{t.real ? '' : ''}</span>
-        <span class="t">{mmss(t.seg)}</span>
-        <span class="ac">{hms(t.acumulado)}</span>
-      </div>
-    {/each}
+  <div class="abajo">
+    <span class="et">Tiempo estimado · HYROX {CATEGORIAS[config.categoria].nombre}</span>
+    <b class="tiempo cifra">{hms(est.total)}</b>
+    <div class="partes">
+      <div><b class="cifra">{hms(est.carreras)}</b><small>8 km corriendo</small></div>
+      <div><b class="cifra">{hms(est.estaciones)}</b><small>estaciones</small></div>
+      <div><b class="cifra">{mmss(est.roxzone)}</b><small>roxzone</small></div>
+    </div>
   </div>
-{/if}
+</Portada>
+<p class="pie-nota">{est.basadoEnMarcas ? 'Calculado con tus marcas y tus mejores tiempos registrados.' : 'Estimación según tu nivel: registra tus simulacros con tiempos por estación para afinarla.'}{config.categoria === 'relay' ? ' (Como si hicieras tú todo el recorrido.)' : ''}</p>
 
-<h2 class="seccion"><Emoji e="🧠" tam={24} /> Estrategia</h2>
-<div class="tarjeta"><ul class="lista">{#each estr.general as g (g)}<li>{g}</li>{/each}</ul></div>
-<div class="estaciones">
-  {#each ESTACIONES as e (e.id)}
-    <button class="est" onclick={() => abrirHoja('estacion', { id: e.id })}>
-      <Emoji e={e.emoji} tam={30} />
-      <span><b>{e.n}. {e.nombre}</b><small>{estr.estaciones[e.id]}</small></span>
-    </button>
+<h3 class="cab">Estrategia</h3>
+<ul class="estrategia">{#each estr.general as g (g)}<li>{g}</li>{/each}</ul>
+
+<!-- El recorrido: 1 km corriendo y una estación, ocho veces, con tiempo objetivo y acumulado -->
+<h3 class="cab">El recorrido<small>Toca una estación para ver técnica y errores</small></h3>
+<ol class="ruta">
+  {#each est.tramos as t, i (i)}
+    {#if t.tipo === 'run'}
+      <li class="km"><span class="linea" aria-hidden="true"></span><span class="km-txt cifra"><Icono n="footprints" tam={14} /> 1 km · {mmss(t.seg)}</span></li>
+    {:else}
+      <li class="est">
+        <button onclick={() => abrirHoja('estacion', { id: t.id })}>
+          <span class="num cifra">{t.n}</span>
+          <span class="est-txt"><b>{t.nombre}</b><small>{estr.estaciones[t.id]}</small></span>
+          <span class="tiempos cifra"><b>{mmss(t.seg)}</b><small>{hms(t.acumulado)}</small></span>
+        </button>
+      </li>
+    {/if}
   {/each}
-</div>
+  <li class="meta"><span class="num"><Icono n="flag" tam={14} grosor={2.4} /></span><b>Meta</b><span class="cifra">{hms(est.total)}</span></li>
+</ol>
 
-<h2 class="seccion"><Emoji e="🍌" tam={24} /> Nutrición el día de carrera</h2>
+<h3 class="cab">Qué comer el día de la carrera</h3>
 <div class="timeline-n">
   {#each nutri as n (n.titulo)}
     <div class="tn"><span class="h">{n.hora}</span><Emoji e={n.emoji} tam={28} /><div><b>{n.titulo}</b><p>{n.texto}</p></div></div>
@@ -67,46 +69,59 @@
 </div>
 <p class="pie-nota">Ensaya este plan en tus simulacros: el día de la carrera, nada nuevo.</p>
 
-<h2 class="seccion"><Emoji e="📅" tam={24} /> La semana de la carrera</h2>
+<h3 class="cab">La semana de la carrera</h3>
 {#each semana as d (d.dia)}
   <div class="tarjeta dia-s"><Emoji e={d.emoji} tam={30} /><div><b>{d.dia}</b><p>{d.texto}</p></div></div>
 {/each}
 
-<h2 class="seccion"><Emoji e="🏋️" tam={24} /> Tus pesos de carrera</h2>
+<h3 class="cab">Tus pesos de carrera</h3>
 <div class="tarjeta">
   {#each ESTACIONES.filter((e) => e.pesos) as e (e.id)}
-    <div class="peso"><span>{e.emoji} {e.nombre}</span><b>{pesoEstacion(e, config.categoria, perfil.sexo)}</b></div>
+    <div class="peso"><span>{e.nombre}</span><b class="cifra">{pesoEstacion(e, config.categoria, perfil.sexo)}</b></div>
   {/each}
   <p class="pie-nota">Referencia de las últimas temporadas ({CATEGORIAS[config.categoria].nombre}, {perfil.sexo === 'm' ? 'mujer' : 'hombre'}). Comprueba el reglamento oficial de tu carrera.</p>
 </div>
 
 <style>
-  .hero-carrera { position: relative; overflow: hidden; padding: 18px; border-radius: 26px; background: radial-gradient(110% 90% at 100% 0%, rgb(255 91 31 / 0.28), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
-  .hero-carrera p { margin: 0; font-weight: 600; font-size: 0.78rem; color: var(--texto-2); }
-  .hero-carrera h2 { margin: 2px 0 14px; font-size: 1.5rem; }
-  .estimado { display: grid; }
-  .estimado span { font-weight: 700; font-size: 0.74rem; color: var(--texto-2); }
-  .estimado b { font-size: 3rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; background: var(--hero); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .estimado small { font-weight: 600; color: var(--texto-2); }
-  .partes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px; }
-  .partes div { display: grid; padding: 10px 6px; border-radius: 14px; background: var(--superficie-2); text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .partes small { font-weight: 600; font-size: 0.68rem; color: var(--texto-2); }
-  .tramos-btn { width: 100%; margin: 10px 0; padding: 12px; border-radius: 14px; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
-  .tabla { border-radius: 18px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); }
-  .fila { display: grid; grid-template-columns: 34px 1fr auto 70px; gap: 8px; align-items: center; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; }
-  .fila.run { background: var(--superficie-2); }
-  .fila .t { font-weight: 800; }
-  .fila .ac { text-align: right; color: var(--texto-2); font-variant-numeric: tabular-nums; }
-  .lista { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
-  .estaciones { display: grid; gap: 6px; }
-  .est { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
-  .est span { display: grid; }
-  .est small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
+  .sup { display: flex; justify-content: space-between; gap: 8px; }
+  .chip { padding: 5px 10px; border-radius: 999px; background: rgb(255 255 255 / 0.14); font-size: 0.78rem; font-weight: 700; }
+  .chip.fuerte { background: #fff; color: #0b0b0e; font-weight: 800; }
+  .abajo { margin-top: auto; display: grid; }
+  .et { font-size: 0.8rem; font-weight: 600; color: rgb(255 255 255 / 0.75); }
+  .tiempo { font-size: 3.4rem; line-height: 1; font-weight: 800; letter-spacing: -0.04em; margin: 4px 0 14px; }
+  .partes { display: flex; gap: 20px; }
+  .partes div { display: grid; }
+  .partes b { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+  .partes small { font-size: 0.72rem; font-weight: 600; color: rgb(255 255 255 / 0.7); }
+  .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 800; }
+  .cab small { display: block; margin-top: 2px; font-size: 0.78rem; font-weight: 600; color: var(--texto-2); }
+  .estrategia { margin: 0; padding: 14px 16px 14px 32px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 8px; font-size: 0.92rem; color: var(--texto-2); }
+
+  /* El recorrido: estaciones como paradas y el km de carrera como tramo de la línea */
+  .ruta { list-style: none; margin: 0; padding: 0; }
+  .km { position: relative; display: flex; align-items: center; min-height: 34px; padding-left: 44px; }
+  .linea { position: absolute; left: 17px; top: 0; bottom: 0; border-left: 2px dashed color-mix(in srgb, var(--primario) 55%, transparent); }
+  .km-txt { display: inline-flex; align-items: center; gap: 6px; color: var(--texto-3); font-size: 0.78rem; font-weight: 700; }
+  .est button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #0b0b0e; font-weight: 800; }
+  .est-txt { flex: 1; min-width: 0; display: grid; }
+  .est-txt b { font-size: 0.98rem; }
+  .est-txt small { color: var(--texto-2); font-size: 0.8rem; line-height: 1.35; }
+  .tiempos { flex-shrink: 0; display: grid; justify-items: end; }
+  .tiempos b { font-size: 1.05rem; font-weight: 800; }
+  .tiempos small { color: var(--texto-3); font-size: 0.74rem; font-weight: 600; }
+  .meta { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--linea); margin-top: 6px; }
+  .meta .num { background: #fff; }
+  .meta b { flex: 1; }
+  .meta span:last-child { font-weight: 800; font-size: 1.15rem; }
+
   .timeline-n { display: grid; gap: 8px; }
   .tn { display: grid; grid-template-columns: 48px 32px 1fr; gap: 8px; align-items: start; padding: 10px 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
-  .tn .h { font-weight: 800; font-size: 0.85rem; padding-top: 4px; }
-  .tn p { margin: 2px 0 0; font-size: 0.86rem; font-weight: 600; color: var(--texto-2); }
+  .tn .h { font-weight: 800; font-size: 0.85rem; padding-top: 4px; font-variant-numeric: tabular-nums; }
+  .tn p { margin: 2px 0 0; font-size: 0.86rem; color: var(--texto-2); }
   .dia-s { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0; }
-  .dia-s p { margin: 3px 0 0; font-size: 0.9rem; font-weight: 600; }
-  .peso { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--superficie-2); font-weight: 700; }
+  .dia-s p { margin: 3px 0 0; font-size: 0.9rem; color: var(--texto-2); }
+  .peso { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--linea); }
+  .peso span { color: var(--texto-2); font-weight: 600; }
+  .peso b { font-weight: 800; }
 </style>

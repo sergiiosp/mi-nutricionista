@@ -11,7 +11,7 @@
   import { recomendaciones, CONDICIONES } from '../lib/salud.js';
   import { resumenObjetivos } from '../lib/cuestionario.js';
   import { hoyISO } from '../lib/planificador.js';
-  import { FOTOS_RECETAS } from '../data/fotos.js';
+  import { FOTOS_RECETAS, FOTOS_SESIONES, FOTOS_ESTACIONES } from '../data/fotos.js';
   import { RECETAS } from '../data/recetas.js';
   import { ALERGENOS } from '../data/alimentos.js';
   import { num, fechaLarga, capital } from '../lib/formato.js';
@@ -156,6 +156,12 @@
     <ul>
       {#each Object.entries(FOTOS_RECETAS) as [id, c] (id)}
         <li><a href={c.fuente} target="_blank" rel="noopener">{nombreReceta(id)}</a> — {c.autor} ({c.licencia})</li>
+      {/each}
+    </ul>
+    <p>Fotos de entreno y estaciones de Wikimedia Commons:</p>
+    <ul>
+      {#each [...Object.entries(FOTOS_SESIONES), ...Object.entries(FOTOS_ESTACIONES)] as [id, c] (id)}
+        <li><a href={c.fuente} target="_blank" rel="noopener">{id}</a> — {c.autor} ({c.licencia})</li>
       {/each}
     </ul>
   </details>

@@ -244,11 +244,7 @@ export const FOTOS_ESTACIONES = {
   "licencia": "Public domain",
   "fuente": "https://commons.wikimedia.org/wiki/File:Sled_Push_(4517338).jpg"
  },
- "bbj": {
-  "autor": "Marine Corps photo by Sgt. Ryan Young",
-  "licencia": "Public domain",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Airborne_Burpee.jpg"
- },
+ "bbj": {"autor": "Taco fleur", "licencia": "CC BY-SA 4.0", "fuente": "https://commons.wikimedia.org/wiki/File:Burpee_5_Thrust.jpg"},
  "row": {
   "autor": "Autor desconocido",
   "licencia": "Public domain",
@@ -268,5 +264,74 @@ export const FOTOS_ESTACIONES = {
   "autor": "U.S. Air Force photo by Senior Airman Arielle Vasquez",
   "licencia": "Public domain",
   "fuente": "https://commons.wikimedia.org/wiki/File:Fitness_center_showcases_new_functional_fitness_box_(4384845).jpg"
+ }
+};
+
+// Fotos de cada tipo de sesión de entreno (Wikimedia Commons, licencias libres). Se muestran en duotono.
+export const FOTOS_SESIONES = {
+ "fuerza": {
+  "autor": "Nenad Stojkovic",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Fit_young_man_doing_deadlift_exercise_in_gym.jpg"
+ },
+ "torso": {
+  "autor": "Lance Cpl. Cory D. Polom",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Competing_To_Be_Top_Dog,_Bench_press_club_lifts_morale,_strengthens_motivation_130311-M-EY704-054.jpg"
+ },
+ "series": {
+  "autor": "Jerry Anderson",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:UMary_Track_and_Field_Sprint.jpg"
+ },
+ "umbral": {
+  "autor": "Ed Yourdon",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Jogging_couple_-_legs.jpg"
+ },
+ "rodaje": {
+  "autor": "Douglas Stutz",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Navy_Medicine_Runners_participate_in_200_mile_relay_(9180517).jpg"
+ },
+ "largo": {
+  "autor": "ValeryGL",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Trail_running_moscow.jpg"
+ },
+ "estaciones": {
+  "autor": "U.S. Army 173IBCT-A by Staff Sgt. Alexander Henninger",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Sled_Push_(4517338).jpg"
+ },
+ "compromised": {
+  "autor": "U.S. Air Force AFCENT by Airman 1st Class Robert Nichols",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Special_Operations_Forces_hosts_Best_Squad_Competition_(8876184).jpg"
+ },
+ "simulacro": {
+  "autor": "AngryJulieMonday (photos · photo sets)",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:CrossFit_RXD_SoCal_Regionals_2014_teams_2.jpg"
+ },
+ "carrera": {
+  "autor": "AngryJulieMonday (photos · photo sets)",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:CrossFit_RXD_SoCal_Regionals_2014_teams_2.jpg"
+ },
+ "recuperacion": {
+  "autor": "Shixart1985",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Back_view_of_a_woman_performing_a_stretching_exercise_for_the_spine.jpg"
+ },
+ "activacion": {
+  "autor": "Peterwchen",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Cyclone_Sports_Complex,_soccer_and_track_stadium,_USATF_Masters_Men_70-74_100_meter_dash_2021.jpg"
+ },
+ "registrada": {
+  "autor": "U.S. Air Force photo by Senior Airman Haiden Morris",
+  "licencia": "Public domain",
+  "fuente": "https://commons.wikimedia.org/wiki/File:2025_Skelton_Gym_Powerlifting_Competition_(9326219).jpg"
  }
 };

@@ -1,4 +1,5 @@
 <script>
+  import { FOTOS_SESIONES } from '../data/fotos.js';
   import Icono from './Icono.svelte';
   import Emoji from './Emoji.svelte';
   import { estado } from '../stores/estado.js';
@@ -45,6 +46,8 @@
 
 {#if s}
   <div class="cab c-{s.color}">
+    <img class="foto-fondo" src="img/sesiones/{FOTOS_SESIONES[s.tipo] ? s.tipo : 'registrada'}.webp" alt="" />
+    <span class="tinte" aria-hidden="true"></span><span class="velo" aria-hidden="true"></span>
     <Emoji e={s.emoji} tam={64} />
     <div>
       <h2>{s.titulo}</h2>
@@ -129,6 +132,11 @@
   .c-azul { --c: var(--azul); } .c-coral { --c: var(--coral); } .c-lila { --c: var(--lila); }
   .c-amarillo { --c: var(--amarillo); } .c-primario { --c: var(--primario); } .c-gris { --c: var(--texto-3); }
   .cab .sobre { color: rgb(255 255 255 / 0.72); }
+  .cab { position: relative; overflow: hidden; isolation: isolate; min-height: 190px; align-items: flex-end; }
+  .cab > :not(.foto-fondo, .tinte, .velo) { position: relative; z-index: 2; }
+  .foto-fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: grayscale(1) contrast(1.2) brightness(0.85); }
+  .tinte { position: absolute; inset: 0; z-index: 1; background: var(--c); mix-blend-mode: color; opacity: 0.85; }
+  .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.1) 0%, rgb(8 8 12 / 0.85) 100%); }
   .cab .datos span { background: rgb(255 255 255 / 0.14); color: #fff; }
   .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }

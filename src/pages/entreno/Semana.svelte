@@ -9,6 +9,7 @@
   import { TIPOS } from '../../lib/hyrox/sesiones.js';
   import { hoyISO, sumarDias } from '../../lib/planificador.js';
   import { diaSemana, fechaCorta } from '../../lib/formato.js';
+  import { FOTOS_SESIONES } from '../../data/fotos.js';
 
   const hoy = hoyISO();
   const plan = $derived(planDe($estado));
@@ -35,6 +36,8 @@
   const esFuerza = (s) => (s?.ejercicios?.length || 0) > 0;
   const corto = (f) => diaSemana(f).slice(0, 3);
   const ESTADO = { completa: 'Hecha', parcial: 'A medias', no: 'No la hice' };
+  // Foto del tipo de sesión (en duotono con su color); si no hay, una genérica de gimnasio
+  const foto = (s) => `img/sesiones/${FOTOS_SESIONES[s?.tipo] ? s.tipo : 'registrada'}.webp`;
 
   function empezar(s) {
     if (esFuerza(s)) abrirHoja('registrarSesion', { id: s.id, entreno: true });
@@ -55,6 +58,8 @@
     {#if principal}
       {@const reg = registros[principal.id]}
       <section class="portada" style="--c:{color(principal)}" aria-label="Sesión de hoy">
+        <img class="foto-fondo" src={foto(principal)} alt="" />
+        <span class="tinte" aria-hidden="true"></span><span class="velo" aria-hidden="true"></span>
         <div class="portada-sup">
           <span class="tipo"><Icono e={principal.emoji} tam={15} /> {tipoNombre(principal)} · hoy {principal.hora}</span>
           {#if reg}<span class="hecha"><Icono n="check" tam={14} grosor={2.8} /> {ESTADO[reg.estado] || 'Registrada'}</span>{/if}
@@ -81,6 +86,8 @@
       {#if deHoy.length > 1}<p class="nota">Hoy tienes {deHoy.length} sesiones: la otra está en la semana, abajo.</p>{/if}
     {:else}
       <section class="portada descanso" aria-label="Hoy descansas">
+        <img class="foto-fondo" src="img/sesiones/recuperacion.webp" alt="" />
+        <span class="tinte" aria-hidden="true"></span><span class="velo" aria-hidden="true"></span>
         <div class="portada-sup"><span class="tipo"><Icono n="moon" tam={15} /> Descanso</span></div>
         <h2>Hoy toca recuperar</h2>
         <p class="portada-txt">Camina, estira y duerme bien: el músculo se construye hoy.</p>
@@ -104,6 +111,8 @@
       <div class="proximas">
         {#each proximas as s (s.id)}
           <button class="prox" style="--c:{color(s)}" onclick={() => abrirHoja('sesion', { id: s.id })}>
+            <img class="foto-fondo" src={foto(s)} alt="" loading="lazy" />
+            <span class="tinte" aria-hidden="true"></span><span class="velo" aria-hidden="true"></span>
             <span class="prox-dia">{corto(s.fecha)} {Number(s.fecha.slice(8))}</span>
             <span class="prox-ic"><Icono e={s.emoji} tam={22} /></span>
             <b>{s.titulo}</b>
@@ -166,11 +175,17 @@
       linear-gradient(160deg, color-mix(in srgb, var(--c) 42%, #121218) 0%, color-mix(in srgb, var(--c) 14%, #0b0b0e) 100%);
     box-shadow: 0 18px 40px color-mix(in srgb, var(--c) 22%, transparent), 0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent);
   }
-  .portada.descanso { --c: var(--texto-3); }
+  .portada.descanso { --c: var(--azul); }
+  .portada { display: flex; flex-direction: column; min-height: 360px; isolation: isolate; }
+  .portada > :not(.foto-fondo, .tinte, .velo) { position: relative; z-index: 2; }
+  .portada .portada-sup { margin-bottom: auto; }
+  .foto-fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: grayscale(1) contrast(1.2) brightness(0.85); }
+  .tinte { position: absolute; inset: 0; z-index: 1; background: var(--c); mix-blend-mode: color; opacity: 0.85; }
+  .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.25) 0%, rgb(8 8 12 / 0.15) 30%, rgb(8 8 12 / 0.78) 68%, rgb(8 8 12 / 0.92) 100%); }
   .portada-sup { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .tipo { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: rgb(255 255 255 / 0.14); font-size: 0.78rem; font-weight: 700; }
   .hecha { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: var(--exito); color: #062014; font-size: 0.76rem; font-weight: 800; }
-  .portada h2 { margin: 26px 0 14px; font-size: 1.85rem; line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; text-wrap: balance; }
+  .portada h2 { margin: 120px 0 14px; text-shadow: 0 2px 18px rgb(0 0 0 / 0.35); font-size: 1.85rem; line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; text-wrap: balance; }
   .cifras-hoy { display: flex; gap: 22px; margin-bottom: 18px; }
   .cifras-hoy div { display: grid; }
   .cifras-hoy b { font-size: 1.6rem; line-height: 1; font-weight: 800; letter-spacing: -0.03em; }
@@ -199,7 +214,12 @@
     background: linear-gradient(165deg, color-mix(in srgb, var(--c) 26%, var(--superficie)) 0%, color-mix(in srgb, var(--c) 8%, var(--superficie)) 100%);
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 22%, transparent);
   }
-  .prox-dia { font-size: 0.76rem; font-weight: 800; color: color-mix(in srgb, var(--c) 70%, #fff); text-transform: capitalize; }
+  .prox { position: relative; overflow: hidden; isolation: isolate; min-height: 168px; align-content: end; color: #fff; }
+  .prox > :not(.foto-fondo, .tinte, .velo) { position: relative; z-index: 2; }
+  .prox .velo { background: linear-gradient(180deg, rgb(8 8 12 / 0.1) 0%, rgb(8 8 12 / 0.85) 100%); }
+  .prox small { color: rgb(255 255 255 / 0.75) !important; }
+  .prox-dia { position: absolute !important; top: 12px; left: 12px; padding: 3px 9px; border-radius: 999px; background: rgb(0 0 0 / 0.35); color: #fff !important;
+  font-size: 0.76rem; font-weight: 800; color: color-mix(in srgb, var(--c) 70%, #fff); text-transform: capitalize; }
   .prox-ic { margin: 10px 0 8px; color: var(--c); }
   .prox b { font-size: 0.95rem; line-height: 1.2; }
   .prox small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
