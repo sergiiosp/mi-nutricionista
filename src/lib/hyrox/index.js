@@ -9,9 +9,9 @@ let ultimoPlan = null;
 export function planDe(e) {
   if (!e?.hyrox?.config || !e.perfil) return null;
   const hoy = hoyISO();
-  const clave = JSON.stringify([e.hyrox, e.perfil.peso, e.perfil.sexo, e.perfil.horaEntreno, hoy]);
+  const clave = JSON.stringify([e.hyrox, e.agenda, e.perfil.peso, e.perfil.sexo, e.perfil.horaEntreno, hoy]);
   if (clave !== ultimaClave) {
-    ultimoPlan = generarPlanHyrox(e.hyrox, e.perfil, hoy);
+    ultimoPlan = generarPlanHyrox(e.hyrox, e.perfil, hoy, e.agenda);
     ultimaClave = clave;
   }
   return ultimoPlan;

@@ -1,6 +1,6 @@
 // Plan HYROX periodizado hasta la fecha de carrera, con ajuste automático según tus registros.
 import { construirSesion, TIPOS, kcalSesionHyrox } from './sesiones.js';
-import { ritmos } from './ritmos.js';
+import { ritmos, hms, mmss } from './ritmos.js';
 import { sumarDias } from '../planificador.js';
 import { EJERCICIOS } from '../../data/hyrox.js';
 
@@ -84,7 +84,7 @@ function ajusteSemana(sesionesPrevias, registros, hoy) {
  * @param hyrox { config, registros, movidas }
  * config: { inicio, fechaCarrera, categoria, nivel, dias[], hora, material{}, lesiones[], marcas{} }
  */
-export function generarPlanHyrox(hyrox, perfil, hoy) {
+export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
   const { config, registros = {}, movidas = {}, sinGym = {} } = hyrox;
   const inicio = lunesDe(config.inicio);
   const carrera = config.fechaCarrera && config.fechaCarrera > inicio ? config.fechaCarrera : null;
@@ -161,6 +161,17 @@ export function generarPlanHyrox(hyrox, perfil, hoy) {
     sesiones.push(...semana.sesiones);
   }
 
+  // Carreras populares y viajes de tu agenda: puesta a punto, la carrera, recuperación y días de caminar
+  const cargasExtra = [];
+  const sueltas = aplicarAgenda(semanas, agenda, { config, perfil, rit: ritmos(config, perfil), cargasExtra });
+  sesiones.length = 0;
+  for (const w of semanas) {
+    w.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
+    w.volumen = w.sesiones.reduce((s, x) => s + (x.duracion || 0), 0);
+    sesiones.push(...w.sesiones);
+  }
+  sesiones.push(...sueltas);
+
   // Lo que ya registraste no cambia ni desaparece: la sesión se queda como la hiciste aunque luego
   // cambies los días, el enfoque o la app se actualice (si ese día ya no está en el plan, se añade tal cual)
   const porId = new Map(sesiones.map((s) => [s.id, s]));
@@ -188,9 +199,90 @@ export function generarPlanHyrox(hyrox, perfil, hoy) {
   for (const s of sesiones) s.kcal = kcalSesionHyrox(s, perfil?.peso || 75);
   const porFecha = {};
   for (const s of sesiones) (porFecha[s.fecha] ||= []).push(s);
-  const diasCarga = carrera ? [sumarDias(carrera, -2), sumarDias(carrera, -1)] : [];
+  const diasCarga = [...new Set([...(carrera ? [sumarDias(carrera, -2), sumarDias(carrera, -1)] : []), ...cargasExtra])];
   const fin = sumarDias(inicio, N * 7 - 1);
   return { inicio, carrera, N, fin, semanas, sesiones, porFecha, diasCarga, ritmos: ritmos(config, perfil) };
+}
+
+const KM_NOMBRE = (km) => (km >= 40 ? 'Maratón' : km >= 20 ? 'Media maratón' : km >= 14 ? `${Math.round(km)} km` : km >= 9 ? '10 km' : `${Math.round(km)} km`);
+
+/** Sesión de una carrera popular con su objetivo (Riegel desde tu 5 km) y cómo repartirla. */
+function sesionCarrera(ev, km, rit) {
+  const seg = Math.round(rit.t5k * Math.pow(km / 5, 1.06));
+  const ritmo = seg / km;
+  return {
+    tipo: 'popular', titulo: ev.nombre || KM_NOMBRE(km), emoji: '🏁', color: 'primario', rpe: 8,
+    duracion: Math.round(seg / 60), distancia: km,
+    calentamiento: ['10 min trotando muy suave', '3-4 rectas progresivas de 80 m', 'Movilidad de cadera y tobillos'],
+    bloques: [{ titulo: 'La carrera', lineas: [
+      `Objetivo: ${hms(seg)} (${mmss(ritmo)}/km)`,
+      `Primeros 3 km a ${mmss(ritmo + 6)}/km: la salida engaña`,
+      `Hasta el km ${Math.max(3, Math.round(km - 4))}: estable a ${mmss(ritmo)}/km`,
+      'Los últimos km: si vas bien, aprieta poco a poco',
+      km >= 15 ? 'Bebe en cada avituallamiento y toma un gel o dátiles cada 40-45 min' : 'Bebe un poco en el avituallamiento si hace calor',
+    ] }],
+    vueltaCalma: ['Camina 10 min', 'Estira suave', 'En la primera hora, algo con hidratos y proteína'],
+    notas: ['La noche antes, cena de siempre con algo más de hidratos y nada nuevo. Desayuna 2-3 h antes.'],
+    ejercicios: [], sinGym: false,
+  };
+}
+
+const sesionCaminar = () => ({
+  tipo: 'caminar', titulo: 'Caminar por la ciudad', emoji: '🚶', color: 'azul', rpe: 2, duracion: 90, distancia: 0,
+  calentamiento: [], vueltaCalma: [], notas: [], ejercicios: [], sinGym: true,
+  bloques: [{ titulo: 'Hoy', lineas: ['Camina a buen paso: entre 8.000 y 12.000 pasos en el día', 'Sube escaleras cuando puedas', 'Si te apetece, 10-15 min de movilidad en el hotel'] }],
+});
+
+/**
+ * Aplica la agenda (carreras populares y viajes) sobre el plan. Devuelve las sesiones que caen fuera
+ * de las semanas del plan (se muestran igual en su día).
+ */
+function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
+  const sueltas = [];
+  if (!agenda) return sueltas;
+  const quitar = (pred) => { for (const w of semanas) w.sesiones = w.sesiones.filter((s) => s.tipo === 'carrera' || !pred(s)); };
+  const poner = (s) => {
+    const w = semanas.find((x) => s.fecha >= x.lunes && s.fecha <= sumarDias(x.lunes, 6));
+    if (w) w.sesiones.push({ semana: w.w, fase: w.fase, ...s });
+    else sueltas.push({ semana: -1, fase: 'base', ...s });
+  };
+  const eventos = (agenda.eventos || []).filter((e) => e.fecha);
+  for (const ev of eventos) {
+    const F = ev.fecha;
+    const km = Number(ev.km) || 21.1;
+    const antes = (s) => diasEntre(s.fecha, F);
+    if (km >= 15) {
+      // Puesta a punto: de 6 a 4 días antes, más corto y suave; los 3 últimos días, descanso
+      for (const w of semanas) for (const s of w.sesiones) {
+        if (s.tipo === 'carrera' || antes(s) < 4 || antes(s) > 6) continue;
+        s.duracion = Math.round(s.duracion * 0.7);
+        s.rpe = Math.max(3, s.rpe - 2);
+        s.titulo = `${s.titulo} · suave`;
+        s.notas = [`Semana de tu ${(ev.nombre || KM_NOMBRE(km)).toLowerCase()}: hoy más corto y sin apretar.`, ...(s.notas || [])];
+      }
+      quitar((s) => antes(s) >= 0 && antes(s) <= 3);
+      // Al día siguiente, recuperación
+      const despues = sumarDias(F, 1);
+      quitar((s) => s.fecha === despues);
+      poner({ id: `rec-${ev.id}`, fecha: despues, fechaOriginal: despues, hora: config.hora || '18:30',
+        ...construirSesion({ tipo: 'recuperacion', fase: 'base', config, perfil, rit }), titulo: 'Recuperación tras la carrera' });
+      cargasExtra.push(sumarDias(F, -1));
+      if (km >= 30) cargasExtra.push(sumarDias(F, -2));
+    } else {
+      quitar((s) => s.fecha === F);
+    }
+    poner({ id: `ev-${ev.id}`, fecha: F, fechaOriginal: F, hora: ev.hora || '09:00', ...sesionCarrera(ev, km, rit) });
+  }
+  // Viajes: cada día, caminar en lugar del entreno (la carrera, si cae en el viaje, se mantiene)
+  for (const v of agenda.viajes || []) {
+    if (!v.desde || !v.hasta) continue;
+    for (let f = v.desde; f <= v.hasta; f = sumarDias(f, 1)) {
+      if (eventos.some((e) => e.fecha === f)) continue;
+      quitar((s) => s.fecha === f);
+      poner({ id: `cam-${f}`, fecha: f, fechaOriginal: f, hora: '11:00', ...sesionCaminar() });
+    }
+  }
+  return sueltas;
 }
 
 /** Semana del plan que contiene una fecha (o null). */

@@ -10,7 +10,7 @@
     "preview": "vite preview --port 8080",
     "precios": "node scripts/actualizar-precios.mjs",
     "catalogo": "node scripts/descargar-catalogo.mjs",
-    "test": "node scripts/probar-motor.mjs"
+    "test": "node scripts/probar-motor.mjs && node scripts/prueba-descanso.mjs && node scripts/prueba-agenda.mjs"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",

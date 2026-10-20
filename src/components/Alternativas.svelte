@@ -25,7 +25,7 @@
   let pestaña = $state(actual && esCombo(actual.recetaId) ? 'montar' : 'opciones');
 
   // ── Opciones ───────────────────────────────────────────────────────────
-  const recetas = alternativas(e.plan, diaIdx, franja, e.perfil, objetivosActuales(), proveedorDe(e), e.favoritas || []);
+  const recetas = alternativas(e.plan, diaIdx, franja, e.perfil, objetivosActuales(), proveedorDe(e), e.favoritas || [], e.agenda?.viajes || []);
   const deFavoritas = $derived(recetas.filter((a) => favoritas.includes(a.comida.recetaId)));
   const delRecetario = $derived(recetas.filter((a) => !favoritas.includes(a.comida.recetaId) && !esCombo(a.comida.recetaId)).slice(0, 6));
   let semilla = $state(Math.floor(Math.random() * 1e6));

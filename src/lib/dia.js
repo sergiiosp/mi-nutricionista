@@ -3,6 +3,8 @@ import { macrosComida, sumarMacros, escalarReceta, objetivosDia, macrosDe, alime
 import { recetaPorId } from './planificador.js';
 
 const CERO = { kcal: 0, p: 0, c: 0, g: 0, f: 0 };
+// Comidas pequeñas que pueden sobrar un día con menos gasto (la de antes de dormir es la última en quitarse)
+const SNACKS = ['merienda', 'media'];
 
 export function restar(a, b) {
   return { kcal: a.kcal - b.kcal, p: a.p - b.p, c: a.c - b.c, g: a.g - b.g, f: (a.f || 0) - (b.f || 0) };
@@ -38,15 +40,30 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
     return { ...c, situacion, registro: delPlan, otros, pasada };
   });
 
-  const pendientes = comidas.filter((c) => c.situacion === 'pendiente');
-  const porVenir = pendientes.filter((c) => !c.pasada);
+  let pendientes = comidas.filter((c) => c.situacion === 'pendiente');
+  let porVenir = pendientes.filter((c) => !c.pasada);
   const desviado = registros.some((r) => r.tipo !== 'plan') || comidas.some((c) => c.situacion === 'saltada');
+  // Las comidas ya pasadas sin marcar cuentan como hechas al calcular lo que queda
+  const pasadas = sumarMacros(pendientes.filter((c) => c.pasada).map((c) => macrosComida(c.ingredientes)));
+  // También se reajusta si lo comido ya no cuadra con el objetivo del día (p. ej. cambias a descanso
+  // después de haber desayunado y comido como día de entreno)
+  const previsto = sumarMacros([consumido, pasadas, ...porVenir.map((c) => macrosComida(c.ingredientes))]);
+  const descuadre = registros.length > 0 && Math.abs(previsto.kcal - objetivo.kcal) / objetivo.kcal > 0.06;
 
   // Reajuste: lo que falta se reparte entre las pendientes según su peso en el plan original
-  if (desviado && porVenir.length) {
-    // Las comidas ya pasadas sin marcar cuentan como hechas al calcular lo que queda
-    const pasadas = sumarMacros(pendientes.filter((c) => c.pasada).map((c) => macrosComida(c.ingredientes)));
+  if ((desviado || descuadre) && porVenir.length) {
     const restante = restar(restar(objetivo, consumido), pasadas);
+    // Si queda poco margen, una merienda o media mañana sobra: mejor quitarla que dejar dos comidas raquíticas
+    const totalPorVenir = sumarMacros(porVenir.map((c) => macrosComida(c.ingredientes)));
+    if (porVenir.length >= 2 && restante.kcal < totalPorVenir.kcal * 0.75) {
+      const snack = porVenir.filter((c) => SNACKS.includes(c.franja) && c.etiqueta !== 'pre' && !e.mantener?.[`${fecha}|${c.franja}`])
+        .sort((a, b) => macrosComida(a.ingredientes).kcal - macrosComida(b.ingredientes).kcal)[0];
+      if (snack) {
+        snack.situacion = 'sobra';
+        porVenir = porVenir.filter((c) => c !== snack);
+        pendientes = pendientes.filter((c) => c !== snack);
+      }
+    }
     const original = porVenir.map((c) => macrosComida(c.ingredientes));
     const total = sumarMacros(original);
     porVenir.forEach((c, i) => {
@@ -138,7 +155,7 @@ export function sugerencias(hueco, perfil) {
       + exceso / 100 + (items.length - 1) * 0.15;
   };
   const vistas = new Set();
-  return combinadas
+  const lista = combinadas
     .map((o) => ({ ...o, puntos: puntuar(o) }))
     .sort((a, b) => a.puntos - b.puntos)
     .filter((o) => {
@@ -147,11 +164,17 @@ export function sugerencias(hueco, perfil) {
       vistas.add(clave);
       return true;
     })
-    .slice(0, 3)
-    .map((o) => ({
-      ...o,
-      nombre: o.items.map((i) => alimento(i.a).nombre).join(' + '),
-    }));
+    .slice(0, 3);
+  // Si falta bastante proteína y tienes proteína en polvo, el batido siempre sale como opción (la más rápida)
+  const conBatido = lista.some((o) => o.items.some((i) => i.a === 'proteina_whey'));
+  if (perfil.whey && hueco.p >= 15 && !conBatido) {
+    const g = hueco.p >= 30 ? 45 : 30;
+    lista.splice(Math.min(lista.length, 2), 1, { items: [{ a: 'proteina_whey', g }], m: macrosDe('proteina_whey', g) });
+  }
+  return lista.map((o) => ({
+    ...o,
+    nombre: o.items.length === 1 && o.items[0].a === 'proteina_whey' ? 'Batido de proteína' : o.items.map((i) => alimento(i.a).nombre).join(' + '),
+  }));
 }
 
 export { CERO };

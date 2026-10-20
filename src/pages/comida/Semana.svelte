@@ -16,7 +16,7 @@
   const objetivos = $derived(calcularObjetivos($estado.perfil));
   let sel = $state(Math.max(0, $estado.plan?.dias.findIndex((d) => d.fecha === hoy) ?? 0));
   const dia = $derived(plan?.dias[sel]);
-  const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
+  const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Antes de dormir' };
   const nombreFranja = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja]);
   const nota = (d, c) => {
     if (c.franja !== 'comida' || !$estado.perfil.sobras) return '';
@@ -30,10 +30,10 @@
   const franjas = $derived.by(() => {
     const vistas = new Map();
     for (const d of plan?.dias || []) for (const c of d.comidas) if (!vistas.has(c.franja)) vistas.set(c.franja, c);
-    const orden = ['desayuno', 'media', 'comida', 'merienda', 'cena'];
+    const orden = ['desayuno', 'media', 'comida', 'merienda', 'cena', 'recena'];
     return [...vistas.values()].sort((a, b) => orden.indexOf(a.franja) - orden.indexOf(b.franja));
   });
-  const CORTO = { desayuno: 'Desayuno', media: 'Media', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
+  const CORTO = { desayuno: 'Desayuno', media: 'Media', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Noche' };
   function abrirCelda(i, c) {
     abrirHoja('receta', { recetaId: c.recetaId, ingredientes: c.ingredientes, titulo: `${capital(diaSemana(plan.dias[i].fecha))} · ${nombreFranja(c)}`, diaIdx: i, franja: c.franja });
   }
@@ -89,13 +89,14 @@
   </div>
 
   {#if dia}
-    {@const od = objetivosDia(objetivos, dia.entreno)}
+    {@const od = dia.objetivo || objetivosDia(objetivos, dia.entreno)}
     {@const t = macrosComida(dia.comidas.flatMap((c) => c.ingredientes))}
     <div class="tarjeta total">
-      <div class="t-cab"><b>{capital(diaSemana(dia.fecha))}</b><span class="etq {dia.entreno ? 'etq-pre' : 'etq-nota'}">{dia.entreno ? 'Entreno' : 'Descanso'}</span><span class="coste">{euros(dia.comidas.reduce((s, c) => s + costeComida(c.ingredientes), 0))}</span></div>
+      <div class="t-cab"><b>{capital(diaSemana(dia.fecha))}</b><span class="etq {dia.entreno ? 'etq-pre' : 'etq-nota'}">{dia.entreno ? 'Entreno' : 'Descanso'}</span>{#if dia.viaje}<span class="etq etq-nota">De viaje</span>{/if}<span class="coste">{euros(dia.comidas.reduce((s, c) => s + costeComida(c.ingredientes), 0))}</span></div>
       <Macros m={t} />
       <p class="pie-nota">Objetivo: {od.kcal} kcal · P {od.proteina} · H {od.hidratos} · G {od.grasa}</p>
       {#if dia.fecha === hoy}<a class="enlace enlace-hoy" href="#hoy">Ver hoy con lo que llevas comido</a>{/if}
+      {#if dia.viaje}<p class="pie-nota">De viaje: comidas para pedir fuera o comprar hechas, sin cocinar. Estos días no entran en la lista de la compra.</p>{/if}
     </div>
     <div class="lista">
       {#each dia.comidas as c (c.franja)}

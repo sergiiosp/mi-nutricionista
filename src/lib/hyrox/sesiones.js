@@ -15,6 +15,8 @@ export const TIPOS = {
   recuperacion: { nombre: 'Recuperación activa', emoji: '🧘', color: 'gris', rpe: 2, met: 2.5, carbos: 0, clase: 'suave' },
   activacion: { nombre: 'Activación pre-carrera', emoji: '🔋', color: 'primario', rpe: 4, met: 6, carbos: 7, clase: 'hyrox' },
   carrera: { nombre: 'HYROX', emoji: '🏆', color: 'primario', rpe: 10, met: 10, carbos: 6, clase: 'hyrox' },
+  popular: { nombre: 'Carrera', emoji: '🏁', color: 'primario', rpe: 8, met: 10.5, carbos: 7, clase: 'carrera' },
+  caminar: { nombre: 'Caminar', emoji: '🚶', color: 'azul', rpe: 2, met: 3.5, carbos: 0, clase: 'suave' },
   // Sesión que registraste en un día que el plan ya no tiene (cambiaste de días) y de la que no queda copia
   registrada: { nombre: 'Entreno registrado', emoji: '✅', color: 'gris', rpe: 6, met: 6, carbos: 3, clase: 'suave' },
 };

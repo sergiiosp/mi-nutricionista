@@ -21,7 +21,7 @@
   import { ruta, ir } from './stores/ruta.js';
   import { hoja, cerrarHoja, abrirHoja, aviso, avisar, deshacerAviso } from './stores/ui.js';
   import { calcularObjetivos } from './lib/nutricion.js';
-  import { crearPlan, reajustarPlan } from './lib/acciones.js';
+  import { crearPlan, reajustarPlan, completarMenu } from './lib/acciones.js';
   import { hoyISO } from './lib/planificador.js';
 
   let editando = $state(false);
@@ -54,6 +54,7 @@
       crearPlan();
       avisar(esEdicion ? 'Perfil guardado y menú nuevo creado' : '¡Tu plan está listo!', '🎉');
     } else {
+      completarMenu(); // p. ej. si activas el lácteo de antes de dormir
       reajustarPlan();
       avisar('Perfil guardado: horario y raciones actualizados', '✅');
     }

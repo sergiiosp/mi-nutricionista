@@ -22,6 +22,7 @@ export function listaCompra(plan, dias = null) {
   const especias = new Set();
   plan.dias.forEach((dia, i) => {
     if (dias && !dias.includes(i)) return;
+    if (dia.viaje) return; // de viaje compras allí o comes fuera
     for (const c of dia.comidas) {
       for (const ing of c.ingredientes) totales[ing.a] = (totales[ing.a] || 0) + ing.g;
       for (const e of recetaPorId[c.recetaId]?.especias || []) especias.add(e);

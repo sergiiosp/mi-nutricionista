@@ -5,10 +5,12 @@ import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos, alimentoPermitido } from './nutricion.js';
 import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias } from './planificador.js';
 import { estadoDia } from './dia.js';
+import { crearRegistro } from './registro.js';
 import { proveedorDe, planDe } from './hyrox/index.js';
 import { copiaSesion } from './hyrox/sesiones.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
+export const viajesDe = (x) => x?.agenda?.viajes || [];
 
 /** Borra un registro del día con opción de deshacer (vuelve a su sitio en la lista). */
 export function quitarRegistro(fecha, id, texto) {
@@ -44,6 +46,25 @@ export function marcarHecha(fecha, comida) {
   }
 }
 
+/**
+ * Te saltas una comida pero te tomas un batido de proteína (whey) en su lugar: se apunta en esa
+ * comida y deja de contar como saltada, así no pierdes la proteína del día.
+ */
+export function tomarBatido(fecha, franja, gramos = 30) {
+  const r = crearRegistro({ item: { tipo: 'alimento', id: 'proteina_whey' }, cantidad: gramos, fecha, franja });
+  r.nombre = 'Batido de proteína';
+  actualizar((x) => {
+    delete x.saltadas[`${fecha}|${franja}`];
+    (x.registros[fecha] ||= []).push(r);
+  });
+  avisar(`Batido apuntado · ${Math.round(r.macros.p)} g de proteína`, '🥤');
+}
+
+/** Una comida que sobraba hoy (cambio a descanso…): tomarla igualmente. */
+export function mantenerComida(fecha, franja) {
+  actualizar((x) => { x.mantener ||= {}; x.mantener[`${fecha}|${franja}`] = true; });
+}
+
 export function alternarSaltada(fecha, franja) {
   actualizar((x) => {
     const k = `${fecha}|${franja}`;
@@ -61,7 +82,7 @@ export function crearPlan(inicio = hoyISO()) {
     const hoy = hoyISO();
     const objetivos = calcularObjetivos(x.perfil);
     const prov = proveedorDe(x);
-    const nuevo = generarPlan(x.perfil, objetivos, { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: x.favoritas || [] });
+    const nuevo = generarPlan(x.perfil, objetivos, { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: x.favoritas || [], viajes: viajesDe(x) });
     const previos = x.plan?.dias || [];
     nuevo.dias = nuevo.dias.map((d) => (d.fecha <= hoy && previos.find((v) => v.fecha === d.fecha)) || d);
     const i = nuevo.dias.findIndex((d) => d.fecha === hoy);
@@ -69,7 +90,7 @@ export function crearPlan(inicio = hoyISO()) {
       const hechas = new Set((x.registros[hoy] || []).filter((r) => r.tipo === 'plan').map((r) => r.franja));
       for (const c of [...nuevo.dias[i].comidas]) {
         if (hechas.has(c.franja) || c.ingredientes.every((ing) => alimentoPermitido(ing.a, x.perfil))) continue;
-        const alt = alternativas(nuevo, i, c.franja, x.perfil, objetivos, prov, x.favoritas || [])[0];
+        const alt = alternativas(nuevo, i, c.franja, x.perfil, objetivos, prov, x.favoritas || [], viajesDe(x))[0];
         if (alt) sustituir(nuevo, i, c.franja, alt.comida);
       }
     }
@@ -99,7 +120,7 @@ export function quitarDeCompra(id) {
     for (const c of [...d.comidas]) {
       if (!c.ingredientes.some((x) => x.a === id)) continue;
       if ((e.registros[d.fecha] || []).some((r) => r.tipo === 'plan' && r.franja === c.franja)) continue; // ya la comiste
-      const alt = alternativas(copia, i, c.franja, perfil, objetivos, prov, e.favoritas || [])
+      const alt = alternativas(copia, i, c.franja, perfil, objetivos, prov, e.favoritas || [], viajesDe(e))
         .find((x) => !x.comida.ingredientes.some((y) => fuera.includes(y.a)));
       if (alt) { sustituir(copia, i, c.franja, alt.comida); n++; }
     }
@@ -170,7 +191,7 @@ export function completarMenu() {
   const e = get(estado);
   if (!e.plan || !e.perfil) return 0;
   const copia = structuredClone(e.plan);
-  const n = completarPlan(copia, e.perfil, calcularObjetivos(e.perfil), proveedorDe(e), e.favoritas || []);
+  const n = completarPlan(copia, e.perfil, calcularObjetivos(e.perfil), proveedorDe(e), e.favoritas || [], viajesDe(e));
   if (n) actualizar((x) => { x.plan = copia; });
   return n;
 }
@@ -180,6 +201,57 @@ export function reajustarPlan() {
   actualizar((x) => {
     if (x.plan) reescalarPlan(x.plan, x.perfil, calcularObjetivos(x.perfil), proveedorDe(x));
   });
+}
+
+// ── Agenda: carreras populares y viajes ───────────────────────────────────
+
+/**
+ * Rehace el menú de los días que cambian de modo (empiezan o dejan de ser de viaje), desde mañana
+ * (o desde hoy si aún no has comido nada); el resto del menú se queda igual y se recalculan cantidades.
+ */
+function rehacerDiasViaje() {
+  const e = get(estado);
+  if (!e.plan) return;
+  const hoy = hoyISO();
+  const viajes = viajesDe(e);
+  const objetivos = calcularObjetivos(e.perfil);
+  const prov = proveedorDe(e);
+  const copia = structuredClone(e.plan);
+  let cambios = 0;
+  copia.dias.forEach((d, i) => {
+    if (d.fecha < hoy || (d.fecha === hoy && (e.registros[hoy] || []).length)) return;
+    const debe = viajes.some((v) => d.fecha >= v.desde && d.fecha <= v.hasta);
+    if (debe === !!d.viaje) return;
+    const nuevo = generarPlan(e.perfil, objetivos, { inicio: d.fecha, dias: 1, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: e.favoritas || [], viajes }).dias[0];
+    copia.dias[i] = nuevo;
+    cambios++;
+  });
+  if (cambios) actualizar((x) => { x.plan = copia; });
+}
+
+export function guardarEvento(ev) {
+  actualizar((x) => {
+    x.agenda ||= { eventos: [], viajes: [] };
+    x.agenda.eventos = [...x.agenda.eventos.filter((y) => y.id !== ev.id), ev].sort((a, b) => a.fecha.localeCompare(b.fecha));
+  });
+  reajustarPlan();
+}
+export function guardarViaje(v) {
+  actualizar((x) => {
+    x.agenda ||= { eventos: [], viajes: [] };
+    x.agenda.viajes = [...x.agenda.viajes.filter((y) => y.id !== v.id), v].sort((a, b) => a.desde.localeCompare(b.desde));
+  });
+  rehacerDiasViaje();
+  reajustarPlan();
+}
+export function borrarDeAgenda(id) {
+  actualizar((x) => {
+    if (!x.agenda) return;
+    x.agenda.eventos = x.agenda.eventos.filter((y) => y.id !== id);
+    x.agenda.viajes = x.agenda.viajes.filter((y) => y.id !== id);
+  });
+  rehacerDiasViaje();
+  reajustarPlan();
 }
 
 // ── HYROX ─────────────────────────────────────────────────────────────────

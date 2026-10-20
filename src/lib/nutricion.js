@@ -360,5 +360,7 @@ export function alimentoPermitido(id, perfil) {
 export function recetaPermitida(receta, perfil) {
   // Recetas con verdura cruda (tomate en tostada, ensaladas…) fuera si no la toleras
   if (receta.crudas && (perfil.alergias || []).includes('verdura_cruda')) return false;
+  // Los batidos de proteína en polvo, solo si dijiste que la tomas
+  if (!perfil.whey && receta.ingredientes.some((i) => i.a === 'proteina_whey')) return false;
   return receta.ingredientes.every((i) => alimentoPermitido(i.a, perfil));
 }

@@ -1,27 +1,36 @@
 // Horario de comidas: coloca cada comida según tu día (despertar, trabajo, entreno, dormir)
 // y reparte los macros, con más hidratos antes y después de entrenar.
 
-// Reparto base del día según el número de comidas (fracción de cada macro)
+// Reparto base del día según el número de comidas (fracción de cada macro).
+// Cena ligera y, antes de dormir, un lácteo rico en caseína (proteína de absorción lenta para la noche):
+// por eso la «recena» lleva mucha proteína y poco de lo demás (pM).
+const RECENA = { id: 'recena', nombre: 'Antes de dormir', tipo: 'recena', pct: 0.06, pM: { p: 0.15, c: 0.03, g: 0.03 } };
 export const REPARTOS = {
   3: [
-    { id: 'desayuno', nombre: 'Desayuno', tipo: 'desayuno', pct: 0.25 },
+    { id: 'desayuno', nombre: 'Desayuno', tipo: 'desayuno', pct: 0.27 },
     { id: 'comida', nombre: 'Comida', tipo: 'comida', pct: 0.42 },
-    { id: 'cena', nombre: 'Cena', tipo: 'cena', pct: 0.33 },
+    { id: 'cena', nombre: 'Cena', tipo: 'cena', pct: 0.25 },
+    RECENA,
   ],
   4: [
     { id: 'desayuno', nombre: 'Desayuno', tipo: 'desayuno', pct: 0.23 },
-    { id: 'comida', nombre: 'Comida', tipo: 'comida', pct: 0.37 },
-    { id: 'merienda', nombre: 'Merienda', tipo: 'snack', pct: 0.12 },
-    { id: 'cena', nombre: 'Cena', tipo: 'cena', pct: 0.28 },
+    { id: 'comida', nombre: 'Comida', tipo: 'comida', pct: 0.38 },
+    { id: 'merienda', nombre: 'Merienda', tipo: 'snack', pct: 0.14 },
+    { id: 'cena', nombre: 'Cena', tipo: 'cena', pct: 0.19 },
+    RECENA,
   ],
   5: [
     { id: 'desayuno', nombre: 'Desayuno', tipo: 'desayuno', pct: 0.2 },
     { id: 'media', nombre: 'Media mañana', tipo: 'snack', pct: 0.1 },
-    { id: 'comida', nombre: 'Comida', tipo: 'comida', pct: 0.33 },
-    { id: 'merienda', nombre: 'Merienda', tipo: 'snack', pct: 0.11 },
-    { id: 'cena', nombre: 'Cena', tipo: 'cena', pct: 0.26 },
+    { id: 'comida', nombre: 'Comida', tipo: 'comida', pct: 0.34 },
+    { id: 'merienda', nombre: 'Merienda', tipo: 'snack', pct: 0.12 },
+    { id: 'cena', nombre: 'Cena', tipo: 'cena', pct: 0.18 },
+    RECENA,
   ],
 };
+
+/** ¿Lleva el día un lácteo antes de dormir? (se puede quitar en el perfil; sin lactosa o vegano, no) */
+export const conRecena = (perfil) => perfil?.recena !== false && !(perfil?.alergias || []).includes('lactosa') && perfil?.dieta !== 'vegana';
 
 export const aMin = (hhmm) => {
   const [h, m] = String(hhmm || '00:00').split(':').map(Number);
@@ -46,7 +55,15 @@ const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
  */
 /** @param sesionDia opcional { hora, duracion } de la sesión concreta del día (plan HYROX) */
 export function horarioDia(perfil, entreno, sesionDia = null) {
-  const base = (REPARTOS[perfil.comidas] || REPARTOS[4]).map((f) => ({ ...f, pctM: { p: f.pct, c: f.pct, g: f.pct } }));
+  let base = (REPARTOS[perfil.comidas] || REPARTOS[4]).map((f) => ({ ...f, pctM: { ...(f.pM || { p: f.pct, c: f.pct, g: f.pct }) } }));
+  // Sin lácteo antes de dormir: su parte vuelve a la cena
+  if (!conRecena(perfil)) {
+    const r = base.find((f) => f.id === 'recena');
+    const cena = base.find((f) => f.id === 'cena');
+    for (const k of ['p', 'c', 'g']) cena.pctM[k] += r.pctM[k];
+    cena.pct += r.pct;
+    base = base.filter((f) => f !== r);
+  }
   const consejos = [];
 
   // Perfiles antiguos sin horario: horas españolas típicas
@@ -66,6 +83,7 @@ export function horarioDia(perfil, entreno, sesionDia = null) {
   horas.cena = clamp(Math.min(21 * 60 + 15, dormir - 150), horas.comida + 4 * 60, dormir - 90);
   horas.media = (horas.desayuno + horas.comida) / 2;
   horas.merienda = (horas.comida + horas.cena) / 2;
+  horas.recena = Math.max(horas.cena + 90, dormir - 45);
 
   const franjas = base.map((f) => ({ ...f, hora: horas[f.id], etiqueta: null }));
   let sesion = null;
@@ -104,14 +122,15 @@ export function horarioDia(perfil, entreno, sesionDia = null) {
 
     // Más hidratos alrededor del entreno, menos grasa justo antes (se digiere mejor)
     for (const f of franjas) {
+      if (f.id === 'recena') continue;
       if (f.etiqueta === 'pre') { f.pctM.c *= 1.35; f.pctM.g *= 0.6; }
       else if (f.etiqueta === 'post') { f.pctM.c *= 1.3; f.pctM.p *= 1.15; }
       else f.pctM.c *= 0.88;
     }
-    for (const k of ['p', 'c', 'g']) {
-      const total = franjas.reduce((s, f) => s + f.pctM[k], 0);
-      for (const f of franjas) f.pctM[k] /= total;
-    }
+  }
+  for (const k of ['p', 'c', 'g']) {
+    const total = franjas.reduce((s, f) => s + f.pctM[k], 0);
+    for (const f of franjas) f.pctM[k] /= total;
   }
 
   franjas.sort((a, b) => a.hora - b.hora);
@@ -125,7 +144,8 @@ export function horarioDia(perfil, entreno, sesionDia = null) {
     // Un tentempié movido por el entreno se nombra según cuándo cae
     if (f.tipo === 'snack') f.nombre = f.hora < horaComida ? 'Media mañana' : 'Merienda';
   }
-  if (dormir - franjas.at(-1).hora < 90) consejos.push('Cenas muy cerca de la hora de dormir: intenta que sea ligera y sin mucha grasa.');
+  const cena = franjas.find((f) => f.id === 'cena');
+  if (cena && dormir - cena.hora < 90) consejos.push('Cenas muy cerca de la hora de dormir: intenta que sea ligera y sin mucha grasa.');
 
   return {
     franjas,

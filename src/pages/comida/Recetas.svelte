@@ -13,10 +13,10 @@
   let tipo = $state('todas');
   let todas = $state(false);
   const objetivos = $derived(calcularObjetivos($estado.perfil));
-  const FRANJA = { desayuno: 'desayuno', snack: 'merienda', comida: 'comida', cena: 'cena' };
+  const FRANJA = { desayuno: 'desayuno', snack: 'merienda', comida: 'comida', cena: 'cena', recena: 'recena' };
   const normal = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-  const lista = $derived(RECETAS.map((r) => adaptarReceta(r, $estado.perfil)).filter((r) => (todas || recetaPermitida(r, $estado.perfil))
+  const lista = $derived(RECETAS.filter((r) => !r.fuera).map((r) => adaptarReceta(r, $estado.perfil)).filter((r) => (todas || recetaPermitida(r, $estado.perfil))
     && (tipo === 'todas' || (tipo === 'rapidas' ? r.tiempo <= 15 : tipo === 'taper' ? r.batch : r.tipos.includes(tipo)))
     && (!texto.trim() || normal(r.nombre).includes(normal(texto.trim())) || r.ingredientes.some((i) => normal(ALIMENTOS[i.a].nombre).includes(normal(texto.trim())))))
     .map((r) => {

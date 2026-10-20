@@ -22,7 +22,7 @@
   const e = get(estado);
   const objetivos = objetivosActuales();
   const dia = e.plan?.dias.find((d) => d.fecha === fecha);
-  const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
+  const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Antes de dormir' };
   const nombreDe = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja]);
   const franjas = [...(dia?.comidas || Object.keys(NOMBRES).map((f) => ({ franja: f }))).map((c) => ({ id: c.franja, nombre: nombreDe(c), hora: c.hora })), { id: null, nombre: 'Picoteo', hora: null }];
 

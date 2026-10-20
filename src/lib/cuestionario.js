@@ -241,7 +241,9 @@ const PASOS_CUESTIONARIO = [
       <label class="interruptor"><input type="checkbox" name="sobras" ${b.sobras ? 'checked' : ''}>
         <span><b>Cocinar la comida para dos días</b><small>Cocinas una vez y te llevas táper al día siguiente</small></span></label>
       <label class="interruptor"><input type="checkbox" name="whey" ${b.whey ? 'checked' : ''}>
-        <span><b>Tengo proteína en polvo</b><small>Si un día vas corto de proteína, te la propongo para cerrar el día</small></span></label>
+        <span><b>Tengo proteína en polvo</b><small>Batidos para la merienda, para cuando te saltas una comida y para cerrar la proteína del día</small></span></label>
+      <label class="interruptor"><input type="checkbox" name="recena" ${b.recena !== false ? 'checked' : ''}>
+        <span><b>Un lácteo antes de dormir</b><small>Cena más ligera y, antes de acostarte, queso batido o yogur proteico: caseína, proteína lenta para la noche</small></span></label>
       <label class="interruptor"><input type="checkbox" name="presupuesto" ${b.presupuesto === 'ajustado' ? 'checked' : ''}>
         <span><b>Priorizar recetas baratas</b><small>Menos salmón y ternera, más pollo, huevos y legumbres</small></span></label>`,
     leer: (f, b) => {
@@ -254,6 +256,7 @@ const PASOS_CUESTIONARIO = [
       b.sobras = f.get('sobras') === 'on';
       b.presupuesto = f.get('presupuesto') === 'on' ? 'ajustado' : 'normal';
       b.whey = f.get('whey') === 'on';
+      b.recena = f.get('recena') === 'on';
     },
   },
   {

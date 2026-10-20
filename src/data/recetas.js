@@ -11,7 +11,7 @@ export const RECETAS = [
 
   // ── Sin olla: microondas, air fryer, plancha o sin cocinar ───────────────
   {
-    id: 'ensalada-alubias-atun-huevo',
+    id: 'ensalada-alubias-atun-huevo', viaje: true,
     emoji: '🫘',
     nombre: 'Alubias con atún, huevo cocido, aceitunas y pimiento asado',
     tipos: ['comida', 'cena'],
@@ -238,6 +238,99 @@ export const RECETAS = [
       'Dora el pavo en tiras en la sartén 2 minutos.',
       'Sirve la crema con el pavo, el queso fresco en dados y el pan tostado aparte.',
     ],
+  },
+
+  // ── Antes de dormir: lácteos ricos en caseína (proteína que se absorbe despacio, de noche) ──
+  {
+    id: 'recena-queso-batido-canela', emoji: '🥛', nombre: 'Queso batido con canela', tipos: ['recena'], tiempo: 1,
+    ingredientes: [{ a: 'queso_batido', g: 250, rol: 'P' }],
+    especias: ['canela'],
+    pasos: ['Sirve el queso batido en un bol y espolvorea canela.'],
+    consejo: 'El queso batido es casi todo caseína: te da proteína durante la noche sin pesarte.',
+  },
+  {
+    id: 'recena-queso-batido-cacao', emoji: '🥛', nombre: 'Queso batido con cacao puro', tipos: ['recena'], tiempo: 1,
+    ingredientes: [{ a: 'queso_batido', g: 250, rol: 'P' }, { a: 'cacao', g: 5 }],
+    pasos: ['Mezcla el queso batido con el cacao puro hasta que quede como una crema.'],
+  },
+  {
+    id: 'recena-yogur-proteico', emoji: '🥛', nombre: 'Yogur +Proteínas', tipos: ['recena'], tiempo: 1, viaje: true,
+    ingredientes: [{ a: 'yogur_proteinas', g: 240, rol: 'P' }],
+    pasos: ['Tómatelo tal cual, frío, media hora antes de dormir.'],
+  },
+  {
+    id: 'recena-cottage-frutos-rojos', emoji: '🫐', nombre: 'Queso cottage con frutos rojos', tipos: ['recena'], tiempo: 2,
+    ingredientes: [{ a: 'queso_cottage', g: 200, rol: 'P' }, { a: 'frutos_rojos_congelados', g: 50 }],
+    pasos: ['Descongela los frutos rojos 30 s en el microondas y échalos sobre el cottage.'],
+  },
+
+  // ── Meriendas con batido de proteína (whey), solo si lo tomas ──
+  {
+    id: 'batido-whey-avena-platano', emoji: '🥤', nombre: 'Batido de proteína con bebida de avena y plátano', tipos: ['snack'], tiempo: 3,
+    ingredientes: [{ a: 'proteina_whey', g: 30, rol: 'P' }, { a: 'bebida_avena', g: 250 }, { a: 'platano', g: 100, rol: 'C' }],
+    pasos: ['Bate el cacito de proteína con la bebida de avena y el plátano (o agítalo en un vaso mezclador y cómete el plátano aparte).'],
+    consejo: 'La merienda más rápida que hay: perfecta si vas con prisa o como pre-entreno ligero.',
+  },
+  {
+    id: 'batido-whey-tortitas', emoji: '🥤', nombre: 'Batido de proteína con tortitas de arroz', tipos: ['snack'], tiempo: 2,
+    ingredientes: [{ a: 'proteina_whey', g: 30, rol: 'P' }, { a: 'tortitas_arroz', g: 23, rol: 'C' }],
+    pasos: ['Mezcla el cacito de proteína con 300 ml de agua fría en un vaso mezclador. Acompaña con las tortitas.'],
+  },
+
+  // ── De viaje: comer fuera (fuera: true, no van a la lista de la compra) ──
+  {
+    id: 'fuera-plancha-patatas', emoji: '🍽️', nombre: 'Menú del día: carne o pescado a la plancha con patatas', tipos: ['comida', 'cena'], tiempo: 1, fuera: true,
+    ingredientes: [{ a: 'pollo_pechuga', g: 180, rol: 'P' }, { a: 'patata', g: 220, rol: 'C' }, { a: 'lechuga', g: 60 }, { a: 'aceite', g: 12, rol: 'G' }],
+    pasos: ['De segundo: pollo, pavo, lomo, merluza o salmón a la plancha.', 'Guarnición: patatas cocidas, asadas o al horno (mejor que fritas) y ensalada verde de lechuga.', 'Pan: un trozo. Postre: fruta, yogur o café.'],
+    consejo: 'Si de primero hay crema de verduras, gazpacho o legumbre, adelante: sustituye a parte de las patatas.',
+  },
+  {
+    id: 'fuera-legumbre-pescado', emoji: '🍽️', nombre: 'Menú del día: legumbre y pescado', tipos: ['comida'], tiempo: 1, fuera: true,
+    ingredientes: [{ a: 'lentejas', g: 220, rol: 'C' }, { a: 'merluza', g: 170, rol: 'P' }, { a: 'pan_integral', g: 30 }, { a: 'aceite', g: 12, rol: 'G' }],
+    pasos: ['De primero: lentejas, garbanzos o alubias (un plato normal, sin repetir).', 'De segundo: pescado a la plancha o al horno.', 'Postre: fruta o yogur.'],
+  },
+  {
+    id: 'fuera-pasta-arroz-pollo', emoji: '🍝', nombre: 'Comer fuera: pasta o arroz con pollo', tipos: ['comida'], tiempo: 1, fuera: true,
+    ingredientes: [{ a: 'pasta', g: 100, rol: 'C' }, { a: 'pollo_pechuga', g: 140, rol: 'P' }, { a: 'tomate_frito', g: 60 }, { a: 'aceite', g: 12, rol: 'G' }],
+    pasos: ['Pide pasta o arroz con pollo, atún o gambas y salsa de tomate (mejor que nata o carbonara).', 'Si es un plato único grande, deja un tercio.'],
+    consejo: 'El día antes de la carrera es justo lo que toca: hidratos, proteína y poca grasa.',
+  },
+  {
+    id: 'fuera-pescado-verduras', emoji: '🐟', nombre: 'Cena fuera: pescado con verduras a la plancha', tipos: ['cena'], tiempo: 1, fuera: true,
+    ingredientes: [{ a: 'merluza', g: 200, rol: 'P' }, { a: 'calabacin', g: 150 }, { a: 'berenjena', g: 100 }, { a: 'pan_integral', g: 50, rol: 'C' }, { a: 'aceite', g: 12, rol: 'G' }],
+    pasos: ['Pescado a la plancha (merluza, dorada, lubina, salmón…) con verduras a la plancha.', 'Un trozo de pan y agua. De postre, si acaso, una infusión.'],
+  },
+  {
+    id: 'fuera-tortilla-jamon', emoji: '🍳', nombre: 'Cena fuera: tortilla francesa con jamón y pan', tipos: ['cena'], tiempo: 1, fuera: true,
+    ingredientes: [{ a: 'huevo', g: 120, rol: 'P' }, { a: 'jamon_serrano', g: 40 }, { a: 'pan_integral', g: 60, rol: 'C' }, { a: 'aceite', g: 6, rol: 'G' }],
+    pasos: ['Tortilla francesa de dos huevos y una tapa o ración pequeña de jamón.', 'Pan con tomate o tostado.'],
+  },
+  {
+    id: 'fuera-desayuno-cafeteria', emoji: '☕', nombre: 'Desayuno de cafetería: café con leche y tostada con pavo', tipos: ['desayuno'], tiempo: 1, fuera: true,
+    ingredientes: [{ a: 'pan_integral', g: 80, rol: 'C' }, { a: 'pavo_fiambre', g: 60, rol: 'P' }, { a: 'leche_semi', g: 200 }, { a: 'aceite', g: 5, rol: 'G' }],
+    pasos: ['Café con leche (o con bebida de avena si la tienen) y tostada con tomate y pavo o jamón york.', 'Si hay zumo natural o fruta, añádelo.'],
+  },
+
+  // ── De viaje sin cocina: todo listo del súper (viaje: true) ──
+  {
+    id: 'viaje-yogur-platano-tortitas', emoji: '🥛', nombre: 'Yogur +Proteínas con plátano y tortitas', tipos: ['desayuno', 'snack'], tiempo: 1, viaje: true,
+    ingredientes: [{ a: 'yogur_proteinas', g: 240, rol: 'P' }, { a: 'platano', g: 110 }, { a: 'tortitas_maiz', g: 23, rol: 'C' }],
+    pasos: ['Todo del súper y listo: los yogures, un plátano y un paquete de tortitas.'],
+  },
+  {
+    id: 'viaje-pollo-asado-pan', emoji: '🍗', nombre: 'Pollo asado del súper con pan y pimientos asados', tipos: ['comida', 'cena'], tiempo: 2, viaje: true,
+    ingredientes: [{ a: 'tiras_pollo_horno', g: 160, rol: 'P' }, { a: 'pan_integral', g: 90, rol: 'C' }, { a: 'pimientos_asados', g: 80 }, { a: 'aceite', g: 6, rol: 'G' }],
+    pasos: ['Pollo asado en tiras (o medio pollo asado sin piel), pan y pimientos asados de bote. Sin cocinar nada.'],
+  },
+  {
+    id: 'viaje-wrap-pollo-hummus', emoji: '🌯', nombre: 'Wraps de pollo con hummus', tipos: ['comida', 'cena'], tiempo: 3, viaje: true,
+    ingredientes: [{ a: 'tortillas_trigo', g: 90, rol: 'C' }, { a: 'tiras_pollo_natural', g: 140, rol: 'P' }, { a: 'hummus', g: 40, rol: 'G' }, { a: 'lechuga', g: 40 }],
+    pasos: ['Unta las tortillas con hummus, pon el pollo y la lechuga y enrolla.'],
+  },
+  {
+    id: 'viaje-pavo-tortitas-fruta', emoji: '🥪', nombre: 'Pavo en lonchas con tortitas y una fruta', tipos: ['snack', 'desayuno'], tiempo: 1, viaje: true,
+    ingredientes: [{ a: 'pavo_fiambre', g: 80, rol: 'P' }, { a: 'tortitas_maiz', g: 30, rol: 'C' }, { a: 'mandarina', g: 140 }],
+    pasos: ['Lonchas de pavo con tortitas de maíz y una pieza de fruta fácil de llevar.'],
   },
 
   // ── Desayunos ────────────────────────────────────────────────────────────

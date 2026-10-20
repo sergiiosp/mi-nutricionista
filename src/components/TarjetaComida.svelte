@@ -8,7 +8,8 @@
   import { racionTipica } from '../lib/raciones.js';
   import { recetaPorId } from '../lib/planificador.js';
   import { macrosComida, costeComida, cantidadTexto, alimento } from '../lib/nutricion.js';
-  import { marcarHecha, alternarSaltada, quitarRegistro } from '../lib/acciones.js';
+  import { marcarHecha, alternarSaltada, quitarRegistro, tomarBatido, mantenerComida } from '../lib/acciones.js';
+  import { estado } from '../stores/estado.js';
   import { abrirHoja, avisar } from '../stores/ui.js';
   import { editarRegistro } from '../stores/estado.js';
   import { euros } from '../lib/formato.js';
@@ -71,9 +72,9 @@
 <article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada>
 {#if plegada}
   <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
-    <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
-    <span class="pl-txt"><small>{comida.hora ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
-    {#if situacion !== 'saltada'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
+    <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
+    <span class="pl-txt"><small>{comida.hora ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sobra' ? ' · hoy no hace falta' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
+    {#if situacion !== 'saltada' && situacion !== 'sobra'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
     <Icono n="chevron-down" tam={18} />
   </button>
 {:else}
@@ -96,6 +97,12 @@
 
   {#if situacion === 'saltada'}
     <div class="estado-linea"><Icono n="skip-forward" tam={15} /> <span>Saltada</span> <button class="boton-linea" onclick={() => alternarSaltada(fecha, comida.franja)}>Deshacer</button></div>
+    {#if $estado.perfil?.whey && editable}
+      <button class="batido" onclick={() => tomarBatido(fecha, comida.franja)}><Icono n="cup-soda" tam={16} /> Me he tomado un batido de proteína</button>
+    {/if}
+  {:else if situacion === 'sobra'}
+    <div class="estado-linea"><Icono n="sparkles" tam={15} /> <span>Hoy no hace falta: con lo que llevas, el resto del día ya cuadra</span></div>
+    {#if editable}<button class="boton-linea" onclick={() => mantenerComida(fecha, comida.franja)}>Me la tomo igualmente</button>{/if}
   {:else if situacion === 'sustituida'}
     <div class="estado-linea"><Icono n="repeat" tam={15} /> <span>Comiste otra cosa</span></div>
     {#each comida.otros as r (r.id)}
@@ -275,4 +282,5 @@
   .acciones .solo-icono { width: 44px; padding: 0; margin-left: auto; }
   .pregunta { flex-basis: 100%; display: flex; align-items: center; gap: 6px; margin: 0 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--aviso-texto); }
   .secundarias { margin-top: 6px; }
+  .batido { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; margin-top: 8px; padding: 0 12px; border: 1px dashed var(--borde); border-radius: 12px; background: none; color: var(--primario); font: inherit; font-weight: 700; font-size: 0.86rem; cursor: pointer; }
 </style>

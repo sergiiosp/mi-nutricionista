@@ -58,7 +58,7 @@
     const ses = sem.sesiones.filter((x) => x.tipo !== 'carrera');
     return { total: ses.length, hechas: ses.filter((x) => ['completa', 'parcial'].includes($estado.hyrox?.registros?.[x.id]?.estado)).length };
   });
-  const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
+  const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Antes de dormir' };
   const nombreFranja = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja]);
 
   // Tramos del día: cada comida del plan es un tramo; lo comido fuera de franja va en un tramo extra

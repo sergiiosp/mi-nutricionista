@@ -14,8 +14,8 @@ const MIN = 60_000;
 export const PREFS_DEFECTO = { activo: false, comidas: true, entreno: true, suplementos: true, pesarse: true, diaPeso: 1, horaPeso: '08:00' };
 export const prefsAvisos = () => ({ ...PREFS_DEFECTO, ...(meta.avisos || {}) });
 
-const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena' };
-const EMOJIS = { desayuno: '☕', media: '🍎', comida: '🍽️', merienda: '🥪', cena: '🌙' };
+const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Antes de dormir' };
+const EMOJIS = { desayuno: '☕', media: '🍎', comida: '🍽️', merienda: '🥪', cena: '🌙', recena: '🌙' };
 const nombreFranja = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja] || 'Comida');
 
 export function soporteAvisos() {

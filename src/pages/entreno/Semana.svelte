@@ -157,6 +157,7 @@
       </li>
     {/each}
   </ol>
+  <a class="agenda-link" href="#entreno/plan"><Icono n="flag" tam={16} /> ¿Una carrera o un viaje? Añádelo y lo ajusto todo</a>
 {/if}
 
 <style>
@@ -250,4 +251,5 @@
   .marca.ok { width: 26px; height: 26px; border-radius: 50%; background: var(--exito-claro); color: var(--exito); }
   .marca.falta { padding: 4px 10px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-size: 0.74rem; font-weight: 800; }
   .libre { color: var(--texto-3); font-size: 0.86rem; font-weight: 600; }
+  .agenda-link { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin-top: 14px; border-radius: 14px; border: 1px dashed var(--borde); color: var(--primario); font-weight: 700; font-size: 0.86rem; text-decoration: none; }
 </style>

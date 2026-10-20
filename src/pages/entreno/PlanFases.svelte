@@ -3,6 +3,7 @@
   // línea de tiempo y tus ritmos de referencia.
   import Icono from '../../components/Icono.svelte';
   import Portada from '../../components/Portada.svelte';
+  import Agenda from '../../components/Agenda.svelte';
   import { estado } from '../../stores/estado.js';
   import { planDe } from '../../lib/hyrox/index.js';
   import { FASES, semanaDe } from '../../lib/hyrox/plan.js';
@@ -43,6 +44,9 @@
       </div>
     </div>
   </Portada>
+
+  <h3 class="cab" id="agenda">Carreras y viajes</h3>
+  <Agenda />
 
   <h3 class="cab">Volumen semana a semana</h3>
   <div class="tarjeta grafico">

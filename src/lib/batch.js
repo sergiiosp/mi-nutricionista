@@ -60,7 +60,7 @@ export const CONSERVAR = [
  * @param aparatos con qué cocinas (orden de preferencia)
  */
 export function planBatch(plan, desde, dias = 4, aparatos = undefined) {
-  const seleccion = plan.dias.filter((d) => d.fecha >= desde).slice(0, dias);
+  const seleccion = plan.dias.filter((d) => d.fecha >= desde && !d.viaje).slice(0, dias); // de viaje no se cocina
   const recetasBatch = {};
   const bases = Object.fromEntries(Object.keys(BASES).map((k) => [k, {}]));
   const tapers = [];

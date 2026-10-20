@@ -35,9 +35,16 @@ function proteinaPrincipal(receta) {
   return p ? p.a : null;
 }
 
-export function candidatas(perfil, franja, { favoritas = [] } = {}) {
+export function candidatas(perfil, franja, { favoritas = [], viaje = null } = {}) {
   const no = new Set(perfil.recetasNo || []); // platos que dijiste que no repetirías
-  let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && !no.has(r.id)).map((r) => adaptarReceta(r, perfil)).filter((r) => recetaPermitida(r, perfil));
+  let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && !no.has(r.id) && (viaje || !r.fuera)).map((r) => adaptarReceta(r, perfil)).filter((r) => recetaPermitida(r, perfil));
+  // De viaje: comer fuera (restaurante) y/o cosas del súper que no hay que cocinar
+  if (viaje) {
+    const modos = viaje.comida || ['fuera', 'super'];
+    const fuera = modos.includes('fuera');
+    const deViaje = lista.filter((r) => (fuera && r.fuera) || (modos.includes('super') && r.viaje) || (!fuera && !modos.includes('super') && r.tiempo <= 5));
+    if (deViaje.length) return deViaje;
+  }
   if (perfil.tiempoMax) {
     const rapidas = lista.filter((r) => r.tiempo <= perfil.tiempoMax);
     if (rapidas.length >= 3) lista = rapidas;
@@ -145,24 +152,26 @@ function errorComida(ingredientes, obj) {
 /**
  * @param proveedor opcional (fecha) => sesiones del plan HYROX ese día; si existe, manda sobre los días fijos de entreno
  */
-export function contextoDia(perfil, objetivos, fecha, proveedor = null) {
+export function contextoDia(perfil, objetivos, fecha, proveedor = null, viajes = null) {
+  const viaje = (viajes || []).find((v) => fecha >= v.desde && fecha <= v.hasta) || null;
   const sesiones = proveedor ? proveedor(fecha) : null;
   if (sesiones) {
-    const principal = sesiones.filter((s) => !s.carga && s.tipo !== 'recuperacion').sort((a, b) => b.duracion - a.duracion)[0];
+    // Caminar o recuperar no es día de entreno (no hay pre ni post), pero su gasto sí cuenta
+    const principal = sesiones.filter((s) => !s.carga && !['recuperacion', 'caminar'].includes(s.tipo)).sort((a, b) => b.duracion - a.duracion)[0];
     const entreno = !!principal;
     const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion } : null);
-    return { entreno, horario, objDia: metaDia(objetivos, sesiones), sesiones };
+    return { entreno, horario, objDia: metaDia(objetivos, sesiones), sesiones, viaje };
   }
   const entreno = esDiaEntreno(perfil, fecha);
   const horario = horarioDia(perfil, entreno);
-  return { entreno, horario, objDia: objetivosDia(objetivos, entreno) };
+  return { entreno, horario, objDia: objetivosDia(objetivos, entreno), viaje };
 }
 
 /**
  * Genera un plan de N días empezando en `inicio` (fecha ISO yyyy-mm-dd).
  * perfil.sobras = true → la comida se cocina para dos días seguidos (táper).
  */
-export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null, favoritas = [] } = {}) {
+export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null, favoritas = [], viajes = null } = {}) {
   const aleatorio = rng(semilla);
   const usos = {};
   const prefs = preferenciasAlimentos(perfil);
@@ -187,7 +196,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   const resultado = [];
   for (let d = 0; d < dias; d++) {
     const fecha = sumarDias(inicio, d);
-    const { entreno, horario, objDia } = contextoDia(perfil, objetivos, fecha, proveedor);
+    const { entreno, horario, objDia, viaje } = contextoDia(perfil, objetivos, fecha, proveedor, viajes);
     const balance = balanceDia(objDia, horario.franjas);
     const proteinasDia = [];
     const comidas = [];
@@ -195,10 +204,10 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       const obj = balance.objetivo(idx);
       let receta;
       const anterior = resultado[d - 1]?.comidas.find((c) => c.franja === franja.id);
-      if (perfil.sobras && franja.tipo === 'comida' && d % 2 === 1 && anterior) {
+      if (perfil.sobras && !viaje && franja.tipo === 'comida' && d % 2 === 1 && anterior && !recetaPorId[anterior.recetaId]?.fuera) {
         receta = recetaPorId[anterior.recetaId]; // segundo día del táper
       } else {
-        const lista = candidatas(perfil, franja, { favoritas });
+        const lista = candidatas(perfil, franja, { favoritas, viaje });
         if (lista.length) {
           const errorAjuste = (r) => comidaEscalada(r, franja, objDia, obj).error;
           const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas) };
@@ -214,7 +223,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       balance.anotar(idx, comida.ingredientes);
       comidas.push(comida);
     }
-    resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, objetivo: objDia, comidas });
+    resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, objetivo: objDia, comidas, ...(viaje ? { viaje: { comida: viaje.comida || [] } } : {}) });
   }
   return { version: 2, creado: new Date().toISOString(), inicio, semilla, comidasDia: perfil.comidas, dias: resultado };
 }
@@ -227,21 +236,21 @@ export function objetivoComida(plan, diaIdx, franjaId, perfil, objetivos, provee
   return franja ? { franja, obj: objetivoFranja(objDia, franja) } : null;
 }
 
-function franjaDelDia(perfil, objetivos, dia, franjaId, proveedor) {
-  const ctx = contextoDia(perfil, objetivos, dia.fecha, proveedor);
+function franjaDelDia(perfil, objetivos, dia, franjaId, proveedor, viajes = null) {
+  const ctx = contextoDia(perfil, objetivos, dia.fecha, proveedor, viajes);
   return { ...ctx, franja: ctx.horario.franjas.find((f) => f.id === franjaId) };
 }
 
 /** Alternativas para sustituir una comida concreta del plan, ordenadas por encaje. */
-export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null, favoritas = []) {
+export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null, favoritas = [], viajes = null) {
   const dia = plan.dias[diaIdx];
-  const { franja, objDia } = franjaDelDia(perfil, objetivos, dia, franjaId, proveedor);
+  const { franja, objDia, viaje } = franjaDelDia(perfil, objetivos, dia, franjaId, proveedor, viajes);
   if (!franja) return [];
   const actual = dia.comidas.find((c) => c.franja === franjaId)?.recetaId;
   const usos = {};
   for (const d of plan.dias) for (const c of d.comidas) usos[c.recetaId] = (usos[c.recetaId] || 0) + 1;
   const obj = objetivoFranja(objDia, franja);
-  return candidatas(perfil, franja, { favoritas })
+  return candidatas(perfil, franja, { favoritas, viaje })
     .filter((r) => r.id !== actual)
     .map((r) => {
       const comida = crearComida(r, franja, objDia);
@@ -259,13 +268,13 @@ export function sustituir(plan, diaIdx, franjaId, comida) {
 }
 
 /** Añade las comidas que falten en el plan (p. ej. un desayuno que no se pudo elegir). Devuelve cuántas. */
-export function completarPlan(plan, perfil, objetivos, proveedor = null, favoritas = []) {
+export function completarPlan(plan, perfil, objetivos, proveedor = null, favoritas = [], viajes = null) {
   let n = 0;
   plan.dias.forEach((dia, i) => {
-    const { horario, objDia } = contextoDia(perfil, objetivos, dia.fecha, proveedor);
+    const { horario, objDia, viaje } = contextoDia(perfil, objetivos, dia.fecha, proveedor, viajes);
     for (const franja of horario.franjas) {
       if (dia.comidas.some((c) => c.franja === franja.id)) continue;
-      const lista = candidatas(perfil, franja, { favoritas });
+      const lista = candidatas(perfil, franja, { favoritas, viaje });
       if (!lista.length) continue;
       const receta = lista[(i * 7 + franja.id.length) % lista.length];
       dia.comidas.push(crearComida(receta, franja, objDia));
