@@ -132,6 +132,9 @@
 {/if}
 
 <style>
+  /* Historial de pesos (antes en app.css) */
+  .historial { list-style: none; padding: 0; margin: 10px 0 0; }
+  .historial li { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; padding: 6px 0; border-top: 1px solid var(--superficie-2); font-size: 0.92rem; }
   .form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; align-items: end; }
   .tit { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; }
   .form .campo { margin: 10px 0; }

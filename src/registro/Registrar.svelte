@@ -11,14 +11,14 @@
   import Fuera from './Fuera.svelte';
   import MisComidas from './MisComidas.svelte';
   import { estado, añadirRegistro, nuevoId, horaActual, actualizar } from '../stores/estado.js';
-  import { cerrarHoja, avisar } from '../stores/ui.js';
+  import { cerrarHoja, avisar, abrirHoja } from '../stores/ui.js';
   import { crearRegistro } from '../lib/registro.js';
   import { guardarFoto } from '../lib/fotos.js';
   import { objetivosActuales } from '../lib/acciones.js';
-  import { hoyISO } from '../lib/planificador.js';
+  import { hoyISO, sumarDias } from '../lib/planificador.js';
   import { franjaPorHora } from '../lib/formato.js';
 
-  let { fecha = hoyISO(), franja: franjaInicial = null } = $props();
+  let { fecha = hoyISO(), franja: franjaInicial = null, vista: vistaInicial = 'inicio' } = $props();
   const e = get(estado);
   const objetivos = objetivosActuales();
   const dia = e.plan?.dias.find((d) => d.fecha === fecha);
@@ -27,7 +27,7 @@
   const franjas = [...(dia?.comidas || Object.keys(NOMBRES).map((f) => ({ franja: f }))).map((c) => ({ id: c.franja, nombre: nombreDe(c), hora: c.hora })), { id: null, nombre: 'Picoteo', hora: null }];
 
   let franja = $state(franjaInicial ?? franjaPorHora(dia?.comidas));
-  let vista = $state('inicio');
+  let vista = $state(vistaInicial);
   let item = $state(null);
   let foto = $state(null);
   let fotoUrl = $state(null);
@@ -83,6 +83,56 @@
     avisar(`${r.nombre} · ${Math.round(r.macros.kcal)} kcal`, '🔁');
     cerrarHoja();
   }
+
+  // Ayer: repetir lo de esta comida o copiar el día entero (si hoy aún está vacío)
+  const ayer = sumarDias(fecha, -1);
+  const deAyer = e.registros[ayer] || [];
+  const hoyLleva = e.registros[fecha] || [];
+  const ayerFranja = $derived(deAyer.filter((r) => (r.franja ?? null) === franja));
+  const franjaHecha = $derived(hoyLleva.some((r) => (r.franja ?? null) === franja));
+  const kcalDe = (l) => Math.round(l.reduce((t, r) => t + (r.macros?.kcal || 0), 0));
+  const nombresDe = (l) => l.map((r) => r.nombre).join(' + ');
+
+  function copiar(lista, mismaFranja) {
+    const ids = [];
+    for (const r of lista) {
+      const nuevo = { ...r, id: nuevoId(), fecha, foto: undefined, ...(mismaFranja ? {} : { franja, hora: horaComida() }) };
+      delete nuevo.clave;
+      añadirRegistro(fecha, nuevo);
+      ids.push(nuevo.id);
+    }
+    return ids;
+  }
+  const deshacerCopia = (ids) => () => actualizar((x) => { x.registros[fecha] = (x.registros[fecha] || []).filter((r) => !ids.includes(r.id)); });
+  function repetirAyer() {
+    const ids = copiar(ayerFranja, false);
+    avisar(`Como ayer · ${kcalDe(ayerFranja)} kcal`, '🔁', deshacerCopia(ids));
+    cerrarHoja();
+  }
+  function copiarDia() {
+    const ids = copiar(deAyer, true);
+    avisar(`Día de ayer copiado · ${kcalDe(deAyer)} kcal`, '🔁', deshacerCopia(ids));
+    cerrarHoja();
+  }
+
+  // Tus habituales: lo que más apuntas (últimos 30 días, con la misma cantidad), a un toque
+  const habituales = (() => {
+    const cuenta = new Map();
+    const desde = sumarDias(fecha, -30);
+    for (const [f, lista] of Object.entries(e.registros || {})) {
+      if (f < desde || f > fecha) continue;
+      for (const r of lista) {
+        if (r.tipo === 'plan') continue;
+        const k = `${r.tipo}|${r.ref || r.nombre}|${r.cantidad?.texto || ''}`;
+        const c = cuenta.get(k) || { n: 0, r, k };
+        c.n++;
+        c.r = r;
+        cuenta.set(k, c);
+      }
+    }
+    return [...cuenta.values()].filter((c) => c.n >= 2).sort((a, b) => b.n - a.n).slice(0, 8);
+  })();
+  const enHabituales = new Set(habituales.map((c) => `${c.r.tipo}:${c.r.ref || c.r.nombre}`));
 
   async function alFoto(ev) {
     const archivo = ev.currentTarget.files?.[0];
@@ -148,6 +198,36 @@
           {/each}
         </div>
 
+        {#if habituales.length}
+          <h3 class="grupo">Tus habituales</h3>
+          <div class="habituales">
+            {#each habituales as { r, n, k } (k)}
+              <button onclick={() => repetir(r)} aria-label="Añadir {r.nombre}, {r.cantidad?.texto || ''}">
+                <span class="h-cab"><Icono n="plus" tam={14} grosor={2.6} /><small>{n} veces</small></span>
+                <b>{r.nombre}</b>
+                <small>{r.cantidad?.texto ? `${r.cantidad.texto} · ` : ''}{Math.round(r.macros.kcal)} kcal</small>
+              </button>
+            {/each}
+          </div>
+        {/if}
+
+        {#if (ayerFranja.length && !franjaHecha) || (deAyer.length && !hoyLleva.length)}
+          <div class="ayer">
+            {#if ayerFranja.length && !franjaHecha}
+              <button onclick={repetirAyer}>
+                <span class="a-ic"><Icono n="repeat" tam={18} grosor={2.2} /></span>
+                <span class="a-txt"><small>{franjaSel.nombre} como ayer · {kcalDe(ayerFranja)} kcal</small><b>{nombresDe(ayerFranja)}</b></span>
+              </button>
+            {/if}
+            {#if deAyer.length && !hoyLleva.length}
+              <button onclick={copiarDia}>
+                <span class="a-ic"><Icono n="calendar-days" tam={18} grosor={2.2} /></span>
+                <span class="a-txt"><small>Todo el día · {kcalDe(deAyer)} kcal</small><b>Copiar lo que comiste ayer ({deAyer.length})</b></span>
+              </button>
+            {/if}
+          </div>
+        {/if}
+
         <div class="opciones-grandes">
           <button class="op op-escanear" onclick={() => (vista = 'escanear')}><Icono n="scan-barcode" tam={28} /><b>Escanear</b><small>Código de barras</small></button>
           <button class="op op-buscar" onclick={() => (vista = 'buscar')}><Icono n="search" tam={28} /><b>Buscar</b><small>Alimento o producto</small></button>
@@ -157,10 +237,10 @@
         </div>
         <input bind:this={inputFoto} type="file" accept="image/*" capture="environment" hidden onchange={alFoto} />
 
-        {#if e.recientes.length}
-          <h3 class="grupo">Repetir con un toque</h3>
+        {#if e.recientes.some((r) => !enHabituales.has(r.clave))}
+          <h3 class="grupo">Lo último que apuntaste</h3>
           <ul class="recientes">
-            {#each e.recientes.slice(0, 8) as r (r.clave)}
+            {#each e.recientes.filter((r) => !enHabituales.has(r.clave)).slice(0, 8) as r (r.clave)}
               <li><button onclick={() => repetir(r)}>
                 {#if r.imagen && r.tipo === 'producto'}<img src={r.imagen} alt="" />{:else}<span class="ic"><Emoji e={r.emoji || '🍽️'} tam={26} /></span>{/if}
                 <span class="txt"><b>{r.nombre}</b><small>{r.cantidad?.texto} · {Math.round(r.macros.kcal)} kcal</small></span>
@@ -174,6 +254,7 @@
       {:else if vista === 'buscar'}
         <Buscar onelegir={elegir} />
       {:else if vista === 'fuera'}
+        <button class="a-guia" onclick={() => abrirHoja('guiaFuera')}><Icono n="lightbulb" tam={18} /> <span><b>¿No sabes qué pedir?</b> Guía por tipo de sitio</span> <Icono n="chevron-right" tam={18} /></button>
         <Fuera onelegir={elegir} />
       {:else if vista === 'propias'}
         <MisComidas onelegir={elegir} />
@@ -204,6 +285,25 @@
   .op-foto { grid-column: 1 / -1; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; }
   .op-foto :global(.icono) { grid-row: span 2; }
   .op-foto b { margin-top: 0; }
+  .habituales { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 6px; scroll-snap-type: x mandatory; scroll-padding-left: 16px; }
+  .habituales::-webkit-scrollbar { display: none; }
+  .habituales button { flex: 0 0 auto; width: 148px; display: grid; align-content: start; gap: 2px; padding: 10px 12px 12px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; color: var(--texto); cursor: pointer; scroll-snap-align: start; transition: transform 0.15s var(--ease-out); }
+  .habituales button:active { transform: scale(0.96); }
+  .h-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .h-cab :global(.icono) { width: 24px; height: 24px; padding: 5px; border-radius: 50%; background: var(--primario); color: var(--sobre-primario); box-sizing: border-box; }
+  .h-cab small { color: var(--texto-3); }
+  .habituales b { font-size: 0.86rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .habituales small { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
+  .ayer { display: grid; gap: 6px; margin: 12px 0 4px; }
+  .ayer button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 12px 8px 8px; border: 1px dashed var(--borde); border-radius: 16px; background: none; color: var(--texto); text-align: left; cursor: pointer; }
+  .a-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
+  .a-txt { flex: 1; min-width: 0; display: grid; }
+  .a-txt small { font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
+  .a-txt b { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .a-guia { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; margin-bottom: 10px; padding: 8px 12px; border: 0; border-radius: 16px; background: var(--primario-claro); color: var(--texto-2); font: inherit; font-size: 0.86rem; text-align: left; cursor: pointer; }
+  .a-guia span { flex: 1; }
+  .a-guia b { color: var(--texto); font-weight: 700; }
+  .a-guia :global(.icono) { color: var(--primario); flex-shrink: 0; }
   .grupo { font-size: 0.7rem; font-weight: 700; color: var(--texto-3); margin: 18px 4px 8px; }
   .recientes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .recientes button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }

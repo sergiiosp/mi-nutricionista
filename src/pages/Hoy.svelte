@@ -8,19 +8,20 @@
   import { estado, añadirRegistro, horaActual } from '../stores/estado.js';
   import { avisar, abrirHoja } from '../stores/ui.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
-  import { hoyISO } from '../lib/planificador.js';
+  import { hoyISO, recetaPorId } from '../lib/planificador.js';
   import { estadoDia, sugerencias, faltas } from '../lib/dia.js';
   import NotaDia from '../components/NotaDia.svelte';
   import { recomendaciones, recordatoriosDia } from '../lib/salud.js';
-  import { esDiaEntreno, horarioDia } from '../lib/horario.js';
+  import { esDiaEntreno, horarioDia, aMin } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
-  import { crearPlan, marcarEntrenoDia, quitarRegistro } from '../lib/acciones.js';
+  import { crearPlan, marcarEntrenoDia, quitarRegistro, alternarToma } from '../lib/acciones.js';
   import { fechaLarga, saludo, entero, capital, num } from '../lib/formato.js';
   import { slide } from 'svelte/transition';
   import { tendencia } from '../lib/progreso.js';
   import { semanaDe } from '../lib/hyrox/plan.js';
   import { rachas } from '../lib/logros.js';
   import PropuestaSemana from '../components/PropuestaSemana.svelte';
+  import Valorar from '../components/Valorar.svelte';
 
   const hoy = hoyISO();
   const objetivos = $derived(calcularObjetivos($estado.perfil));
@@ -95,6 +96,24 @@
   // Lo siguiente que toca (comida pendiente o sesión sin registrar) y el resto del día, en líneas
   const proximo = $derived(linea.find((it) => (it.tipo === 'comida' && it.c.situacion === 'pendiente') || (it.tipo === 'hyrox' && it.s.tipo !== 'carrera' && !$estado.hyrox?.registros?.[it.s.id])) || null);
   const resto = $derived(linea.filter((it) => it !== proximo));
+  // Marca «Ahora» en la línea de tiempo: antes del primer momento que aún no ha llegado
+  const posAhora = $derived.by(() => { const i = resto.findIndex((it) => it.hora && it.hora > ahora); return i === -1 ? resto.length : i; });
+  const tomadas = $derived($estado.tomas?.[hoy] || {});
+
+  // Por qué toca esa comida a esa hora, en una línea
+  const horaEntreno = $derived(entrenoHoy ? (sesionesHoy.find((s) => !['carrera', 'recuperacion', 'caminar'].includes(s.tipo))?.hora || sesion?.inicio || null) : null);
+  function porQue(c) {
+    if (c.situacion === 'sobra') return 'Hoy no hace falta: el día ya cuadra sin ella';
+    if (c.franja === 'recena') return 'Caseína: proteína lenta mientras duermes';
+    if (d.dia?.viaje) return 'De viaje: fácil de encontrar fuera de casa';
+    if (horaEntreno && c.hora) {
+      const dif = aMin(horaEntreno) - aMin(c.hora);
+      if (dif >= 45 && dif <= 240) return 'Antes de entrenar: hidratos para rendir';
+      if (dif < 0 && dif >= -210) return 'Después de entrenar: proteína para recuperar';
+    }
+    return { desayuno: 'Empieza el día con proteína', comida: 'La comida fuerte del día', cena: entrenoHoy ? 'Recupera sin acostarte lleno' : 'Ligera, para dormir mejor', merienda: 'Llegas a la cena sin hambre', media: 'Aguantas hasta la comida' }[c.franja] || '';
+  }
+  const POR_QUE_SESION = { caminar: 'Suma pasos sin cargar las piernas', popular: 'Tu carrera: sal a tu ritmo objetivo', recuperacion: 'Movilidad suave para soltar' };
 
   const CONSEJOS = [
     'Llena medio plato de verdura: aporta volumen, fibra y casi nada de calorías.',
@@ -205,6 +224,9 @@
   {#if d.desviado && d.comidas.some((c) => c.ajustada && c.situacion === 'pendiente')}
     <div class="aviso"><Icono n="refresh-cw" tam={18} /> <span><b>Próximas comidas reajustadas</b> para cuadrar el día con lo que ya has comido.</span></div>
   {/if}
+  {#if d.dia?.viaje}
+    <button class="aviso viaje" onclick={() => abrirHoja('guiaFuera')}><Icono n="map-pin" tam={18} /> <span><b>Hoy comes fuera.</b> Mira qué pedir según el sitio para no salirte del día.</span> <Icono n="chevron-right" tam={18} /></button>
+  {/if}
   {#if d.pasado}
     <div class="aviso amarillo"><Icono n="thumbs-up" tam={18} /> <span><b>Hoy vas algo por encima.</b> Es normal en días así: mañana sigue el menú sin compensar.</span></div>
   {/if}
@@ -227,7 +249,7 @@
   {#if proximo}
     <h2 class="seccion">Ahora toca</h2>
     {#if proximo.tipo === 'comida'}
-      <div class="s-comida"><TarjetaComida comida={proximo.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(proximo.c)} destacada /></div>
+      <div class="s-comida"><TarjetaComida comida={proximo.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(proximo.c)} destacada portada porque={porQue(proximo.c)} /></div>
     {:else}
       <div class="s-entreno"><TarjetaSesion sesion={proximo.s} registro={$estado.hyrox?.registros?.[proximo.s.id]} /></div>
     {/if}
@@ -236,38 +258,52 @@
   {/if}
 
   {#if resto.length}
-    <h2 class="seccion">Resto del día</h2>
-    <div class="resto">
+    <h2 class="seccion">Tu día</h2>
+    <ol class="linea-dia">
       {#each resto as it, i (it.tipo + (it.c?.franja || it.s?.id || it.x?.id || it.x?.texto || i))}
-        {#if it.tipo === 'comida'}
-          <div class="s-comida"><TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={false} compacta /></div>
-        {:else if it.tipo === 'hyrox'}
-          {@const reg = $estado.hyrox?.registros?.[it.s.id]}
-          <button class="fila s-entreno" onclick={() => abrirHoja('sesion', { id: it.s.id })}>
-            <span class="f-ic" class:ok={reg?.estado === 'completa'}><Icono n={reg?.estado === 'completa' ? 'check' : 'dumbbell'} tam={15} grosor={2.4} /></span>
-            <span class="f-txt"><small>{it.s.hora} · Entreno</small><b>{it.s.titulo}</b></span>
-            <span class="f-dato">{it.s.duracion} min</span>
-          </button>
-        {:else if it.tipo === 'entreno'}
-          <div class="fila s-entreno">
-            <span class="f-ic"><Icono n="dumbbell" tam={15} grosor={2.4} /></span>
-            <span class="f-txt"><small>{sesion.inicio} · Entreno</small><b>{deportes.map((x) => x.nombre).join(', ') || 'Tu sesión'}</b></span>
+        {#if i === posAhora}<li class="ahora" aria-label="Ahora, {ahora}"><span class="t-hora cifra">{ahora}</span><span class="t-ahora">Ahora</span></li>{/if}
+        {@const reg = it.tipo === 'hyrox' ? $estado.hyrox?.registros?.[it.s.id] : null}
+        {@const hecho = (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || reg?.estado === 'completa' || (it.tipo === 'sup' && !!tomadas[it.x.id])}
+        <li class="paso" class:s-comida={it.tipo === 'comida' || it.tipo === 'extra'} class:s-entreno={it.tipo === 'hyrox' || it.tipo === 'entreno'} class:s-hoy={it.tipo === 'sup'} class:hecho class:pasado={i < posAhora}>
+          <span class="t-hora cifra">{it.hora || ''}</span>
+          <span class="t-nodo" aria-hidden="true">{#if hecho}<Icono n="check" tam={11} grosor={3} />{/if}</span>
+          <div class="t-cuerpo">
+            {#if it.tipo === 'comida'}
+              <TarjetaComida comida={it.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(it.c)} destacada={false} compacta />
+              {#if !hecho && porQue(it.c)}<p class="t-porque">{porQue(it.c)}</p>
+              {:else if it.c.situacion === 'hecha' && recetaPorId[it.c.recetaId]}<Valorar id={it.c.recetaId} compacto />{/if}
+            {:else if it.tipo === 'hyrox'}
+              <button class="fila" onclick={() => abrirHoja('sesion', { id: it.s.id })}>
+                <span class="f-ic" class:ok={reg?.estado === 'completa'}><Icono n={reg?.estado === 'completa' ? 'check' : 'dumbbell'} tam={15} grosor={2.4} /></span>
+                <span class="f-txt"><small>Entreno</small><b>{it.s.titulo}</b></span>
+                <span class="f-dato">{it.s.duracion} min</span>
+              </button>
+              {#if !hecho && POR_QUE_SESION[it.s.tipo]}<p class="t-porque">{POR_QUE_SESION[it.s.tipo]}</p>{/if}
+            {:else if it.tipo === 'entreno'}
+              <div class="fila">
+                <span class="f-ic"><Icono n="dumbbell" tam={15} grosor={2.4} /></span>
+                <span class="f-txt"><small>Entreno</small><b>{deportes.map((x) => x.nombre).join(', ') || 'Tu sesión'}</b></span>
+              </div>
+            {:else if it.tipo === 'sup'}
+              <button class="fila toma" class:tomado={tomadas[it.x.id]} aria-pressed={!!tomadas[it.x.id]} onclick={() => alternarToma(hoy, it.x.id)}>
+                <span class="f-ic" class:ok={tomadas[it.x.id]}>{#if tomadas[it.x.id]}<Icono n="check" tam={15} grosor={2.4} />{:else}<Icono e={it.x.emoji} tam={15} grosor={2.4} />{/if}</span>
+                <span class="f-txt"><small>Suplemento</small><b>{it.x.texto}</b></span>
+                <span class="f-dato">{tomadas[it.x.id] ? 'Tomado' : 'Marcar'}</span>
+              </button>
+              {#if !hecho && it.x.porque}<p class="t-porque">{it.x.porque}</p>{/if}
+            {:else if it.tipo === 'extra'}
+              <div class="fila">
+                <span class="f-ic ok"><Icono n="check" tam={15} grosor={2.4} /></span>
+                <span class="f-txt"><small>{it.x.franja ? NOMBRES[it.x.franja] : 'Picoteo'}</small><b>{it.x.nombre}</b></span>
+                <span class="f-dato">{entero(it.x.macros.kcal)} kcal</span>
+                <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="trash" tam={16} /></button>
+              </div>
+            {/if}
           </div>
-        {:else if it.tipo === 'sup'}
-          <div class="fila s-hoy">
-            <span class="f-ic"><Icono e={it.x.emoji} tam={15} grosor={2.4} /></span>
-            <span class="f-txt"><small>{it.hora || 'Hoy'} · Suplemento</small><b>{it.x.texto}</b></span>
-          </div>
-        {:else if it.tipo === 'extra'}
-          <div class="fila s-comida">
-            <span class="f-ic ok"><Icono n="check" tam={15} grosor={2.4} /></span>
-            <span class="f-txt"><small>{it.x.hora || ''} · {it.x.franja ? NOMBRES[it.x.franja] : 'Picoteo'}</small><b>{it.x.nombre}</b></span>
-            <span class="f-dato">{entero(it.x.macros.kcal)} kcal</span>
-            <button class="borrar" aria-label="Borrar {it.x.nombre}" onclick={() => quitarRegistro(hoy, it.x.id)}><Icono n="trash" tam={16} /></button>
-          </div>
-        {/if}
+        </li>
       {/each}
-    </div>
+      {#if posAhora === resto.length}<li class="ahora" aria-label="Ahora, {ahora}"><span class="t-hora cifra">{ahora}</span><span class="t-ahora">Ahora</span></li>{/if}
+    </ol>
     {#each d.dia?.consejos || [] as c (c)}<p class="nota-dia"><Icono n="info" tam={16} /> {c}</p>{/each}
   {/if}
 
@@ -283,9 +319,26 @@
   .detalle .marcador { margin-top: 0; }
   .detalle :global(.sesion) { margin-top: 10px; }
 
-  /* Resto del día: una lista de líneas, cada una con el color de lo que es */
-  .resto { display: grid; gap: 6px; }
-  .resto :global(.comida-card) { margin: 0; }
+  /* Tu día: línea de tiempo con la hora a la izquierda; cada paso con el color de lo que es */
+  .linea-dia { list-style: none; margin: 0; padding: 0; position: relative; }
+  .linea-dia::before { content: ""; position: absolute; left: 55px; top: 18px; bottom: 18px; width: 2px; border-radius: 2px; background: var(--linea); }
+  .paso, .ahora { position: relative; display: grid; grid-template-columns: 44px 24px minmax(0, 1fr); align-items: start; }
+  .paso { padding-bottom: 10px; }
+  .t-hora { padding: 17px 2px 0 0; font-size: 0.78rem; font-weight: 700; color: var(--texto-2); text-align: right; }
+  .paso.pasado .t-hora { color: var(--texto-3); }
+  .t-nodo { justify-self: center; margin-top: 18px; width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; background: var(--fondo); box-shadow: inset 0 0 0 2px var(--primario); color: var(--sobre-primario); z-index: 1; }
+  .paso.hecho .t-nodo { width: 18px; height: 18px; margin-top: 16px; background: var(--primario); box-shadow: 0 0 0 3px var(--fondo); }
+  .t-cuerpo { min-width: 0; padding-left: 6px; }
+  .t-cuerpo :global(.comida-card) { margin: 0; }
+  .t-porque { margin: 5px 0 0 4px; font-size: 0.76rem; color: var(--texto-3); line-height: 1.3; }
+  .ahora { align-items: center; padding: 0 0 10px; }
+  .ahora .t-hora { padding-top: 0; color: var(--primario); }
+  .t-ahora { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 800; color: var(--primario); }
+  .t-ahora::before { content: ""; width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 25%, transparent); }
+  .t-ahora::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--primario), transparent); }
+  .fila.toma { cursor: pointer; }
+  .fila.toma .f-dato { font-size: 0.78rem; color: var(--primario-fuerte); }
+  .fila.toma.tomado .f-dato { color: var(--texto-3); }
   .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
   .f-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
@@ -342,6 +395,8 @@
   .aviso :global(.icono) { color: var(--lila); margin-top: 1px; }
   .aviso b { color: var(--texto); font-weight: 600; }
   .aviso.amarillo { background: var(--amarillo-claro); }
+  .aviso.viaje { width: 100%; border: 0; font: inherit; text-align: left; cursor: pointer; align-items: center; }
+  .aviso.viaje span { flex: 1; }
   .aviso.amarillo :global(.icono) { color: var(--amarillo); }
 
   .sugerencias { padding: 14px; }

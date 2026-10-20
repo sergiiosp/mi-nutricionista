@@ -171,6 +171,8 @@
         <span><b><Icono e="💊" tam={18} /> Suplementos</b><small>Creatina y el resto de tu plan, a su hora</small></span></label>
       <label class="interruptor"><input type="checkbox" checked={prefs.pesarse} onchange={(ev) => cambiarPref({ pesarse: ev.currentTarget.checked })} />
         <span><b><Icono e="⚖️" tam={18} /> Pesarse</b><small>Una vez a la semana</small></span></label>
+      <label class="interruptor"><input type="checkbox" checked={prefs.inteligentes} onchange={(ev) => cambiarPref({ inteligentes: ev.currentTarget.checked })} />
+        <span><b><Icono n="sparkles" tam={18} /> Avisos inteligentes</b><small>Si se te olvida apuntar una comida, tu pre-entreno, la proteína que falta, días de viaje y carreras</small></span></label>
       {#if prefs.pesarse}
         <div class="fila-peso">
           <select value={prefs.diaPeso} onchange={(ev) => cambiarPref({ diaPeso: Number(ev.currentTarget.value) })} aria-label="Día de pesarse">

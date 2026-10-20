@@ -169,6 +169,12 @@
 {/if}
 
 <style>
+  /* Nivel de evidencia de cada suplemento (antes en app.css) */
+  .evid { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; }
+  .evid-alta { background: var(--primario-claro); color: var(--primario-fuerte); }
+  .evid-moderada { background: var(--amarillo-claro); color: color-mix(in srgb, var(--amarillo) 70%, var(--texto)); }
+  .evid-baja { background: var(--superficie-2); color: var(--texto-2); }
+  .aviso-legal { margin-top: 22px; }
   .ancho { width: 100%; margin-top: 10px; }
   .h-cab { margin: 6px 0 4px; }
   .horario-mini .etq { margin-left: auto; }

@@ -7,3 +7,6 @@ Thumbs.db
 dist/
 servidor/.wrangler/
 .impeccable/
+
+# Pruebas de pantallas (scripts/pantallas.mjs)
+pantallas/

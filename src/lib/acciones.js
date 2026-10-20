@@ -65,6 +65,15 @@ export function mantenerComida(fecha, franja) {
   actualizar((x) => { x.mantener ||= {}; x.mantener[`${fecha}|${franja}`] = true; });
 }
 
+/** Marca o desmarca un suplemento como tomado ese día (creatina, vitamina…). */
+export function alternarToma(fecha, id) {
+  actualizar((x) => {
+    const dia = ((x.tomas ||= {})[fecha] ||= {});
+    if (dia[id]) delete dia[id];
+    else dia[id] = true;
+  });
+}
+
 export function alternarSaltada(fecha, franja) {
   actualizar((x) => {
     const k = `${fecha}|${franja}`;
@@ -167,6 +176,46 @@ export function alternarFavorita(id) {
     x.favoritas = guardada ? [...lista, id] : lista.filter((f) => f !== id);
   });
   return guardada;
+}
+
+/**
+ * Valoras un plato al comerlo. Me gusta: entra en tus favoritas y sale más a menudo. No me gusta:
+ * deja de salir (perfil.recetasNo) y se cambia desde mañana por otra comida que cuadre igual.
+ * Tocar otra vez la misma valoración la deshace.
+ */
+export function valorarPlato(id, v) {
+  const e = get(estado);
+  const quitar = v === 1 ? (e.favoritas || []).includes(id) : (e.perfil.recetasNo || []).includes(id);
+  actualizar((x) => {
+    x.favoritas = (x.favoritas || []).filter((f) => f !== id);
+    x.perfil.recetasNo = (x.perfil.recetasNo || []).filter((f) => f !== id);
+    if (!quitar) (v === 1 ? x.favoritas : x.perfil.recetasNo).push(id);
+  });
+  if (quitar) return;
+  if (v === 1) { avisar('Apuntado: te lo pondré más a menudo', '👍'); return; }
+  const n = cambiarProximas(id);
+  avisar(n ? `No volverá a salir: cambiado en ${n} ${n === 1 ? 'comida' : 'comidas'} de esta semana` : 'No volverá a salir en tus menús', '👎');
+}
+
+/** Cambia por otra cada vez que ese plato sale en el menú a partir de mañana. Devuelve cuántas. */
+function cambiarProximas(id) {
+  const e = get(estado);
+  if (!e.plan) return 0;
+  const hoy = hoyISO();
+  const objetivos = calcularObjetivos(e.perfil);
+  const prov = proveedorDe(e);
+  const copia = structuredClone(e.plan);
+  let n = 0;
+  copia.dias.forEach((d, i) => {
+    if (d.fecha <= hoy) return;
+    for (const c of [...d.comidas]) {
+      if (c.recetaId !== id) continue;
+      const alt = alternativas(copia, i, c.franja, e.perfil, objetivos, prov, e.favoritas || [], viajesDe(e)).find((x) => x.comida.recetaId !== id);
+      if (alt) { sustituir(copia, i, c.franja, alt.comida); n++; }
+    }
+  });
+  if (n) actualizar((x) => { x.plan = copia; });
+  return n;
 }
 
 export function sustituirComida(diaIdx, franja, comida) {

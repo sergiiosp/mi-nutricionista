@@ -106,7 +106,7 @@
   .intro-cab small { color: var(--texto-2); font-weight: 600; }
   .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .cifras div { display: grid; padding: 10px; border-radius: 14px; background: var(--superficie-2); }
-  .cifras b { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .cifras b { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
   .cifras small { color: var(--texto-2); font-weight: 600; font-size: 0.74rem; }
   .filtros { margin: 0; }
   .b-pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }

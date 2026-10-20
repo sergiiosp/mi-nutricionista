@@ -194,6 +194,15 @@ export function recomendaciones(perfil, objetivos) {
 }
 
 /** Recordatorios de suplementos para la línea de tiempo de un día. */
+// Por qué se toma a esa hora, en una línea (para la línea de tiempo de Hoy)
+const BREVE = {
+  creatina: 'Cada día, también en descanso: cuenta la constancia',
+  cafeina: 'Hace efecto en unos 45 min',
+  b12: 'Imprescindible si no comes carne',
+  magnesio: 'Puede ayudarte a descansar mejor',
+  hidratos: 'Mantienen el ritmo en sesiones largas',
+};
+
 export function recordatoriosDia(recs, franjas, sesion) {
   const lista = [];
   for (const s of recs.suplementos) {
@@ -202,11 +211,11 @@ export function recordatoriosDia(recs, franjas, sesion) {
     if (r.franja) {
       const f = franjas.find((x) => x.id === r.franja) || franjas[0];
       if (!f) continue; // día sin menú
-      lista.push({ hora: f.horaTexto, texto: r.texto, emoji: s.emoji });
+      lista.push({ id: s.id, hora: f.horaTexto, texto: r.texto, emoji: s.emoji, porque: BREVE[s.id] });
     } else if (r.preEntreno && sesion) {
-      lista.push({ hora: aHora(aMin(sesion.inicio) - 45), texto: r.texto, emoji: s.emoji });
+      lista.push({ id: s.id, hora: aHora(aMin(sesion.inicio) - 45), texto: r.texto, emoji: s.emoji, porque: BREVE[s.id] });
     } else if (r.duranteEntreno && sesion) {
-      lista.push({ hora: sesion.inicio, texto: r.texto, emoji: s.emoji, durante: true });
+      lista.push({ id: s.id, hora: sesion.inicio, texto: r.texto, emoji: s.emoji, durante: true, porque: BREVE[s.id] });
     }
   }
   return lista;

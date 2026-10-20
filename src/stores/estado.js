@@ -26,6 +26,7 @@ export const VACIO = () => ({
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
   feedback: { dias: {}, semanas: {} }, // notas del día (hambre, energía…) y repasos semanales (clave: lunes)
   agenda: { eventos: [], viajes: [] },
+  tomas: {}, // fecha → { idSuplemento: true }: suplementos tomados ese día
   propuestasVistas: {}, // propuestas de un toque ya respondidas // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }
 });
 
@@ -37,6 +38,7 @@ function migrar(datos) {
   e.favoritas ||= [];
   e.entrenoDia ||= {};
   e.mantener ||= {};
+  e.tomas ||= {};
   e.agenda = { eventos: [], viajes: [], ...(datos.agenda || {}) };
   e.feedback = { dias: {}, semanas: {}, ...(datos.feedback || {}) };
   if (!['oscuro', 'claro', 'sistema'].includes(e.tema)) e.tema = 'oscuro'; // el diseño nuevo es oscuro por defecto

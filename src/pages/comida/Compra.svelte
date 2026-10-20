@@ -166,6 +166,9 @@
 {/if}
 
 <style>
+  /* Pasillos y lista (antes en app.css) */
+  .pasillo { font-size: 0.8rem; color: var(--texto-2); margin: 22px 4px 8px; font-weight: 800; }
+  .lista-compra { list-style: none; margin: 0; padding: 4px 0; background: var(--superficie); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
   .coste-real { margin: 0 0 6px; font-size: 0.86rem; color: var(--texto-2); }
   .coste-real b { color: var(--texto); }
   .pasillo-cab { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 48px; margin: 18px 0 6px; padding: 0 4px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }

@@ -7,22 +7,24 @@
   import Confeti from './components/Confeti.svelte';
   import DetalleReceta from './components/DetalleReceta.svelte';
   import Alternativas from './components/Alternativas.svelte';
-  import DetalleSesion from './components/DetalleSesion.svelte';
-  import RegistrarSesion from './components/RegistrarSesion.svelte';
-  import FichaEstacion from './components/FichaEstacion.svelte';
   import Registrar from './registro/Registrar.svelte';
-  import Cuestionario from './pages/Cuestionario.svelte';
   import Hoy from './pages/Hoy.svelte';
-  import Entreno from './pages/Entreno.svelte';
-  import Comida from './pages/Comida.svelte';
-  import Progreso from './pages/Progreso.svelte';
-  import Ajustes from './pages/Ajustes.svelte';
   import { estado, actualizar } from './stores/estado.js';
   import { ruta, ir } from './stores/ruta.js';
   import { hoja, cerrarHoja, abrirHoja, aviso, avisar, deshacerAviso } from './stores/ui.js';
   import { calcularObjetivos } from './lib/nutricion.js';
   import { crearPlan, reajustarPlan, completarMenu } from './lib/acciones.js';
   import { hoyISO } from './lib/planificador.js';
+  import { cargar, precargarTodo } from './lib/perezosas.js';
+  import { onMount } from 'svelte';
+
+  // Pantallas que se cargan aparte (ver lib/perezosas.js): se pintan en cuanto llegan
+  let vistas = $state({});
+  function vista(k) {
+    if (!vistas[k]) cargar(k).then((C) => (vistas[k] = C));
+    return vistas[k];
+  }
+  onMount(precargarTodo);
 
   let editando = $state(false);
 
@@ -70,12 +72,13 @@
   ];
   // Color de cada sección (Hoy naranja, Comida lima, Entreno violeta, Progreso azul)
   const seccion = $derived(['comida', 'entreno', 'progreso'].includes($ruta.pagina) ? $ruta.pagina : 'hoy');
-  const SECCION_HOJA = { receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
-  const TITULOS = { receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
+  const SECCION_HOJA = { guiaFuera: 'comida', receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
+  const TITULOS = { guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
 
 {#if !$estado.perfil || editando}
-  <Cuestionario perfil={editando ? $estado.perfil : null} onterminar={terminarCuestionario} oncancelar={() => (editando = false)} />
+  {@const Cuestionario = vista('cuestionario')}
+  {#if Cuestionario}<Cuestionario perfil={editando ? $estado.perfil : null} onterminar={terminarCuestionario} oncancelar={() => (editando = false)} />{/if}
 {:else}
   <header class="cabecera">
     <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Pulso</a>
@@ -86,11 +89,11 @@
   <main class="contenido s-{seccion}">
     {#key $ruta.pagina}
       <div in:fade={{ duration: 160 }}>
-        {#if $ruta.pagina === 'entreno'}<Entreno sub={$ruta.sub} />
-        {:else if $ruta.pagina === 'comida'}<Comida sub={$ruta.sub} />
-        {:else if $ruta.pagina === 'progreso'}<Progreso sub={$ruta.sub} />
-        {:else if $ruta.pagina === 'ajustes'}<Ajustes sub={$ruta.sub} oneditar={() => (editando = true)} />
-        {:else}<Hoy />{/if}
+        {#if $ruta.pagina === 'hoy' || !['entreno', 'comida', 'progreso', 'ajustes'].includes($ruta.pagina)}<Hoy />
+        {:else}
+          {@const Pagina = vista($ruta.pagina)}
+          {#if Pagina}<Pagina sub={$ruta.sub} oneditar={() => (editando = true)} />{/if}
+        {/if}
       </div>
     {/key}
   </main>
@@ -116,9 +119,10 @@
         {#if $hoja.tipo === 'registrar'}<Registrar {...$hoja.props} />
         {:else if $hoja.tipo === 'receta'}<DetalleReceta {...$hoja.props} />
         {:else if $hoja.tipo === 'alternativas'}<Alternativas {...$hoja.props} />
-        {:else if $hoja.tipo === 'sesion'}<DetalleSesion {...$hoja.props} />
-        {:else if $hoja.tipo === 'registrarSesion'}<RegistrarSesion {...$hoja.props} />
-        {:else if $hoja.tipo === 'estacion'}<FichaEstacion {...$hoja.props} />{/if}
+        {:else}
+          {@const Contenido = vista($hoja.tipo)}
+          {#if Contenido}<Contenido {...$hoja.props} />{/if}
+        {/if}
       </Hoja>
     {/key}
   {/if}
