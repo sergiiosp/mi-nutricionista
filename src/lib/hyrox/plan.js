@@ -85,7 +85,7 @@ function ajusteSemana(sesionesPrevias, registros, hoy) {
  * config: { inicio, fechaCarrera, categoria, nivel, dias[], hora, material{}, lesiones[], marcas{} }
  */
 export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
-  const { config, registros = {}, movidas = {}, sinGym = {} } = hyrox;
+  const { config, registros = {}, movidas = {}, sinGym = {}, forma = {} } = hyrox;
   const inicio = lunesDe(config.inicio);
   const carrera = config.fechaCarrera && config.fechaCarrera > inicio ? config.fechaCarrera : null;
   const N = carrera ? Math.min(30, Math.max(2, Math.ceil((diasEntre(inicio, carrera) + 1) / 7))) : 12;
@@ -164,6 +164,8 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
   // Carreras populares y viajes de tu agenda: puesta a punto, la carrera, recuperación y días de caminar
   const cargasExtra = [];
   const sueltas = aplicarAgenda(semanas, agenda, { config, perfil, rit: ritmos(config, perfil), cargasExtra });
+  // Cómo llegas ese día (sueño, agujetas, energía): si vienes tocado, la sesión se suaviza
+  for (const w of semanas) w.sesiones = w.sesiones.map((s) => (forma[s.fecha]?.nivel && forma[s.fecha].nivel !== 'bien' && s.tipo !== 'carrera' ? suavizar(s, forma[s.fecha].nivel, ritmos(config, perfil)) : s));
   sesiones.length = 0;
   for (const w of semanas) {
     w.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
@@ -302,6 +304,43 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
     }
   }
   return sueltas;
+}
+
+/**
+ * Sesión adaptada a cómo llegas: «suave» = menos volumen y un punto menos de esfuerzo;
+ * «muy-suave» = la fuerza con dos series menos y un 80 % del peso, y lo demás, rodaje muy suave.
+ */
+export function suavizar(s, nivel, rit) {
+  const muy = nivel === 'muy-suave';
+  const nota = muy ? 'Hoy llegas fundido: sesión de mantenimiento. Mejor sumar mañana que romperte hoy.' : 'Hoy llegas algo tocado: menos volumen y un punto menos de esfuerzo.';
+  if (s.ejercicios?.length) {
+    const quitar = muy ? 2 : 1;
+    const menos = (t) => t.replace(/(\d+) × /g, (_, n) => `${Math.max(2, Number(n) - quitar)} × `);
+    return {
+      ...s, titulo: `${s.titulo} · ${muy ? 'mínima' : 'suave'}`, duracion: Math.round(s.duracion * (muy ? 0.65 : 0.8)), rpe: Math.max(4, s.rpe - (muy ? 2 : 1)), forma: nivel,
+      ejercicios: s.ejercicios.map((x) => ({ ...x, series: Math.max(2, x.series - quitar) })),
+      bloques: s.bloques.map((b) => ({ ...b, lineas: b.lineas.map(menos) })),
+      notas: [`${nota} Usa un ${muy ? 80 : 90} % del peso de siempre.`, ...(s.notas || [])],
+    };
+  }
+  if (['recuperacion', 'caminar', 'popular'].includes(s.tipo)) return s;
+  if (muy || ['rodaje', 'largo'].includes(s.tipo)) {
+    const dur = muy ? 30 : Math.round(s.duracion * 0.8);
+    return {
+      ...s, tipo: 'rodaje', titulo: muy ? 'Rodaje muy suave' : `${s.titulo} · más corto`, emoji: TIPOS.rodaje.emoji, color: TIPOS.rodaje.color, rpe: muy ? 3 : Math.max(3, s.rpe - 1), forma: nivel,
+      duracion: dur, distancia: Math.round((dur * 60 / rit.z2) * 10) / 10, ejercicios: [],
+      bloques: muy ? [{ titulo: `${dur} min muy suaves`, lineas: [`Ritmo ${mmss(rit.z2 + 15)}/km o más lento`, 'Si a los 10 min sigues mal, camina y para'] }] : s.bloques,
+      notas: [nota, ...(s.notas || [])],
+    };
+  }
+  // Series, umbral, estaciones, simulacro…: un 30 % menos de repeticiones
+  const menos = (t) => t.replace(/(\d+) ×/, (_, n) => `${Math.max(2, Math.ceil(Number(n) * 0.7))} ×`).replace(/(\d+) rondas/, (_, n) => `${Math.max(1, Math.ceil(Number(n) * 0.7))} rondas`);
+  return {
+    ...s, titulo: `${menos(s.titulo)} · suave`, duracion: Math.round(s.duracion * 0.8), rpe: Math.max(4, s.rpe - 1), forma: nivel,
+    distancia: s.distancia ? Math.round(s.distancia * 0.75 * 10) / 10 : s.distancia,
+    bloques: s.bloques.map((b) => ({ ...b, titulo: menos(b.titulo || ''), lineas: b.lineas.map(menos) })),
+    notas: [nota, ...(s.notas || [])],
+  };
 }
 
 /** Semana del plan que contiene una fecha (o null). */

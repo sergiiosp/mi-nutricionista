@@ -280,6 +280,23 @@ export function quitarDiaLibre() {
   reajustarPlan(sumarDias(hoyISO(), 1));
 }
 
+/**
+ * Cómo llegas hoy al entreno (sueño, agujetas, energía: 0-2 cada uno). Con 4 o más, la sesión va tal cual;
+ * con 2-3, más suave; con 0-1, de mantenimiento. Devuelve el nivel.
+ */
+export function guardarForma(fecha, datos) {
+  const total = (datos.sueno ?? 1) + (datos.agujetas ?? 1) + (datos.energia ?? 1);
+  const nivel = total >= 4 ? 'bien' : total >= 2 ? 'suave' : 'muy-suave';
+  actualizar((x) => {
+    if (!x.hyrox) return;
+    x.hyrox.forma = { ...(x.hyrox.forma || {}), [fecha]: { ...datos, nivel } };
+  });
+  return nivel;
+}
+export function borrarForma(fecha) {
+  actualizar((x) => { if (x.hyrox?.forma) delete x.hyrox.forma[fecha]; });
+}
+
 /** Rellena las comidas que le falten al menú actual (sin tocar las demás). */
 export function completarMenu() {
   const e = get(estado);

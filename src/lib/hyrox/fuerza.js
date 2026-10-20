@@ -29,6 +29,7 @@ export function historialFuerza(registros = {}, plan = null) {
         fecha,
         sesion: id,
         series: validas,
+        rpe: r.rpe || null,
         mejor: Math.round(e1rm(mejorSerie.kg, mejorSerie.reps) * 10) / 10,
         kg: Math.max(...validas.map((x) => x.kg || 0)),
         reps: mejorSerie.reps,
@@ -38,6 +39,30 @@ export function historialFuerza(registros = {}, plan = null) {
   }
   for (const l of Object.values(hist)) l.sort((a, b) => (a.fecha < b.fecha ? -1 : 1));
   return hist;
+}
+
+/**
+ * Progresión doble: si la última vez completaste todas las series en lo alto del rango de repeticiones
+ * y la sesión no fue al límite (RPE ≤ 8), toca subir peso; si te quedaste corto con esfuerzo máximo, bajar.
+ * Devuelve { kg, cambio, motivo } o null si no hay datos.
+ */
+export function siguienteCarga(ultima, ej, factor = 1) {
+  if (!ultima?.series?.length || !ultima.kg) return null;
+  const nums = String(ej.reps || '').match(/\d+/g)?.map(Number) || [];
+  const min = nums[0] || 8;
+  const max = nums[1] || nums[0] || 10;
+  const conKg = ultima.series.filter((x) => x.kg > 0);
+  const kg = Math.max(...conKg.map((x) => x.kg));
+  const enTope = conKg.length >= Math.min(ej.series || 3, conKg.length) && conKg.every((x) => x.reps >= max);
+  const corto = conKg.some((x) => x.reps < min);
+  const paso = ['pierna', 'espalda'].includes(EJERCICIOS[ej.id]?.grupo) || kg >= 40 ? 2.5 : kg >= 15 ? 2 : 1;
+  const redondear = (v) => Math.round(v / (paso === 2.5 ? 2.5 : paso === 2 ? 1 : 0.5)) * (paso === 2.5 ? 2.5 : paso === 2 ? 1 : 0.5);
+  let objetivo = kg;
+  let motivo = 'mantener';
+  if (enTope && (ultima.rpe == null || ultima.rpe <= 8)) { objetivo = kg + paso; motivo = 'subir'; }
+  else if (corto && ultima.rpe >= 9) { objetivo = redondear(kg * 0.95); motivo = 'bajar'; }
+  if (factor !== 1) { objetivo = redondear(objetivo * factor); motivo = 'forma'; }
+  return { kg: objetivo, cambio: Math.round((objetivo - kg) * 10) / 10, motivo };
 }
 
 /** Series de la última vez que hiciste un ejercicio (sin contar la sesión que estás registrando). */

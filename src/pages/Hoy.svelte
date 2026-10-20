@@ -23,6 +23,7 @@
   import PropuestaSemana from '../components/PropuestaSemana.svelte';
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
+  import ComoLlegas from '../components/ComoLlegas.svelte';
   import FotoReceta from '../components/FotoReceta.svelte';
   import { sumarDias } from '../lib/planificador.js';
 
@@ -218,6 +219,10 @@
       <Icono n="chevron-right" tam={14} />
     </a>
   </section>
+
+  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
+    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
+  {/if}
 
   {#if abierto === 'comida'}
     <section class="detalle s-comida" aria-label="Detalle de la comida de hoy" transition:slide={{ duration: 200 }}>

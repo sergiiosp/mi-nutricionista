@@ -4,7 +4,7 @@
   import Emoji from './Emoji.svelte';
   import Icono from './Icono.svelte';
   import CampoTiempo from './CampoTiempo.svelte';
-  import { ultimaVez } from '../lib/hyrox/fuerza.js';
+  import { ultimaVez, siguienteCarga } from '../lib/hyrox/fuerza.js';
   import { estado } from '../stores/estado.js';
   import { cerrarHoja, avisar, celebrar } from '../stores/ui.js';
   import { planDe } from '../lib/hyrox/index.js';
@@ -44,6 +44,9 @@
   // Kilos y repeticiones por serie (opcional): solo se guardan los ejercicios que abras
   const ejercicios = s?.ejercicios || [];
   const ultimas = Object.fromEntries(ejercicios.map((ej) => [ej.id, ultimaVez(e.hyrox?.registros, ej.id, id, planDe(e))]));
+  // Progresión: el peso que toca hoy (más si la última vez fue fácil; menos si hoy llegas tocado)
+  const factorForma = s?.forma === 'muy-suave' ? 0.8 : s?.forma === 'suave' ? 0.9 : 1;
+  const cargasHoy = Object.fromEntries(ejercicios.map((ej) => [ej.id, siguienteCarga(ultimas[ej.id], ej, factorForma)]));
   let cargas = $state(borrador?.cargas || Object.fromEntries(Object.entries(previo.series || {}).map(([k, l]) => [k, l.map((x) => ({ kg: x.kg ?? '', reps: x.reps ?? '', hecha: true, phKg: '', phReps: '' }))])));
   if (borrador) { ritmo = borrador.ritmoTxt ?? ritmo; tiempo = borrador.tiempoTxt ?? tiempo; tiemposEst = { ...tiemposEst, ...(borrador.tiemposEst || {}) }; }
   let guardado = false;
@@ -67,7 +70,7 @@
     // Como en Hevy: lo de la última vez queda de sugerencia y cada serie se confirma con un toque
     cargas[ej.id] = Array.from({ length: Math.max(ej.series, antes.length) }, (_, i) => {
       const x = antes[i] || antes.at(-1);
-      return { kg: '', reps: '', hecha: false, phKg: x?.kg ?? '', phReps: x?.reps ?? objetivoReps(ej) };
+      return { kg: '', reps: '', hecha: false, phKg: cargasHoy[ej.id]?.kg ?? x?.kg ?? '', phReps: x?.reps ?? objetivoReps(ej) };
     });
   }
   function marcar(serie) {
@@ -124,7 +127,10 @@
           {@const u = ultimas[ej.id]}
           <div class="ej" class:abierto={cargas[ej.id]}>
             <button class="ej-cab" onclick={() => abrir(ej)} aria-expanded={!!cargas[ej.id]}>
-              <span><b>{ej.nombre}</b><small>{ej.series} × {ej.reps}{#if u} · última vez {resumen(u)}{/if}</small></span>
+              <span><b>{ej.nombre}</b><small>{ej.series} × {ej.reps}{#if u} · última vez {resumen(u)}{/if}</small>
+                {#if cargasHoy[ej.id]?.motivo === 'subir'}<i class="prog sube">Hoy {String(cargasHoy[ej.id].kg).replace('.', ',')} kg · +{String(cargasHoy[ej.id].cambio).replace('.', ',')}: la última vez te sobró</i>
+                {:else if cargasHoy[ej.id]?.motivo === 'bajar'}<i class="prog">Hoy {String(cargasHoy[ej.id].kg).replace('.', ',')} kg: la última vez fue al límite</i>
+                {:else if cargasHoy[ej.id]?.motivo === 'forma'}<i class="prog">Hoy {String(cargasHoy[ej.id].kg).replace('.', ',')} kg: llegas tocado</i>{/if}</span>
               <Icono n={cargas[ej.id] ? 'minus' : 'plus'} tam={18} />
             </button>
             {#if u && !(cargas[ej.id] || []).every((s) => s.hecha)}
@@ -260,4 +266,6 @@
   .al-terminar { margin: 22px 0 10px; font-size: 1.05rem; font-weight: 800; }
   .recuperado { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.84rem; }
   .recuperado .enlace { margin-left: auto; }
+  .prog { display: block; margin-top: 3px; font-style: normal; font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }
+  .prog.sube { color: var(--exito, #6fd08c); }
 </style>
