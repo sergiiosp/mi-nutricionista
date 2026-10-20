@@ -97,7 +97,7 @@
       <span class="tk-lbl"><Icono n="receipt" tam={15} grosor={2.2} /> {progreso && progreso < 100 ? 'Te falta por coger' : 'Ticket estimado'}</span>
       <label class="tk-solo"><input type="checkbox" checked={$estado.compra.soloRestantes} onchange={(ev) => actualizar((e) => { e.compra.soloRestantes = ev.currentTarget.checked; })} /> Solo lo que queda</label>
     </div>
-    <b class="tk-total cifra">{euros(progreso && progreso < 100 ? falta : ticket)}</b>
+    <b class="tk-total cifra cifra-xl">{euros(progreso && progreso < 100 ? falta : ticket)}</b>
     <div class="tk-pista" aria-hidden="true"><span style="--p:{progreso}%"></span></div>
     <p class="tk-sub"><span class="cifra">{comprar.filter((i) => marcados[i.id]).length}/{comprar.length}</span> cogidos{#if progreso && progreso < 100} · ticket {euros(ticket)}{/if} · comes <b class="cifra">{euros(lista.costeConsumo)}</b> esta semana</p>
     <div class="tk-acciones">
@@ -190,7 +190,7 @@
 
 <style>
   /* Pasillos y lista (antes en app.css) */
-  .pasillo { font-size: 0.8rem; color: var(--texto-2); margin: 22px 4px 8px; font-weight: 800; }
+  .pasillo { font-size: 0.8rem; color: var(--texto-2); margin: 22px 4px 8px; font-weight: 700; }
   .lista-compra { list-style: none; margin: 0; padding: 4px 0; background: var(--superficie); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
   /* Ticket */
   .ticket { padding: 16px; border-radius: 24px; background: radial-gradient(120% 100% at 100% 0%, var(--halo), transparent 65%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 20%, transparent); }
@@ -198,7 +198,7 @@
   .tk-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--primario-fuerte); }
   .tk-solo { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; font-size: 0.76rem; font-weight: 600; color: var(--texto-2); cursor: pointer; }
   .tk-solo input { width: 18px; height: 18px; accent-color: var(--primario); }
-  .tk-total { display: block; margin: 2px 0 10px; font-size: 3rem; line-height: 1; font-weight: 800; letter-spacing: -0.05em; }
+  .tk-total { display: block; margin: 2px 0 10px; font-size: 3rem; line-height: 1; font-weight: 700; letter-spacing: -0.05em; }
   .tk-pista { height: 8px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .tk-pista span { display: block; width: 100%; height: 100%; border-radius: 999px; background: var(--hero); transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.6s var(--ease-out); }
   .tk-sub { margin: 8px 0 14px; font-size: 0.8rem; color: var(--texto-2); }
@@ -208,7 +208,7 @@
   .tk-icono { width: 52px; padding: 0; flex-shrink: 0; }
   .fuente-precios { margin-top: 18px; text-align: center; }
   .pasillo-cab { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 48px; margin: 18px 0 6px; padding: 0 4px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .pc-nombre { flex: 1; display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.95rem; }
+  .pc-nombre { flex: 1; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.95rem; }
   .pc-nombre :global(svg) { color: var(--primario); }
   .pc-cuenta { font-weight: 700; font-size: 0.82rem; color: var(--primario-fuerte); padding: 3px 9px; border-radius: 999px; background: var(--primario-claro); }
   .pasillo-cab > :global(svg:last-child) { color: var(--texto-3); }
@@ -232,7 +232,7 @@
   .anadir { margin-top: 12px; max-height: 480px; overflow-y: auto; }
   .info b { font-size: 0.9rem; line-height: 1.25; }
   .info small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
-  .precio { font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
+  .precio { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
   .casa-btn { position: relative; width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--superficie-2); cursor: pointer; filter: grayscale(1); opacity: 0.6; flex-shrink: 0; }
   .casa-btn.activo { filter: none; opacity: 1; background: var(--amarillo-claro); }
   .cogido b { text-decoration: line-through; color: var(--texto-2); }

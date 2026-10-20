@@ -123,6 +123,6 @@
   .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   figure { margin: 0; border-radius: 18px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); }
   figure img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; background: var(--superficie-2); }
-  figcaption { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; font-size: 0.78rem; font-weight: 800; color: var(--texto-2); }
+  figcaption { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; font-size: 0.78rem; font-weight: 700; color: var(--texto-2); }
   figcaption button { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; border: 0; background: none; cursor: pointer; padding: 0; }
 </style>

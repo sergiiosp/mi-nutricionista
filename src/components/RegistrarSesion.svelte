@@ -228,7 +228,7 @@
   .cab { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
   .cab small { display: block; color: var(--texto-2); font-weight: 700; }
   .estado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .estado button { display: grid; justify-items: center; gap: 4px; padding: 12px 6px; border-radius: 18px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); font-weight: 800; cursor: pointer; color: var(--texto); }
+  .estado button { display: grid; justify-items: center; gap: 4px; padding: 12px 6px; border-radius: 18px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; cursor: pointer; color: var(--texto); }
   .estado button.activo { border-color: var(--primario); background: var(--primario-claro); }
   .rpe { margin: 12px 0; padding: 12px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
   .rpe-cab { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.92rem; }
@@ -253,17 +253,17 @@
   .repetir { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; margin: -4px 0 8px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--primario-claro); color: var(--primario-fuerte); font: inherit; font-weight: 700; font-size: 0.78rem; cursor: pointer; }
   .serie-acciones { display: flex; justify-content: space-between; }
   .quitar-ult { color: var(--texto-3); }
-  .serie .n { font-weight: 800; color: var(--texto-3); font-size: 0.8rem; }
+  .serie .n { font-weight: 700; color: var(--texto-3); font-size: 0.8rem; }
   .serie input { width: 100%; min-height: 42px; padding: 6px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
   .serie i { font-style: normal; font-size: 0.78rem; color: var(--texto-2); font-weight: 600; }
   .ej .enlace { margin: 2px 0 10px; }
   /* Modo entreno */
   .cab-entreno { display: grid; gap: 4px; margin-bottom: 14px; }
-  .cab-entreno b { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+  .cab-entreno b { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
   .cab-entreno span { color: var(--texto-2); font-weight: 600; font-size: 0.84rem; }
   .progreso-ej { display: block; height: 6px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .progreso-ej i { display: block; width: 100%; height: 100%; border-radius: 999px; background: var(--primario); transform: translateX(calc(var(--p) - 100%)); transition: transform 0.4s var(--ease-out); }
-  .al-terminar { margin: 22px 0 10px; font-size: 1.05rem; font-weight: 800; }
+  .al-terminar { margin: 22px 0 10px; font-size: 1.05rem; font-weight: 700; }
   .recuperado { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.84rem; }
   .recuperado .enlace { margin-left: auto; }
   .prog { display: block; margin-top: 3px; font-style: normal; font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }

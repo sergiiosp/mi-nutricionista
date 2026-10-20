@@ -132,7 +132,7 @@
   const sesPrincipal = $derived(sesionesHoy.find((s) => !['carrera'].includes(s.tipo)) || null);
   const regPrincipal = $derived(sesPrincipal ? $estado.hyrox?.registros?.[sesPrincipal.id] : null);
   const minus = (t) => (t ? t[0].toLowerCase() + t.slice(1) : t);
-  const COLOR = { kcal: '#b4e35a', p: 'var(--coral)', e: '#a08cff' };
+  const COLOR = { kcal: 'var(--dato-kcal)', p: 'var(--dato-p)', e: 'var(--dato-e)' };
 
   // Una frase que resume el día (lo que un coach te diría al abrir la app)
   const titular = $derived.by(() => {
@@ -231,7 +231,7 @@
     <div class="marcador">
         <div>
           <span class="lbl">{d.pasado ? 'Por encima de tu objetivo' : 'Te quedan'}</span>
-          <b class="num cifra" class:pasado={d.pasado}><Cifra valor={Math.abs(d.objetivo.kcal - d.consumido.kcal)} /></b>
+          <b class="num cifra cifra-xl" class:pasado={d.pasado}><Cifra valor={Math.abs(d.objetivo.kcal - d.consumido.kcal)} /></b>
           <span class="lbl">kcal</span>
         </div>
         <div class="dcha">
@@ -460,7 +460,7 @@
   .t-porque { margin: 5px 0 0 4px; font-size: 0.76rem; color: var(--texto-3); line-height: 1.3; }
   .ahora { align-items: center; padding: 0 0 10px; }
   .ahora .t-hora { padding-top: 0; color: var(--primario); }
-  .t-ahora { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 800; color: var(--primario); }
+  .t-ahora { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 700; color: var(--primario); }
   .t-ahora::before { content: ""; width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 25%, transparent); }
   .t-ahora::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--primario), transparent); }
   .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }

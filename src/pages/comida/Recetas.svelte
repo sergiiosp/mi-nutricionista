@@ -67,5 +67,5 @@
   .cuerpo { display: grid; gap: 6px; padding: 10px 12px 12px; flex: 1; align-content: space-between; }
   .cuerpo b { font-size: 0.9rem; font-weight: 600; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .mac { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
-  .mac .kcal { color: var(--primario-fuerte); font-weight: 800; }
+  .mac .kcal { color: var(--primario-fuerte); font-weight: 700; }
 </style>

@@ -269,10 +269,10 @@
   .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .nav b { flex: 1; font-size: 1.05rem; }
   .atras { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; color: var(--texto); }
-  .franja-chip { padding: 5px 11px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; font-size: 0.8rem; }
+  .franja-chip { padding: 5px 11px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.8rem; }
   .franjas { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 10px; }
   .franjas::-webkit-scrollbar { display: none; }
-  .franjas button { flex-shrink: 0; display: grid; justify-items: center; padding: 8px 14px; border: 1.5px solid transparent; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 800; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
+  .franjas button { flex-shrink: 0; display: grid; justify-items: center; padding: 8px 14px; border: 1.5px solid transparent; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
   .franjas small { font-size: 0.7rem; color: var(--texto-2); font-weight: 700; }
   .franjas button.activa { border-color: var(--primario); background: var(--primario-claro); }
   .opciones-grandes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; }
@@ -311,10 +311,10 @@
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.92rem; }
   .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
-  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; }
+  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; }
   .plato { margin: 0 0 14px; padding: 12px 14px; border-radius: 18px; background: var(--primario-claro); }
   .plato-cab { display: flex; justify-content: space-between; align-items: baseline; }
-  .plato-cab .cifra { font-weight: 800; color: var(--primario-fuerte); }
+  .plato-cab .cifra { font-weight: 700; color: var(--primario-fuerte); }
   .plato ul { list-style: none; margin: 8px 0; padding: 0; }
   .plato li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--linea); }
   .pl-n { flex: 1; min-width: 0; display: grid; }

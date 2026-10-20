@@ -65,5 +65,5 @@
   .casillas input.h { width: 42px; }
   .casillas input::placeholder { color: var(--texto-3); font-weight: 500; }
   .casillas input:focus { outline: none; border-color: var(--primario); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primario) 25%, transparent); }
-  .casillas i { font-style: normal; font-weight: 800; color: var(--texto-2); }
+  .casillas i { font-style: normal; font-weight: 700; color: var(--texto-2); }
 </style>

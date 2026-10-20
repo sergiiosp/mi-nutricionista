@@ -120,7 +120,7 @@
   .i-tabla th { text-align: left; font-size: 0.7rem; color: #5f5f68; font-weight: 700; padding: 6px 4px; border-bottom: 1px solid #ddd; }
   .i-tabla td { padding: 6px 4px; border-bottom: 1px solid #eee; }
   .i-tabla td + td, .i-tabla th + th { white-space: nowrap; text-align: right; }
-  .i-tabla td.sube { color: #2f8a3a; font-weight: 800; }
+  .i-tabla td.sube { color: #2f8a3a; font-weight: 700; }
   .i-fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .i-fotos figure { margin: 0; }
   .i-fotos img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; display: block; }

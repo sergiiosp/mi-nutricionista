@@ -116,7 +116,7 @@
   .marco { position: absolute; left: 12%; right: 12%; top: 32%; bottom: 32%; border: 3px solid rgb(255 255 255 / 0.9); border-radius: 18px; box-shadow: 0 0 0 999px rgb(0 0 0 / 0.35); }
   .marco.buscando { border-color: var(--primario); animation: latido 0.9s infinite; }
   @keyframes latido { 50% { transform: scale(1.03); } }
-  .mensaje { position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center; color: #fff; font-weight: 800; text-shadow: 0 1px 4px rgb(0 0 0 / 0.6); }
+  .mensaje { position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center; color: #fff; font-weight: 700; text-shadow: 0 1px 4px rgb(0 0 0 / 0.6); }
   .manual { display: flex; gap: 8px; margin-top: 12px; }
   .manual input { flex: 1; min-height: 44px; padding: 10px 14px; border-radius: 14px; border: 1.5px solid var(--borde); background: var(--superficie); font-weight: 700; color: var(--texto); }
 </style>

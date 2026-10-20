@@ -269,10 +269,10 @@
   .pc-libre { position: absolute; top: 22px; right: 18px; color: color-mix(in srgb, var(--primario) 70%, transparent); opacity: 0.8; }
   .pc-guia { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; margin-left: auto; padding: 0 11px; border: 0; border-radius: 999px; background: rgb(255 255 255 / 0.16); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font: inherit; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
   .meta-guia { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: var(--primario); font: inherit; font-weight: 700; cursor: pointer; }
-  .pc-etq { padding: 6px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.72rem; font-weight: 800; }
+  .pc-etq { padding: 6px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.72rem; font-weight: 700; }
   /* Sin foto: el plato en anillo, grande y medio fuera por la derecha, de fondo (no compite con el título) */
   .pc-anillo { position: absolute; top: 50%; right: -78px; width: 210px; aspect-ratio: 1; border-radius: 50%; transform: translateY(-58%); opacity: 0.38; -webkit-mask: radial-gradient(circle, transparent 50%, #000 51.5%); mask: radial-gradient(circle, transparent 50%, #000 51.5%); }
-  .pc-titulo { margin-top: auto; padding: 18px 0 0; border: 0; background: none; color: #fff; font: inherit; font-size: 1.42rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; text-align: left; text-wrap: balance; cursor: pointer; position: relative; }
+  .pc-titulo { margin-top: auto; padding: 18px 0 0; border: 0; background: none; color: #fff; font: inherit; font-size: 1.42rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; text-align: left; text-wrap: balance; cursor: pointer; position: relative; }
   .pc-porque { margin: 6px 0 0; font-size: 0.84rem; font-weight: 600; color: color-mix(in srgb, var(--primario) 70%, #fff); }
   .pc-cifras { display: flex; gap: 18px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgb(255 255 255 / 0.16); }
   .pc-cifras div { display: grid; }

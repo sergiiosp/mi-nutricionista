@@ -32,7 +32,7 @@
   </div>
   <div class="abajo">
     <span class="et">Tiempo estimado · HYROX {CATEGORIAS[config.categoria].nombre}</span>
-    <b class="tiempo cifra">{hms(est.total)}</b>
+    <b class="tiempo cifra cifra-xl">{hms(est.total)}</b>
     <div class="partes">
       <div><b class="cifra">{hms(est.carreras)}</b><small>8 km corriendo</small></div>
       <div><b class="cifra">{hms(est.estaciones)}</b><small>estaciones</small></div>
@@ -103,15 +103,15 @@
 <style>
   .sup { display: flex; justify-content: space-between; gap: 8px; }
   .chip { padding: 5px 10px; border-radius: 999px; background: rgb(255 255 255 / 0.14); font-size: 0.78rem; font-weight: 700; }
-  .chip.fuerte { background: #fff; color: #0b0b0e; font-weight: 800; }
+  .chip.fuerte { background: #fff; color: #0b0b0e; font-weight: 700; }
   .abajo { margin-top: auto; display: grid; }
   .et { font-size: 0.8rem; font-weight: 600; color: rgb(255 255 255 / 0.75); }
-  .tiempo { font-size: 3.4rem; line-height: 1; font-weight: 800; letter-spacing: -0.04em; margin: 4px 0 14px; }
+  .tiempo { font-size: 3.4rem; line-height: 1; font-weight: 700; letter-spacing: -0.04em; margin: 4px 0 14px; }
   .partes { display: flex; gap: 20px; }
   .partes div { display: grid; }
-  .partes b { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+  .partes b { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
   .partes small { font-size: 0.72rem; font-weight: 600; color: rgb(255 255 255 / 0.7); }
-  .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 800; }
+  .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 700; }
   .cab small { display: block; margin-top: 2px; font-size: 0.78rem; font-weight: 600; color: var(--texto-2); }
   .estrategia { margin: 0; padding: 14px 16px 14px 32px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 8px; font-size: 0.92rem; color: var(--texto-2); }
 
@@ -121,27 +121,27 @@
   .linea { position: absolute; left: 17px; top: 0; bottom: 0; border-left: 2px dashed color-mix(in srgb, var(--primario) 55%, transparent); }
   .km-txt { display: inline-flex; align-items: center; gap: 6px; color: var(--texto-3); font-size: 0.78rem; font-weight: 700; }
   .est button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #0b0b0e; font-weight: 800; }
+  .num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #0b0b0e; font-weight: 700; }
   .est-txt { flex: 1; min-width: 0; display: grid; }
   .est-txt b { font-size: 0.98rem; }
   .est-txt small { color: var(--texto-2); font-size: 0.8rem; line-height: 1.35; }
   .tiempos { flex-shrink: 0; display: grid; justify-items: end; }
-  .tiempos b { font-size: 1.05rem; font-weight: 800; }
+  .tiempos b { font-size: 1.05rem; font-weight: 700; }
   .tiempos small { color: var(--texto-3); font-size: 0.74rem; font-weight: 600; }
   .meta { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--linea); margin-top: 6px; }
   .meta .num { background: #fff; }
   .meta b { flex: 1; }
-  .meta span:last-child { font-weight: 800; font-size: 1.15rem; }
+  .meta span:last-child { font-weight: 700; font-size: 1.15rem; }
 
   .timeline-n { display: grid; gap: 8px; }
   .tn { display: grid; grid-template-columns: 48px 32px 1fr; gap: 8px; align-items: start; padding: 10px 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
-  .tn .h { font-weight: 800; font-size: 0.85rem; padding-top: 4px; font-variant-numeric: tabular-nums; }
+  .tn .h { font-weight: 700; font-size: 0.85rem; padding-top: 4px; font-variant-numeric: tabular-nums; }
   .tn p { margin: 2px 0 0; font-size: 0.86rem; color: var(--texto-2); }
   .dia-s { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0; }
   .dia-s p { margin: 3px 0 0; font-size: 0.9rem; color: var(--texto-2); }
   .peso { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--linea); }
   .peso span { color: var(--texto-2); font-weight: 600; }
-  .peso b { font-weight: 800; }
+  .peso b { font-weight: 700; }
   .ganas { list-style: none; margin: 0; padding: 4px 14px; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); }
   .ganas li { display: grid; grid-template-columns: 34px minmax(0, 1fr) 56px; grid-template-rows: auto auto; align-items: center; column-gap: 10px; padding: 10px 0; }
   .ganas li + li { border-top: 1px solid var(--linea); }

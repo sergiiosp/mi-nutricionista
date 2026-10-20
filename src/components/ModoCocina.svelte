@@ -76,7 +76,7 @@
         {#if min}
           <div class="c-timer" class:activo={enMarcha}>
             {#if enMarcha}
-              <b class="cifra">{reloj(quedan)}</b>
+              <b class="cifra cifra-xl">{reloj(quedan)}</b>
               <button class="boton boton-sec" onclick={parar}>Parar</button>
             {:else}
               <button class="boton" onclick={() => empezar(min)}><Icono n="timer" tam={20} /> Temporizador {min} min</button>
@@ -101,7 +101,7 @@
 <style>
   .cocina { display: flex; flex-direction: column; min-height: 70vh; }
   .c-cab { display: grid; gap: 8px; }
-  .c-num { font-size: 0.86rem; font-weight: 800; color: var(--primario-fuerte); }
+  .c-num { font-size: 0.86rem; font-weight: 700; color: var(--primario-fuerte); }
   .c-pista { height: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .c-pista i { display: block; height: 100%; border-radius: 999px; background: var(--hero); transition: width 0.3s var(--ease-out); }
   .c-paso { flex: 1; padding: 22px 0 12px; animation: entra 0.22s var(--ease-out); }
@@ -112,7 +112,7 @@
   .c-ings { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .c-ings button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 12px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; font-size: 1rem; text-align: left; cursor: pointer; }
   .c-ings button.tengo { opacity: 0.55; }
-  .c-ings b { font-weight: 800; }
+  .c-ings b { font-weight: 700; }
   .c-check { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--borde); flex-shrink: 0; color: var(--sobre-primario); }
   .tengo .c-check { background: var(--primario); border-color: var(--primario); }
   .c-timer { display: flex; align-items: center; gap: 14px; margin-top: 22px; }

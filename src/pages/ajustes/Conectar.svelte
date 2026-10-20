@@ -219,7 +219,7 @@
   .añadir { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--superficie-2); }
   .añadir p { font-size: 0.92rem; }
   .qr { display: block; width: min(240px, 70%); margin: 10px auto; border-radius: 14px; box-shadow: var(--sombra); }
-  .codigo-grande { margin: 12px 0 0; text-align: center; font-size: 1.9rem; font-weight: 800; letter-spacing: 0.14em; font-variant-numeric: tabular-nums; }
+  .codigo-grande { margin: 12px 0 0; text-align: center; font-size: 1.9rem; font-weight: 700; letter-spacing: 0.14em; font-variant-numeric: tabular-nums; }
   .copias { list-style: none; margin: 0; padding: 0; }
   .copias li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--superficie-2); }
   .copias li span { display: grid; }
@@ -227,5 +227,5 @@
   .fila-peso { display: flex; gap: 8px; margin: -4px 0 10px 60px; }
   .fila-peso select, .fila-peso input { min-height: 40px; padding: 6px 10px; border-radius: 12px; border: 1.5px solid var(--borde); background: var(--superficie); color: var(--texto); font-weight: 700; font-family: inherit; }
   .zona-peligro { margin-top: 18px; }
-  .zona-peligro summary { font-weight: 800; cursor: pointer; color: var(--texto-2); }
+  .zona-peligro summary { font-weight: 700; cursor: pointer; color: var(--texto-2); }
 </style>

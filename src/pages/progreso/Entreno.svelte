@@ -139,13 +139,13 @@
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; }
   .zona { width: 100%; display: flex; align-items: flex-end; }
   .barra { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 3px; }
-  .col small { font-size: 0.68rem; font-weight: 800; color: var(--texto-2); }
+  .col small { font-size: 0.68rem; font-weight: 700; color: var(--texto-2); }
   .col .h { color: var(--primario-fuerte); }
   .est { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 8px; align-items: center; padding: 6px 0; font-weight: 700; font-size: 0.85rem; }
   .est .n { display: flex; gap: 6px; align-items: center; }
   .pista { height: 8px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; }
   .relleno { height: 100%; border-radius: 999px; background: var(--primario); }
-  .est .t { font-weight: 800; min-width: 42px; text-align: right; }
+  .est .t { font-weight: 700; min-width: 42px; text-align: right; }
   .graf { width: 100%; height: auto; margin-top: 8px; }
   .sim { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid var(--superficie-2); font-weight: 700; font-size: 0.9rem; }
   .vacia { text-align: center; }
@@ -156,7 +156,7 @@
   .grupo:first-child { border-top: 0; }
   .g-n { display: grid; font-weight: 700; }
   .g-n small { font-weight: 600; font-size: 0.75rem; color: var(--texto-2); }
-  .g-v { display: flex; align-items: center; gap: 4px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--texto-2); }
+  .g-v { display: flex; align-items: center; gap: 4px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--texto-2); }
   .g-v.sube { color: var(--exito); }
   .g-v.baja { color: var(--texto-2); }
   .g-ej { list-style: none; margin: 0 0 8px; padding: 0 0 0 10px; display: grid; gap: 6px; font-size: 0.84rem; }

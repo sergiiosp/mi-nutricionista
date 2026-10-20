@@ -117,7 +117,7 @@
   .evol { display: grid; gap: 6px; margin-top: 10px; }
   .m { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: var(--superficie-2); }
   .n { flex: 1; font-weight: 700; }
-  .dif { min-width: 56px; text-align: center; padding: 3px 8px; border-radius: 999px; font-weight: 800; font-size: 0.82rem; background: var(--superficie); }
+  .dif { min-width: 56px; text-align: center; padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 0.82rem; background: var(--superficie); }
   .dif.baja { background: var(--primario-claro); color: var(--primario-fuerte); }
   .dif.sube { background: var(--superficie-3); color: var(--texto); }
 </style>

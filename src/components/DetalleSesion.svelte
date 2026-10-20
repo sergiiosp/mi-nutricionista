@@ -141,7 +141,7 @@
   .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
-  .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 800; font-size: 0.78rem; }
+  .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 700; font-size: 0.78rem; }
   .registro { margin-top: 12px; padding: 12px 14px; border-radius: 18px; background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
   .registro p { margin: 6px 0 0; font-style: italic; }
   .cargas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.82rem; }

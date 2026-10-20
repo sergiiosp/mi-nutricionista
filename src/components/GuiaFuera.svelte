@@ -66,7 +66,7 @@
 <style>
   .guia h2 { margin: 0 0 4px; font-size: 1.5rem; letter-spacing: -0.02em; }
   .quedan { margin: 0 0 14px; color: var(--texto-2); font-size: 0.9rem; }
-  .quedan b { color: var(--primario-fuerte); font-weight: 800; }
+  .quedan b { color: var(--primario-fuerte); font-weight: 700; }
   .sitios { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 12px; }
   .sitios::-webkit-scrollbar { display: none; }
   .sitios button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; font-weight: 700; font-size: 0.84rem; cursor: pointer; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
@@ -74,7 +74,7 @@
   .ficha { padding: 16px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); animation: entra 0.22s var(--ease-out); }
   @keyframes entra { from { opacity: 0; transform: translateY(6px); } }
   .idea { margin: 0; font-size: 1.08rem; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
-  h3 { margin: 16px 0 8px; font-size: 0.86rem; font-weight: 800; color: var(--texto-2); }
+  h3 { margin: 16px 0 8px; font-size: 0.86rem; font-weight: 700; color: var(--texto-2); }
   .lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .lista li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; line-height: 1.35; }
   .marca { display: grid; place-items: center; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; flex-shrink: 0; }

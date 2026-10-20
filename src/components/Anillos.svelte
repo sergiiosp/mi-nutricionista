@@ -13,10 +13,10 @@
     {@const r = tam / 2 - grosor / 2 - i * (grosor + hueco)}
     {@const c = 2 * Math.PI * r}
     {@const p = a.meta ? Math.min(1, a.valor / a.meta) : 0}
-    <circle cx={tam / 2} cy={tam / 2} {r} fill="none" stroke={a.color} stroke-opacity="0.18" stroke-width={grosor} />
-    <circle class="arco" cx={tam / 2} cy={tam / 2} {r} fill="none" stroke={a.color} stroke-width={grosor} stroke-linecap="round"
+    <circle cx={tam / 2} cy={tam / 2} {r} fill="none" style="stroke:{a.color}" stroke-opacity="0.18" stroke-width={grosor} />
+    <circle class="arco" cx={tam / 2} cy={tam / 2} {r} fill="none" style="stroke:{a.color};transition-delay:{i * 120}ms" stroke-width={grosor} stroke-linecap="round"
       stroke-dasharray={c} stroke-dashoffset={listo ? c * (1 - p) : c} transform="rotate(-90 {tam / 2} {tam / 2})"
-      style="transition-delay:{i * 120}ms" opacity={p ? 1 : 0} />
+      opacity={p ? 1 : 0} />
   {/each}
 </svg>
 

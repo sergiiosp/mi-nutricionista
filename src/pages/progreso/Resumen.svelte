@@ -26,7 +26,7 @@
     const ses = sem.sesiones.filter((x) => x.tipo !== 'carrera');
     return { hechas: ses.filter((x) => ['completa', 'parcial'].includes($estado.hyrox?.registros?.[x.id]?.estado)).length, total: ses.length };
   });
-  const COLORES = { kcal: '#b4e35a', p: 'var(--coral)', e: '#a08cff' };
+  const COLORES = { kcal: 'var(--dato-kcal)', p: 'var(--dato-p)', e: 'var(--dato-e)' };
   const anillos = $derived([
     { valor: s.diasKcal, meta: META, color: COLORES.kcal },
     { valor: s.diasProteina, meta: META, color: COLORES.p },
@@ -148,7 +148,7 @@
   .informe-btn small { font-size: 0.76rem; color: var(--texto-2); }
   .retos { margin-top: 12px; }
   .rt-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-  .rt-racha { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--amarillo); font-size: 0.74rem; font-weight: 800; }
+  .rt-racha { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--amarillo); font-size: 0.74rem; font-weight: 700; }
   .rt { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; padding: 8px 0; }
   .rt + .rt { border-top: 1px solid var(--linea); }
   .rt-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
@@ -163,15 +163,15 @@
   .d-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .d-ley { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: var(--texto-3); }
   .d-ley i { width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; }
-  .d-ley i.ok { background: #b4e35a; }
+  .d-ley i.ok { background: var(--dato-kcal); }
   .d-ley i.pr { background: var(--coral); }
   .barras { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 150px; margin-top: 14px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; gap: 5px; }
   .zona { position: relative; width: 100%; height: 100%; }
   .meta, .barra { position: absolute; bottom: 0; left: 18%; right: 18%; border-radius: 8px; }
   .meta { background: var(--superficie-2); }
-  .barra { background: color-mix(in srgb, #b4e35a 45%, var(--superficie-3)); min-height: 4px; transition: height 0.5s var(--ease-out); }
-  .barra.ok { background: #b4e35a; }
+  .barra { background: color-mix(in srgb, var(--dato-kcal) 45%, var(--superficie-3)); min-height: 4px; transition: height 0.5s var(--ease-out); }
+  .barra.ok { background: var(--dato-kcal); }
   .barra.sin { background: none; }
   .col.hoy .meta { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 60%, transparent); }
   .punto { width: 7px; height: 7px; border-radius: 50%; background: var(--superficie-3); }

@@ -124,6 +124,10 @@
   <h2 class="seccion"><Icono e="🎨" tam={18} /> Apariencia</h2>
   <Segmentos opciones={[{ id: 'oscuro', nombre: 'Oscuro', emoji: '🌙' }, { id: 'claro', nombre: 'Claro', emoji: '☀️' }, { id: 'sistema', nombre: 'Como el móvil', emoji: '🌗' }]}
     valor={$estado.tema} onchange={(t) => actualizar((e) => { e.tema = t; })} />
+  <p class="sub-apariencia">Letra</p>
+  <Segmentos opciones={[{ id: 'sistema', nombre: 'SF Pro', icono: 'smartphone' }, { id: 'manrope', nombre: 'Manrope', icono: 'pencil' }, { id: 'geist', nombre: 'Geist', icono: 'pencil' }]}
+    valor={$estado.fuente || 'sistema'} onchange={(f) => actualizar((e) => { e.fuente = f; })} />
+  <p class="pie-nota">SF Pro es la letra del iPhone (la de Apple Salud o Fitness). En otros dispositivos se usa la de su sistema.</p>
 
   <h2 class="seccion"><Icono e="💾" tam={18} /> Copia de seguridad</h2>
   <div class="tarjeta">
@@ -170,12 +174,13 @@
 
 <style>
   /* Nivel de evidencia de cada suplemento (antes en app.css) */
-  .evid { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; }
+  .evid { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
   .evid-alta { background: var(--primario-claro); color: var(--primario-fuerte); }
   .evid-moderada { background: var(--amarillo-claro); color: color-mix(in srgb, var(--amarillo) 70%, var(--texto)); }
   .evid-baja { background: var(--superficie-2); color: var(--texto-2); }
   .aviso-legal { margin-top: 22px; }
   .ancho { width: 100%; margin-top: 10px; }
+  .sub-apariencia { margin: 14px 0 6px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
   .h-cab { margin: 6px 0 4px; }
   .horario-mini .etq { margin-left: auto; }
   .lista { display: grid; gap: 8px; }
@@ -186,7 +191,7 @@
   .sup-t { flex: 1; min-width: 0; display: grid; }
   .sup-t small { color: var(--texto-2); font-weight: 700; }
   .sup dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; padding: 0 14px 14px; font-size: 0.9rem; }
-  .sup dt { font-weight: 800; color: var(--texto-2); }
+  .sup dt { font-weight: 700; color: var(--texto-2); }
   .sup dd { margin: 0; }
   .consejo-item { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0; }
   .consejo-item p { margin: 3px 0 0; font-size: 0.92rem; }

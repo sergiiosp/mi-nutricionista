@@ -74,7 +74,7 @@
 
 <style>
   .intro { margin: 0 0 6px; color: var(--texto-2); font-size: 0.92rem; }
-  h3 { margin: 16px 0 8px; font-size: 0.86rem; font-weight: 800; color: var(--texto-2); }
+  h3 { margin: 16px 0 8px; font-size: 0.86rem; font-weight: 700; color: var(--texto-2); }
   .opciones-fila { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
   .opciones-fila button { flex: 0 0 52px; display: grid; justify-items: center; padding: 8px 0; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; cursor: pointer; }
   .opciones-fila small { font-size: 0.72rem; font-weight: 700; }

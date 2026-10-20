@@ -50,7 +50,7 @@
   .lista-ing li + li { border-top: 1px solid var(--linea); }
   .fila { width: 100%; display: grid; grid-template-columns: minmax(64px, max-content) 1fr auto; gap: 12px; align-items: center; min-height: 40px; padding: 6px 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
-  .cant { display: grid; font-weight: 800; text-align: right; white-space: nowrap; }
+  .cant { display: grid; font-weight: 700; text-align: right; white-space: nowrap; }
   .cant small { font-size: 0.66rem; font-weight: 600; color: var(--texto-3); }
   .nombre { display: grid; min-width: 0; }
   .nombre a { color: inherit; text-decoration: underline; text-decoration-color: var(--borde); text-underline-offset: 3px; }

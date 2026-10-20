@@ -108,14 +108,14 @@
   .intro-cab small { color: var(--texto-2); font-weight: 600; }
   .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .cifras div { display: grid; padding: 10px; border-radius: 14px; background: var(--superficie-2); }
-  .cifras b { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .cifras b { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
   .cifras small { color: var(--texto-2); font-weight: 600; font-size: 0.74rem; }
   .filtros { margin: 0; }
   .b-pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .b-paso { border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); overflow: hidden; }
   .b-paso.hecha { opacity: 0.55; }
   .paso-cab { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
-  .num { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 800; font-size: 0.8rem; flex-shrink: 0; }
+  .num { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
   .foto { width: 48px; padding: 0; border: 0; background: none; cursor: pointer; flex-shrink: 0; }
   .ic { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; background: var(--superficie-2); flex-shrink: 0; }
   .titulo { flex: 1; min-width: 0; display: grid; gap: 2px; padding: 4px 0; border: 0; background: none; color: var(--texto); text-align: left; font: inherit; cursor: pointer; }
@@ -135,7 +135,7 @@
   .tapers, .reglas { list-style: none; margin: 0; padding: 6px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
   .tapers li { display: grid; grid-template-columns: 96px 1fr; gap: 2px 10px; padding: 8px 0; font-size: 0.86rem; }
   .tapers li + li, .reglas li + li { border-top: 1px solid var(--linea); }
-  .cuando { font-weight: 800; color: var(--texto-2); }
+  .cuando { font-weight: 700; color: var(--texto-2); }
   .tapers small { grid-column: 2; color: var(--amarillo); font-weight: 600; font-size: 0.74rem; }
   .reglas li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; font-size: 0.86rem; line-height: 1.45; color: var(--texto-2); }
   .reglas :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }

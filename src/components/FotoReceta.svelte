@@ -55,7 +55,7 @@
     padding: 12px 14px 14px;
     background: linear-gradient(165deg, color-mix(in srgb, var(--primario) 16%, var(--superficie-2)) 0%, var(--superficie) 100%);
   }
-  .titulo { font-size: 1.12rem; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; color: var(--texto); }
+  .titulo { font-size: 1.12rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; color: var(--texto); }
   .sub { font-size: 0.76rem; font-weight: 600; color: color-mix(in srgb, var(--primario-fuerte) 55%, var(--texto-2)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .barra { display: flex; gap: 3px; height: 6px; margin-top: 8px; }
   .barra i { border-radius: 999px; min-width: 6px; }
@@ -80,5 +80,5 @@
     -webkit-mask: radial-gradient(circle, transparent 54%, #000 55.5%);
     mask: radial-gradient(circle, transparent 54%, #000 55.5%);
   }
-  .centro { grid-area: 1 / 1; max-width: 62%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; letter-spacing: -0.01em; color: var(--texto); text-align: center; }
+  .centro { grid-area: 1 / 1; max-width: 62%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; letter-spacing: -0.01em; color: var(--texto); text-align: center; }
 </style>

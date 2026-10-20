@@ -41,7 +41,7 @@
   .explica { margin: 0 0 10px; }
   .mini-barra { width: 80%; height: 5px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; margin-top: 4px; }
   .mini-barra div { height: 100%; background: var(--primario); }
-  .falta { font-weight: 800 !important; }
+  .falta { font-weight: 700 !important; }
   .logro.ok { background: linear-gradient(160deg, var(--amarillo-claro), var(--superficie) 70%); }
   .logro b { font-size: 0.9rem; }
   .logro small { font-size: 0.74rem; color: var(--texto-2); font-weight: 600; }

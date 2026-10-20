@@ -38,10 +38,10 @@
   .foto { position: relative; border-radius: 24px; overflow: hidden; height: 210px; background: radial-gradient(circle at 30% 20%, var(--superficie-3), var(--superficie-2)); color: var(--primario); }
   .foto img { width: 100%; height: 100%; object-fit: cover; }
   .ilus { height: 100%; display: grid; place-items: center; }
-  .num { position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; background: rgb(0 0 0 / 0.55); color: #fff; font-weight: 800; font-size: 0.8rem; }
+  .num { position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; background: rgb(0 0 0 / 0.55); color: #fff; font-weight: 700; font-size: 0.8rem; }
   h2 { margin: 14px 0 6px; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
-  .datos span { padding: 4px 10px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 800; font-size: 0.82rem; }
+  .datos span { padding: 4px 10px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; font-size: 0.82rem; }
   .datos .mejor { background: var(--amarillo-claro); }
   .desc { font-weight: 600; }
   .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }

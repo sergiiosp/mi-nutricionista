@@ -69,6 +69,13 @@ await cdp('Page.addScriptToEvaluateOnNewDocument', { source: `
     globalThis.Date = Fija;
     let s = 20261020;
     Math.random = () => ((s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296);
+    // FUENTE="Nombre|url-css" prueba otra tipografía sin tocar el código
+    const fuente = ${JSON.stringify(process.env.FUENTE || '')};
+    if (fuente) document.addEventListener('DOMContentLoaded', () => {
+      const [nombre, url] = fuente.split('|');
+      const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = url; document.head.append(l);
+      const st = document.createElement('style'); st.textContent = ':root { --fuente: "' + nombre + '", system-ui, sans-serif !important; } body, button, input, select, textarea { font-family: var(--fuente) !important; }'; document.head.append(st);
+    });
   })();` });
 await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
 await cdp('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });

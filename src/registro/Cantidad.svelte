@@ -94,18 +94,18 @@
   .nombre b { font-size: 1.1rem; line-height: 1.25; }
   .nombre small { color: var(--texto-2); font-weight: 700; }
   .raciones { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
-  .racion { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border-radius: 16px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 800; font-size: 0.82rem; color: var(--texto); text-align: center; }
+  .racion { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border-radius: 16px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.82rem; color: var(--texto); text-align: center; }
   .racion small { color: var(--texto-2); font-weight: 600; font-size: 0.7rem; }
   .racion.activa { border-color: var(--primario); background: var(--primario-claro); }
   .ajuste { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 16px 0 6px; }
-  .mas-menos { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 800; cursor: pointer; color: var(--texto); }
+  .mas-menos { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-size: 1.5rem; font-weight: 700; cursor: pointer; color: var(--texto); }
   .ajuste label { display: flex; align-items: baseline; gap: 6px; }
-  .ajuste input { width: 110px; text-align: center; font-size: 1.8rem; font-weight: 800; border: 0; border-bottom: 3px solid var(--primario); background: transparent; padding: 2px; color: var(--texto); }
+  .ajuste input { width: 110px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 0; border-bottom: 3px solid var(--primario); background: transparent; padding: 2px; color: var(--texto); }
   .ajuste input:focus { outline: none; }
-  .ajuste span { font-weight: 800; color: var(--texto-2); }
+  .ajuste span { font-weight: 700; color: var(--texto-2); }
   .resultado { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin: 12px 0 16px; }
   .kcal { font-weight: 700; color: var(--texto-2); }
-  .kcal b { font-size: 1.6rem; font-weight: 800; color: var(--texto); }
+  .kcal b { font-size: 1.6rem; font-weight: 700; color: var(--texto); }
   .ancho { width: 100%; }
   .boton:disabled { opacity: 0.5; cursor: not-allowed; }
   .mas { margin-top: 8px; }

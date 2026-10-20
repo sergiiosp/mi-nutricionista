@@ -36,6 +36,21 @@
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', claro ? '#f2f2f5' : '#0a0a0c');
   });
 
+  // Fuente: la del sistema (SF Pro en iPhone) o la que elijas en Ajustes → Apariencia
+  const URL_FUENTE = {
+    manrope: 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap',
+    geist: 'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap',
+  };
+  $effect(() => {
+    const f = $estado.fuente || 'sistema';
+    document.documentElement.dataset.fuente = f;
+    if (URL_FUENTE[f] && !document.querySelector(`link[data-fuente="${f}"]`)) {
+      const l = document.createElement('link');
+      l.rel = 'stylesheet'; l.href = URL_FUENTE[f]; l.dataset.fuente = f;
+      document.head.append(l);
+    }
+  });
+
   // Al cambiar de pantalla, arriba del todo y sin hojas abiertas
   $effect(() => {
     $ruta.pagina;

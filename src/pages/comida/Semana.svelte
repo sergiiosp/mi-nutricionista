@@ -108,7 +108,7 @@
         <span class="p-coste cifra">{euros(dia.comidas.reduce((x, c) => x + costeComida(c.ingredientes), 0))}</span>
       </div>
       <div class="p-cifras">
-        <div class="p-kcal"><b class="cifra">{entero(t.kcal)}</b><small>{Math.abs(t.kcal - od.kcal) / od.kcal < 0.03 ? 'kcal · cuadra con tu objetivo' : `de ${entero(od.kcal)} kcal`}</small></div>
+        <div class="p-kcal"><b class="cifra cifra-xl">{entero(t.kcal)}</b><small>{Math.abs(t.kcal - od.kcal) / od.kcal < 0.03 ? 'kcal · cuadra con tu objetivo' : `de ${entero(od.kcal)} kcal`}</small></div>
         <div><b class="cifra">{Math.round(t.p)}<span>g</span></b><small>proteína</small></div>
         <div><b class="cifra">{Math.round(t.c)}<span>g</span></b><small>hidratos</small></div>
         <div><b class="cifra">{Math.round(t.g)}<span>g</span></b><small>grasa</small></div>
@@ -156,7 +156,7 @@
 <style>
   .dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 8px 0 4px; }
   .dias button { display: grid; justify-items: center; padding: 8px 0 4px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.75rem; color: var(--texto-2); }
-  .dias b { font-size: 1.1rem; font-weight: 800; color: var(--texto); }
+  .dias b { font-size: 1.1rem; font-weight: 700; color: var(--texto); }
   .dias i { font-style: normal; font-size: 0.7rem; height: 1em; line-height: 1; }
   .dias button.hoy { outline: 2px solid var(--primario); outline-offset: -2px; }
   .dias button.activo { background: var(--hero); color: var(--sobre-primario); }
@@ -185,7 +185,7 @@
   .dias { margin-bottom: 12px; }
   .p-sup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .p-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 700; }
-  .p-coste { margin-left: auto; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.82rem; font-weight: 800; }
+  .p-coste { margin-left: auto; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.82rem; font-weight: 700; }
   .p-cifras { display: flex; align-items: flex-end; gap: 14px; margin-top: auto; padding-top: 24px; }
   .p-cifras div { display: grid; }
   .p-cifras b { font-size: 1.15rem; line-height: 1.1; color: #fff; }
@@ -214,7 +214,7 @@
   .m-etq { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario-claro); font-size: 0.66rem; }
   .m-etq.gris { background: var(--superficie-2); color: var(--texto-2); }
   .m-txt b { font-weight: 600; font-size: 0.9rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .m-kcal { display: grid; justify-items: end; flex-shrink: 0; font-size: 0.95rem; font-weight: 800; }
+  .m-kcal { display: grid; justify-items: end; flex-shrink: 0; font-size: 0.95rem; font-weight: 700; }
   .m-kcal small { font-size: 0.66rem; font-weight: 600; color: var(--texto-3); }
   .m-cambiar { display: grid; place-items: center; width: 44px; height: 44px; margin-right: 6px; border: 0; border-radius: 12px; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
   .m-cambiar:active { background: var(--superficie-2); color: var(--primario); }

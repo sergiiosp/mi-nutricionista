@@ -52,7 +52,7 @@
   .meta { color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .grandes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 4px; }
   .grandes div { display: grid; text-align: center; padding: 10px 4px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
-  .grandes b { font-size: 1.1rem; font-weight: 800; }
+  .grandes b { font-size: 1.1rem; font-weight: 700; }
   .grandes span { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
   .grandes .p { background: var(--coral-claro); } .grandes .c { background: var(--amarillo-claro); } .grandes .g { background: var(--azul-claro); }
   .ancho { width: 100%; margin-top: 12px; }

@@ -48,10 +48,10 @@
   .tinte { position: absolute; inset: 0; z-index: 1; background: var(--primario); mix-blend-mode: color; opacity: 0.8; }
   .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.15) 0%, rgb(8 8 12 / 0.15) 35%, rgb(8 8 12 / 0.88) 100%); }
   .ilus { position: absolute; inset: 0 0 40px; display: grid; place-items: center; z-index: 2; color: var(--primario-fuerte); }
-  .n { position: absolute; left: 10px; top: 10px; z-index: 2; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #0b0b0e; font-weight: 800; font-size: 0.82rem; }
-  .mejor { position: absolute; right: 10px; top: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: rgb(0 0 0 / 0.45); font-size: 0.74rem; font-weight: 800; }
+  .n { position: absolute; left: 10px; top: 10px; z-index: 2; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #0b0b0e; font-weight: 700; font-size: 0.82rem; }
+  .mejor { position: absolute; right: 10px; top: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: rgb(0 0 0 / 0.45); font-size: 0.74rem; font-weight: 700; }
   .cuerpo { position: relative; z-index: 2; display: grid; padding: 12px; }
-  .cuerpo b { font-size: 1.02rem; line-height: 1.15; font-weight: 800; }
+  .cuerpo b { font-size: 1.02rem; line-height: 1.15; font-weight: 700; }
   .cuerpo small { margin-top: 2px; color: rgb(255 255 255 / 0.75); font-weight: 600; font-size: 0.76rem; }
   .ejercicios { margin-top: 16px; }
   .ej { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--linea); }

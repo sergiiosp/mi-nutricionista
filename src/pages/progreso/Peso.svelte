@@ -153,7 +153,7 @@
 <section class="tarjeta gasto" aria-label="Tu gasto real">
   <div class="cu-cab"><b>Tu gasto real</b><small>se revisa cada semana</small></div>
   {#if gasto?.listo}
-    <p class="g-cifra"><b class="cifra">{gasto.tdee.toLocaleString('es-ES')}</b> kcal al día</p>
+    <p class="g-cifra"><b class="cifra cifra-xl">{gasto.tdee.toLocaleString('es-ES')}</b> kcal al día</p>
     <p class="pie-nota">Comes {gasto.ingesta.toLocaleString('es-ES')} kcal de media y tu peso va {gasto.kgSemana > 0 ? '+' : ''}{num(gasto.kgSemana, 2)} kg/semana ({gasto.dias} días y {gasto.pesajes} pesajes). La fórmula decía {gasto.formula.toLocaleString('es-ES')} kcal: {gasto.ajuste ? `tu plan lleva un ajuste de ${gasto.ajuste > 0 ? '+' : ''}${gasto.ajuste} kcal por esto` : 'clavada, sin ajuste'}.</p>
   {:else}
     <p class="g-texto">Calibrando con tus datos: tu plan sale de fórmulas, que fallan ±10 %. Con 2 semanas de comidas apuntadas y pesajes, lo ajusto a lo que gastas de verdad.</p>

@@ -72,7 +72,7 @@
     <video bind:this={video} playsinline muted class:espejo={frontal}></video>
     {#if calco}<img class="calco" src={calco} alt="" style="opacity:{opacidad / 100}" />{/if}
     <span class="guia cabeza" aria-hidden="true"></span><span class="guia pies" aria-hidden="true"></span><span class="guia centro" aria-hidden="true"></span>
-    {#if cuenta}<b class="cuenta cifra">{cuenta}</b>{/if}
+    {#if cuenta}<b class="cuenta cifra cifra-xl">{cuenta}</b>{/if}
     {#if error}<p class="error">{error}</p>{/if}
   </div>
   {#if calco}

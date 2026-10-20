@@ -103,13 +103,13 @@
 <style>
   .chip { align-self: flex-start; padding: 5px 10px; border-radius: 999px; background: rgb(255 255 255 / 0.14); font-size: 0.78rem; font-weight: 700; }
   .abajo { margin-top: auto; }
-  .abajo h2 { margin: 0 0 4px; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; text-wrap: balance; }
+  .abajo h2 { margin: 0 0 4px; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
   .sub { margin: 0 0 14px; color: rgb(255 255 255 / 0.78); font-weight: 600; font-size: 0.9rem; }
   .tira { position: relative; display: flex; gap: 3px; height: 8px; }
   .tira i { border-radius: 999px; }
   .marca { position: absolute; top: -5px; width: 4px; height: 18px; margin-left: -2px; border-radius: 2px; background: #fff; box-shadow: 0 0 0 2px rgb(0 0 0 / 0.35); }
 
-  .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 800; }
+  .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 700; }
   .grafico { margin: 0; }
   .barras { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
   .col { flex: 1; height: 100%; display: flex; align-items: flex-end; border-radius: 6px; }
@@ -125,7 +125,7 @@
   .hecha .nodo, .ahora .nodo { background: var(--c); }
   .ahora .nodo { box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 25%, transparent); }
   .fases b { display: flex; align-items: center; gap: 8px; font-size: 1rem; }
-  .ya { padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--c) 22%, transparent); color: var(--c); font-size: 0.72rem; font-weight: 800; }
+  .ya { padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--c) 22%, transparent); color: var(--c); font-size: 0.72rem; font-weight: 700; }
   .fases small { display: block; margin-top: 2px; color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
   .fases p { margin: 4px 0 0; color: var(--texto-2); font-size: 0.88rem; }
   .hecha b, .hecha p { color: var(--texto-3); }
@@ -136,7 +136,7 @@
   .g-nom { display: block; padding: 8px 0 4px; font-size: 0.78rem; font-weight: 700; color: var(--texto-3); }
   .r { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--linea); }
   .r span { font-weight: 600; color: var(--texto-2); }
-  .r b { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+  .r b { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
   .r small { margin-left: 3px; font-size: 0.74rem; font-weight: 600; color: var(--texto-3); }
   .r.destaca span { color: var(--texto); }
   .r.destaca b { color: var(--lila); }

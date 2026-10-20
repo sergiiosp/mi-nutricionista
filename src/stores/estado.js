@@ -21,6 +21,7 @@ export const VACIO = () => ({
   recientes: [], // últimas cosas registradas (para repetir con un toque)
   productos: {}, // productos escaneados (Open Food Facts) para usarlos sin conexión
   tema: 'oscuro', // oscuro · claro · sistema
+  fuente: 'sistema', // sistema (SF Pro en iPhone) · manrope · geist
   favoritas: [], // ids de recetas o comidas montadas («combo:…») que el menú usa a menudo
   entrenoDia: {}, // fecha → 'si' | 'no' cuando cambias si ese día entrenas
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }
@@ -41,6 +42,7 @@ function migrar(datos) {
   e.entrenoDia ||= {};
   e.mantener ||= {};
   e.tomas ||= {};
+  if (!['sistema', 'manrope', 'geist'].includes(e.fuente)) e.fuente = 'sistema';
   e.despensa ||= {};
   e.agenda = { eventos: [], viajes: [], ...(datos.agenda || {}) };
   e.feedback = { dias: {}, semanas: {}, ...(datos.feedback || {}) };
