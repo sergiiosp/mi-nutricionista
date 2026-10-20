@@ -316,7 +316,8 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde =
           const m = macrosComida(comida.ingredientes);
           const meta = { p: m.p, c: m.c + (dia.libre.extra * 0.55) / 4, g: m.g + (dia.libre.extra * 0.45) / 9 };
           meta.kcal = meta.p * 4 + meta.c * 4 + meta.g * 9;
-          comida.ingredientes = escalarReceta(receta, meta).ingredientes;
+          // Es un hueco, no una receta que cocinar: se escala sin los límites normales para que cuadre el margen
+          comida.ingredientes = escalarReceta(receta, meta, { P: [0.5, 6], C: [0.3, 8], G: [0.4, 8] }).ingredientes;
           comida.libre = dia.libre.extra;
         }
         return comida;
