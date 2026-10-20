@@ -4,7 +4,7 @@ import { esDiaEntreno } from './horario.js';
 import { sumarDias } from './planificador.js';
 import { tendencia } from './progreso.js';
 
-function resumenDia(e, objetivos, fecha) {
+export function resumenDia(e, objetivos, fecha) {
   const regs = e.registros[fecha] || [];
   if (!regs.length) return null;
   const m = sumarMacros(regs.map((r) => r.macros));

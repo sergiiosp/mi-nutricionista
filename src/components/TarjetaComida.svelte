@@ -68,6 +68,8 @@
   }
   const mEdit = $derived(editando ? macrosComida(Object.entries(editando).map(([a, g]) => ({ a, g }))) : null);
   const ETQ = { pre: 'Pre-entreno', post: 'Post-entreno' };
+  // Comida libre (día libre reservado): margen de kcal en vez de receta
+  const nombre = $derived(comida.libre ? `${franjaNombre} libre` : receta?.nombre);
   const tieneFoto = $derived(!!FOTOS_RECETAS[receta?.id] && !receta?.sinFoto);
   // Sin foto: el plato visto desde arriba, en anillo (proteína, hidrato, verdura)
   const anillo = $derived.by(() => {
@@ -84,26 +86,26 @@
 <article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada class:con-portada={portada && !plegada}>
 {#if plegada}
   <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
-    {#if receta && (situacion === 'pendiente' || situacion === 'hecha')}
+    {#if receta && !comida.libre && (situacion === 'pendiente' || situacion === 'hecha')}
       <span class="pl-foto"><FotoReceta {receta} alto={42} redondeo={11} />{#if situacion === 'hecha'}<span class="pl-check"><Icono n="check" tam={11} grosor={3} /></span>{/if}</span>
     {:else}
       <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
     {/if}
-    <span class="pl-txt"><small>{comida.hora && !compacta ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sobra' ? ' · hoy no hace falta' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : receta?.nombre}</b></span>
+    <span class="pl-txt"><small>{comida.hora && !compacta ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sobra' ? ' · hoy no hace falta' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : nombre}</b></span>
     {#if situacion !== 'saltada' && situacion !== 'sobra'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
     <Icono n="chevron-down" tam={18} />
   </button>
 {:else}
   {#if portada}
-    <Portada foto={tieneFoto ? `img/recetas/${receta.id}.webp` : ''} color="var(--primario)" alto={tieneFoto ? 270 : 230} duotono={false} etiqueta="Comida que toca ahora">
+    <Portada foto={tieneFoto && !comida.libre ? `img/recetas/${receta.id}.webp` : ''} color="var(--primario)" alto={tieneFoto ? 270 : 230} duotono={false} etiqueta="Comida que toca ahora">
       <div class="pc-sup">
         <span class="pc-tipo"><Icono n="utensils" tam={14} grosor={2.2} /> {franjaNombre}{comida.hora ? ` · ${comida.hora}` : ''}</span>
         {#if comida.etiqueta}<span class="pc-etq">{ETQ[comida.etiqueta]}</span>{/if}
         {#if comida.ajustada && situacion === 'pendiente'}<span class="pc-etq">Ajustada</span>{/if}
         {#if receta?.fuera || receta?.viaje}<button class="pc-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={14} grosor={2.2} /> Qué pedir</button>{/if}
       </div>
-      {#if !tieneFoto}<span class="pc-anillo" style="background:{anillo}" aria-hidden="true"></span>{/if}
-      <button class="pc-titulo" onclick={verReceta}>{receta?.nombre}</button>
+      {#if comida.libre}<span class="pc-libre" aria-hidden="true"><Icono n="party-popper" tam={86} grosor={1.4} /></span>{:else if !tieneFoto}<span class="pc-anillo" style="background:{anillo}" aria-hidden="true"></span>{/if}
+      <button class="pc-titulo" onclick={verReceta}>{nombre}</button>
       {#if porque}<p class="pc-porque">{porque}</p>{/if}
       <div class="pc-cifras">
         <div><b class="cifra">{Math.round(m.kcal)}</b><small>kcal</small></div>
@@ -125,7 +127,7 @@
           {#if comida.ajustada && situacion === 'pendiente'}<span class="etq etq-ajuste">Ajustada</span>{/if}
           {#if nota}<span class="etq etq-nota">{nota}</span>{/if}
         </div>
-        <button class="titulo" onclick={verReceta}>{receta?.nombre}</button>
+        <button class="titulo" onclick={verReceta}>{nombre}</button>
         <Macros {m} peque />
         <div class="meta"><span><Icono n="clock" tam={13} /> {receta?.tiempo} min</span><span><Icono n="euro" tam={13} /> {euros(costeComida(comida.ingredientes))}</span>{#if receta?.fuera || receta?.viaje}<button class="meta-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={13} /> Qué pedir</button>{/if}</div>
       </div>
@@ -196,9 +198,14 @@
   {#snippet pieP()}
     <footer class="acciones">
       {#if comida.pasada}<p class="pregunta"><Icono n="clock" tam={14} /> ¿Ya la has comido?</p>{/if}
+      {#if comida.libre}
+        <button class="principal" onclick={() => abrirHoja('registrar', { fecha, franja: comida.franja })}><Icono n="plus" tam={17} grosor={2.6} /> Apuntar lo que comí</button>
+        <button onclick={() => abrirHoja('guiaFuera')}><Icono n="lightbulb" tam={16} /> Qué pedir</button>
+      {:else}
       <button class="principal" class:suave={!destacada && !comida.pasada} aria-label="Marcar {franjaNombre.toLowerCase()} como comida" onclick={() => marcarHecha(fecha, comida)}>
         <Icono n="check" tam={17} grosor={2.6} /> {comida.pasada ? 'Sí' : 'Hecha'}
       </button>
+      {/if}
       {#if comida.pasada}
         <button onclick={() => alternarSaltada(fecha, comida.franja)}><Icono n="skip-forward" tam={16} /> Me la salté</button>
       {:else}
@@ -259,6 +266,7 @@
   /* Portada de la comida que toca */
   .pc-sup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .pc-tipo { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 700; }
+  .pc-libre { position: absolute; top: 22px; right: 18px; color: color-mix(in srgb, var(--primario) 70%, transparent); opacity: 0.8; }
   .pc-guia { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; margin-left: auto; padding: 0 11px; border: 0; border-radius: 999px; background: rgb(255 255 255 / 0.16); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font: inherit; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
   .meta-guia { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: var(--primario); font: inherit; font-weight: 700; cursor: pointer; }
   .pc-etq { padding: 6px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.72rem; font-weight: 800; }

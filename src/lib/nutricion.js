@@ -110,7 +110,8 @@ export function calcularObjetivos(perfil) {
   // Seguridad: sin déficit en embarazo/lactancia y déficit muy suave si hay historial de TCA
   if (condiciones.includes('embarazo')) ritmo = Math.max(ritmo, 0);
   if (condiciones.includes('tca')) ritmo = Math.max(ritmo, -0.1);
-  const ajuste = perfil.ajusteKcal || 0;
+  // Ajuste manual (tú o el repaso semanal) + el del gasto real calculado con tus datos (lib/gasto.js)
+  const ajuste = (perfil.ajusteKcal || 0) + (perfil.ajusteGasto || 0);
   const minimo = sexo === 'h' ? 1500 : 1200;
   const limitado = getDescanso * (1 + ritmo) + ajuste < minimo;
   const kcalDe = (get) => Math.round(Math.max(get * (1 + ritmo) + ajuste, minimo) / 10) * 10;

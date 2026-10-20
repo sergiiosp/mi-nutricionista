@@ -8,6 +8,7 @@ import { estadoDia } from './dia.js';
 import { crearRegistro } from './registro.js';
 import { proveedorDe, planDe } from './hyrox/index.js';
 import { copiaSesion } from './hyrox/sesiones.js';
+import { gastoReal, ajusteGasto } from './gasto.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 export const viajesDe = (x) => x?.agenda?.viajes || [];
@@ -233,6 +234,50 @@ export function marcarEntrenoDia(fecha, valor) {
     for (const f of Object.keys(x.entrenoDia)) if (f < limite) delete x.entrenoDia[f];
   });
   reajustarPlan();
+}
+
+/**
+ * Una vez por semana: calcula tu gasto real con lo que comes y la tendencia del peso, y ajusta las kcal.
+ * Hoy se queda como estaba (las cantidades nuevas, desde mañana). Devuelve la estimación.
+ */
+export function revisarGasto(forzar = false) {
+  const e = get(estado);
+  if (!e.perfil) return null;
+  const hoy = hoyISO();
+  if (!forzar && e.gasto?.fecha && sumarDias(e.gasto.fecha, 7) > hoy) return e.gasto;
+  const objetivos = calcularObjetivos({ ...e.perfil, ajusteGasto: 0 });
+  const est = gastoReal(e, objetivos, hoy);
+  const antes = e.perfil.ajusteGasto || 0;
+  const nuevo = ajusteGasto(est, objetivos, antes);
+  const registro = { fecha: hoy, ...est, formula: objetivos.get, ajuste: nuevo };
+  actualizar((x) => {
+    x.gasto = registro;
+    x.gastoHistorial = [...(x.gastoHistorial || []).filter((g) => g.fecha !== hoy), registro].slice(-26);
+    if (nuevo !== antes) {
+      const dHoy = x.plan?.dias.find((d) => d.fecha === hoy);
+      if (dHoy && !('ajusteGasto' in (dHoy.perfilFijo || {}))) dHoy.perfilFijo = { ...(dHoy.perfilFijo || {}), ajusteGasto: antes };
+      x.perfil.ajusteGasto = nuevo;
+    }
+  });
+  if (nuevo !== antes) {
+    reajustarPlan();
+    avisar(`Tu gasto real es ~${est.tdee} kcal: desde mañana ${nuevo > antes ? 'subo' : 'bajo'} ${Math.abs(nuevo - antes)} kcal`, '📈');
+  }
+  return registro;
+}
+
+/**
+ * Día libre: ahorras `ahorro` kcal al día desde mañana hasta la víspera y esa comida (cena por defecto)
+ * tiene todo ese margen. Hoy no cambia.
+ */
+export function guardarDiaLibre({ fecha, franja = 'cena', ahorro }) {
+  const desde = sumarDias(hoyISO(), 1);
+  actualizar((x) => { x.perfil.diaLibre = { fecha, franja, ahorro, desde }; });
+  reajustarPlan(desde);
+}
+export function quitarDiaLibre() {
+  actualizar((x) => { delete x.perfil.diaLibre; });
+  reajustarPlan(sumarDias(hoyISO(), 1));
 }
 
 /** Rellena las comidas que le falten al menú actual (sin tocar las demás). */

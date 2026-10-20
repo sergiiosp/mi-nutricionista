@@ -10,6 +10,7 @@ const CARGADORES = {
   registrarSesion: () => import('../components/RegistrarSesion.svelte'),
   estacion: () => import('../components/FichaEstacion.svelte'),
   guiaFuera: () => import('../components/GuiaFuera.svelte'),
+  diaLibre: () => import('../components/DiaLibre.svelte'),
 };
 
 const promesas = {};

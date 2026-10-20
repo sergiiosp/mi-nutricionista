@@ -70,7 +70,7 @@ export function planBatch(plan, desde, dias = 4, aparatos = undefined) {
   for (const dia of seleccion) {
     for (const c of dia.comidas) {
       const receta = recetaPorId[c.recetaId];
-      if (!receta || !['comida', 'cena'].includes(c.franja)) continue;
+      if (!receta || c.libre || !['comida', 'cena'].includes(c.franja)) continue;
       const cuando = `${nombreDia(dia.fecha)} ${NOMBRE_FRANJA[c.franja]}`;
       tapers.push({ cuando, nombre: receta.nombre, emoji: receta.emoji, pescado: c.ingredientes.some((i) => BASES.pescado.ids.includes(i.a)), fecha: dia.fecha });
       if (receta.batch) {

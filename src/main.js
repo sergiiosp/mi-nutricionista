@@ -3,7 +3,7 @@ import './app.css';
 import App from './App.svelte';
 import { iniciarNube } from './lib/nube/sincro.js';
 import { iniciarAvisos } from './lib/nube/avisos.js';
-import { completarMenu, congelarSesiones, reajustarPlan } from './lib/acciones.js';
+import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto } from './lib/acciones.js';
 import { get } from 'svelte/store';
 import { estado } from './stores/estado.js';
 import { hoja } from './stores/ui.js';
@@ -30,6 +30,8 @@ copiarHoy().finally(() => {
   // (y siempre se recalculan cantidades: si el plan de entreno cambió con una versión nueva, el menú lo sigue)
   completarMenu();
   reajustarPlan();
+  // Una vez por semana, el gasto real con tus datos reajusta las kcal (desde mañana)
+  revisarGasto();
 });
 
 // iOS solo aplica :active (la respuesta al pulsar) si la página escucha toques

@@ -159,7 +159,7 @@ export function contextoDia(perfil, objetivos, fecha, proveedor = null, viajes =
     // Caminar o recuperar no es día de entreno (no hay pre ni post), pero su gasto sí cuenta
     const principal = sesiones.filter((s) => !s.carga && !['recuperacion', 'caminar'].includes(s.tipo)).sort((a, b) => b.duracion - a.duracion)[0];
     const entreno = !!principal;
-    const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion } : null);
+    const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion, tipo: principal.tipo } : null);
     return { entreno, horario, objDia: metaDia(objetivos, sesiones), sesiones, viaje };
   }
   const entreno = esDiaEntreno(perfil, fecha);
@@ -291,9 +291,15 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde =
     if (dia.fecha < desde) continue; // los días pasados (y hoy, si se pide desde mañana) se quedan como fueron
     // Un día «fijado» (p. ej. hoy, al apuntar un peso nuevo) sigue con el peso con el que se planificó
     const p = dia.perfilFijo ? { ...perfil, ...dia.perfilFijo } : perfil;
-    const { entreno, horario, objDia } = contextoDia(p, dia.perfilFijo ? calcularObjetivos(p) : objetivos, dia.fecha, proveedor);
+    const ctx = contextoDia(p, dia.perfilFijo ? calcularObjetivos(p) : objetivos, dia.fecha, proveedor);
+    const { entreno, horario } = ctx;
+    // Día libre (perfil.diaLibre): los días de antes ahorran kcal y esa comida tiene el margen extra
+    const libre = diaLibreActivo(perfil.diaLibre, dia.fecha);
+    const objDia = libre?.ahorro ? cambiarKcal(ctx.objDia, -libre.ahorro) : ctx.objDia;
     dia.entreno = entreno;
-    dia.objetivo = objDia;
+    dia.objetivo = libre?.extra ? cambiarKcal(objDia, libre.extra) : objDia;
+    dia.ahorro = libre?.ahorro || 0;
+    dia.libre = libre?.extra ? { franja: libre.franja, extra: libre.extra } : null;
     dia.sesion = horario.entreno;
     dia.consejos = horario.consejos;
     // Mismo reparto que al generar: en orden del día, compensando lo que va quedando
@@ -305,10 +311,36 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde =
         if (!receta) return null;
         const comida = crearComida(receta, franja, objDia, balance.objetivo(idx));
         balance.anotar(idx, comida.ingredientes);
+        if (dia.libre?.franja === franja.id) {
+          // La comida libre: el plato de base más el margen ahorrado (no va a la compra; comes lo que quieras)
+          const m = macrosComida(comida.ingredientes);
+          const meta = { p: m.p, c: m.c + (dia.libre.extra * 0.55) / 4, g: m.g + (dia.libre.extra * 0.45) / 9 };
+          meta.kcal = meta.p * 4 + meta.c * 4 + meta.g * 9;
+          comida.ingredientes = escalarReceta(receta, meta).ingredientes;
+          comida.libre = dia.libre.extra;
+        }
         return comida;
       })
       .filter(Boolean);
   }
+}
+
+/** ¿Este día ahorra kcal o es el día libre? { ahorro } o { extra, franja } (null si no le toca). */
+export function diaLibreActivo(dl, fecha) {
+  if (!dl?.fecha || !dl.ahorro) return null;
+  const dias = diasAhorro(dl);
+  if (fecha === dl.fecha) return { extra: dl.ahorro * dias.length, franja: dl.franja || 'cena' };
+  if (dias.includes(fecha)) return { ahorro: dl.ahorro };
+  return null;
+}
+/** Días que ahorran: desde el día siguiente a crearlo hasta la víspera del día libre (máx. 6). */
+export function diasAhorro(dl) {
+  const lista = [];
+  for (let f = dl.desde; f < dl.fecha && lista.length < 6; f = sumarDias(f, 1)) lista.push(f);
+  return lista;
+}
+function cambiarKcal(obj, kcal) {
+  return { ...obj, kcal: obj.kcal + kcal, hidratos: Math.max(0, Math.round(obj.hidratos + (kcal * 0.55) / 4)), grasa: Math.max(0, Math.round(obj.grasa + (kcal * 0.45) / 9)) };
 }
 
 export function sumarDias(iso, n) {

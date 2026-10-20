@@ -54,6 +54,15 @@ const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
  * @returns {{ franjas: Array, entreno: {inicio, fin}|null, consejos: string[] }}
  */
 /** @param sesionDia opcional { hora, duracion } de la sesión concreta del día (plan HYROX) */
+// Pre y post según el tipo de sesión (multiplicadores sobre el reparto de cada comida)
+export const CLASE_SESION = { series: 'intensa', umbral: 'intensa', largo: 'intensa', simulacro: 'intensa', compromised: 'intensa', estaciones: 'intensa', carrera: 'intensa', popular: 'intensa', activacion: 'intensa', fuerza: 'fuerza', torso: 'fuerza', rodaje: 'suave' };
+const AJUSTE_SESION = {
+  intensa: { pre: { c: 1.5, g: 0.5 }, post: { c: 1.4, p: 1.1 }, resto: { c: 0.85 } },
+  fuerza: { pre: { c: 1.25, g: 0.7, p: 1.05 }, post: { p: 1.3, c: 1.2 }, resto: { c: 0.9 } },
+  suave: { pre: { c: 1.15, g: 0.8 }, post: { p: 1.1, c: 1.1 }, resto: { c: 0.95 } },
+  normal: { pre: { c: 1.35, g: 0.6 }, post: { c: 1.3, p: 1.15 }, resto: { c: 0.88 } },
+};
+
 export function horarioDia(perfil, entreno, sesionDia = null) {
   let base = (REPARTOS[perfil.comidas] || REPARTOS[4]).map((f) => ({ ...f, pctM: { ...(f.pM || { p: f.pct, c: f.pct, g: f.pct }) } }));
   // Sin lácteo antes de dormir: su parte vuelve a la cena
@@ -120,12 +129,13 @@ export function horarioDia(perfil, entreno, sesionDia = null) {
     if (post && post.hora - fin <= 180) post.etiqueta = 'post';
     else consejos.push('Al acabar, toma algo con proteína (un yogur +Proteínas o un vaso de leche) si tu siguiente comida tarda más de 3 h.');
 
-    // Más hidratos alrededor del entreno, menos grasa justo antes (se digiere mejor)
+    // Más hidratos alrededor del entreno y menos grasa justo antes (se digiere mejor), según lo que toque:
+    // series y carrera tiran de glucógeno; la fuerza pide más proteína después; lo suave, casi nada
+    const ajuste = AJUSTE_SESION[CLASE_SESION[sesionDia?.tipo]] || AJUSTE_SESION.normal;
     for (const f of franjas) {
       if (f.id === 'recena') continue;
-      if (f.etiqueta === 'pre') { f.pctM.c *= 1.35; f.pctM.g *= 0.6; }
-      else if (f.etiqueta === 'post') { f.pctM.c *= 1.3; f.pctM.p *= 1.15; }
-      else f.pctM.c *= 0.88;
+      const a = f.etiqueta === 'pre' ? ajuste.pre : f.etiqueta === 'post' ? ajuste.post : ajuste.resto;
+      for (const k of ['p', 'c', 'g']) f.pctM[k] *= a[k] ?? 1;
     }
   }
   for (const k of ['p', 'c', 'g']) {

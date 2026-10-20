@@ -12,7 +12,7 @@
   import { estadoDia, sugerencias, faltas } from '../lib/dia.js';
   import NotaDia from '../components/NotaDia.svelte';
   import { recomendaciones, recordatoriosDia } from '../lib/salud.js';
-  import { esDiaEntreno, horarioDia, aMin } from '../lib/horario.js';
+  import { esDiaEntreno, horarioDia, aMin, CLASE_SESION } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
   import { crearPlan, marcarEntrenoDia, quitarRegistro, alternarToma } from '../lib/acciones.js';
   import { fechaLarga, saludo, entero, capital, num } from '../lib/formato.js';
@@ -107,8 +107,13 @@
   const horaEntreno = $derived(entrenoHoy ? (sesionesHoy.find((s) => !['carrera', 'recuperacion', 'caminar'].includes(s.tipo))?.hora || sesion?.inicio || null) : null);
   function porQue(c) {
     if (c.situacion === 'sobra') return 'Hoy no hace falta: el día ya cuadra sin ella';
+    if (c.libre) return `Margen de ~${entero(macrosComida(c.ingredientes).kcal)} kcal: come lo que te apetezca`;
     if (c.franja === 'recena') return 'Caseína: proteína lenta mientras duermes';
     if (d.dia?.viaje) return 'De viaje: fácil de encontrar fuera de casa';
+    // Según lo que entrenas hoy: antes de series, hidratos y poca grasa; después de fuerza, más proteína
+    const clase = CLASE_SESION[sesPrincipal?.tipo];
+    if (c.etiqueta === 'pre') return clase === 'intensa' ? `Antes de ${minus(sesPrincipal.titulo.split(':')[0]).split(' ')[0]}: hidratos rápidos y poca grasa` : clase === 'fuerza' ? 'Antes de fuerza: hidratos y algo de proteína' : 'Antes de entrenar: hidratos para rendir';
+    if (c.etiqueta === 'post') return clase === 'fuerza' ? 'Después de fuerza: más proteína para el músculo' : clase === 'intensa' ? 'Después de la sesión: hidratos para recargar y proteína' : 'Después de entrenar: proteína para recuperar';
     if (horaEntreno && c.hora) {
       const dif = aMin(horaEntreno) - aMin(c.hora);
       if (dif >= 45 && dif <= 240) return 'Antes de entrenar: hidratos para rendir';

@@ -6,7 +6,8 @@
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
   import { tendencia, recomendacion } from '../../lib/progreso.js';
-  import { reajustarPlan } from '../../lib/acciones.js';
+  import { reajustarPlan, revisarGasto } from '../../lib/acciones.js';
+  import { MINIMOS } from '../../lib/gasto.js';
   import { fechaCorta, num } from '../../lib/formato.js';
   import { grasaReferencia, ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, RANGOS } from '../../lib/cuerpo.js';
 
@@ -40,13 +41,14 @@
     actualizar((e) => {
       // Hoy se queda con el peso con el que se planificó: las cantidades nuevas, desde mañana
       const dHoy = e.plan?.dias.find((d) => d.fecha === hoy);
-      if (dHoy && !dHoy.perfilFijo) dHoy.perfilFijo = { peso: antes.peso, grasa: antes.grasa ?? null };
+      if (dHoy && !('peso' in (dHoy.perfilFijo || {}))) dHoy.perfilFijo = { ...(dHoy.perfilFijo || {}), peso: antes.peso, grasa: antes.grasa ?? null };
       e.pesos = e.pesos.filter((x) => x.fecha !== fecha).concat([{ fecha, peso: p, ...extra }]);
       e.perfil.peso = [...e.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)).at(-1).peso;
       const g = grasaReferencia(e.pesos, hoy);
       if (g) e.perfil.grasa = g;
     });
     peso = grasa = musculo = agua = '';
+    revisarGasto();
     formAbierto = false;
     const kcalAhora = calcularObjetivos($estado.perfil).kcal;
     const salto = Math.abs($estado.perfil.peso - antes.peso);
@@ -61,6 +63,9 @@
   const juicio = $derived(veredicto(cambio, $estado.perfil.objetivo));
   const agua_ = $derived(avisoAgua(pesos));
   const signo = (x) => `${x > 0 ? '+' : ''}${num(x, 1)}`;
+  // Gasto real: se calcula una vez por semana (también al apuntar un peso, si toca)
+  const gasto = $derived($estado.gasto);
+  const progresoGasto = $derived(gasto && !gasto.listo ? Math.round(((Math.min(gasto.dias || 0, MINIMOS.dias) / MINIMOS.dias) * 0.6 + (Math.min(gasto.pesajes || 0, MINIMOS.pesajes) / MINIMOS.pesajes) * 0.4) * 100) : 0);
 
   function borrarPeso(p) {
     actualizar((e) => { e.pesos = e.pesos.filter((x) => x.fecha !== p.fecha); });
@@ -145,6 +150,18 @@
   </section>
 {/if}
 
+<section class="tarjeta gasto" aria-label="Tu gasto real">
+  <div class="cu-cab"><b>Tu gasto real</b><small>se revisa cada semana</small></div>
+  {#if gasto?.listo}
+    <p class="g-cifra"><b class="cifra">{gasto.tdee.toLocaleString('es-ES')}</b> kcal al día</p>
+    <p class="pie-nota">Comes {gasto.ingesta.toLocaleString('es-ES')} kcal de media y tu peso va {gasto.kgSemana > 0 ? '+' : ''}{num(gasto.kgSemana, 2)} kg/semana ({gasto.dias} días y {gasto.pesajes} pesajes). La fórmula decía {gasto.formula.toLocaleString('es-ES')} kcal: {gasto.ajuste ? `tu plan lleva un ajuste de ${gasto.ajuste > 0 ? '+' : ''}${gasto.ajuste} kcal por esto` : 'clavada, sin ajuste'}.</p>
+  {:else}
+    <p class="g-texto">Calibrando con tus datos: tu plan sale de fórmulas, que fallan ±10 %. Con 2 semanas de comidas apuntadas y pesajes, lo ajusto a lo que gastas de verdad.</p>
+    <div class="g-pista" aria-hidden="true"><i style="width:{progresoGasto}%"></i></div>
+    <p class="pie-nota">{#if gasto?.raro}Los datos de estas semanas no cuadran (¿días a medio apuntar?): sigo esperando.{:else if gasto}Faltan {[gasto.faltan.dias && `${gasto.faltan.dias} ${gasto.faltan.dias === 1 ? 'día bien apuntado' : 'días bien apuntados'}`, gasto.faltan.pesajes && `${gasto.faltan.pesajes} ${gasto.faltan.pesajes === 1 ? 'pesaje' : 'pesajes'}`, gasto.faltan.semanas && 'datos de al menos 2 semanas'].filter(Boolean).join(', ')}.{:else}Se calcula al abrir la app una vez por semana.{/if}</p>
+  {/if}
+</section>
+
 {#if pesos.length}
   <div class="tarjeta">
     <b class="tit-graf">Evolución</b>
@@ -171,7 +188,7 @@
 <div class="tarjeta destacada rec rec-{rec.tipo}">
   <div class="cab"><span class="ic-cab"><Icono n="lightbulb" tam={18} /></span><b>Tu nutricionista dice</b></div>
   <p>{rec.texto}</p>
-  {#if rec.tipo === 'ajuste'}<button class="boton" onclick={() => aplicarAjuste(rec.ajuste)}>Aplicar ajuste ({rec.ajuste > 0 ? '+' : ''}{rec.ajuste} kcal)</button>{/if}
+  {#if rec.tipo === 'ajuste' && !gasto?.listo}<button class="boton" onclick={() => aplicarAjuste(rec.ajuste)}>Aplicar ajuste ({rec.ajuste > 0 ? '+' : ''}{rec.ajuste} kcal)</button>{:else if rec.tipo === 'ajuste'}<p class="pie-nota">No hace falta tocar nada: el ajuste por tu gasto real ya se aplica solo cada semana.</p>{/if}
   {#if $estado.perfil.ajusteKcal}<p class="pie-nota">Ajuste acumulado: {$estado.perfil.ajusteKcal > 0 ? '+' : ''}{$estado.perfil.ajusteKcal} kcal. <button class="enlace" onclick={() => aplicarAjuste(-$estado.perfil.ajusteKcal)}>Quitar</button></p>{/if}
 </div>
 
@@ -204,6 +221,11 @@
   .bascula small { color: var(--texto-3); font-weight: 600; }
   .tres { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 8px; }
   .consejo-bascula { grid-column: 1 / -1; margin: 0 0 10px; }
+  .g-cifra { margin: 8px 0 2px; font-size: 0.9rem; color: var(--texto-2); }
+  .g-cifra b { font-size: 2rem; letter-spacing: -0.03em; color: var(--primario-fuerte); }
+  .g-texto { margin: 8px 0 10px; font-size: 0.86rem; color: var(--texto-2); }
+  .g-pista { height: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .g-pista i { display: block; height: 100%; border-radius: 999px; background: var(--primario); }
   .h-comp { font-size: 0.74rem; color: var(--texto-2); }
   .historial li { grid-template-columns: 64px 70px 1fr auto; gap: 8px; }
   /* Tu cuerpo */

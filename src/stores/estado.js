@@ -27,6 +27,7 @@ export const VACIO = () => ({
   feedback: { dias: {}, semanas: {} }, // notas del día (hambre, energía…) y repasos semanales (clave: lunes)
   agenda: { eventos: [], viajes: [] },
   tomas: {}, // fecha → { idSuplemento: true }: suplementos tomados ese día
+  gasto: null, // última estimación del gasto real { fecha, listo, tdee, ingesta, kgSemana, formula, ajuste }
   propuestasVistas: {}, // propuestas de un toque ya respondidas // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }
 });
 

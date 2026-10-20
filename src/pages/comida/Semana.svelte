@@ -104,6 +104,7 @@
       <div class="p-sup">
         <span class="p-chip"><Icono n={dia.entreno ? 'dumbbell' : 'moon'} tam={14} grosor={2.2} /> {capital(diaSemana(dia.fecha))} · {dia.entreno ? 'entreno' : 'descanso'}</span>
         {#if dia.viaje}<span class="p-chip"><Icono n="map-pin" tam={14} grosor={2.2} /> de viaje</span>{/if}
+        {#if dia.libre}<span class="p-chip"><Icono n="party-popper" tam={14} grosor={2.2} /> día libre</span>{:else if dia.ahorro}<span class="p-chip">ahorro −{dia.ahorro} kcal</span>{/if}
         <span class="p-coste cifra">{euros(dia.comidas.reduce((x, c) => x + costeComida(c.ingredientes), 0))}</span>
       </div>
       <div class="p-cifras">
@@ -133,8 +134,8 @@
             <span class="m-hora cifra">{c.hora}</span>
             <span class="m-foto"><FotoReceta receta={r} alto={56} redondeo={14} /></span>
             <span class="m-txt">
-              <small>{nombreFranja(c)}{#if c.etiqueta}<i class="m-etq">{ETQ[c.etiqueta]}</i>{/if}{#if n}<i class="m-etq gris">{n}</i>{/if}</small>
-              <b>{r?.nombre}</b>
+              <small>{nombreFranja(c)}{#if c.libre}<i class="m-etq">libre · come lo que quieras</i>{/if}{#if c.etiqueta}<i class="m-etq">{ETQ[c.etiqueta]}</i>{/if}{#if n}<i class="m-etq gris">{n}</i>{/if}</small>
+              <b>{c.libre ? `${nombreFranja(c)} libre` : r?.nombre}</b>
             </span>
             <span class="m-kcal cifra">{Math.round(macrosComida(c.ingredientes).kcal)}<small>kcal</small></span>
           </button>
@@ -146,6 +147,7 @@
   {/if}
 
   <div class="acciones-plan">
+    <button class="boton boton-sec" onclick={() => abrirHoja('diaLibre')}><Icono n="party-popper" tam={18} /> {$estado.perfil.diaLibre?.fecha >= hoy ? 'Tu día libre' : 'Reservar kcal para un día libre'}</button>
     <button class="boton boton-sec" onclick={() => nuevo(true)}><Icono e="🎲" tam={18} /> Otro menú con las mismas fechas</button>
     <button class="boton boton-sec" onclick={() => nuevo(false)}><Icono e="📅" tam={18} /> Nueva semana desde hoy</button>
   </div>

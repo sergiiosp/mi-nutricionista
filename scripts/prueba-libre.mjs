@@ -1,0 +1,30 @@
+// Prueba: reservar kcal para un día libre (ahorro los días de antes, margen en esa comida, fuera de la compra)
+import { get } from 'svelte/store';
+const { estado, actualizar } = await import('../src/stores/estado.js');
+const { crearPlan, guardarDiaLibre, quitarDiaLibre } = await import('../src/lib/acciones.js');
+const { macrosComida } = await import('../src/lib/nutricion.js');
+const { hoyISO, sumarDias } = await import('../src/lib/planificador.js');
+const { listaCompra } = await import('../src/lib/compra.js');
+
+let fallos = 0;
+const ok = (c, t) => { console.log(`${c ? '✓' : '✗'} ${t}`); if (!c) fallos++; };
+const hoy = hoyISO();
+const perfil = { sexo: 'h', edad: 30, altura: 178, peso: 80, trabajo: 'sentado', trabajoInicio: '09:00', trabajoFin: '18:00', despertar: '07:00', dormir: '23:30', pasos: 'normal', entrena: true, deportes: ['fuerza'], diasEntreno: [1, 2, 4, 5], horaEntreno: '18:30', duracionEntreno: 60, intensidad: 'moderada', objetivo: 'recomposicion', ritmo: 'moderado', comidas: 4, alergias: [], noMeGusta: [], dieta: 'omnivora', condiciones: [], leche: 'avena', whey: true };
+actualizar((e) => { e.perfil = perfil; e.registros = {}; });
+crearPlan();
+const dia = (f) => get(estado).plan.dias.find((d) => d.fecha === f);
+const kcal = (f) => Math.round(dia(f).comidas.reduce((s, c) => s + macrosComida(c.ingredientes).kcal, 0));
+const fLibre = sumarDias(hoy, 5);
+const antes = Object.fromEntries([0, 1, 2, 3, 4, 5].map((i) => [sumarDias(hoy, i), kcal(sumarDias(hoy, i))]));
+guardarDiaLibre({ fecha: fLibre, franja: 'cena', ahorro: 150 });
+ok(kcal(hoy) === antes[hoy], 'Hoy no cambia');
+const ahorros = [1, 2, 3, 4].map((i) => antes[sumarDias(hoy, i)] - kcal(sumarDias(hoy, i)));
+ok(ahorros.every((a) => a >= 100 && a <= 200), `Los 4 días de antes ahorran ~150 kcal (${ahorros.join(', ')})`);
+const cena = dia(fLibre).comidas.find((c) => c.franja === 'cena');
+ok(cena.libre === 600, `La cena del día libre tiene +600 kcal de margen (${cena.libre})`);
+ok(kcal(fLibre) - antes[fLibre] >= 500, `Ese día suma el margen (${antes[fLibre]} → ${kcal(fLibre)})`);
+const ids = new Set(listaCompra({ dias: [dia(fLibre)] }).grupos.flatMap((g) => g.items).map((i) => i.id));
+ok(cena.ingredientes.every((i) => !ids.has(i.a) || dia(fLibre).comidas.some((c) => c !== cena && c.ingredientes.some((x) => x.a === i.a))), 'La comida libre no va a la lista de la compra');
+quitarDiaLibre();
+ok(Math.abs(kcal(sumarDias(hoy, 2)) - antes[sumarDias(hoy, 2)]) <= 30 && !dia(fLibre).libre, `Al quitarlo, el menú vuelve a lo de antes (${antes[sumarDias(hoy, 2)]} → ${kcal(sumarDias(hoy, 2))})`);
+process.exitCode = fallos ? 1 : 0;
