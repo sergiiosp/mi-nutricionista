@@ -245,10 +245,10 @@ export function completarMenu() {
   return n;
 }
 
-/** Tras cambiar perfil o peso: mismas recetas, nuevas cantidades y horario. */
-export function reajustarPlan() {
+/** Tras cambiar perfil o peso: mismas recetas, nuevas cantidades y horario (desde hoy o la fecha que digas). */
+export function reajustarPlan(desde = hoyISO()) {
   actualizar((x) => {
-    if (x.plan) reescalarPlan(x.plan, x.perfil, calcularObjetivos(x.perfil), proveedorDe(x));
+    if (x.plan) reescalarPlan(x.plan, x.perfil, calcularObjetivos(x.perfil), proveedorDe(x), desde);
   });
 }
 

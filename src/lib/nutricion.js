@@ -87,7 +87,11 @@ export function calcularObjetivos(perfil) {
   const { sexo, edad, altura, peso, objetivo } = perfil;
   const h = altura / 100;
   const imc = peso / (h * h);
-  const tmb = 10 * peso + 6.25 * altura - 5 * edad + (sexo === 'h' ? 5 : -161);
+  // Con el % de grasa de tu báscula, el metabolismo sale de la masa magra (Katch-McArdle), más fiable
+  // si tienes más músculo de la media; sin ese dato, de peso, altura y edad (Mifflin-St Jeor)
+  const grasaPct = perfil.grasa >= 4 && perfil.grasa <= 60 ? perfil.grasa : null;
+  const magra = grasaPct ? peso * (1 - grasaPct / 100) : null;
+  const tmb = magra ? 370 + 21.6 * magra : 10 * peso + 6.25 * altura - 5 * edad + (sexo === 'h' ? 5 : -161);
   const condiciones = perfil.condiciones || [];
 
   // Gasto en días de descanso (actividad diaria) y de entreno (+ la sesión)
@@ -127,7 +131,8 @@ export function calcularObjetivos(perfil) {
     gKg -= 0.3;
   }
   gKg = Math.max(gKg, 1.2);
-  const proteina = Math.round(Math.min(pesoRef * gKg, (kcalMedia * 0.35) / 4));
+  // Con masa magra conocida, la proteína va sobre ella (×1,2 ≈ los mismos g/kg de peso con un ~17 % de grasa)
+  const proteina = Math.round(Math.min(magra ? magra * gKg * 1.2 : pesoRef * gKg, (kcalMedia * 0.35) / 4));
   const grasaBase = Math.max(0.8 * pesoRef, (kcalMedia * 0.27) / 9);
 
   // Deportes de resistencia con sesiones largas: mínimo de hidratos para rendir
@@ -142,6 +147,8 @@ export function calcularObjetivos(perfil) {
   return {
     imc: Math.round(imc * 10) / 10,
     tmb: Math.round(tmb),
+    metodoTmb: magra ? 'magra' : 'peso',
+    magraKg: magra ? Math.round(magra * 10) / 10 : null,
     get: Math.round(getMedio),
     kcal: kcalMedia,
     proteina,

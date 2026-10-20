@@ -2,7 +2,7 @@
 
 import { RECETAS } from '../data/recetas.js';
 import { ALIMENTOS } from '../data/alimentos.js';
-import { escalarReceta, recetaPermitida, costeComida, macrosComida, objetivosDia, metaDia } from './nutricion.js';
+import { escalarReceta, recetaPermitida, costeComida, macrosComida, objetivosDia, metaDia, calcularObjetivos } from './nutricion.js';
 import { REPARTOS, horarioDia, objetivoFranja, esDiaEntreno } from './horario.js';
 import { preferenciasAlimentos } from './salud.js';
 import { comboDesdeId, esCombo, combosAleatorios, familiaDe } from './combos.js';
@@ -286,11 +286,12 @@ export function completarPlan(plan, perfil, objetivos, proveedor = null, favorit
 }
 
 /** Recalcula horario y cantidades de todo el plan (mismas recetas) tras cambiar el perfil. */
-export function reescalarPlan(plan, perfil, objetivos, proveedor = null) {
-  const hoy = hoyISO();
+export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde = hoyISO()) {
   for (const dia of plan.dias) {
-    if (dia.fecha < hoy) continue; // los días pasados se quedan como fueron
-    const { entreno, horario, objDia } = contextoDia(perfil, objetivos, dia.fecha, proveedor);
+    if (dia.fecha < desde) continue; // los días pasados (y hoy, si se pide desde mañana) se quedan como fueron
+    // Un día «fijado» (p. ej. hoy, al apuntar un peso nuevo) sigue con el peso con el que se planificó
+    const p = dia.perfilFijo ? { ...perfil, ...dia.perfilFijo } : perfil;
+    const { entreno, horario, objDia } = contextoDia(p, dia.perfilFijo ? calcularObjetivos(p) : objetivos, dia.fecha, proveedor);
     dia.entreno = entreno;
     dia.objetivo = objDia;
     dia.sesion = horario.entreno;

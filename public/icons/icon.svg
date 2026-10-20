@@ -1,9 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Pulso: un bíceps flexionado atravesado por la línea de pulso -->
   <defs>
     <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f1f25"/><stop offset="1" stop-color="#09090b"/></linearGradient>
-    <linearGradient id="naranja" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffb21f"/><stop offset=".55" stop-color="#ff5b1f"/><stop offset="1" stop-color="#ff2e4d"/></linearGradient>
+    <linearGradient id="naranja" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb21f"/><stop offset=".5" stop-color="#ff5b1f"/><stop offset="1" stop-color="#ff2e4d"/></linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#fondo)"/>
-  <path d="M84 290h78l34-58 52 150 58-262 42 170h80" fill="none" stroke="url(#naranja)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="428" cy="290" r="26" fill="#fff"/>
+  <path transform="translate(96 94) scale(13.5)" fill="url(#naranja)" stroke="url(#naranja)" stroke-width="1.6" stroke-linejoin="round" d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1Z"/>
+  <path d="M120 322H178L208 272L244 382L278 246L304 322H390" fill="none" stroke="#141418" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M68 322H178L208 272L244 382L278 246L304 322H418" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="446" cy="322" r="18" fill="#fff"/>
 </svg>

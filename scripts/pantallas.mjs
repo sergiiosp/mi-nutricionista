@@ -79,8 +79,8 @@ await espera(2500);
 
 // ── Datos de ejemplo (perfil parecido al de Sergio, plan HYROX, registros) ──
 await js(`
-  const perfil = { nombre: 'Sergio', sexo: 'h', edad: 30, altura: 178, peso: 80, trabajo: 'sentado', trabajoInicio: '09:00', trabajoFin: '18:00', despertar: '07:00', dormir: '23:30', pasos: 'normal', entrena: true, deportes: ['fuerza', 'carrera', 'hiit'], diasEntreno: [1, 2, 4, 5], horaEntreno: '18:30', duracionEntreno: 60, intensidad: 'moderada', compite: true, objetivo: 'recomposicion', ritmo: 'moderado', comidas: 4, alergias: ['cacahuete', 'nueces', 'avellana', 'anacardo', 'verdura_cruda', 'fruta_piel'], noMeGusta: [], dieta: 'omnivora', condiciones: [], leche: 'avena', aparatos: ['microondas', 'airfryer', 'plancha'], whey: true };
-  const pesos = ['2026-09-21:81.6', '2026-09-28:81.2', '2026-10-05:80.7', '2026-10-12:80.4', '2026-10-19:80.1'].map((x) => { const [f, p] = x.split(':'); return { fecha: f, peso: +p }; });
+  const perfil = { nombre: 'Sergio', sexo: 'h', edad: 30, altura: 178, peso: 80.1, grasa: 17.2, trabajo: 'sentado', trabajoInicio: '09:00', trabajoFin: '18:00', despertar: '07:00', dormir: '23:30', pasos: 'normal', entrena: true, deportes: ['fuerza', 'carrera', 'hiit'], diasEntreno: [1, 2, 4, 5], horaEntreno: '18:30', duracionEntreno: 60, intensidad: 'moderada', compite: true, objetivo: 'recomposicion', ritmo: 'moderado', comidas: 4, alergias: ['cacahuete', 'nueces', 'avellana', 'anacardo', 'verdura_cruda', 'fruta_piel'], noMeGusta: [], dieta: 'omnivora', condiciones: [], leche: 'avena', aparatos: ['microondas', 'airfryer', 'plancha'], whey: true };
+  const pesos = ['2026-09-21:81.6:18.4:61.8:55.6', '2026-09-28:81.2:18.1:61.9:55.8', '2026-10-05:80.7:17.6:62.1:55.9', '2026-10-12:80.4:17.2:62.2:56.1', '2026-10-19:80.1:16.9:62.4:56'].map((x) => { const [f, p, g, m, a] = x.split(':'); return { fecha: f, peso: +p, grasa: +g, musculo: +m, agua: +a }; });
   localStorage.clear();
   localStorage.setItem('mi-nutricionista:v1', JSON.stringify({ version: 2, perfil, plan: null, registros: {}, saltadas: {}, pesos, medidas: [{ fecha: '2026-09-21', cintura: 86 }, { fecha: '2026-10-12', cintura: 84.5 }],
     hyrox: { config: { inicio: '2026-09-22', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1440 }, enfoque: 'equilibrado', exigencia: 'normal' }, registros: {}, movidas: {} },
@@ -140,7 +140,8 @@ await pestaña('Compra'); await foto('comida-compra', 2);
 await pestaña('Batch'); await foto('comida-batch', 2);
 await ir('#progreso'); await foto('progreso-resumen', 2);
 await pestaña('Entreno'); await foto('progreso-entreno', 2);
-await pestaña('Peso'); await foto('progreso-peso', 2);
+await pestaña('Peso'); await foto('progreso-peso', 3);
+await js(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('Apuntar peso'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('progreso-peso-form', 1);
 await ir('#ajustes'); await foto('ajustes', 3);
 await ir('#hoy');
 await hoja('registrar', `{ fecha: '2026-10-20', franja: 'merienda' }`); await foto('hoja-registrar', 2); await cerrar();
