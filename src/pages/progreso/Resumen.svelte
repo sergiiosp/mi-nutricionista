@@ -4,6 +4,7 @@
   import Icono from '../../components/Icono.svelte';
   import Anillos from '../../components/Anillos.svelte';
   import RepasoSemanal from '../../components/RepasoSemanal.svelte';
+  import { abrirHoja } from '../../stores/ui.js';
   import { estado } from '../../stores/estado.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
@@ -63,6 +64,8 @@
 </section>
 
 <RepasoSemanal />
+
+<button class="informe-btn" onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={18} /> <span><b>Informe del mes</b><small>Peso, comida, entrenos y fotos en un PDF</small></span> <Icono n="chevron-right" tam={18} /></button>
 
 {#if s.porDia.some((d) => d.r)}
   <section class="tarjeta dias" aria-label="Calorías por día">
@@ -124,6 +127,11 @@
   .titular span { font-size: 0.86rem; color: var(--texto-2); }
   .racha { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 0.8rem; font-weight: 700; color: var(--amarillo); }
 
+  .informe-btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; margin: 10px 0 0; padding: 8px 14px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .informe-btn > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
+  .informe-btn > :global(svg:last-child) { margin-left: auto; color: var(--texto-3); flex-shrink: 0; }
+  .informe-btn span { display: grid; }
+  .informe-btn small { font-size: 0.76rem; color: var(--texto-2); }
   /* Cada día */
   .d-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .d-ley { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: var(--texto-3); }

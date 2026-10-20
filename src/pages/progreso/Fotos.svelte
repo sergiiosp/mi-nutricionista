@@ -6,11 +6,14 @@
   import { hoyISO, sumarDias } from '../../lib/planificador.js';
   import { guardarFoto, urlFoto, borrarFoto } from '../../lib/fotos.js';
   import { fechaCorta } from '../../lib/formato.js';
+  import { abrirHoja } from '../../stores/ui.js';
 
   let entrada;
   let pose = $state('frente');
   const POSES = [['frente', 'De frente'], ['lado', 'De lado'], ['espalda', 'De espaldas']];
   let corte = $state(50); // posición del deslizador antes/ahora
+  let idAntes = $state(null);
+  let idAhora = $state(null);
   let urls = $state({});
   const fotos = $derived([...($estado.fotosProgreso || [])].sort((a, b) => a.fecha.localeCompare(b.fecha)));
   // Se comparan fotos de la misma pose (las antiguas sin pose cuentan como «de frente»)
@@ -61,12 +64,13 @@
 <div class="poses" role="radiogroup" aria-label="Pose">
   {#each POSES as [v, n] (v)}<button role="radio" aria-checked={pose === v} class:activo={pose === v} onclick={() => (pose = v)}>{n}</button>{/each}
 </div>
-<button class="boton ancho" onclick={() => entrada.click()}><Icono e="📸" tam={18} /> Añadir foto {POSES.find(([v]) => v === pose)[1].toLowerCase()}</button>
+<button class="boton ancho" onclick={() => abrirHoja('camara', { pose })}><Icono n="camera" tam={18} /> Hacer foto {POSES.find(([v]) => v === pose)[1].toLowerCase()} con guía</button>
+<button class="boton boton-sec ancho galeria-btn" onclick={() => entrada.click()}>Subir una de la galería</button>
 <input bind:this={entrada} type="file" accept="image/*" capture="user" hidden onchange={añadir} />
 
 {#if dePose.length >= 2}
-  {@const antes = dePose[0]}
-  {@const ahora = dePose.at(-1)}
+  {@const antes = dePose.find((f) => f.id === idAntes) || dePose[0]}
+  {@const ahora = dePose.find((f) => f.id === idAhora) || dePose.at(-1)}
   <h2 class="seccion">Antes y ahora</h2>
   <div class="deslizar">
     {#if urls[antes.id]}<img src={urls[antes.id]} alt="Antes, {fechaCorta(antes.fecha)}" />{/if}
@@ -75,6 +79,12 @@
     <span class="et izq">Antes · {fechaCorta(antes.fecha)}</span><span class="et der">Ahora · {fechaCorta(ahora.fecha)}</span>
   </div>
   <input class="corte" type="range" min="0" max="100" bind:value={corte} aria-label="Deslizar entre antes y ahora" />
+  {#if dePose.length > 2}
+    <div class="elegir-fechas">
+      <label><span>Antes</span><select bind:value={idAntes}>{#each dePose as f (f.id)}<option value={f.id}>{fechaCorta(f.fecha)}</option>{/each}</select></label>
+      <label><span>Ahora</span><select bind:value={idAhora}>{#each dePose as f (f.id)}<option value={f.id}>{fechaCorta(f.fecha)}</option>{/each}</select></label>
+    </div>
+  {/if}
 {:else if fotos.length}
   <p class="pie-nota">Cuando tengas dos fotos {POSES.find(([v]) => v === pose)[1].toLowerCase()}, aquí las podrás comparar.</p>
 {/if}
@@ -106,6 +116,10 @@
   .et.izq { left: 8px; } .et.der { right: 8px; }
   .corte { width: 100%; margin: 10px 0 0; accent-color: var(--primario); }
   .ancho { width: 100%; }
+  .galeria-btn { margin-top: 8px; }
+  .elegir-fechas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .elegir-fechas label { display: grid; gap: 4px; font-size: 0.76rem; font-weight: 700; color: var(--texto-2); }
+  .elegir-fechas select { min-height: 44px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-size: 16px; }
   .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   figure { margin: 0; border-radius: 18px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); }
   figure img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; background: var(--superficie-2); }

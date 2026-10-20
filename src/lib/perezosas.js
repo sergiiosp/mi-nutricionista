@@ -11,6 +11,8 @@ const CARGADORES = {
   estacion: () => import('../components/FichaEstacion.svelte'),
   guiaFuera: () => import('../components/GuiaFuera.svelte'),
   diaLibre: () => import('../components/DiaLibre.svelte'),
+  camara: () => import('../components/CamaraGuia.svelte'),
+  informe: () => import('../components/Informe.svelte'),
 };
 
 const promesas = {};

@@ -156,6 +156,8 @@ await hoja('sesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20'
 await hoja('registrarSesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20' && s.ejercicios?.length).id, entreno: true }`); await foto('hoja-entreno', 2); await cerrar();
 await hoja('estacion', `{ id: 'push' }`); await foto('hoja-estacion', 1); await cerrar();
 await hoja('guiaFuera', `{ sitio: 'asiatico' }`); await foto('hoja-guia-fuera', 2); await cerrar();
+await hoja('informe', '{}'); await foto('hoja-informe', 3); await cerrar();
+await hoja('camara', `{ pose: 'frente' }`); await foto('hoja-camara', 1); await cerrar();
 
 // Día cerrado: todas las comidas de hoy hechas (al final, porque cambia los datos)
 await cerrar();
