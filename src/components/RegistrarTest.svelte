@@ -4,13 +4,13 @@
   import Emoji from './Emoji.svelte';
   import CampoTiempo from './CampoTiempo.svelte';
   import { estado } from '../stores/estado.js';
-  import { avisar, cerrarHoja } from '../stores/ui.js';
+  import { avisar, cerrarHoja, abrirHoja } from '../stores/ui.js';
   import { guardarTest } from '../lib/acciones.js';
   import { TESTS, testPorId, historialTests } from '../lib/hyrox/tests.js';
   import { aSegundos, mmss } from '../lib/hyrox/ritmos.js';
   import { hoyISO } from '../lib/planificador.js';
 
-  let { id: idInicial = '5k' } = $props();
+  let { id: idInicial = '5k', volver = null } = $props(); // volver: hoja a la que regresar (la revisión del mes)
   let id = $state(idInicial);
   let fecha = $state(hoyISO());
   let tiempo = $state('');
@@ -23,7 +23,7 @@
     if (!seg) return avisar('Pon el tiempo del test', '⚠️');
     const dif = guardarTest(fecha, id, seg);
     avisar(dif == null ? `Primera marca: ${mmss(seg)}` : dif < 0 ? `¡Mejoras ${mmss(-dif)}!` : `${mmss(seg)}: ${mmss(dif)} más que la última vez`, dif != null && dif < 0 ? '🎉' : '⏱️');
-    cerrarHoja();
+    if (volver) abrirHoja(volver.tipo, volver.props); else cerrarHoja();
   }
 </script>
 

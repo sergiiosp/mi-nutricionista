@@ -12,6 +12,9 @@ import { copiaSesion } from './hyrox/sesiones.js';
 import { gastoReal, ajusteGasto } from './gasto.js';
 import { marcasDeTests, testPorId } from './hyrox/tests.js';
 import { mmss } from './hyrox/ritmos.js';
+import { grasaReferencia } from './cuerpo.js';
+import { num } from './formato.js';
+import { resumenRevision } from './revision.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 export const viajesDe = (x) => x?.agenda?.viajes || [];
@@ -352,6 +355,55 @@ export function borrarTest(fecha, id) {
     x.tests = (x.tests || []).filter((t) => !(t.fecha === fecha && t.id === id));
     if (x.hyrox?.config) x.hyrox.config = { ...x.hyrox.config, marcas: { ...(x.hyrox.config.marcas || {}), ...marcasDeTests(x.tests) } };
   });
+}
+
+/**
+ * Apunta un peso (y lo que quieras de la báscula). Hoy se queda con el peso con el que se planificó: si cambian
+ * tus kcal, las cantidades nuevas van desde mañana y queda en el diario del coach. Devuelve el texto del aviso.
+ */
+export function guardarPeso(fecha, p, extra = {}) {
+  const hoy = hoyISO();
+  const antes = get(estado).perfil;
+  const kcalAntes = calcularObjetivos(antes).kcal;
+  actualizar((e) => {
+    const dHoy = e.plan?.dias.find((d) => d.fecha === hoy);
+    if (dHoy && !('peso' in (dHoy.perfilFijo || {}))) dHoy.perfilFijo = { ...(dHoy.perfilFijo || {}), peso: antes.peso, grasa: antes.grasa ?? null };
+    e.pesos = e.pesos.filter((x) => x.fecha !== fecha).concat([{ fecha, peso: p, ...extra }]);
+    e.perfil.peso = [...e.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)).at(-1).peso;
+    const g = grasaReferencia(e.pesos, hoy);
+    if (g) e.perfil.grasa = g;
+  });
+  revisarGasto();
+  const ahora = get(estado).perfil;
+  const kcalAhora = calcularObjetivos(ahora).kcal;
+  const salto = Math.abs(ahora.peso - antes.peso);
+  if (Math.abs(kcalAhora - kcalAntes) < 30 && salto < 2) return 'Peso guardado';
+  reajustarPlan();
+  anotarDiario('peso', `Tu plan pasa de ${kcalAntes} a ${kcalAhora} kcal`, salto >= 2 ? `Tu peso real (${num(ahora.peso, 1)} kg) era ${num(salto, 1)} kg distinto del que tenía.` : `Con tu peso${extra.grasa ? ' y tu grasa' : ''} de hoy (${num(p, 1)} kg${extra.grasa ? `, ${num(extra.grasa, 1)} %` : ''}).`);
+  return salto >= 2 ? `Tu peso real difiere ${num(salto, 1)} kg del que tenía: cantidades nuevas desde mañana` : `Guardado: tu plan pasa a ${kcalAhora} kcal desde mañana`;
+}
+
+/** Revisión del mes: empezar (o seguir la que está a medias), apuntar medidas y terminar. */
+export function empezarRevision() {
+  actualizar((x) => { x.revision ||= { inicio: hoyISO() }; x.revisionPospuesta = null; });
+}
+export function guardarMedidas(fecha, datos) {
+  actualizar((x) => { x.medidas = (x.medidas || []).filter((m) => m.fecha !== fecha).concat([{ fecha, ...datos }]); });
+}
+export function posponerRevision() {
+  actualizar((x) => { x.revisionPospuesta = hoyISO(); });
+}
+export function terminarRevision() {
+  const e = get(estado);
+  const inicio = e.revision?.inicio || hoyISO();
+  const r = resumenRevision(e, inicio);
+  const cambios = r.filas.filter((f) => f.dif != null && f.dif !== 0).map((f) => `${f.nombre.toLowerCase()} ${f.dif > 0 ? '+' : '−'}${f.unidad === 'seg' ? mmss(Math.abs(f.dif)) : `${num(Math.abs(f.dif), f.dec)} ${f.unidad}`}`);
+  actualizar((x) => {
+    x.revisiones = [...(x.revisiones || []).filter((v) => v.fecha !== hoyISO()), { fecha: hoyISO(), inicio }];
+    x.revision = null;
+  });
+  anotarDiario('revision', 'Revisión del mes hecha', cambios.length ? `${r.titular} Desde la anterior: ${cambios.join(', ')}.` : r.titular);
+  return r;
 }
 
 /** Rellena las comidas que le falten al menú actual (sin tocar las demás). */

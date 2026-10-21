@@ -12,7 +12,7 @@
     "catalogo": "node scripts/descargar-catalogo.mjs",
     "pantallas": "node scripts/pantallas.mjs",
     "pantallas:base": "node scripts/pantallas.mjs base",
-    "test": "node scripts/probar-motor.mjs && node scripts/prueba-descanso.mjs && node scripts/prueba-agenda.mjs && node scripts/prueba-avisos.mjs && node scripts/prueba-valorar.mjs && node scripts/prueba-cuerpo.mjs && node scripts/prueba-gasto.mjs && node scripts/prueba-libre.mjs && node scripts/prueba-forma.mjs && node scripts/prueba-despensa.mjs && node scripts/prueba-coach.mjs && node scripts/prueba-fase.mjs && node scripts/prueba-tests.mjs && node scripts/prueba-diacarrera.mjs && node scripts/prueba-descubrimientos.mjs"
+    "test": "node scripts/probar-motor.mjs && node scripts/prueba-descanso.mjs && node scripts/prueba-agenda.mjs && node scripts/prueba-avisos.mjs && node scripts/prueba-valorar.mjs && node scripts/prueba-cuerpo.mjs && node scripts/prueba-gasto.mjs && node scripts/prueba-libre.mjs && node scripts/prueba-forma.mjs && node scripts/prueba-despensa.mjs && node scripts/prueba-coach.mjs && node scripts/prueba-fase.mjs && node scripts/prueba-tests.mjs && node scripts/prueba-diacarrera.mjs && node scripts/prueba-descubrimientos.mjs && node scripts/prueba-revision.mjs"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",

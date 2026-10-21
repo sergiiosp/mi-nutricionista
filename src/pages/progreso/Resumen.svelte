@@ -13,7 +13,8 @@
   import { resumenSemanal, rachas } from '../../lib/logros.js';
   import { planDe } from '../../lib/hyrox/index.js';
   import { semanaDe } from '../../lib/hyrox/plan.js';
-  import { diaCorto, entero, num } from '../../lib/formato.js';
+  import { estadoRevision } from '../../lib/revision.js';
+  import { diaCorto, entero, num, fechaCorta } from '../../lib/formato.js';
 
   const hoy = hoyISO();
   const objetivos = $derived(calcularObjetivos($estado.perfil));
@@ -45,6 +46,7 @@
     return { cifra: `${k > 0 ? '+' : ''}${num(k, 2)} kg/sem`, texto, bien };
   });
 
+  const rev = $derived(estadoRevision($estado, hoy));
   const retos = $derived(retosSemana($estado, objetivos, hoy));
   const maxKcal = $derived(Math.max(...s.porDia.map((d) => Math.max(d.r?.m.kcal || 0, d.r?.od.kcal || objetivos.kcal))) * 1.05);
 </script>
@@ -82,6 +84,7 @@
 
 <Descubrimientos />
 
+<button class="informe-btn" class:toca={rev.toca} onclick={() => abrirHoja('revision')}><Icono n="clipboard-list" tam={18} /> <span><b>Revisión del mes</b><small>{rev.enCurso ? 'A medias: sigue donde lo dejaste' : rev.toca ? 'Toca ya: báscula, medidas, fotos y test' : `Próxima: ${fechaCorta(rev.proxima)}`}</small></span> <Icono n="chevron-right" tam={18} /></button>
 <button class="informe-btn" onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={18} /> <span><b>Tu plan, explicado</b><small>Por qué tus números y qué esperar este mes</small></span> <Icono n="chevron-right" tam={18} /></button>
 <button class="informe-btn" onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={18} /> <span><b>Informe del mes</b><small>Peso, comida, entrenos y fotos en un PDF</small></span> <Icono n="chevron-right" tam={18} /></button>
 
@@ -149,6 +152,8 @@
   .informe-btn > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
   .informe-btn > :global(svg:last-child) { margin-left: auto; color: var(--texto-3); flex-shrink: 0; }
   .informe-btn span { display: grid; }
+  .informe-btn.toca { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 40%, transparent); }
+  .informe-btn.toca small { color: var(--primario-fuerte); font-weight: 700; }
   .informe-btn small { font-size: 0.76rem; color: var(--texto-2); }
   .retos { margin-top: 12px; }
   .rt-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }

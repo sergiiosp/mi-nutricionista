@@ -6,10 +6,10 @@
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
   import { tendencia, recomendacion } from '../../lib/progreso.js';
-  import { reajustarPlan, revisarGasto } from '../../lib/acciones.js';
+  import { reajustarPlan, guardarPeso } from '../../lib/acciones.js';
   import { MINIMOS } from '../../lib/gasto.js';
   import { fechaCorta, num } from '../../lib/formato.js';
-  import { grasaReferencia, ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, avisoVisceral, CAMPOS } from '../../lib/cuerpo.js';
+  import { ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, avisoVisceral, CAMPOS } from '../../lib/cuerpo.js';
 
   const hoy = hoyISO();
   let fecha = $state(hoy);
@@ -36,28 +36,10 @@
       if (!(v >= c.r[0] && v <= c.r[1])) return avisar(`Revisa: ${c.n.toLowerCase()}`, '⚠️');
       extra[c.k] = v;
     }
-    const antes = $estado.perfil;
-    const kcalAntes = calcularObjetivos(antes).kcal;
-    actualizar((e) => {
-      // Hoy se queda con el peso con el que se planificó: las cantidades nuevas, desde mañana
-      const dHoy = e.plan?.dias.find((d) => d.fecha === hoy);
-      if (dHoy && !('peso' in (dHoy.perfilFijo || {}))) dHoy.perfilFijo = { ...(dHoy.perfilFijo || {}), peso: antes.peso, grasa: antes.grasa ?? null };
-      e.pesos = e.pesos.filter((x) => x.fecha !== fecha).concat([{ fecha, peso: p, ...extra }]);
-      e.perfil.peso = [...e.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)).at(-1).peso;
-      const g = grasaReferencia(e.pesos, hoy);
-      if (g) e.perfil.grasa = g;
-    });
+    avisar(guardarPeso(fecha, p, extra), '⚖️');
     peso = '';
     bascula = {};
-    revisarGasto();
     formAbierto = false;
-    const kcalAhora = calcularObjetivos($estado.perfil).kcal;
-    const salto = Math.abs($estado.perfil.peso - antes.peso);
-    if (Math.abs(kcalAhora - kcalAntes) >= 30 || salto >= 2) {
-      reajustarPlan();
-      avisar(salto >= 2 ? `Tu peso real difiere ${num(salto, 1)} kg del que tenía: cantidades nuevas desde mañana` : `Guardado: tu plan pasa a ${kcalAhora} kcal desde mañana`, '⚖️');
-      anotarDiario('peso', `Tu plan pasa de ${kcalAntes} a ${kcalAhora} kcal`, salto >= 2 ? `Tu peso real (${num($estado.perfil.peso, 1)} kg) era ${num(salto, 1)} kg distinto del que tenía.` : `Con tu peso${extra.grasa ? ' y tu grasa' : ''} de hoy (${num(p, 1)} kg${extra.grasa ? `, ${num(extra.grasa, 1)} %` : ''}).`);
-    } else avisar('Peso guardado', '⚖️');
   }
 
   const cuerpo = $derived(ultimaComposicion(pesos, $estado.perfil.altura));

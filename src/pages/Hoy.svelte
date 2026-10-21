@@ -25,6 +25,7 @@
   import Anillos from '../components/Anillos.svelte';
   import ComoLlegas from '../components/ComoLlegas.svelte';
   import AvisoCopia from '../components/AvisoCopia.svelte';
+  import AvisoRevision from '../components/AvisoRevision.svelte';
   import { retosSemana } from '../lib/retos.js';
   import { explicarPlan } from '../lib/coach.js';
   import { planDiaCarrera } from '../lib/hyrox/diaCarrera.js';
@@ -208,6 +209,7 @@
 
   <PropuestaSemana />
   <AvisoCopia />
+  <AvisoRevision />
 
   <!-- El día en anillos: kcal, proteína y entreno; cada fila se toca para ver el detalle -->
   <section class="resumen-dia s-comida" aria-label="Tu día en cifras">

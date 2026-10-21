@@ -4,11 +4,11 @@
   import { onMount, onDestroy } from 'svelte';
   import Icono from './Icono.svelte';
   import { estado, actualizar, nuevoId } from '../stores/estado.js';
-  import { avisar, cerrarHoja } from '../stores/ui.js';
+  import { avisar, cerrarHoja, abrirHoja } from '../stores/ui.js';
   import { guardarFoto, urlFoto } from '../lib/fotos.js';
   import { hoyISO } from '../lib/planificador.js';
 
-  let { pose = 'frente' } = $props();
+  let { pose = 'frente', volver = null } = $props(); // volver: hoja a la que regresar (la revisión del mes)
   const NOMBRE = { frente: 'de frente', lado: 'de lado', espalda: 'de espaldas' };
   let video = $state();
   let stream = null;
@@ -61,7 +61,7 @@
     actualizar((e) => { (e.fotosProgreso ||= []).push({ id, fecha: hoyISO(), pose }); });
     avisar(`Foto ${NOMBRE[pose]} guardada solo en este dispositivo`, '📸');
     parar();
-    cerrarHoja();
+    if (volver) abrirHoja(volver.tipo, volver.props); else cerrarHoja();
   }
 </script>
 

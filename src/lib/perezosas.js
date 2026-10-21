@@ -17,6 +17,7 @@ const CARGADORES = {
   test: () => import('../components/RegistrarTest.svelte'),
   diaCarrera: () => import('../components/ModoCarrera.svelte'),
   informe: () => import('../components/Informe.svelte'),
+  revision: () => import('../components/Revision.svelte'),
 };
 
 const promesas = {};
