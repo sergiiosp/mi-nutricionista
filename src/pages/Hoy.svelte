@@ -25,6 +25,7 @@
   import Anillos from '../components/Anillos.svelte';
   import ComoLlegas from '../components/ComoLlegas.svelte';
   import { retosSemana } from '../lib/retos.js';
+  import { explicarPlan } from '../lib/coach.js';
   import FotoReceta from '../components/FotoReceta.svelte';
   import { sumarDias } from '../lib/planificador.js';
 
@@ -54,6 +55,8 @@
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const r = $derived(rachas($estado, objetivos, hoy));
   const retos = $derived(retosSemana($estado, objetivos, hoy));
+  const coach = $derived(explicarPlan($estado, objetivos, hoy));
+  const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
   // Panel: qué bloque está abierto (ninguno al entrar: lo esencial ya se ve)
   let abierto = $state(null);
   const alternar = (k) => (abierto = abierto === k ? null : k);
@@ -221,6 +224,12 @@
       <Icono n="chevron-right" tam={14} />
     </a>
   </section>
+
+  <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
+    <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
+    <span class="co-txt"><small>Tu coach · {coach.cabecera.toLowerCase()}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
+    <Icono n="chevron-right" tam={18} />
+  </button>
 
   {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
     <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
@@ -415,6 +424,15 @@
   .r-semana :global(svg:first-child) { color: var(--primario); }
   .r-semana :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
 
+  /* Tu coach */
+  .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }
+  .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .co-txt { flex: 1; min-width: 0; display: grid; }
+  .co-txt small { display: flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 600; color: var(--primario-fuerte); }
+  .co-txt small i { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.66rem; }
+  .co-txt b { font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
+  .coach > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   /* Cierre del día */
   .cierre { margin-top: 12px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--lila) 22%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
   .ci-cab { display: flex; align-items: center; gap: 8px; color: var(--lila); }

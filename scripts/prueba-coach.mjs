@@ -1,0 +1,33 @@
+// Prueba: «Tu plan» explica números, fase, mes y semana con tus datos
+import { get } from 'svelte/store';
+const { estado, actualizar } = await import('../src/stores/estado.js');
+const { crearPlan, guardarHyrox, guardarEvento } = await import('../src/lib/acciones.js');
+const { calcularObjetivos } = await import('../src/lib/nutricion.js');
+const { hoyISO, sumarDias } = await import('../src/lib/planificador.js');
+const { explicarPlan } = await import('../src/lib/coach.js');
+
+let fallos = 0;
+const ok = (c, t) => { console.log(`${c ? '✓' : '✗'} ${t}`); if (!c) fallos++; };
+const hoy = hoyISO();
+const perfil = { nombre: 'Sergio', sexo: 'h', edad: 30, altura: 178, peso: 80, grasa: 17, trabajo: 'sentado', trabajoInicio: '09:00', trabajoFin: '18:00', despertar: '07:00', dormir: '23:30', pasos: 'normal', entrena: true, deportes: ['fuerza', 'carrera'], diasEntreno: [1, 2, 4, 5], horaEntreno: '18:30', duracionEntreno: 60, intensidad: 'moderada', objetivo: 'recomposicion', ritmo: 'moderado', comidas: 4, alergias: [], noMeGusta: [], dieta: 'omnivora', condiciones: [], leche: 'avena', whey: true };
+actualizar((e) => { e.perfil = perfil; e.pesos = [{ fecha: sumarDias(hoy, -14), peso: 80.5, grasa: 17.8, musculo: 62, visceral: 11 }, { fecha: sumarDias(hoy, -7), peso: 80.2, grasa: 17.3, musculo: 62.2, visceral: 11 }, { fecha: hoy, peso: 80, grasa: 17, musculo: 62.4, visceral: 11, bmr: 1790 }]; });
+guardarHyrox({ inicio: sumarDias(hoy, -28), fechaCarrera: sumarDias(hoy, 120), categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1440 }, enfoque: 'equilibrado', exigencia: 'normal' });
+guardarEvento({ id: 'm', fecha: sumarDias(hoy, 10), hora: '09:00', km: 21.1, nombre: 'Media maratón' });
+crearPlan();
+const e = get(estado);
+const x = explicarPlan(e, calcularObjetivos(e.perfil), hoy);
+const sec = Object.fromEntries(x.secciones.map((s) => [s.id, s]));
+ok(['semana', 'numeros', 'donde', 'mes', 'vas'].every((k) => sec[k]?.items.length), 'Las cinco secciones tienen contenido');
+ok(sec.numeros.items[0].detalle.some((d) => d.includes('masa magra')), 'Explica que las kcal salen de tu masa magra');
+ok(sec.numeros.items[0].detalle.some((d) => d.includes('báscula dice')), 'Compara con el BMR de la báscula');
+ok(sec.donde.items.some((i) => i.titulo === 'Media maratón'), 'Habla de la media maratón');
+ok(sec.mes.items.some((i) => i.titulo === 'Prioridad de salud'), 'Avisa de la grasa visceral alta');
+ok(x.resumen.length > 10 && x.cabecera.startsWith('Semana'), `Resumen para Hoy: «${x.cabecera} · ${x.resumen}»`);
+ok(x.secciones.flatMap((s) => s.items).every((i) => !/undefined|NaN|null/.test(`${i.cifra} ${i.texto} ${i.detalle.join(' ')}`)), 'Sin «undefined» ni «NaN» en ningún texto');
+const v = x.visual;
+ok(v.portada?.tramos.length >= 3 && v.semana.length === 7 && v.semana.some((d) => d.ses), 'Portada con fases y semana de 7 días con sesiones');
+const suma = v.cuenta.reduce((t, c) => t + c.v, 0);
+ok(Math.abs(suma - v.total) <= 15, `La cuenta de kcal cuadra: ${v.cuenta.map((c) => `${c.n} ${c.v}`).join(' + ')} = ${suma} (objetivo ${v.total})`);
+ok(Math.abs(v.macros.reduce((t, m) => t + m.pct, 0) - 1) < 0.01 && v.esperado.length === 3 && v.anillos.length === 3, 'Macros en proporción, tres flechas y tres anillos');
+for (const s of x.secciones) console.log(`  ${s.titulo}: ${s.items.map((i) => `${i.titulo} (${i.cifra})`).join(' · ')}`);
+process.exitCode = fallos ? 1 : 0;

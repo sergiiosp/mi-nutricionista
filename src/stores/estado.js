@@ -29,6 +29,7 @@ export const VACIO = () => ({
   agenda: { eventos: [], viajes: [] },
   tomas: {}, // fecha → { idSuplemento: true }: suplementos tomados ese día
   despensa: {}, // alimento → { g, fecha }: lo que tienes en casa (lo cogido en la compra, menos lo que comes)
+  coachVisto: null, // lunes de la última semana en que abriste «Tu plan» (para el aviso del lunes en Hoy)
   gasto: null, // última estimación del gasto real { fecha, listo, tdee, ingesta, kgSemana, formula, ajuste }
   propuestasVistas: {}, // propuestas de un toque ya respondidas // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }
 });

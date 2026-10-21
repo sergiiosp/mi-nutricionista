@@ -79,6 +79,7 @@
 
 <RepasoSemanal />
 
+<button class="informe-btn" onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={18} /> <span><b>Tu plan, explicado</b><small>Por qué tus números y qué esperar este mes</small></span> <Icono n="chevron-right" tam={18} /></button>
 <button class="informe-btn" onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={18} /> <span><b>Informe del mes</b><small>Peso, comida, entrenos y fotos en un PDF</small></span> <Icono n="chevron-right" tam={18} /></button>
 
 {#if s.porDia.some((d) => d.r)}

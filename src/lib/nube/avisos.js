@@ -6,6 +6,7 @@ import { calcularObjetivos } from '../nutricion.js';
 import { recomendaciones, recordatoriosDia } from '../salud.js';
 import { esDiaEntreno, aMin, aHora } from '../horario.js';
 import { estadoDia } from '../dia.js';
+import { explicarPlan } from '../coach.js';
 import { sesionesDia } from '../hyrox/index.js';
 import { hoyISO, sumarDias, recetaPorId } from '../planificador.js';
 import { meta, guardarMeta, apiJSON } from './sincro.js';
@@ -87,6 +88,13 @@ export function calcularAvisos(e, prefs = prefsAvisos(), ahora = Date.now()) {
     if (prefs.inteligentes) {
       const despertar = e.perfil.despertar || '07:30';
       const dormir = e.perfil.dormir || '23:30';
+      // Los lunes, lo que toca esta semana (Tu plan)
+      if (new Date(`${fecha}T12:00`).getDay() === 1) {
+        try {
+          const c = explicarPlan(e, calcularObjetivos(e.perfil), fecha);
+          lista.push({ t: t(fecha, aHora(aMin(despertar) + 45)), titulo: `Tu semana · ${c.cabecera.toLowerCase()}`, cuerpo: c.resumen, url: '#hoy', etiqueta: `coach-${fecha}` });
+        } catch { /* sin plan aún */ }
+      }
       // Día de viaje: por la mañana, la guía para pedir fuera
       if (dia?.viaje) lista.push({ t: t(fecha, aHora(aMin(despertar) + 30)), titulo: '📍 Hoy comes fuera', cuerpo: 'Mira qué pedir según el sitio para no salirte del día.', url: '#hoy', etiqueta: `viaje-${fecha}` });
       // Carreras de tu agenda: la víspera y el desayuno del día
