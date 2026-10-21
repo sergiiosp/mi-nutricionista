@@ -59,6 +59,8 @@
       <div><small>Tendencia</small><b>{t ? `${signo(t.kgSemana, 2)}` : '—'}</b><span>kg por semana</span></div>
       {#if comp?.grasa}<div><small>Grasa</small><b>{num(comp.grasa, 1)} %</b><span>{cuerpo?.grasaKg != null ? `${signo(cuerpo.grasaKg)} kg de grasa` : 'última medición'}</span></div>{/if}
       {#if comp?.musculo}<div><small>Músculo</small><b>{num(comp.musculo, 1)} kg</b><span>{cuerpo?.musculo != null ? `${signo(cuerpo.musculo)} kg` : 'última medición'}</span></div>{/if}
+      {#if comp?.visceral}<div><small>Grasa visceral</small><b>{comp.visceral}</b><span>{comp.visceral < 10 ? 'sana (menos de 10)' : 'alta'}</span></div>{/if}
+      {#if comp?.edad}<div><small>Edad corporal</small><b>{comp.edad} años</b><span>tienes {e.perfil.edad}</span></div>{/if}
     </div>
   </section>
 

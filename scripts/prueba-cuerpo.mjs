@@ -47,4 +47,9 @@ actualizar((e) => {
 reajustarPlan();
 ok(Math.abs(kcalDia(hoy) - hoyAntes) < 15, `Hoy se queda igual (${hoyAntes} → ${kcalDia(hoy)} kcal)`);
 ok(Math.abs(kcalDia(sumarDias(hoy, 1)) - mananaAntes) >= 30, `Mañana cambia (${mananaAntes} → ${kcalDia(sumarDias(hoy, 1))} kcal)`);
+const { ultimaComposicion, avisoVisceral, CAMPOS } = await import('../src/lib/cuerpo.js');
+const u = ultimaComposicion([{ fecha: hoy, peso: 80, grasa: 17, agua: 56, proteina: 18, musculo: 62, visceral: 9 }], 178);
+ok(Math.abs(u.imc - 25.2) < 0.1 && Math.abs(u.aguaKg - 44.8) < 0.1 && Math.abs(u.proteinaKg - 14.4) < 0.1 && Math.abs(u.magraKg - 66.4) < 0.1, `Se calculan IMC ${u.imc.toFixed(1)}, agua ${u.aguaKg.toFixed(1)} kg, proteína ${u.proteinaKg.toFixed(1)} kg y peso sin grasa ${u.magraKg.toFixed(1)} kg`);
+ok(!avisoVisceral(9) && avisoVisceral(11) && !avisoVisceral(11).alto && avisoVisceral(16).alto, 'Grasa visceral: sin aviso por debajo de 10, alta de 10 a 14 y muy alta desde 15');
+ok(CAMPOS.length === 11, 'El formulario pide los 11 datos de FitDays que no se calculan');
 process.exitCode = fallos ? 1 : 0;

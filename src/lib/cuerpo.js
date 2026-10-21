@@ -7,7 +7,22 @@ const ordenar = (l) => [...l].sort((a, b) => a.fecha.localeCompare(b.fecha));
 const media = (l) => l.reduce((s, x) => s + x, 0) / l.length;
 const diasEntre = (a, b) => Math.round((new Date(`${b}T12:00`) - new Date(`${a}T12:00`)) / 86400000);
 
-export const RANGOS = { grasa: [3, 60], musculo: [15, 120], agua: [30, 75] };
+// Datos de la báscula, en el orden de FitDays (lo que se puede calcular no se pide: IMC, masa grasa,
+// peso sin grasa, agua y proteína en kg y % de músculo)
+export const CAMPOS = [
+  { k: 'grasa', n: 'Grasa corporal', u: '%', r: [3, 60] },
+  { k: 'perdidaGrasa', n: 'Pérdida de grasa', u: 'kg', r: [0, 150] },
+  { k: 'musculo', n: 'Masa muscular', u: 'kg', r: [15, 120] },
+  { k: 'esqueletico', n: 'Músculo esquelético', u: '%', r: [20, 70] },
+  { k: 'hueso', n: 'Masa esquelética', u: 'kg', r: [1, 8] },
+  { k: 'proteina', n: 'Proteína', u: '%', r: [5, 30] },
+  { k: 'agua', n: 'Agua corporal', u: '%', r: [30, 75] },
+  { k: 'subcutanea', n: 'Grasa subcutánea', u: '%', r: [2, 60] },
+  { k: 'visceral', n: 'Grasa visceral', u: 'nivel', r: [1, 30], paso: 1 },
+  { k: 'bmr', n: 'BMR', u: 'kcal', r: [800, 4000], paso: 1 },
+  { k: 'edad', n: 'Edad corporal', u: 'años', r: [10, 100], paso: 1 },
+];
+export const RANGOS = Object.fromEntries(CAMPOS.map((c) => [c.k, c.r]));
 
 /** % de grasa para los cálculos: media de las 3 últimas mediciones de las últimas 4 semanas. */
 export function grasaReferencia(pesos, hoy) {
@@ -17,11 +32,28 @@ export function grasaReferencia(pesos, hoy) {
 
 const grasaKg = (p) => (p.grasa ? (p.peso * p.grasa) / 100 : null);
 
-/** Lo último medido: peso, grasa (% y kg), masa magra, músculo y agua. */
-export function ultimaComposicion(pesos) {
-  const p = ordenar(pesos).filter((x) => x.grasa || x.musculo || x.agua).at(-1);
+/** Lo último medido, con lo que se calcula: masa grasa, peso sin grasa, agua y proteína en kg, % de músculo e IMC. */
+export function ultimaComposicion(pesos, altura = null) {
+  const p = ordenar(pesos).filter((x) => CAMPOS.some((c) => x[c.k] != null)).at(-1);
   if (!p) return null;
-  return { ...p, grasaKg: grasaKg(p), magraKg: p.grasa ? p.peso - grasaKg(p) : null };
+  const kg = (pct) => (pct ? (p.peso * pct) / 100 : null);
+  return {
+    ...p,
+    grasaKg: grasaKg(p),
+    magraKg: p.grasa ? p.peso - grasaKg(p) : null,
+    aguaKg: kg(p.agua),
+    proteinaKg: kg(p.proteina),
+    tasaMuscular: p.musculo ? (p.musculo / p.peso) * 100 : null,
+    imc: altura ? p.peso / (altura / 100) ** 2 : null,
+  };
+}
+
+/** Grasa visceral (escala de las básculas, 1-30): hasta 9 bien, 10-14 alta, 15 o más muy alta. */
+export function avisoVisceral(nivel) {
+  if (!nivel || nivel < 10) return null;
+  return nivel >= 15
+    ? { alto: true, texto: `Grasa visceral muy alta (${nivel}): es la que rodea los órganos y la más ligada a riesgo cardiovascular. Coméntalo con tu médico; déficit suave, caminar a diario y menos alcohol la bajan rápido.` }
+    : { alto: false, texto: `Grasa visceral algo alta (${nivel}; lo sano es menos de 10). Es la primera que se va con déficit suave, pasos diarios y entreno: vigílala cada mes.` };
 }
 
 /**
@@ -40,7 +72,7 @@ export function cambioCuerpo(pesos) {
     const b = fin.map(f).filter((x) => x != null);
     return a.length && b.length ? Math.round((media(b) - media(a)) * 10) / 10 : null;
   };
-  return { dias, desde: ini[0].fecha, grasaKg: dif(grasaKg), musculo: dif((p) => p.musculo || null), peso: dif((p) => p.peso) };
+  return { dias, desde: ini[0].fecha, grasaKg: dif(grasaKg), musculo: dif((p) => p.musculo || null), esqueletico: dif((p) => p.esqueletico || null), visceral: dif((p) => p.visceral || null), peso: dif((p) => p.peso) };
 }
 
 /** Qué dice ese cambio de tu objetivo (sobre todo en recomposición, donde el peso engaña). */

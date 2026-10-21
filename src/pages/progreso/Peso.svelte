@@ -9,15 +9,13 @@
   import { reajustarPlan, revisarGasto } from '../../lib/acciones.js';
   import { MINIMOS } from '../../lib/gasto.js';
   import { fechaCorta, num } from '../../lib/formato.js';
-  import { grasaReferencia, ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, RANGOS } from '../../lib/cuerpo.js';
+  import { grasaReferencia, ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, avisoVisceral, CAMPOS } from '../../lib/cuerpo.js';
 
   const hoy = hoyISO();
   let fecha = $state(hoy);
   let peso = $state('');
-  // De la báscula (opcionales)
-  let grasa = $state('');
-  let musculo = $state('');
-  let agua = $state('');
+  // De la báscula (todos opcionales, en el orden de FitDays)
+  let bascula = $state({});
   let formAbierto = $state(false);
   const pesos = $derived([...$estado.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)));
   const o = $derived(calcularObjetivos($estado.perfil));
@@ -31,10 +29,12 @@
     ev.preventDefault();
     const p = numero(peso);
     if (!(p >= 35 && p <= 250)) return avisar('Revisa el peso', '⚠️');
-    const extra = { grasa: numero(grasa), musculo: numero(musculo), agua: numero(agua) };
-    for (const [k, v] of Object.entries(extra)) {
-      if (v == null) delete extra[k];
-      else if (!(v >= RANGOS[k][0] && v <= RANGOS[k][1])) return avisar(`Revisa ${k === 'grasa' ? 'la grasa' : k === 'musculo' ? 'el músculo' : 'el agua'}`, '⚠️');
+    const extra = {};
+    for (const c of CAMPOS) {
+      const v = numero(bascula[c.k] ?? '');
+      if (v == null) continue;
+      if (!(v >= c.r[0] && v <= c.r[1])) return avisar(`Revisa: ${c.n.toLowerCase()}`, '⚠️');
+      extra[c.k] = v;
     }
     const antes = $estado.perfil;
     const kcalAntes = calcularObjetivos(antes).kcal;
@@ -47,7 +47,8 @@
       const g = grasaReferencia(e.pesos, hoy);
       if (g) e.perfil.grasa = g;
     });
-    peso = grasa = musculo = agua = '';
+    peso = '';
+    bascula = {};
     revisarGasto();
     formAbierto = false;
     const kcalAhora = calcularObjetivos($estado.perfil).kcal;
@@ -58,7 +59,8 @@
     } else avisar('Peso guardado', '⚖️');
   }
 
-  const cuerpo = $derived(ultimaComposicion(pesos));
+  const cuerpo = $derived(ultimaComposicion(pesos, $estado.perfil.altura));
+  const visceral = $derived(avisoVisceral(cuerpo?.visceral));
   const cambio = $derived(cambioCuerpo(pesos));
   const juicio = $derived(veredicto(cambio, $estado.perfil.objetivo));
   const agua_ = $derived(avisoAgua(pesos));
@@ -115,12 +117,13 @@
   <b class="tit"><Emoji e="⚖️" tam={24} /> Registrar peso</b>
   <label class="campo"><span>Fecha</span><input type="date" bind:value={fecha} max={hoy} required /></label>
   <label class="campo"><span>Peso</span><input enterkeyhint="next" type="number" step="0.1" min="35" max="250" inputmode="decimal" bind:value={peso} placeholder={actual ? num(actual, 1) : ''} required /><small>kg</small></label>
-  <p class="bascula"><Icono n="activity" tam={15} grosor={2.2} /> De tu báscula <small>opcional</small></p>
-  <div class="tres">
-    <label class="campo"><span>Grasa</span><input enterkeyhint="next" type="number" step="0.1" min="3" max="60" inputmode="decimal" bind:value={grasa} placeholder={cuerpo?.grasa ? num(cuerpo.grasa, 1) : ''} /><small>%</small></label>
-    <label class="campo"><span>Músculo</span><input enterkeyhint="next" type="number" step="0.1" min="15" max="120" inputmode="decimal" bind:value={musculo} placeholder={cuerpo?.musculo ? num(cuerpo.musculo, 1) : ''} /><small>kg</small></label>
-    <label class="campo"><span>Agua</span><input enterkeyhint="done" type="number" step="0.1" min="30" max="75" inputmode="decimal" bind:value={agua} placeholder={cuerpo?.agua ? num(cuerpo.agua, 1) : ''} /><small>%</small></label>
+  <p class="bascula"><Icono n="activity" tam={15} grosor={2.2} /> De tu báscula <small>opcional · en el orden de FitDays</small></p>
+  <div class="campos-bascula">
+    {#each CAMPOS as c, i (c.k)}
+      <label class="campo"><span>{c.n}</span><input enterkeyhint={i === CAMPOS.length - 1 ? 'done' : 'next'} type="number" step={c.paso || 0.1} min={c.r[0]} max={c.r[1]} inputmode={c.paso ? 'numeric' : 'decimal'} bind:value={bascula[c.k]} placeholder={cuerpo?.[c.k] != null ? num(cuerpo[c.k], c.paso ? 0 : 1) : ''} /><small>{c.u}</small></label>
+    {/each}
   </div>
+  <p class="pie-nota consejo-bascula">IMC, masa grasa, peso sin grasa, agua y proteína en kg y % de músculo se calculan solos. El número gris es tu última medición.</p>
   <p class="pie-nota consejo-bascula">Mismo momento siempre: en ayunas, tras ir al baño y descalzo. La grasa cambia con lo que bebas, por eso uso la media de tus últimas mediciones.</p>
   <button class="boton" type="submit">Guardar</button>
 </form>
@@ -133,18 +136,33 @@
       {#if cuerpo.grasa}<div><small>Grasa</small><b class="cifra">{num(cuerpo.grasa, 1)}<span>%</span></b><small>{num(cuerpo.grasaKg, 1)} kg</small></div>{/if}
       {#if cuerpo.magraKg}<div><small>Masa magra</small><b class="cifra">{num(cuerpo.magraKg, 1)}<span>kg</span></b><small>todo menos grasa</small></div>{/if}
       {#if cuerpo.musculo}<div><small>Músculo</small><b class="cifra">{num(cuerpo.musculo, 1)}<span>kg</span></b><small>según la báscula</small></div>{/if}
-      {#if cuerpo.agua}<div><small>Agua</small><b class="cifra">{num(cuerpo.agua, 1)}<span>%</span></b><small>&nbsp;</small></div>{/if}
+      {#if cuerpo.esqueletico}<div><small>M. esquelético</small><b class="cifra">{num(cuerpo.esqueletico, 1)}<span>%</span></b><small>{num((cuerpo.peso * cuerpo.esqueletico) / 100, 1)} kg</small></div>{/if}
+      {#if cuerpo.agua}<div><small>Agua</small><b class="cifra">{num(cuerpo.agua, 1)}<span>%</span></b><small>{num(cuerpo.aguaKg, 1)} kg</small></div>{/if}
+      {#if cuerpo.visceral}<div><small>G. visceral</small><b class="cifra" class:alerta-v={cuerpo.visceral >= 10}>{cuerpo.visceral}</b><small>{cuerpo.visceral < 10 ? 'sana (<10)' : 'alta'}</small></div>{/if}
     </div>
+    <dl class="cu-mas">
+      {#if cuerpo.imc}<div><dt>IMC</dt><dd class="cifra">{num(cuerpo.imc, 1)}</dd></div>{/if}
+      {#if cuerpo.tasaMuscular}<div><dt>% músculo</dt><dd class="cifra">{num(cuerpo.tasaMuscular, 1)} %</dd></div>{/if}
+      {#if cuerpo.proteinaKg}<div><dt>Proteína</dt><dd class="cifra">{num(cuerpo.proteinaKg, 1)} kg · {num(cuerpo.proteina, 1)} %</dd></div>{/if}
+      {#if cuerpo.hueso}<div><dt>Masa esquelética</dt><dd class="cifra">{num(cuerpo.hueso, 1)} kg</dd></div>{/if}
+      {#if cuerpo.subcutanea}<div><dt>G. subcutánea</dt><dd class="cifra">{num(cuerpo.subcutanea, 1)} %</dd></div>{/if}
+      {#if cuerpo.edad}<div><dt>Edad corporal</dt><dd class="cifra">{cuerpo.edad} años{#if $estado.perfil.edad} <small>({cuerpo.edad <= $estado.perfil.edad ? `${$estado.perfil.edad - cuerpo.edad} menos que la tuya` : `${cuerpo.edad - $estado.perfil.edad} más que la tuya`})</small>{/if}</dd></div>{/if}
+      {#if cuerpo.bmr}<div><dt>BMR báscula</dt><dd class="cifra">{cuerpo.bmr} kcal <small>(la app calcula {o.tmb})</small></dd></div>{/if}
+      {#if cuerpo.perdidaGrasa != null}<div><dt>Pérdida de grasa</dt><dd class="cifra">{num(cuerpo.perdidaGrasa, 1)} kg</dd></div>{/if}
+    </dl>
     {#if cambio && (cambio.grasaKg != null || cambio.musculo != null)}
       <div class="cu-cambio">
         <span class="cu-desde">Desde el {fechaCorta(cambio.desde)}</span>
         {#if cambio.grasaKg != null}<span class="chip-cambio" class:bien={cambio.grasaKg <= 0}>Grasa {signo(cambio.grasaKg)} kg</span>{/if}
         {#if cambio.musculo != null}<span class="chip-cambio" class:bien={cambio.musculo >= 0}>Músculo {signo(cambio.musculo)} kg</span>{/if}
+        {#if cambio.esqueletico != null}<span class="chip-cambio" class:bien={cambio.esqueletico >= 0}>M. esquelético {signo(cambio.esqueletico)} %</span>{/if}
+        {#if cambio.visceral}<span class="chip-cambio" class:bien={cambio.visceral <= 0}>Visceral {cambio.visceral > 0 ? '+' : ''}{Math.round(cambio.visceral)}</span>{/if}
       </div>
       {#if juicio}<p class="cu-juicio" class:bien={juicio.bien}>{juicio.texto}</p>{/if}
     {:else}
       <p class="pie-nota">Con unas cuantas mediciones en 2 semanas verás si baja la grasa y se mantiene el músculo.</p>
     {/if}
+    {#if visceral}<p class="cu-agua visceral" class:alto={visceral.alto}><Icono n="triangle-alert" tam={16} /> <span>{visceral.texto}</span></p>{/if}
     {#if agua_}<p class="cu-agua"><Icono n="droplet" tam={16} /> <span>{agua_}</span></p>{/if}
     {#if o.metodoTmb === 'magra'}<p class="pie-nota">Tus calorías salen de tu masa magra ({num(o.magraKg, 1)} kg, con la media de tus últimas mediciones de grasa): metabolismo basal {o.tmb} kcal y {o.proteina} g de proteína.</p>{/if}
   </section>
@@ -219,7 +237,17 @@
   .rec p { font-weight: 600; }
   .bascula { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; margin: 12px 0 0; font-weight: 700; font-size: 0.86rem; color: var(--primario-fuerte); }
   .bascula small { color: var(--texto-3); font-weight: 600; }
-  .tres { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 8px; }
+  .campos-bascula { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; }
+  .campos-bascula .campo { margin: 6px 0; }
+  .cu-mas { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--linea); }
+  .cu-mas div { display: grid; }
+  .cu-mas dt { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); }
+  .cu-mas dd { margin: 0; font-size: 0.9rem; font-weight: 600; }
+  .cu-mas small { display: block; font-size: 0.72rem; color: var(--texto-2); font-weight: 500; }
+  .alerta-v { color: var(--amarillo); }
+  .cu-agua.visceral :global(svg) { color: var(--amarillo); }
+  .cu-agua.visceral.alto { background: var(--coral-claro); }
+  .cu-agua.visceral.alto :global(svg) { color: var(--coral); }
   .consejo-bascula { grid-column: 1 / -1; margin: 0 0 10px; }
   .g-cifra { margin: 8px 0 2px; font-size: 0.9rem; color: var(--texto-2); }
   .g-cifra b { font-size: 2rem; letter-spacing: -0.03em; color: var(--primario-fuerte); }
