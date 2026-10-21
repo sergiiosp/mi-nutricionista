@@ -107,9 +107,9 @@
   .intro .mini { font-size: 0.78rem; color: var(--texto-2); display: flex; gap: 6px; align-items: center; }
   .como ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.85rem; color: var(--texto-2); }
   .poses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 10px; }
-  .poses button { min-height: 44px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .poses button { min-height: 44px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
   .poses button.activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
-  .deslizar { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 3 / 4; background: var(--superficie-2); }
+  .deslizar { position: relative; border-radius: var(--r-l); overflow: hidden; aspect-ratio: 3 / 4; background: var(--superficie-2); }
   .deslizar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .raya { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 8px rgb(0 0 0 / 0.5); }
   .et { position: absolute; bottom: 8px; padding: 3px 8px; border-radius: 999px; background: rgb(0 0 0 / 0.55); color: #fff; font-size: 0.72rem; font-weight: 700; }
@@ -119,9 +119,9 @@
   .galeria-btn { margin-top: 8px; }
   .elegir-fechas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
   .elegir-fechas label { display: grid; gap: 4px; font-size: 0.76rem; font-weight: 700; color: var(--texto-2); }
-  .elegir-fechas select { min-height: 44px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-size: 16px; }
+  .elegir-fechas select { min-height: 44px; padding: 0 10px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; font-size: 16px; }
   .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  figure { margin: 0; border-radius: 18px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); }
+  figure { margin: 0; border-radius: var(--r-l); overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); }
   figure img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; background: var(--superficie-2); }
   figcaption { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; font-size: 0.78rem; font-weight: 700; color: var(--texto-2); }
   figcaption button { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; border: 0; background: none; cursor: pointer; padding: 0; }

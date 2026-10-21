@@ -88,7 +88,7 @@
 <style>
   .intro { margin: 0 0 10px; color: var(--texto-2); font-size: 0.9rem; }
   .intro b { color: var(--texto); }
-  .visor { position: relative; aspect-ratio: 3 / 4; border-radius: 20px; overflow: hidden; background: #000; }
+  .visor { position: relative; aspect-ratio: 3 / 4; border-radius: var(--r-l); overflow: hidden; background: #000; }
   video, .calco { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .espejo { transform: scaleX(-1); }
   .calco { pointer-events: none; mix-blend-mode: screen; filter: grayscale(1) contrast(1.2); }
@@ -96,7 +96,7 @@
   .cabeza { top: 8%; } .pies { top: 94%; }
   .centro { left: 50%; right: auto; top: 6%; bottom: 4%; border-top: 0; border-left: 2px dashed rgb(255 255 255 / 0.3); }
   .cuenta { position: absolute; inset: 0; display: grid; place-items: center; font-size: 6rem; color: #fff; text-shadow: 0 4px 30px rgb(0 0 0 / 0.6); }
-  .error { position: absolute; inset: auto 16px 16px; margin: 0; padding: 12px; border-radius: 12px; background: rgb(0 0 0 / 0.7); color: #fff; font-size: 0.86rem; }
+  .error { position: absolute; inset: auto 16px 16px; margin: 0; padding: 12px; border-radius: var(--r-s); background: rgb(0 0 0 / 0.7); color: #fff; font-size: 0.86rem; }
   .opac { display: grid; gap: 4px; margin-top: 10px; font-size: 0.8rem; font-weight: 700; color: var(--texto-2); }
   .opac input { accent-color: var(--primario); }
   .acciones-cam { display: flex; gap: 8px; margin-top: 12px; }

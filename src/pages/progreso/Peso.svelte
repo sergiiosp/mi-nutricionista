@@ -207,7 +207,7 @@
   .form .campo { margin: 10px 0; }
   .form .boton { grid-column: 1 / -1; }
   .rec .cab { display: flex; gap: 10px; align-items: center; }
-  .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
+  .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); }
   .ancho-peso { width: 100%; margin-top: 12px; }
   .tit-graf { display: block; margin-bottom: 6px; }
   .rec p { font-weight: 600; }
@@ -247,6 +247,6 @@
   .chip-cambio.bien { background: var(--primario-claro); color: var(--primario-fuerte); }
   .cu-juicio { margin: 10px 0 0; font-weight: 700; font-size: 0.9rem; }
   .cu-juicio.bien { color: var(--primario-fuerte); }
-  .cu-agua { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--superficie-2); font-size: 0.82rem; color: var(--texto-2); }
+  .cu-agua { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.82rem; color: var(--texto-2); }
   .cu-agua :global(svg) { color: var(--azul); flex-shrink: 0; margin-top: 1px; }
 </style>

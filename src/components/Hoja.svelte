@@ -111,7 +111,7 @@
   .hoja-cuerpo { overflow-y: auto; padding: 8px 16px calc(24px + env(safe-area-inset-bottom)); overscroll-behavior: contain; }
   @media (min-width: 760px) {
     .hoja-capa { align-items: center; }
-    .hoja-caja { border-radius: 28px; max-height: 86vh; max-height: 86dvh; }
+    .hoja-caja { border-radius: var(--r-xl); max-height: 86vh; max-height: 86dvh; }
     .hoja-asa { display: none; }
   }
 </style>

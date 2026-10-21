@@ -106,15 +106,15 @@
 <p class="pie-nota no-imprimir">En el iPhone: «Imprimir» y luego, en la vista previa, Compartir → Guardar en Archivos.</p>
 
 <style>
-  .informe { padding: 18px; border-radius: 20px; background: #fff; color: #16161a; font-size: 0.86rem; }
+  .informe { padding: 18px; border-radius: var(--r-l); background: #fff; color: #16161a; font-size: 0.86rem; }
   .i-cab { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 2px solid #ff5b1f; }
-  .i-cab img { border-radius: 10px; }
+  .i-cab img { border-radius: var(--r-s); }
   .i-cab div { display: grid; }
   .i-cab b { font-size: 1.2rem; }
   .i-cab small { color: #5f5f68; font-weight: 600; }
   h3 { margin: 16px 0 8px; font-size: 0.95rem; color: #16161a; }
   .i-datos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .i-datos div { display: grid; padding: 10px; border-radius: 12px; background: #f3f3f6; }
+  .i-datos div { display: grid; padding: 10px; border-radius: var(--r-s); background: #f3f3f6; }
   .i-datos small { font-size: 0.72rem; font-weight: 700; color: #5f5f68; }
   .i-datos b { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
   .i-datos span { font-size: 0.74rem; color: #5f5f68; }
@@ -125,7 +125,7 @@
   .i-tabla td.sube { color: #2f8a3a; font-weight: 700; }
   .i-fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .i-fotos figure { margin: 0; }
-  .i-fotos img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; display: block; }
+  .i-fotos img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--r-s); display: block; }
   .i-fotos figcaption { margin-top: 4px; font-size: 0.74rem; font-weight: 700; color: #5f5f68; text-align: center; }
   .i-pie { margin: 16px 0 0; font-size: 0.7rem; color: #8a8a94; }
   .ancho { width: 100%; margin-top: 14px; }

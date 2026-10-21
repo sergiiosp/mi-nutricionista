@@ -40,7 +40,7 @@
   .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   /* Tarjeta de estación: la foto en duotono naranja y el nombre encima, abajo */
   .card {
-    position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: flex-end; min-height: 176px; padding: 0; border: 0; border-radius: 20px;
+    position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: flex-end; min-height: 176px; padding: 0; border: 0; border-radius: var(--r-l);
     background: linear-gradient(160deg, color-mix(in srgb, var(--primario) 35%, #121218), #0b0b0e); text-align: left; cursor: pointer; color: #fff; font: inherit;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--primario) 22%, transparent);
   }

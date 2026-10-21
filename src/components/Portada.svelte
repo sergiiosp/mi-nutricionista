@@ -13,7 +13,7 @@
 
 <style>
   .portada {
-    position: relative; overflow: hidden; isolation: isolate; display: flex; border-radius: 26px; color: #fff;
+    position: relative; overflow: hidden; isolation: isolate; display: flex; border-radius: var(--r-xl); color: #fff;
     background: linear-gradient(160deg, color-mix(in srgb, var(--c) 40%, #121218), #0b0b0e);
     box-shadow: 0 18px 40px color-mix(in srgb, var(--c) 20%, transparent), 0 0 0 1px color-mix(in srgb, var(--c) 28%, transparent);
   }

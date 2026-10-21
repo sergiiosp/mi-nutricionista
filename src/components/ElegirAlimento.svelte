@@ -57,15 +57,15 @@
 <style>
   .buscador-caja { position: sticky; top: 0; z-index: 2; padding-bottom: 8px; background: var(--fondo); }
   .lupa { position: absolute; left: 15px; top: 15px; color: var(--texto-2); }
-  input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: 16px; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
+  input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: var(--r-m); border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
   input:focus { outline: 2px solid var(--primario); }
   .grupos { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 10px; }
   .grupos::-webkit-scrollbar { display: none; }
   .grupos button { flex-shrink: 0; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto-2); font-weight: 700; font-size: 0.82rem; cursor: pointer; }
   .grupos button.activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
   .resultados { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
-  .ic { width: 42px; height: 42px; border-radius: 12px; background: var(--superficie-2); flex-shrink: 0; display: grid; place-items: center; }
+  .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
+  .ic { width: 42px; height: 42px; border-radius: var(--r-s); background: var(--superficie-2); flex-shrink: 0; display: grid; place-items: center; }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.92rem; line-height: 1.25; }
   .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.74rem; }

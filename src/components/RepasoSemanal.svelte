@@ -111,7 +111,7 @@
 </div>
 
 <style>
-  .repaso { margin-bottom: 12px; border-radius: 20px; background: radial-gradient(120% 100% at 0% 0%, rgb(255 91 31 / 0.16), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
+  .repaso { margin-bottom: 12px; border-radius: var(--r-l); background: radial-gradient(120% 100% at 0% 0%, rgb(255 91 31 / 0.16), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .cab { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 12px 14px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .cab > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
   .cab span { flex: 1; display: grid; }
@@ -120,7 +120,7 @@
   .preg { display: grid; gap: 6px; margin-bottom: 12px; }
   .preg > span { font-weight: 700; font-size: 0.86rem; }
   .ops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .ops button, .chips button { min-height: 44px; padding: 0 8px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .ops button, .chips button { min-height: 44px; padding: 0 8px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
   .ops button.activo, .chips button.activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chips button { text-align: left; padding: 8px 10px; line-height: 1.25; }

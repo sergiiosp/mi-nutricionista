@@ -117,7 +117,7 @@
 
 <style>
   .cab { display: flex; gap: 12px; align-items: flex-start; }
-  .cab-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
+  .cab-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--r-m); background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
   .cab h2 { margin: 0; font-size: 1.5rem; letter-spacing: -0.02em; }
   .cab p { margin: 2px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
 
@@ -125,7 +125,7 @@
   .horizonte button { flex-shrink: 0; min-height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
   .horizonte button.activo { background: var(--texto); color: var(--fondo); box-shadow: none; }
 
-  .resultado { padding: 16px; border-radius: 22px; background: radial-gradient(120% 120% at 0% 0%, var(--primario-claro), transparent 65%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 18%, transparent); }
+  .resultado { padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 120% at 0% 0%, var(--primario-claro), transparent 65%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 18%, transparent); }
   .r-tit { font-size: 0.78rem; font-weight: 700; color: var(--texto-2); }
   .cifras { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
   .cifras div { display: grid; }
@@ -145,7 +145,7 @@
   .l-sim { background: var(--primario); }
   .l-plan { margin-left: 8px; background: repeating-linear-gradient(90deg, var(--texto-3) 0 4px, transparent 4px 7px); }
 
-  .mandos { margin-top: 12px; padding: 4px 16px; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); }
+  .mandos { margin-top: 12px; padding: 4px 16px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .mando { padding: 14px 0; }
   .mando + .mando { border-top: 1px solid var(--linea); }
   .mando.fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -165,7 +165,7 @@
   .reiniciar { display: flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 0; min-height: 32px; border: 0; background: none; color: var(--primario-fuerte); font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
 
   .avisos { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
-  .avisos li { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; font-size: 0.84rem; line-height: 1.35; }
+  .avisos li { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: var(--r-m); font-size: 0.84rem; line-height: 1.35; }
   .avisos li :global(svg) { flex-shrink: 0; margin-top: 1px; }
   .avisos .mal { background: var(--coral-claro); color: var(--texto); }
   .avisos .mal :global(svg) { color: var(--coral); }

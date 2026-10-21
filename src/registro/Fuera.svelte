@@ -26,7 +26,7 @@
 
 <style>
   .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
-  .plato { display: grid; justify-items: center; gap: 4px; padding: 14px 8px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: center; color: var(--texto); }
+  .plato { display: grid; justify-items: center; gap: 4px; padding: 14px 8px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: center; color: var(--texto); }
   @media (hover: hover) and (pointer: fine) { .plato:hover { box-shadow: var(--sombra), inset 0 0 0 2px var(--primario); } }
   .plato b { font-size: 0.86rem; line-height: 1.2; }
   .plato small { color: var(--texto-2); font-weight: 700; }

@@ -115,7 +115,7 @@
   .partes small { font-size: 0.72rem; font-weight: 600; color: rgb(255 255 255 / 0.7); }
   .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 700; }
   .cab small { display: block; margin-top: 2px; font-size: 0.78rem; font-weight: 600; color: var(--texto-2); }
-  .estrategia { margin: 0; padding: 14px 16px 14px 32px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 8px; font-size: 0.92rem; color: var(--texto-2); }
+  .estrategia { margin: 0; padding: 14px 16px 14px 32px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 8px; font-size: 0.92rem; color: var(--texto-2); }
 
   /* El recorrido: estaciones como paradas y el km de carrera como tramo de la línea */
   .ruta { list-style: none; margin: 0; padding: 0; }
@@ -136,7 +136,7 @@
   .meta span:last-child { font-weight: 700; font-size: 1.15rem; }
 
   .timeline-n { display: grid; gap: 8px; }
-  .tn { display: grid; grid-template-columns: 48px 32px 1fr; gap: 8px; align-items: start; padding: 10px 12px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
+  .tn { display: grid; grid-template-columns: 48px 32px 1fr; gap: 8px; align-items: start; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
   .tn .h { font-weight: 700; font-size: 0.85rem; padding-top: 4px; font-variant-numeric: tabular-nums; }
   .tn p { margin: 2px 0 0; font-size: 0.86rem; color: var(--texto-2); }
   .dia-s { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0; }
@@ -144,10 +144,10 @@
   .peso { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--linea); }
   .peso span { color: var(--texto-2); font-weight: 600; }
   .peso b { font-weight: 700; }
-  .ganas { list-style: none; margin: 0; padding: 4px 14px; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); }
+  .ganas { list-style: none; margin: 0; padding: 4px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .ganas li { display: grid; grid-template-columns: 34px minmax(0, 1fr) 56px; grid-template-rows: auto auto; align-items: center; column-gap: 10px; padding: 10px 0; }
   .ganas li + li { border-top: 1px solid var(--linea); }
-  .g-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
+  .g-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); }
   .g-txt { display: grid; min-width: 0; }
   .g-txt b { font-size: 0.9rem; font-weight: 600; }
   .g-txt small { font-size: 0.74rem; color: var(--texto-2); }

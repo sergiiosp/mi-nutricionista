@@ -48,7 +48,7 @@
 </script>
 
 <div class="tarjeta intro">
-  <Emoji e="📏" tam={36} />
+  <span class="in-ic"><Icono n="ruler" tam={20} /></span>
   <div>
     <p>La báscula no lo dice todo: si pierdes cintura y mantienes brazo, estás perdiendo grasa y no músculo. Mídete cada 2-4 semanas.</p>
     <button class="enlace" onclick={() => (guia = !guia)} aria-expanded={guia}>{guia ? 'Ocultar cómo medirte' : '¿Cómo me mido yo solo?'}</button>
@@ -76,7 +76,7 @@
         {@const ini = medidas.find((m) => m[c.id])?.[c.id]}
         {@const dif = ultima[c.id] - ini}
         <div class="m">
-          <Emoji e={c.emoji} tam={26} />
+          <span class="m-ic"><Emoji e={c.emoji} tam={16} /></span>
           <span class="n">{c.nombre}</span>
           <b>{num(ultima[c.id], 1)} cm</b>
           <span class="dif" class:baja={dif < 0} class:sube={dif > 0}>{dif === 0 ? '=' : `${dif > 0 ? '+' : ''}${num(dif, 1)}`}</span>
@@ -105,19 +105,23 @@
 
 <style>
   .intro { display: flex; gap: 12px; align-items: flex-start; }
-  .intro p { margin: 0 0 6px; font-weight: 600; font-size: 0.9rem; }
+  .intro p { margin: 0 0 6px; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
+  .in-ic, .m-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .m-ic { width: 32px; height: 32px; }
   .guia ol { margin: 8px 0; padding-left: 20px; display: grid; gap: 6px; font-size: 0.86rem; color: var(--texto-2); }
   .guia ol b, .zona b { color: var(--texto); }
+  .zona :global(svg) { color: var(--primario); flex-shrink: 0; }
   .zona { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0 0; font-size: 0.84rem; color: var(--texto-2); }
-  .lectura { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--superficie-2); font-size: 0.86rem; font-weight: 600; }
+  .lectura { margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.86rem; font-weight: 600; }
   .lectura.ok { background: var(--exito-claro); color: var(--exito); }
   .campos { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
   .campos .campo span { display: flex; gap: 6px; align-items: center; }
   .ancho { width: 100%; margin-top: 6px; }
   .evol { display: grid; gap: 6px; margin-top: 10px; }
-  .m { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: var(--superficie-2); }
+  .m { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+  .m + .m { border-top: 1px solid var(--linea); }
   .n { flex: 1; font-weight: 700; }
-  .dif { min-width: 56px; text-align: center; padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 0.82rem; background: var(--superficie); }
+  .dif { min-width: 56px; text-align: center; padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 0.82rem; background: var(--superficie-2); }
   .dif.baja { background: var(--primario-claro); color: var(--primario-fuerte); }
   .dif.sube { background: var(--superficie-3); color: var(--texto); }
 </style>

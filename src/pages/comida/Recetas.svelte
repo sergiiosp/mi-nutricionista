@@ -59,7 +59,7 @@
   .lupa { position: absolute; left: 15px; top: 15px; color: var(--texto-2); }
   .buscador { width: 100%; padding-left: 44px; border-color: transparent; box-shadow: var(--sombra); }
   .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 8px; }
-  .card { display: flex; flex-direction: column; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: left; color: var(--texto); transition: transform 0.12s var(--ease-out); }
+  .card { display: flex; flex-direction: column; padding: 0; border: 0; border-radius: var(--r-xl); overflow: hidden; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; text-align: left; color: var(--texto); transition: transform 0.12s var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .card:hover { transform: translateY(-2px); } }
   .imagen { position: relative; display: block; }
   .chips-img { position: absolute; left: 8px; top: 8px; display: flex; gap: 4px; }

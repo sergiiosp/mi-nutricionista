@@ -110,7 +110,7 @@
   .c-sub { margin: 0 0 10px; color: var(--texto-2); }
   .c-texto { margin: 0; font-size: 1.45rem; line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; text-wrap: pretty; }
   .c-ings { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .c-ings button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 12px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; font-size: 1rem; text-align: left; cursor: pointer; }
+  .c-ings button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 12px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; font-size: 1rem; text-align: left; cursor: pointer; }
   .c-ings button.tengo { opacity: 0.55; }
   .c-ings b { font-weight: 700; }
   .c-check { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--borde); flex-shrink: 0; color: var(--sobre-primario); }

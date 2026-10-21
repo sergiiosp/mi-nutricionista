@@ -22,6 +22,7 @@ export const VACIO = () => ({
   productos: {}, // productos escaneados (Open Food Facts) para usarlos sin conexión
   tema: 'oscuro', // oscuro · claro · sistema
   fuente: 'sistema', // sistema (SF Pro en iPhone) · manrope · geist
+  textoSistema: false, // la letra sigue el tamaño de texto elegido en el iPhone
   favoritas: [], // ids de recetas o comidas montadas («combo:…») que el menú usa a menudo
   entrenoDia: {}, // fecha → 'si' | 'no' cuando cambias si ese día entrenas
   hyrox: null, // { config, registros: { idSesion: {...} }, movidas: { idSesion: fecha } }

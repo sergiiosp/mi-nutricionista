@@ -87,14 +87,14 @@
 
 <style>
   .cant-cab { display: flex; gap: 14px; align-items: center; margin: 4px 0 14px; }
-  .icono { width: 72px; height: 72px; border-radius: 20px; display: grid; place-items: center; background: var(--superficie); box-shadow: var(--sombra); flex-shrink: 0; }
-  .producto { width: 72px; height: 72px; border-radius: 18px; object-fit: contain; background: #fff; padding: 4px; box-shadow: var(--sombra); }
+  .icono { width: 72px; height: 72px; border-radius: var(--r-l); display: grid; place-items: center; background: var(--superficie); box-shadow: var(--sombra); flex-shrink: 0; }
+  .producto { width: 72px; height: 72px; border-radius: var(--r-l); object-fit: contain; background: #fff; padding: 4px; box-shadow: var(--sombra); }
   :global(.foto-cantidad) { width: 72px; }
   .nombre { display: grid; }
   .nombre b { font-size: 1.1rem; line-height: 1.25; }
   .nombre small { color: var(--texto-2); font-weight: 700; }
   .raciones { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
-  .racion { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border-radius: 16px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.82rem; color: var(--texto); text-align: center; }
+  .racion { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border-radius: var(--r-m); border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.82rem; color: var(--texto); text-align: center; }
   .racion small { color: var(--texto-2); font-weight: 600; font-size: 0.7rem; }
   .racion.activa { border-color: var(--primario); background: var(--primario-claro); }
   .ajuste { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 16px 0 6px; }

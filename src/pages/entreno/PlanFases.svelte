@@ -132,7 +132,7 @@
 
   /* Ritmos en dos grupos, filas con la cifra a la derecha */
   .ritmos { display: grid; gap: 10px; }
-  .grupo { padding: 6px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
+  .grupo { padding: 6px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .g-nom { display: block; padding: 8px 0 4px; font-size: 0.78rem; font-weight: 700; color: var(--texto-3); }
   .r { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--linea); }
   .r span { font-weight: 600; color: var(--texto-2); }

@@ -126,7 +126,7 @@
 
 <style>
   /* Cabecera en el color del tipo de sesión, como la portada de Entreno */
-  .cab { --c: var(--lila); display: flex; gap: 14px; align-items: center; padding: 18px 56px 18px 16px; border-radius: 24px; color: #fff;
+  .cab { --c: var(--lila); display: flex; gap: 14px; align-items: center; padding: 18px 56px 18px 16px; border-radius: var(--r-xl); color: #fff;
     background: radial-gradient(130% 90% at 100% 0%, color-mix(in srgb, var(--c) 50%, transparent), transparent 60%),
       linear-gradient(160deg, color-mix(in srgb, var(--c) 40%, #121218), color-mix(in srgb, var(--c) 14%, #0b0b0e)); }
   .c-azul { --c: var(--azul); } .c-coral { --c: var(--coral); } .c-lila { --c: var(--lila); }
@@ -142,27 +142,27 @@
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
   .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 700; font-size: 0.78rem; }
-  .registro { margin-top: 12px; padding: 12px 14px; border-radius: 18px; background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
+  .registro { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-l); background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
   .registro p { margin: 6px 0 0; font-style: italic; }
   .cargas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.82rem; }
   .cargas li { display: flex; justify-content: space-between; gap: 10px; }
   .cargas span { color: var(--texto-2); font-weight: 600; }
   .cargas b { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 500; font-size: 0.92rem; color: var(--texto-2); }
+  .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 500; font-size: 0.92rem; color: var(--texto-2); }
   /* Ejercicios: filas con el nombre y las series × reps alineadas, en cifras */
-  .ejercicios { list-style: none; margin: 0; padding: 2px 14px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
+  .ejercicios { list-style: none; margin: 0; padding: 2px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
   .ejercicios li { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 11px 0; font-size: 0.92rem; }
   .ejercicios li + li { border-top: 1px solid var(--linea); }
   .ejercicios span { font-weight: 600; color: var(--texto); }
   .ejercicios b { flex-shrink: 0; max-width: 48%; text-align: right; font-weight: 700; color: var(--texto); }
-  .nota { padding: 10px 12px; border-radius: 14px; background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 500; }
-  .comida { display: flex; gap: 12px; align-items: center; margin-top: 14px; padding: 12px 14px; border-radius: 18px; background: linear-gradient(135deg, var(--primario-claro), var(--superficie)); }
+  .nota { padding: 10px 12px; border-radius: var(--r-m); background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 500; }
+  .comida { display: flex; gap: 12px; align-items: center; margin-top: 14px; padding: 12px 14px; border-radius: var(--r-l); background: linear-gradient(135deg, var(--primario-claro), var(--superficie)); }
   .comida small { display: block; color: var(--texto-2); font-weight: 600; }
   .botones { display: flex; gap: 8px; margin-top: 16px; }
   .botones .boton { flex: 1; }
   .mover { margin-top: 10px; }
   .dias { display: flex; gap: 6px; flex-wrap: wrap; }
-  .dias button { display: grid; justify-items: center; width: 52px; padding: 8px 0; border-radius: 14px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; color: var(--texto); }
+  .dias button { display: grid; justify-items: center; width: 52px; padding: 8px 0; border-radius: var(--r-m); border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; color: var(--texto); }
   .dias button.activo { border-color: var(--primario); background: var(--primario-claro); }
   .dias i { font-style: normal; font-size: 0.7rem; }
 </style>

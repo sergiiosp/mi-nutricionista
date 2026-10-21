@@ -49,7 +49,7 @@
 </div>
 
 <style>
-  .nota-dia { margin-top: 10px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
+  .nota-dia { margin-top: 10px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .cab { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 10px 14px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .cab > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
   .cab span { flex: 1; display: grid; }
@@ -58,6 +58,6 @@
   .preg { display: grid; gap: 6px; margin-bottom: 10px; }
   .preg > span { font-weight: 700; font-size: 0.84rem; color: var(--texto-2); }
   .ops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .ops button { min-height: 44px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .ops button { min-height: 44px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
   .ops button.activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
 </style>

@@ -111,12 +111,12 @@
 <p class="pie-nota">Datos de Open Food Facts, una base de datos abierta. Los productos Hacendado suelen estar; si alguno falla, búscalo por nombre.</p>
 
 <style>
-  .visor { position: relative; border-radius: 24px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
+  .visor { position: relative; border-radius: var(--r-xl); overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
   video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .marco { position: absolute; left: 12%; right: 12%; top: 32%; bottom: 32%; border: 3px solid rgb(255 255 255 / 0.9); border-radius: 18px; box-shadow: 0 0 0 999px rgb(0 0 0 / 0.35); }
+  .marco { position: absolute; left: 12%; right: 12%; top: 32%; bottom: 32%; border: 3px solid rgb(255 255 255 / 0.9); border-radius: var(--r-l); box-shadow: 0 0 0 999px rgb(0 0 0 / 0.35); }
   .marco.buscando { border-color: var(--primario); animation: latido 0.9s infinite; }
   @keyframes latido { 50% { transform: scale(1.03); } }
   .mensaje { position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center; color: #fff; font-weight: 700; text-shadow: 0 1px 4px rgb(0 0 0 / 0.6); }
   .manual { display: flex; gap: 8px; margin-top: 12px; }
-  .manual input { flex: 1; min-height: 44px; padding: 10px 14px; border-radius: 14px; border: 1.5px solid var(--borde); background: var(--superficie); font-weight: 700; color: var(--texto); }
+  .manual input { flex: 1; min-height: 44px; padding: 10px 14px; border-radius: var(--r-m); border: 1.5px solid var(--borde); background: var(--superficie); font-weight: 700; color: var(--texto); }
 </style>

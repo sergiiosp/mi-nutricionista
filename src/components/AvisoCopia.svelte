@@ -38,9 +38,9 @@
 {/if}
 
 <style>
-  .copia { margin-top: 12px; padding: 14px; border-radius: 20px; background: radial-gradient(120% 120% at 0% 0%, var(--azul-claro), transparent 70%), var(--superficie); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--azul) 35%, transparent); }
+  .copia { margin-top: 12px; padding: 14px; border-radius: var(--r-l); background: radial-gradient(120% 120% at 0% 0%, var(--azul-claro), transparent 70%), var(--superficie); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--azul) 35%, transparent); }
   .cp-cab { display: flex; gap: 12px; align-items: flex-start; }
-  .cp-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--azul-claro); color: var(--azul); flex-shrink: 0; }
+  .cp-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--azul-claro); color: var(--azul); flex-shrink: 0; }
   .cp-cab div { display: grid; gap: 2px; }
   .cp-cab b { font-size: 0.95rem; }
   .cp-cab small { font-size: 0.82rem; color: var(--texto-2); line-height: 1.35; }

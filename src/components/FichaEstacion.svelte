@@ -35,7 +35,7 @@
 <div class="consejo sust"><Icono e="🔁" tam={18} /> {e.sustituto}</div>
 
 <style>
-  .foto { position: relative; border-radius: 24px; overflow: hidden; height: 210px; background: radial-gradient(circle at 30% 20%, var(--superficie-3), var(--superficie-2)); color: var(--primario); }
+  .foto { position: relative; border-radius: var(--r-xl); overflow: hidden; height: 210px; background: radial-gradient(circle at 30% 20%, var(--superficie-3), var(--superficie-2)); color: var(--primario); }
   .foto img { width: 100%; height: 100%; object-fit: cover; }
   .ilus { height: 100%; display: grid; place-items: center; }
   .num { position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; background: rgb(0 0 0 / 0.55); color: #fff; font-weight: 700; font-size: 0.8rem; }
@@ -44,9 +44,9 @@
   .datos span { padding: 4px 10px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; font-size: 0.82rem; }
   .datos .mejor { background: var(--amarillo-claro); }
   .desc { font-weight: 600; }
-  .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
+  .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
   .lista.ok { background: linear-gradient(100deg, color-mix(in srgb, var(--primario) 10%, var(--superficie)), var(--superficie) 70%); }
   .lista.mal { background: linear-gradient(100deg, color-mix(in srgb, var(--coral) 10%, var(--superficie)), var(--superficie) 70%); }
-  .consejo { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
+  .consejo { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-m); background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
   .consejo.sust { background: var(--superficie-2); }
 </style>

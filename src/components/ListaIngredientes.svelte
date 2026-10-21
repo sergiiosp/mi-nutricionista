@@ -57,7 +57,7 @@
   .antes { color: var(--lila); font-weight: 600; font-size: 0.78rem; }
   .fila :global(.mas-info) { color: var(--texto-3); }
   .fila.abierto :global(.mas-info) { color: var(--primario); }
-  .info { margin: 0 0 10px; padding: 10px 12px; border-radius: 12px; background: var(--superficie-2); font-size: 0.84rem; line-height: 1.45; color: var(--texto-2); }
+  .info { margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.84rem; line-height: 1.45; color: var(--texto-2); }
   .info p { margin: 0 0 6px; }
   .info b { color: var(--texto); }
   .como { display: flex; gap: 8px; align-items: flex-start; }

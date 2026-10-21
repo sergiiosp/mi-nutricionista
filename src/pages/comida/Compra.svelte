@@ -193,7 +193,7 @@
   .pasillo { font-size: 0.8rem; color: var(--texto-2); margin: 22px 4px 8px; font-weight: 700; }
   .lista-compra { list-style: none; margin: 0; padding: 4px 0; background: var(--superficie); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
   /* Ticket */
-  .ticket { padding: 16px; border-radius: 24px; background: radial-gradient(120% 100% at 100% 0%, var(--halo), transparent 65%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 20%, transparent); }
+  .ticket { padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 100% 0%, var(--halo), transparent 65%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 20%, transparent); }
   .tk-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .tk-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--primario-fuerte); }
   .tk-solo { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; font-size: 0.76rem; font-weight: 600; color: var(--texto-2); cursor: pointer; }
@@ -219,7 +219,7 @@
   .check::after, .casa-btn::after { content: ""; position: absolute; inset: -7px; }
   .check.activo { background: var(--primario); border-color: var(--primario); color: #fff; }
   .check:disabled { opacity: 0.3; }
-  .item img, .img { width: 48px; height: 48px; border-radius: 12px; object-fit: contain; background: #fff; padding: 3px; flex-shrink: 0; display: grid; place-items: center; }
+  .item img, .img { width: 48px; height: 48px; border-radius: var(--r-s); object-fit: contain; background: #fff; padding: 3px; flex-shrink: 0; display: grid; place-items: center; }
   .info { flex: 1; min-width: 0; display: grid; padding: 0; border: 0; background: none; color: var(--texto); text-align: left; font: inherit; cursor: pointer; }
   .corto { color: var(--aviso-texto, var(--amarillo)) !important; }
   .editor { display: grid; gap: 8px; padding: 10px 12px 14px; background: var(--superficie-2); border-radius: 0 0 14px 14px; }
@@ -233,7 +233,7 @@
   .info b { font-size: 0.9rem; line-height: 1.25; }
   .info small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
   .precio { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
-  .casa-btn { position: relative; width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--superficie-2); cursor: pointer; filter: grayscale(1); opacity: 0.6; flex-shrink: 0; }
+  .casa-btn { position: relative; width: 34px; height: 34px; border-radius: var(--r-s); border: 0; background: var(--superficie-2); cursor: pointer; filter: grayscale(1); opacity: 0.6; flex-shrink: 0; }
   .casa-btn.activo { filter: none; opacity: 1; background: var(--amarillo-claro); }
   .cogido b { text-decoration: line-through; color: var(--texto-2); }
   .cogido img, .casa img { opacity: 0.4; }
@@ -252,5 +252,5 @@
   .despensa li b { font-size: 0.88rem; font-weight: 600; }
   .despensa li small { font-size: 0.74rem; color: var(--texto-2); }
   .despensa .pie-nota { padding: 0 16px 12px; margin: 4px 0 0; }
-  .borrar-d { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 10px; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
+  .borrar-d { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
 </style>

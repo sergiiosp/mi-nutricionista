@@ -37,7 +37,7 @@
 <style>
   .logros-res { margin-top: 12px; }
   .lr-cab { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .lr-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--amarillo-claro); color: var(--amarillo); flex-shrink: 0; }
+  .lr-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--amarillo-claro); color: var(--amarillo); flex-shrink: 0; }
   .lr-txt { flex: 1; display: grid; }
   .lr-txt small { font-size: 0.76rem; color: var(--texto-2); }
   .lr-ver { display: inline-flex; align-items: center; gap: 2px; font-size: 0.8rem; font-weight: 700; color: var(--primario-fuerte); }

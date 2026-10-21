@@ -237,7 +237,7 @@
 </div>
 
 <style>
-  .simular { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 12px 14px; border: 0; border-radius: 16px; background: var(--primario-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .simular { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 12px 14px; border: 0; border-radius: var(--r-m); background: var(--primario-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .si-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
   .si-txt { flex: 1; min-width: 0; display: grid; }
   .si-txt b { font-size: 0.95rem; }
@@ -254,9 +254,9 @@
   .po-meta { display: block; margin-top: 8px; font-size: 0.74rem; color: rgb(255 255 255 / 0.7); }
   .sin-hyrox { display: flex; align-items: center; gap: 12px; }
   .sin-hyrox h2 { margin: 0; }
-  .p-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--primario-claro); color: var(--primario); }
+  .p-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-m); background: var(--primario-claro); color: var(--primario); }
 
-  .bloque-plan { margin-top: 14px; padding: 16px; border-radius: 22px; background: var(--superficie); box-shadow: var(--sombra); }
+  .bloque-plan { margin-top: 14px; padding: 16px; border-radius: var(--r-xl); background: var(--superficie); box-shadow: var(--sombra); }
   h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 1.02rem; }
   h3 :global(svg) { color: var(--primario); }
   .nota { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
@@ -269,13 +269,13 @@
 
   /* Semana */
   .dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-  .dia { display: grid; justify-items: center; gap: 3px; padding: 8px 0 6px; border-radius: 14px; }
+  .dia { display: grid; justify-items: center; gap: 3px; padding: 8px 0 6px; border-radius: var(--r-m); }
   .dia > small:first-child { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); }
   .dia > b { font-size: 1rem; }
   .dia.hoy { background: var(--primario-claro); }
   .dia.hoy > small:first-child, .dia.hoy > b { color: var(--primario-fuerte); }
   .dia.pasado { opacity: 0.55; }
-  .d-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; background: var(--lila-claro); color: var(--lila); }
+  .d-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: var(--r-s); background: var(--lila-claro); color: var(--lila); }
   .d-ic.descanso { background: var(--superficie-2); color: var(--texto-3); }
   .d-ic.hecha { background: var(--lila); color: #fff; }
   .dia.clave .d-ic { box-shadow: 0 0 0 2px var(--primario); }
@@ -309,8 +309,8 @@
 
   /* Qué esperar */
   .esperado { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .esp { display: grid; justify-items: start; gap: 2px; padding: 12px; border-radius: 16px; background: var(--superficie-2); }
-  .esp-ic { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 6px; border-radius: 12px; }
+  .esp { display: grid; justify-items: start; gap: 2px; padding: 12px; border-radius: var(--r-m); background: var(--superficie-2); }
+  .esp-ic { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 6px; border-radius: var(--r-s); }
   .esp.baja .esp-ic { background: color-mix(in srgb, var(--dato-kcal) 18%, transparent); color: var(--dato-kcal); }
   .esp.sube .esp-ic { background: color-mix(in srgb, var(--dato-e) 18%, transparent); color: var(--dato-e); }
   .esp.igual .esp-ic { background: var(--superficie-3); color: var(--texto-2); }
@@ -325,12 +325,12 @@
   .mini-anillo b { position: absolute; font-size: 1.05rem; }
   .mini-anillo b small { font-size: 0.66rem; color: var(--texto-3); }
   .mini > small { font-size: 0.76rem; font-weight: 600; color: var(--texto-2); }
-  .frase { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px; border-radius: 14px; background: var(--primario-claro); font-size: 0.88rem; font-weight: 600; line-height: 1.4; }
+  .frase { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px; border-radius: var(--r-m); background: var(--primario-claro); font-size: 0.88rem; font-weight: 600; line-height: 1.4; }
   .frase :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
 
   /* Detalle */
   .ver { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin: 6px 0 -8px; padding: 0; border: 0; background: none; color: var(--primario); font: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
-  .detalle { margin-top: 8px; padding: 12px; border-radius: 14px; background: var(--superficie-2); font-size: 0.84rem; line-height: 1.45; color: var(--texto-2); }
+  .detalle { margin-top: 8px; padding: 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.84rem; line-height: 1.45; color: var(--texto-2); }
   .detalle p { margin: 8px 0 4px; }
   .detalle p:first-child { margin-top: 0; }
   .detalle p b { color: var(--texto); }
@@ -347,14 +347,14 @@
   .fases-ley span:last-child { flex-shrink: 0; min-width: max-content; }
   .fases-ley i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
   /* Tu coach dice */
-  .coach-dice { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 14px; border-radius: 20px; background: radial-gradient(120% 120% at 0% 0%, var(--primario-claro), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
+  .coach-dice { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 14px; border-radius: var(--r-l); background: radial-gradient(120% 120% at 0% 0%, var(--primario-claro), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
   .cd-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--hero); color: #fff; flex-shrink: 0; }
   .coach-dice p { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
   .coach-dice small { display: block; margin-bottom: 2px; font-size: 0.72rem; font-weight: 600; color: var(--primario-fuerte); }
   /* Próxima carrera */
   .carrera { width: 100%; border: 0; font: inherit; text-align: left; color: var(--texto); cursor: pointer; }
-  .carrera { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 12px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
-  .ca-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .carrera { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 12px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
+  .ca-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .ca-txt { flex: 1; min-width: 0; display: grid; }
   .ca-txt b { font-size: 0.95rem; }
   .ca-txt small { font-size: 0.76rem; color: var(--texto-2); }
@@ -379,7 +379,7 @@
   .esp-estado.mejor { background: color-mix(in srgb, var(--dato-e) 18%, transparent); color: var(--dato-e); }
   .esp-estado.ojo { background: var(--amarillo-claro); color: var(--amarillo); }
   /* Tendencia */
-  .tend { margin-top: 14px; padding: 12px; border-radius: 16px; background: var(--superficie-2); }
+  .tend { margin-top: 14px; padding: 12px; border-radius: var(--r-m); background: var(--superficie-2); }
   .t-cab { display: flex; align-items: baseline; gap: 8px; }
   .t-cab small { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
   .t-cab b { margin-left: auto; font-size: 0.95rem; }

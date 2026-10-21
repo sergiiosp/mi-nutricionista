@@ -53,24 +53,24 @@
 {/if}
 
 <style>
-  .como-fila { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; margin-top: 12px; padding: 8px 14px; border: 0; border-radius: 18px; background: var(--lila-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .como-fila { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; margin-top: 12px; padding: 8px 14px; border: 0; border-radius: var(--r-l); background: var(--lila-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .como-fila > :global(svg:first-child) { color: var(--lila); flex-shrink: 0; }
   .como-fila > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   .como-fila span { flex: 1; display: grid; }
   .como-fila b { font-size: 0.9rem; }
   .como-fila small { font-size: 0.76rem; color: var(--texto-2); }
-  .como { margin-top: 12px; padding: 14px; border-radius: 22px; background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--lila) 20%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
+  .como { margin-top: 12px; padding: 14px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--lila) 20%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
   .c-cab { display: flex; align-items: center; gap: 8px; color: var(--lila); margin-bottom: 6px; }
   .c-cab b { color: var(--texto); }
   .c-fila { display: grid; grid-template-columns: 74px 1fr; align-items: center; gap: 8px; padding: 6px 0; }
   .c-fila > span { font-size: 0.82rem; font-weight: 700; color: var(--texto-2); }
-  .c-op { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; border-radius: 12px; background: var(--superficie-2); }
-  .c-op button { min-height: 38px; border: 0; border-radius: 9px; background: none; color: var(--texto-2); font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out); }
+  .c-op { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; border-radius: var(--r-s); background: var(--superficie-2); }
+  .c-op button { min-height: 38px; border: 0; border-radius: var(--r-xs); background: none; color: var(--texto-2); font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out); }
   .c-op button.activo { background: var(--lila); color: #14121f; }
   .ancho { width: 100%; margin-top: 10px; }
-  .ajustada { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 6px 10px 14px; border-radius: 16px; background: var(--lila-claro); font-size: 0.84rem; color: var(--texto-2); }
+  .ajustada { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 6px 10px 14px; border-radius: var(--r-m); background: var(--lila-claro); font-size: 0.84rem; color: var(--texto-2); }
   .ajustada :global(svg) { color: var(--lila); flex-shrink: 0; }
   .ajustada b { color: var(--texto); }
   .ajustada span { flex: 1; }
-  .ajustada button { min-height: 40px; padding: 0 12px; border: 0; border-radius: 10px; background: none; color: var(--lila); font: inherit; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .ajustada button { min-height: 40px; padding: 0 12px; border: 0; border-radius: var(--r-s); background: none; color: var(--lila); font: inherit; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
 </style>

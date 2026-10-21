@@ -110,16 +110,16 @@
 <style>
   .buscador-caja { position: sticky; top: 0; z-index: 2; padding-bottom: 8px; background: var(--fondo); }
   .lupa { position: absolute; left: 15px; top: 15px; color: var(--texto-2); }
-  input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: 16px; border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
+  input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: var(--r-m); border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
   input:focus { outline: 2px solid var(--primario); }
   .centro { text-align: center; }
   .ancho { width: 100%; margin-top: 14px; }
   .grupo { font-size: 0.78rem; color: var(--texto-2); margin: 14px 4px 6px; }
   .grupo small { text-transform: none; letter-spacing: 0; font-weight: 600; }
   .resultados { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
+  .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
   @media (hover: hover) and (pointer: fine) { .resultados button:hover { box-shadow: var(--sombra), inset 0 0 0 2px var(--primario); } }
-  .resultados img, .ic { width: 46px; height: 46px; border-radius: 12px; object-fit: contain; background: #fff; flex-shrink: 0; display: grid; place-items: center; }
+  .resultados img, .ic { width: 46px; height: 46px; border-radius: var(--r-s); object-fit: contain; background: #fff; flex-shrink: 0; display: grid; place-items: center; }
   .ic { background: var(--superficie-2); }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.94rem; line-height: 1.25; }

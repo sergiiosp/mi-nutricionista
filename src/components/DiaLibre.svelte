@@ -76,7 +76,7 @@
   .intro { margin: 0 0 6px; color: var(--texto-2); font-size: 0.92rem; }
   h3 { margin: 16px 0 8px; font-size: 0.86rem; font-weight: 700; color: var(--texto-2); }
   .opciones-fila { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-  .opciones-fila button { flex: 0 0 52px; display: grid; justify-items: center; padding: 8px 0; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; cursor: pointer; }
+  .opciones-fila button { flex: 0 0 52px; display: grid; justify-items: center; padding: 8px 0; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; cursor: pointer; }
   .opciones-fila small { font-size: 0.72rem; font-weight: 700; }
   .opciones-fila b { font-size: 1.1rem; color: var(--texto); }
   .opciones-fila button.activo { background: var(--primario); color: var(--sobre-primario); }
@@ -84,8 +84,8 @@
   .segm { display: flex; gap: 6px; flex-wrap: wrap; }
   .segm button { min-height: 42px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; font-weight: 700; font-size: 0.86rem; cursor: pointer; }
   .segm button.activo { background: var(--primario); color: var(--sobre-primario); }
-  .resultado { display: flex; gap: 12px; align-items: center; margin-top: 18px; padding: 14px; border-radius: 18px; background: radial-gradient(120% 100% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
-  .r-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .resultado { display: flex; gap: 12px; align-items: center; margin-top: 18px; padding: 14px; border-radius: var(--r-l); background: radial-gradient(120% 100% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
+  .r-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--r-m); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .resultado div { display: grid; }
   .resultado b { font-size: 1.6rem; color: var(--primario-fuerte); letter-spacing: -0.02em; }
   .resultado small { font-size: 0.8rem; color: var(--texto-2); }

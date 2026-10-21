@@ -43,7 +43,7 @@
 
 <style>
   .fichas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
-  .fichas button { display: grid; gap: 2px; min-height: 84px; padding: 10px 11px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; transition: box-shadow 0.2s var(--ease-out), background 0.2s var(--ease-out); }
+  .fichas button { display: grid; gap: 2px; min-height: 84px; padding: 10px 11px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; transition: box-shadow 0.2s var(--ease-out), background 0.2s var(--ease-out); }
   .fichas button.activa { background: var(--primario-claro); box-shadow: inset 0 0 0 1.5px var(--primario); }
   .f-cab { display: flex; align-items: center; gap: 5px; font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }
   .activa .f-cab { color: var(--primario-fuerte); }

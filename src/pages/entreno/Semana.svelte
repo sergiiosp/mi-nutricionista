@@ -172,7 +172,7 @@
 
   /* Hoy: bloque grande en el color del tipo de sesión */
   .portada {
-    position: relative; overflow: hidden; padding: 18px 18px 16px; border-radius: 26px; color: #fff;
+    position: relative; overflow: hidden; padding: 18px 18px 16px; border-radius: var(--r-xl); color: #fff;
     background:
       radial-gradient(140% 100% at 100% 0%, color-mix(in srgb, var(--c) 38%, transparent), transparent 72%),
       linear-gradient(160deg, color-mix(in srgb, var(--c) 42%, #121218) 0%, color-mix(in srgb, var(--c) 14%, #0b0b0e) 100%);
@@ -195,16 +195,16 @@
   .cifras-hoy b span { font-size: 0.95rem; color: rgb(255 255 255 / 0.7); }
   .cifras-hoy small { margin-top: 4px; font-size: 0.74rem; font-weight: 600; color: rgb(255 255 255 / 0.7); }
   .portada-acciones { display: flex; gap: 8px; }
-  .portada-acciones button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 18px; border: 0; border-radius: 16px; font: inherit; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+  .portada-acciones button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 18px; border: 0; border-radius: var(--r-m); font: inherit; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
   .b-claro { flex: 1; background: #fff; color: #0b0b0e; }
   .b-ghost { background: rgb(255 255 255 / 0.14); color: #fff; }
   .portada-txt { margin: -6px 0 14px; color: rgb(255 255 255 / 0.75); font-size: 0.92rem; }
-  .sig { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 0; border-radius: 16px; background: rgb(255 255 255 / 0.08); color: #fff; font: inherit; text-align: left; cursor: pointer; }
-  .sig-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 30%, transparent); color: #fff; flex-shrink: 0; }
+  .sig { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 0; border-radius: var(--r-m); background: rgb(255 255 255 / 0.08); color: #fff; font: inherit; text-align: left; cursor: pointer; }
+  .sig-ic { width: 40px; height: 40px; border-radius: var(--r-s); display: grid; place-items: center; background: color-mix(in srgb, var(--c) 30%, transparent); color: #fff; flex-shrink: 0; }
   .sig-txt { flex: 1; display: grid; min-width: 0; }
   .sig-txt small { color: rgb(255 255 255 / 0.65); font-weight: 600; font-size: 0.76rem; }
   .nota { margin: 8px 4px 0; font-size: 0.8rem; color: var(--texto-3); }
-  .ajuste { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px 14px; border-radius: 16px; background: var(--lila-claro); font-size: 0.86rem; }
+  .ajuste { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px 14px; border-radius: var(--r-m); background: var(--lila-claro); font-size: 0.86rem; }
 
   .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 700; }
   .cab small { display: block; margin-top: 2px; font-size: 0.78rem; font-weight: 600; color: var(--texto-2); }
@@ -213,7 +213,7 @@
   .proximas { display: grid; grid-auto-flow: column; grid-auto-columns: 46%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; scroll-padding: 0 16px; }
   .proximas::-webkit-scrollbar { display: none; }
   .prox {
-    scroll-snap-align: start; display: grid; align-content: start; gap: 2px; min-height: 132px; padding: 12px; border: 0; border-radius: 20px; text-align: left; cursor: pointer; color: var(--texto); font: inherit;
+    scroll-snap-align: start; display: grid; align-content: start; gap: 2px; min-height: 132px; padding: 12px; border: 0; border-radius: var(--r-l); text-align: left; cursor: pointer; color: var(--texto); font: inherit;
     background: linear-gradient(165deg, color-mix(in srgb, var(--c) 26%, var(--superficie)) 0%, color-mix(in srgb, var(--c) 8%, var(--superficie)) 100%);
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 22%, transparent);
   }
@@ -230,7 +230,7 @@
   /* La semana: filas con la fecha en columna */
   .semana-cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
   .flechas { display: flex; gap: 6px; margin-bottom: 10px; }
-  .flechas button { width: 38px; height: 38px; border-radius: 12px; border: 0; background: var(--superficie); box-shadow: var(--sombra); display: grid; place-items: center; color: var(--texto); cursor: pointer; }
+  .flechas button { width: 38px; height: 38px; border-radius: var(--r-s); border: 0; background: var(--superficie); box-shadow: var(--sombra); display: grid; place-items: center; color: var(--texto); cursor: pointer; }
   .flechas button:disabled { opacity: 0.3; cursor: default; }
   .lista-semana { list-style: none; margin: 0; padding: 0; }
   .lista-semana li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 10px; align-items: center; min-height: 56px; padding: 6px 0; border-top: 1px solid var(--linea); }
@@ -253,5 +253,5 @@
   .marca.ok { width: 26px; height: 26px; border-radius: 50%; background: var(--exito-claro); color: var(--exito); }
   .marca.falta { padding: 4px 10px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-size: 0.74rem; font-weight: 700; }
   .libre { color: var(--texto-3); font-size: 0.86rem; font-weight: 600; }
-  .agenda-link { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin-top: 14px; border-radius: 14px; border: 1px dashed var(--borde); color: var(--primario); font-weight: 700; font-size: 0.86rem; text-decoration: none; }
+  .agenda-link { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin-top: 14px; border-radius: var(--r-m); border: 1px dashed var(--borde); color: var(--primario); font-weight: 700; font-size: 0.86rem; text-decoration: none; }
 </style>

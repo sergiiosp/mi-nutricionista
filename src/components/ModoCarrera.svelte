@@ -72,7 +72,7 @@
   .mc-abajo small { font-size: 0.86rem; font-weight: 600; color: rgb(255 255 255 / 0.8); }
   .mc-abajo > b { font-size: 1.9rem; line-height: 1.1; }
   .mc-abajo span { font-size: 0.86rem; color: rgb(255 255 255 / 0.85); }
-  .proximo { display: grid; margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--primario-claro); }
+  .proximo { display: grid; margin-top: 12px; padding: 12px 14px; border-radius: var(--r-m); background: var(--primario-claro); }
   .proximo small { font-size: 0.76rem; font-weight: 600; color: var(--primario-fuerte); }
   .proximo b { font-size: 1.05rem; }
   .linea { list-style: none; margin: 14px 0 0; padding: 0; position: relative; }
@@ -80,11 +80,11 @@
   .linea > li { display: grid; grid-template-columns: 44px 36px minmax(0, 1fr); gap: 0 6px; padding: 6px 0; }
   .h { padding-top: 8px; font-size: 0.8rem; font-weight: 700; color: var(--texto-2); text-align: right; }
   .nodo { position: relative; display: grid; place-items: center; width: 32px; height: 32px; margin: 2px auto 0; border-radius: 50%; background: var(--superficie); box-shadow: 0 0 0 1.5px var(--linea), 0 0 0 4px var(--fondo); color: var(--primario); }
-  .cuerpo { padding: 6px 10px 10px; border-radius: 14px; }
+  .cuerpo { padding: 6px 10px 10px; border-radius: var(--r-m); }
   .cuerpo b { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
   .cuerpo b i { font-style: normal; padding: 1px 8px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.68rem; }
   .cuerpo p { margin: 3px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
-  .cuerpo ul { margin: 6px 0 0; padding: 8px 10px; border-radius: 10px; background: var(--superficie-2); list-style: none; display: grid; gap: 2px; font-size: 0.82rem; }
+  .cuerpo ul { margin: 6px 0 0; padding: 8px 10px; border-radius: var(--r-s); background: var(--superficie-2); list-style: none; display: grid; gap: 2px; font-size: 0.82rem; }
   .ahora .cuerpo { background: var(--superficie); box-shadow: inset 0 0 0 1.5px var(--primario); }
   .ahora .nodo { background: var(--primario); color: var(--sobre-primario); }
   .pasado { opacity: 0.45; }

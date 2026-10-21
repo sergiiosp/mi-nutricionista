@@ -78,9 +78,9 @@
   .ds-cab { display: flex; align-items: center; gap: 10px; }
   .ds-cab > span:last-child { display: grid; min-width: 0; }
   .ds-cab small { font-size: 0.76rem; color: var(--texto-2); }
-  .ds-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--amarillo-claro); color: var(--amarillo); flex-shrink: 0; }
+  .ds-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--amarillo-claro); color: var(--amarillo); flex-shrink: 0; }
 
-  .hz { margin-top: 12px; padding: 14px; border-radius: 18px; background: color-mix(in srgb, var(--c) 7%, var(--superficie)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 16%, transparent); }
+  .hz { margin-top: 12px; padding: 14px; border-radius: var(--r-l); background: color-mix(in srgb, var(--c) 7%, var(--superficie)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 16%, transparent); }
   .hz-cab { display: flex; align-items: flex-start; gap: 10px; }
   .hz-cab b { font-size: 0.98rem; line-height: 1.3; letter-spacing: -0.01em; }
   .hz-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: color-mix(in srgb, var(--c) 16%, var(--superficie)); color: var(--c); flex-shrink: 0; }
@@ -109,7 +109,7 @@
   .ds-apr { list-style: none; margin: 0; padding: 0; }
   .ds-apr li { display: grid; grid-template-columns: 30px minmax(0, 1fr) 54px; align-items: center; gap: 10px; padding: 8px 0; }
   .ds-apr li + li { border-top: 1px solid var(--linea); }
-  .apr-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: color-mix(in srgb, var(--c) 13%, var(--superficie)); color: var(--c); }
+  .apr-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: var(--r-xs); background: color-mix(in srgb, var(--c) 13%, var(--superficie)); color: var(--c); }
   .apr-txt { display: grid; }
   .apr-txt b { font-size: 0.86rem; }
   .apr-txt small { font-size: 0.74rem; line-height: 1.3; color: var(--texto-2); }

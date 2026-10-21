@@ -51,13 +51,13 @@
   h2 { margin: 16px 0 2px; font-size: 1.4rem; line-height: 1.2; }
   .meta { color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
   .grandes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 4px; }
-  .grandes div { display: grid; text-align: center; padding: 10px 4px; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
+  .grandes div { display: grid; text-align: center; padding: 10px 4px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
   .grandes b { font-size: 1.1rem; font-weight: 700; }
   .grandes span { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
   .grandes .p { background: var(--coral-claro); } .grandes .c { background: var(--amarillo-claro); } .grandes .g { background: var(--azul-claro); }
   .ancho { width: 100%; margin-top: 12px; }
   .prep { display: flex; align-items: center; gap: 8px; }
   .cocinar { margin-left: auto; }
-  .adaptada { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: var(--superficie-2); font-size: 0.84rem; color: var(--texto-2); }
+  .adaptada { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.84rem; color: var(--texto-2); }
   .adaptada :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
 </style>

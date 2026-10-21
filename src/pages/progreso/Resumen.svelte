@@ -140,7 +140,7 @@
 
 <style>
   /* Anillos */
-  .semana { margin-bottom: 12px; padding: 18px; border-radius: 26px; background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 18%, transparent); }
+  .semana { margin-bottom: 12px; padding: 18px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 18%, transparent); }
   .anillos-fila { display: flex; align-items: center; gap: 18px; }
   .leyenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
   .leyenda li { display: grid; }
@@ -155,7 +155,7 @@
   .racha { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 0.8rem; font-weight: 700; color: var(--amarillo); }
 
   .herramientas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .herramientas button { display: grid; justify-items: start; align-content: start; gap: 2px; min-height: 96px; padding: 12px 13px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .herramientas button { display: grid; justify-items: start; align-content: start; gap: 2px; min-height: 96px; padding: 12px 13px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .herramientas button > :global(svg) { margin-bottom: 6px; color: var(--primario); }
   .herramientas b { font-size: 0.88rem; line-height: 1.2; }
   .herramientas small { font-size: 0.74rem; color: var(--texto-2); }
@@ -166,7 +166,7 @@
   .rt-racha { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--amarillo); font-size: 0.74rem; font-weight: 700; }
   .rt { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; padding: 8px 0; }
   .rt + .rt { border-top: 1px solid var(--linea); }
-  .rt-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); }
+  .rt-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); }
   .rt.hecho .rt-ic { background: var(--primario); color: var(--sobre-primario); }
   .rt-txt { display: grid; }
   .rt-txt b { font-size: 0.9rem; font-weight: 700; }
@@ -183,7 +183,7 @@
   .barras { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 150px; margin-top: 14px; }
   .col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; gap: 5px; }
   .zona { position: relative; width: 100%; height: 100%; }
-  .meta, .barra { position: absolute; bottom: 0; left: 18%; right: 18%; border-radius: 8px; }
+  .meta, .barra { position: absolute; bottom: 0; left: 18%; right: 18%; border-radius: var(--r-xs); }
   .meta { background: var(--superficie-2); }
   .barra { background: color-mix(in srgb, var(--dato-kcal) 45%, var(--superficie-3)); min-height: 4px; transition: height 0.5s var(--ease-out); }
   .barra.ok { background: var(--dato-kcal); }
@@ -208,7 +208,7 @@
   .consejos .cab { display: flex; align-items: center; gap: 10px; color: var(--primario); }
   .vacia-semana { display: flex; gap: 12px; align-items: center; color: var(--primario); }
   .vacia-semana p { margin: 0; color: var(--texto-2); font-size: 0.88rem; }
-  .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); }
+  .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); }
   .consejos .cab b { color: var(--texto); }
   .consejos p { margin: 8px 0 0; font-weight: 500; font-size: 0.88rem; color: var(--texto-2); }
 </style>

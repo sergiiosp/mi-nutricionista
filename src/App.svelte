@@ -44,6 +44,7 @@
   $effect(() => {
     const f = $estado.fuente || 'sistema';
     document.documentElement.dataset.fuente = f;
+    if ($estado.textoSistema) document.documentElement.dataset.texto = 'sistema'; else delete document.documentElement.dataset.texto;
     if (URL_FUENTE[f] && !document.querySelector(`link[data-fuente="${f}"]`)) {
       const l = document.createElement('link');
       l.rel = 'stylesheet'; l.href = URL_FUENTE[f]; l.dataset.fuente = f;

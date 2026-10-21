@@ -111,19 +111,19 @@
 </div>
 
 <style>
-  .agenda { padding: 14px; border-radius: 20px; background: var(--superficie); box-shadow: var(--sombra); }
+  .agenda { padding: 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .lista { list-style: none; margin: 0 0 12px; padding: 0; }
   .lista li { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
   .lista li + li { border-top: 1px solid var(--linea); }
-  .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; }
+  .ic { width: 40px; height: 40px; border-radius: var(--r-s); display: grid; place-items: center; flex-shrink: 0; }
   .ic.carrera { background: var(--primario-claro); color: var(--primario-fuerte); }
   .ic.viaje { background: var(--azul-claro); color: var(--azul); }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
-  .borrar { width: 40px; height: 40px; border: 0; border-radius: 12px; background: none; color: var(--texto-3); display: grid; place-items: center; cursor: pointer; }
+  .borrar { width: 40px; height: 40px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); display: grid; place-items: center; cursor: pointer; }
   .vacio { margin: 0 0 12px; color: var(--texto-2); font-size: 0.88rem; }
   .botones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .botones button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; border: 1px dashed var(--borde); border-radius: 14px; background: none; color: var(--primario); font: inherit; font-weight: 700; cursor: pointer; }
+  .botones button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; border: 1px dashed var(--borde); border-radius: var(--r-m); background: none; color: var(--primario); font: inherit; font-weight: 700; cursor: pointer; }
   .botones button.activo { border-style: solid; border-color: var(--primario); background: var(--primario-claro); }
   .form { margin-top: 12px; display: grid; gap: 10px; }
   .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

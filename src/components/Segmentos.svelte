@@ -31,7 +31,7 @@
 </div>
 
 <style>
-  .segmentos { display: flex; gap: 2px; padding: 4px; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); overflow-x: auto; scrollbar-width: none; margin: 4px 0 16px; }
+  .segmentos { display: flex; gap: 2px; padding: 4px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); overflow-x: auto; scrollbar-width: none; margin: 4px 0 16px; }
   .segmentos::-webkit-scrollbar { display: none; }
   .segmentos { scroll-padding: 0 24px; }
   .mas-derecha { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
@@ -42,7 +42,7 @@
     button :global(.icono) { display: none; }
     button { padding: 9px 10px; font-size: 0.8rem; }
   }
-  button { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; border: 0; border-radius: 10px; background: transparent; font-weight: 700; font-size: 0.82rem; color: var(--texto-3); cursor: pointer; white-space: nowrap; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
+  button { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; border: 0; border-radius: var(--r-s); background: transparent; font-weight: 700; font-size: 0.82rem; color: var(--texto-3); cursor: pointer; white-space: nowrap; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
   button { position: relative; }
   button::after { content: ""; position: absolute; inset: -4px 0; }
   @media (hover: hover) and (pointer: fine) { button:hover { color: var(--texto-2); } }

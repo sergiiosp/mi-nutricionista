@@ -156,7 +156,7 @@
   .sim { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid var(--superficie-2); font-weight: 700; font-size: 0.9rem; }
   .vacia { text-align: center; }
   .sin-margen { margin: 0; }
-  .aviso-flojo { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; margin-bottom: 10px; border-radius: 18px; background: color-mix(in srgb, var(--primario) 14%, var(--superficie)); color: var(--texto); font-size: 0.88rem; line-height: 1.4; }
+  .aviso-flojo { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; margin-bottom: 10px; border-radius: var(--r-l); background: color-mix(in srgb, var(--primario) 14%, var(--superficie)); color: var(--texto); font-size: 0.88rem; line-height: 1.4; }
   .aviso-flojo :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
   .grupo { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 52px; padding: 8px 0; border: 0; border-top: 1px solid var(--linea); background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .grupo:first-child { border-top: 0; }

@@ -428,9 +428,9 @@
   .sub-titular { margin: 6px 0 0; color: var(--texto-2); font-size: 0.92rem; line-height: 1.35; }
 
   /* El día en anillos */
-  .resumen-dia { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 18px; padding: 16px; border-radius: 26px; background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 16%, transparent); }
+  .resumen-dia { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 18px; padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 16%, transparent); }
   .r-filas { display: grid; gap: 4px; min-width: 0; }
-  .r-fila { display: grid; justify-items: start; padding: 4px 8px; margin-left: -8px; border: 0; border-radius: 10px; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .r-fila { display: grid; justify-items: start; padding: 4px 8px; margin-left: -8px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .r-fila.activo { background: var(--superficie-2); }
   .r-fila small { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
   .r-fila small::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
@@ -442,23 +442,23 @@
   .r-semana :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
 
   /* Modo día de carrera */
-  .modo-carrera { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: 20px; background: var(--hero); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--brillo-naranja); }
-  .mcr-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: rgb(255 255 255 / 0.22); flex-shrink: 0; }
+  .modo-carrera { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: var(--r-l); background: var(--hero); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--brillo-naranja); }
+  .mcr-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--r-m); background: rgb(255 255 255 / 0.22); flex-shrink: 0; }
   .mcr-txt { flex: 1; min-width: 0; display: grid; }
   .mcr-txt small { font-size: 0.76rem; font-weight: 700; opacity: 0.85; }
   .mcr-txt b { font-size: 1.05rem; }
   .mcr-txt span { font-size: 0.8rem; opacity: 0.9; }
   /* Tu coach */
-  .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }
-  .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .co-txt { flex: 1; min-width: 0; display: grid; }
   .co-txt small { display: flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 600; color: var(--primario-fuerte); }
   .co-txt small i { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.66rem; }
   .co-txt b { font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
   .coach > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   /* Cierre del día */
-  .cierre { margin-top: 12px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--lila) 22%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
+  .cierre { margin-top: 12px; padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--lila) 22%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
   .ci-cab { display: flex; align-items: center; gap: 8px; color: var(--lila); }
   .ci-cab b { color: var(--texto); }
   .ci-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
@@ -476,7 +476,7 @@
   .f-fotos :global(.foto) { width: 30px; box-shadow: 0 0 0 2px var(--superficie); }
   .f-fotos :global(.foto + .foto) { margin-left: -10px; }
   .replegar-li { list-style: none; padding: 0 0 10px 68px; }
-  .replegar-hechas { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--texto-3); font: inherit; font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+  .replegar-hechas { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); font: inherit; font-weight: 600; font-size: 0.78rem; cursor: pointer; }
 
   /* Suplementos: un chip pequeño en su hora */
   .chip-toma { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 8px; padding: 0 14px 0 12px; border: 1px dashed color-mix(in srgb, var(--primario) 45%, transparent); border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
@@ -484,7 +484,7 @@
   .chip-toma small { font-weight: 600; font-size: 0.72rem; color: var(--texto-3); }
   .chip-toma.tomado { border-style: solid; border-color: transparent; background: var(--primario-claro); color: var(--primario-fuerte); }
 
-  .detalle { margin-top: 10px; padding: 16px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
+  .detalle { margin-top: 10px; padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .detalle .marcador { margin-top: 0; }
   .detalle :global(.sesion) { margin-top: 10px; }
 
@@ -505,9 +505,9 @@
   .t-ahora { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 700; color: var(--primario); }
   .t-ahora::before { content: ""; width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 25%, transparent); }
   .t-ahora::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--primario), transparent); }
-  .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
+  .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
-  .f-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .f-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .f-ic.ok { background: var(--primario); color: var(--sobre-primario); }
   .f-txt { flex: 1; min-width: 0; display: grid; }
   .f-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
@@ -516,7 +516,7 @@
   .completo { display: flex; gap: 10px; align-items: center; color: var(--texto-2); }
   .completo :global(.icono) { color: var(--primario); }
 
-  .resumen { padding: 16px; border-radius: 24px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
+  .resumen { padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip-hoy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: var(--superficie-2); font-size: 0.78rem; font-weight: 600; color: var(--texto-2); max-width: 100%; }
   .chip-hoy.naranja { background: var(--primario-claro); color: var(--primario-fuerte); }
@@ -557,7 +557,7 @@
   .macro .relleno { width: 100%; height: 100%; border-radius: 999px; transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.9s var(--ease-out) 0.4s; }
   .b-p .relleno { background: var(--coral); } .b-c .relleno { background: var(--amarillo); } .b-g .relleno { background: var(--azul); }
 
-  .aviso { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; margin: 12px 0; font-size: 0.85rem; color: var(--texto-2); background: var(--lila-claro); }
+  .aviso { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-m); margin: 12px 0; font-size: 0.85rem; color: var(--texto-2); background: var(--lila-claro); }
   .aviso :global(.icono) { color: var(--lila); margin-top: 1px; }
   .aviso b { color: var(--texto); font-weight: 600; }
   .aviso.amarillo { background: var(--amarillo-claro); }
@@ -577,14 +577,14 @@
   .sug-mas:active { transform: scale(0.9); }
   .borrar { background: var(--superficie-2); color: var(--texto-2); }
 
-  .bloque-entreno { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
-  .be-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--primario-claro); color: var(--primario); }
+  .bloque-entreno { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
+  .be-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-m); background: var(--primario-claro); color: var(--primario); }
   .bloque-entreno b { font-weight: 600; }
   .bloque-entreno small { display: block; color: var(--texto-2); font-size: 0.78rem; }
   .recordatorio { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
   .recordatorio :global(.icono) { color: var(--lila); }
   .extra { display: flex; align-items: center; gap: 10px; padding: 10px 0 12px; border-bottom: 1px solid var(--linea); }
-  .ic { width: 44px; height: 44px; border-radius: 12px; object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; color: var(--texto-2); }
+  .ic { width: 44px; height: 44px; border-radius: var(--r-s); object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; color: var(--texto-2); }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-weight: 600; font-size: 0.92rem; }
   .txt small { color: var(--texto-2); font-size: 0.74rem; }
@@ -592,5 +592,5 @@
   .nota-dia { display: flex; gap: 8px; align-items: flex-start; }
   .nota-dia :global(.icono) { color: var(--primario); margin-top: 2px; }
   .vacia { text-align: center; }
-  .vacia-ic { display: inline-grid; place-items: center; width: 60px; height: 60px; border-radius: 20px; background: var(--primario-claro); color: var(--primario); }
+  .vacia-ic { display: inline-grid; place-items: center; width: 60px; height: 60px; border-radius: var(--r-l); background: var(--primario-claro); color: var(--primario); }
 </style>

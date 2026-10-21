@@ -54,7 +54,7 @@
   ul { list-style: none; margin: 10px 0 0; padding: 0; }
   li { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
   li + li { border-top: 1px solid var(--linea); }
-  .ts-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .ts-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .ts-txt { flex: 1; min-width: 0; display: grid; }
   .ts-txt b { font-size: 0.9rem; }
   .ts-txt small { font-size: 0.74rem; color: var(--texto-3); }

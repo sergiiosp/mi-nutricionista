@@ -71,7 +71,7 @@
   .sitios::-webkit-scrollbar { display: none; }
   .sitios button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; font-weight: 700; font-size: 0.84rem; cursor: pointer; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
   .sitios button.activo { background: var(--primario); color: var(--sobre-primario); }
-  .ficha { padding: 16px; border-radius: 22px; background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); animation: entra 0.22s var(--ease-out); }
+  .ficha { padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); animation: entra 0.22s var(--ease-out); }
   @keyframes entra { from { opacity: 0; transform: translateY(6px); } }
   .idea { margin: 0; font-size: 1.08rem; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
   h3 { margin: 16px 0 8px; font-size: 0.86rem; font-weight: 700; color: var(--texto-2); }
@@ -81,14 +81,14 @@
   .si .marca { background: var(--primario); color: var(--sobre-primario); }
   .no .marca { background: var(--superficie-3); color: var(--texto-2); }
   .no li { color: var(--texto-2); }
-  .alerta, .truco { display: flex; gap: 10px; align-items: flex-start; margin: 12px 0 0; padding: 12px; border-radius: 14px; font-size: 0.86rem; line-height: 1.4; }
+  .alerta, .truco { display: flex; gap: 10px; align-items: flex-start; margin: 12px 0 0; padding: 12px; border-radius: var(--r-m); font-size: 0.86rem; line-height: 1.4; }
   .alerta { background: var(--amarillo-claro); color: var(--texto); }
   .alerta :global(.icono) { color: var(--amarillo); flex-shrink: 0; }
   .truco { margin-top: 16px; background: var(--superficie-2); color: var(--texto-2); }
   .truco :global(.icono) { color: var(--primario); flex-shrink: 0; }
   .ojo { display: grid; gap: 6px; }
-  .ojo > div { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); }
-  .o-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .ojo > div { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
+  .o-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .ojo b { display: block; font-size: 0.88rem; }
   .ojo small { color: var(--texto-2); font-size: 0.8rem; }
   .boton { width: 100%; margin-top: 18px; }

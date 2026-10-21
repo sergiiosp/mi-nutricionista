@@ -123,6 +123,8 @@
   <Segmentos opciones={[{ id: 'sistema', nombre: 'SF Pro', icono: 'smartphone' }, { id: 'manrope', nombre: 'Manrope', icono: 'pencil' }, { id: 'geist', nombre: 'Geist', icono: 'pencil' }]}
     valor={$estado.fuente || 'sistema'} onchange={(f) => actualizar((e) => { e.fuente = f; })} />
   <p class="pie-nota">SF Pro es la letra del iPhone (la de Apple Salud o Fitness). En otros dispositivos se usa la de su sistema.</p>
+  <label class="interruptor"><input type="checkbox" checked={!!$estado.textoSistema} onchange={(ev) => actualizar((e) => { e.textoSistema = ev.currentTarget.checked; })} />
+    <span><b>Tamaño de texto del iPhone</b><small>La letra sigue lo que tengas en Ajustes → Pantalla y brillo → Tamaño del texto. Algo más grande que el normal.</small></span></label>
 
   <h2 class="seccion"><Icono e="💾" tam={18} /> Copia de seguridad</h2>
   <div class="tarjeta">
@@ -182,7 +184,7 @@
   .sup { margin: 0; padding: 0; }
   .sup summary { display: flex; align-items: center; gap: 12px; padding: 14px; list-style: none; cursor: pointer; }
   .sup summary::-webkit-details-marker { display: none; }
-  .sup-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--lila-claro); flex-shrink: 0; }
+  .sup-ic { width: 46px; height: 46px; border-radius: var(--r-m); display: grid; place-items: center; background: var(--lila-claro); flex-shrink: 0; }
   .sup-t { flex: 1; min-width: 0; display: grid; }
   .sup-t small { color: var(--texto-2); font-weight: 700; }
   .sup dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; padding: 0 14px 14px; font-size: 0.9rem; }

@@ -59,7 +59,7 @@
   .et { flex: 1; min-width: 0; font-weight: 600; font-size: 0.9rem; color: var(--texto); line-height: 1.3; }
   .casillas { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
   .casillas input {
-    width: 54px; height: 46px; padding: 0 4px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie-2);
+    width: 54px; height: 46px; padding: 0 4px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2);
     color: var(--texto); font: inherit; font-size: 1.1rem; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums;
   }
   .casillas input.h { width: 42px; }

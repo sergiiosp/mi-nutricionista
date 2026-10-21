@@ -155,7 +155,7 @@
 
 <style>
   .dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 8px 0 4px; }
-  .dias button { display: grid; justify-items: center; padding: 8px 0 4px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.75rem; color: var(--texto-2); }
+  .dias button { display: grid; justify-items: center; padding: 8px 0 4px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; font-size: 0.75rem; color: var(--texto-2); }
   .dias b { font-size: 1.1rem; font-weight: 700; color: var(--texto); }
   .dias i { font-style: normal; font-size: 0.7rem; height: 1em; line-height: 1; }
   .dias button.hoy { outline: 2px solid var(--primario); outline-offset: -2px; }
@@ -163,19 +163,19 @@
   .dias button.activo b { color: var(--sobre-primario); }
   .cab-semana { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .cab-semana .sobretitulo { margin: 0; }
-  .vista { display: inline-flex; padding: 3px; border-radius: 12px; background: var(--superficie); box-shadow: var(--sombra); }
-  .vista button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: none; color: var(--texto-2); font: inherit; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .vista { display: inline-flex; padding: 3px; border-radius: var(--r-s); background: var(--superficie); box-shadow: var(--sombra); }
+  .vista button { min-height: 36px; padding: 0 14px; border: 0; border-radius: var(--r-xs); background: none; color: var(--texto-2); font: inherit; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
   .vista button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
   .cuadricula { display: grid; gap: 4px; margin-top: 12px; }
   .fila-cq { display: grid; grid-template-columns: 38px repeat(var(--cols), minmax(0, 1fr)); gap: 4px; }
   .fila-cq.cab span { font-size: 0.68rem; font-weight: 700; color: var(--primario-fuerte); text-align: center; padding-bottom: 2px; }
-  .cq-dia { display: grid; justify-items: center; align-content: center; gap: 1px; border-radius: 12px; color: var(--texto-2); }
+  .cq-dia { display: grid; justify-items: center; align-content: center; gap: 1px; border-radius: var(--r-s); color: var(--texto-2); }
   .cq-dia small { font-size: 0.66rem; font-weight: 700; }
   .cq-dia b { font-size: 1rem; color: var(--texto); line-height: 1; }
   .cq-dia :global(svg) { color: var(--primario); }
   .fila-cq.hoy .cq-dia { background: var(--primario); color: var(--sobre-primario); }
   .fila-cq.hoy .cq-dia b, .fila-cq.hoy .cq-dia :global(svg) { color: var(--sobre-primario); }
-  .celda { display: flex; flex-direction: column; justify-content: space-between; gap: 4px; min-height: 76px; min-width: 0; padding: 7px; border: 0; border-radius: 12px; text-align: left; font: inherit; color: var(--texto); cursor: pointer;
+  .celda { display: flex; flex-direction: column; justify-content: space-between; gap: 4px; min-height: 76px; min-width: 0; padding: 7px; border: 0; border-radius: var(--r-s); text-align: left; font: inherit; color: var(--texto); cursor: pointer;
     background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--tinte) 80%, transparent), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
   .fila-cq.hoy .celda { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 45%, transparent); }
   .c-nombre { font-size: 0.68rem; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -202,7 +202,7 @@
   .ver-hoy :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
 
   /* El menú del día en filas */
-  .menu-dia { list-style: none; margin: 12px 0 0; padding: 0; border-radius: 22px; background: var(--superficie); box-shadow: var(--sombra); overflow: hidden; }
+  .menu-dia { list-style: none; margin: 12px 0 0; padding: 0; border-radius: var(--r-xl); background: var(--superficie); box-shadow: var(--sombra); overflow: hidden; }
   .menu-dia li { display: flex; align-items: center; }
   .menu-dia li + li { border-top: 1px solid var(--linea); }
   .m-fila { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; min-height: 76px; padding: 10px 4px 10px 12px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
@@ -216,7 +216,7 @@
   .m-txt b { font-weight: 600; font-size: 0.9rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .m-kcal { display: grid; justify-items: end; flex-shrink: 0; font-size: 0.95rem; font-weight: 700; }
   .m-kcal small { font-size: 0.66rem; font-weight: 600; color: var(--texto-3); }
-  .m-cambiar { display: grid; place-items: center; width: 44px; height: 44px; margin-right: 6px; border: 0; border-radius: 12px; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
+  .m-cambiar { display: grid; place-items: center; width: 44px; height: 44px; margin-right: 6px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
   .m-cambiar:active { background: var(--superficie-2); color: var(--primario); }
   @media (hover: hover) and (pointer: fine) { .m-cambiar:hover { background: var(--superficie-2); color: var(--primario); } }
   .vacia { text-align: center; }

@@ -192,7 +192,7 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip-montar { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto-2); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), border-color 0.15s var(--ease-out); }
   .chip-montar.activo { background: var(--primario); border-color: var(--primario); color: var(--sobre-primario); }
-  .resultado { position: sticky; bottom: 0; margin-top: 12px; padding: 12px 14px; border-radius: 20px; background: color-mix(in srgb, var(--superficie-2) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 -10px 30px rgb(0 0 0 / 0.35); }
+  .resultado { position: sticky; bottom: 0; margin-top: 12px; padding: 12px 14px; border-radius: var(--r-l); background: color-mix(in srgb, var(--superficie-2) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 -10px 30px rgb(0 0 0 / 0.35); }
   .resultado p { margin: 0; color: var(--texto-2); font-size: 0.86rem; }
   .r-nombre { margin: 0 0 6px; font-weight: 600; font-size: 0.92rem; }
   .r-items { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 3px; font-size: 0.86rem; color: var(--texto-2); }

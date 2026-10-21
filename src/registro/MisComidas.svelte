@@ -121,20 +121,20 @@
   .centro { text-align: center; }
   .lista { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
   .lista li { display: flex; gap: 6px; align-items: center; }
-  .fila { flex: 1; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
-  .ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--superficie-2); }
+  .fila { flex: 1; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
+  .ic { width: 46px; height: 46px; border-radius: var(--r-s); display: grid; place-items: center; background: var(--superficie-2); }
   .txt { flex: 1; display: grid; }
   .txt small { color: var(--texto-2); font-weight: 600; }
   .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; }
-  .borrar { display: grid; place-items: center; flex-shrink: 0; min-width: 44px; min-height: 44px; border: 0; border-radius: 12px; background: none; cursor: pointer; padding: 0; color: var(--texto-2); }
+  .borrar { display: grid; place-items: center; flex-shrink: 0; min-width: 44px; min-height: 44px; border: 0; border-radius: var(--r-s); background: none; cursor: pointer; padding: 0; color: var(--texto-2); }
   .emojis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 6px 0 12px; }
-  .emojis button { aspect-ratio: 1; border-radius: 12px; border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; display: grid; place-items: center; }
+  .emojis button { aspect-ratio: 1; border-radius: var(--r-s); border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; display: grid; place-items: center; }
   .emojis button.activo { border-color: var(--primario); background: var(--primario-claro); }
-  .ing { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); margin-bottom: 6px; }
+  .ing { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); margin-bottom: 6px; }
   .ing-n { flex: 1; font-weight: 700; font-size: 0.9rem; }
-  .ing input { width: 70px; padding: 6px; border-radius: 10px; border: 1.5px solid var(--borde); text-align: right; font-weight: 700; background: var(--superficie); color: var(--texto); }
-  .busca { width: 100%; min-height: 46px; padding: 10px 14px; border-radius: 14px; border: 1.5px dashed var(--borde); background: transparent; font-weight: 700; margin-top: 4px; color: var(--texto); }
-  .sug { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px; padding: 8px 12px; border: 0; border-radius: 12px; background: var(--superficie-2); cursor: pointer; font-weight: 700; text-align: left; color: var(--texto); }
+  .ing input { width: 70px; padding: 6px; border-radius: var(--r-s); border: 1.5px solid var(--borde); text-align: right; font-weight: 700; background: var(--superficie); color: var(--texto); }
+  .busca { width: 100%; min-height: 46px; padding: 10px 14px; border-radius: var(--r-m); border: 1.5px dashed var(--borde); background: transparent; font-weight: 700; margin-top: 4px; color: var(--texto); }
+  .sug { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px; padding: 8px 12px; border: 0; border-radius: var(--r-s); background: var(--superficie-2); cursor: pointer; font-weight: 700; text-align: left; color: var(--texto); }
   .manual { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
   .total { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0; }
   .botones { display: flex; gap: 10px; }

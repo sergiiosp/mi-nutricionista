@@ -45,13 +45,13 @@
 {/if}
 
 <style>
-  .propuesta { margin: 0 0 16px; padding: 16px; border-radius: 22px; background: linear-gradient(160deg, color-mix(in srgb, var(--primario) 18%, var(--superficie)), var(--superficie)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--primario) 30%, transparent); }
+  .propuesta { margin: 0 0 16px; padding: 16px; border-radius: var(--r-xl); background: linear-gradient(160deg, color-mix(in srgb, var(--primario) 18%, var(--superficie)), var(--superficie)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--primario) 30%, transparent); }
   .cab { display: flex; align-items: center; gap: 10px; }
   .cab b { font-size: 1.02rem; line-height: 1.25; }
-  .ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; background: var(--primario-claro); color: var(--primario-fuerte); }
+  .ic { width: 38px; height: 38px; border-radius: var(--r-s); display: grid; place-items: center; flex-shrink: 0; background: var(--primario-claro); color: var(--primario-fuerte); }
   ul { margin: 12px 0; padding-left: 18px; display: grid; gap: 4px; color: var(--texto-2); font-size: 0.88rem; }
   ul b { color: var(--texto); }
   .hora { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-weight: 600; font-size: 0.88rem; }
-  .hora input { width: 120px; min-height: 42px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; }
+  .hora input { width: 120px; min-height: 42px; padding: 0 10px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; }
   .acciones { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
 </style>
