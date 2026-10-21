@@ -10,6 +10,8 @@ import { crearRegistro } from './registro.js';
 import { proveedorDe, planDe } from './hyrox/index.js';
 import { copiaSesion } from './hyrox/sesiones.js';
 import { gastoReal, ajusteGasto } from './gasto.js';
+import { marcasDeTests, testPorId } from './hyrox/tests.js';
+import { mmss } from './hyrox/ritmos.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 export const viajesDe = (x) => x?.agenda?.viajes || [];
@@ -328,6 +330,28 @@ export function consumirDespensa(ingredientes) {
 }
 export function quitarDeDespensa(id) {
   actualizar((x) => { if (x.despensa) delete x.despensa[id]; });
+}
+
+/**
+ * Apunta un test (5 km, SkiErg, remo o una estación). Si es de los que marcan los ritmos, tus ritmos de
+ * entreno y el predictor se actualizan con él.
+ */
+export function guardarTest(fecha, id, seg) {
+  const antes = get(estado).tests?.filter((t) => t.id === id).sort((a, b) => a.fecha.localeCompare(b.fecha)).at(-1);
+  actualizar((x) => {
+    x.tests = [...(x.tests || []).filter((t) => !(t.fecha === fecha && t.id === id)), { fecha, id, seg }];
+    if (x.hyrox?.config) x.hyrox.config = { ...x.hyrox.config, marcas: { ...(x.hyrox.config.marcas || {}), ...marcasDeTests(x.tests) } };
+  });
+  const dif = antes ? seg - antes.seg : null;
+  anotarDiario(`test-${id}`, `Test de ${testPorId[id]?.corto || id}: ${mmss(seg)}`, dif == null ? 'Primera marca: a partir de aquí verás si mejoras.' : `${dif < 0 ? 'Mejoras' : 'Empeoras'} ${mmss(Math.abs(dif))} respecto al ${antes.fecha.slice(8)}/${antes.fecha.slice(5, 7)}.${['5k', 'ski1000', 'row1000'].includes(id) ? ' Tus ritmos de entreno se ajustan a esta marca.' : ''}`);
+  reajustarPlan();
+  return dif;
+}
+export function borrarTest(fecha, id) {
+  actualizar((x) => {
+    x.tests = (x.tests || []).filter((t) => !(t.fecha === fecha && t.id === id));
+    if (x.hyrox?.config) x.hyrox.config = { ...x.hyrox.config, marcas: { ...(x.hyrox.config.marcas || {}), ...marcasDeTests(x.tests) } };
+  });
 }
 
 /** Rellena las comidas que le falten al menú actual (sin tocar las demás). */

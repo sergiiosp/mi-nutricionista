@@ -14,7 +14,7 @@
   const plan = $derived(planDe($estado));
   const config = $derived($estado.hyrox.config);
   const perfil = $derived($estado.perfil);
-  const est = $derived(estimarCarrera(config, perfil, $estado.hyrox.registros));
+  const est = $derived(estimarCarrera(config, perfil, $estado.hyrox.registros, $estado.tests || []));
   const estr = $derived(estrategia(config, est));
   const opo = $derived(oportunidades(config, perfil, est));
   const maxGana = $derived(Math.max(1, ...opo.lista.map((x) => x.gana)));

@@ -92,6 +92,7 @@ await js(`
   const datos = JSON.stringify({ version: 2, perfil, plan: null, registros: {}, saltadas: {}, pesos, medidas: [{ fecha: '2026-09-21', cintura: 86 }, { fecha: '2026-10-12', cintura: 84.5 }],
     hyrox: { config: { inicio: '2026-09-22', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1440 }, enfoque: 'equilibrado', exigencia: 'normal' }, registros: {}, movidas: {} },
     diario: [{ fecha: '2026-10-13', tipo: 'gasto', titulo: 'Subo 100 kcal al día', motivo: 'Con tus comidas y tu peso de las últimas semanas, gastas unas 2.640 kcal (la fórmula decía 2.495).' }, { fecha: '2026-10-19', tipo: 'peso', titulo: 'Tu plan pasa de 2300 a 2340 kcal', motivo: 'Con tu peso y tu grasa de hoy (80,1 kg, 16,9 %).' }],
+    tests: [{ fecha: '2026-09-15', id: '5k', seg: 1500 }, { fecha: '2026-10-13', id: '5k', seg: 1452 }, { fecha: '2026-09-15', id: 'ski1000', seg: 256 }, { fecha: '2026-10-13', id: 'ski1000', seg: 248 }, { fecha: '2026-10-13', id: 'wallballs', seg: 300 }],
     propuestasVistas: { 'media-2026-10-25': true }, tema: ${JSON.stringify(process.env.TEMA || 'oscuro')} });
   // La app guarda su estado al salir de la página: los datos de ejemplo se escriben después
   localStorage.setItem('mi-nutricionista:v1', datos);
@@ -164,6 +165,7 @@ await hoja('sesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20'
 await hoja('registrarSesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20' && s.ejercicios?.length).id, entreno: true }`); await foto('hoja-entreno', 2); await cerrar();
 await hoja('estacion', `{ id: 'push' }`); await foto('hoja-estacion', 1); await cerrar();
 await hoja('guiaFuera', `{ sitio: 'asiatico' }`); await foto('hoja-guia-fuera', 2); await cerrar();
+await hoja('test', `{ id: 'ski1000' }`); await foto('hoja-test', 1); await cerrar();
 await hoja('informe', '{}'); await foto('hoja-informe', 3); await cerrar();
 await hoja('tuPlan', '{}'); await foto('hoja-tu-plan', 4);
 await js(`[...document.querySelectorAll('.ver')].slice(0, 2).forEach((b) => b.click()); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-tu-plan-detalle', 1); await cerrar();

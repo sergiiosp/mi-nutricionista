@@ -30,6 +30,7 @@ export const VACIO = () => ({
   tomas: {}, // fecha → { idSuplemento: true }: suplementos tomados ese día
   despensa: {}, // alimento → { g, fecha }: lo que tienes en casa (lo cogido en la compra, menos lo que comes)
   diario: [], // diario del coach: cada cambio del plan { fecha, tipo, titulo, motivo }
+  tests: [], // días de test { fecha, id (5k, ski1000, row1000, push…), seg }
   ultimaCopia: null,
   copiaPospuesta: null, // «Más tarde» en el aviso de copia (vuelve a los 3 días) // fecha de la última copia guardada fuera del móvil
   coachVisto: null, // lunes de la última semana en que abriste «Tu plan» (para el aviso del lunes en Hoy)
@@ -47,6 +48,7 @@ function migrar(datos) {
   e.mantener ||= {};
   e.tomas ||= {};
   e.diario ||= [];
+  e.tests ||= [];
   if (!['sistema', 'manrope', 'geist'].includes(e.fuente)) e.fuente = 'sistema';
   e.despensa ||= {};
   e.agenda = { eventos: [], viajes: [], ...(datos.agenda || {}) };

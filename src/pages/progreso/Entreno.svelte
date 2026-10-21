@@ -1,4 +1,6 @@
 <script>
+  import TusTests from '../../components/TusTests.svelte';
+  import { estacionesDeTests } from '../../lib/hyrox/tests.js';
   import Emoji from '../../components/Emoji.svelte';
   import { estado } from '../../stores/estado.js';
   import { planDe } from '../../lib/hyrox/index.js';
@@ -29,6 +31,7 @@
     const Y = (r) => 10 + ((r - min) / (max - min)) * (H - 30);
     return { d: v.map((r, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(r).toFixed(1)}`).join(' '), puntos: v.map((r, i) => ({ x: X(i), y: Y(r), r })) };
   });
+  const estTests = $derived(estacionesDeTests($estado.tests || []));
 </script>
 
 {#if !st}
@@ -74,10 +77,12 @@
     <p class="por-estrenar"><Icono n="target" tam={16} /> <span><b>Por estrenar:</b> {recs.filter((x) => !x.v).map((x) => x.n.toLowerCase()).join(' y ')}. Apunta el {recs.filter((x) => !x.v).map((x) => x.falta).join(' o el ')} al registrar.</span></p>
   {/if}
 
+  <TusTests />
+
   <div class="tarjeta">
     <b>Tus estaciones</b>
     {#each ESTACIONES as e (e.id)}
-      {@const t = st.records.estaciones[e.id]}
+      {@const t = Math.min(...[estTests[e.id], st.records.estaciones[e.id]].filter(Boolean)) || null}
       {@const ref = TIEMPOS_BASE[e.id] * nivel.k}
       <div class="est">
         <span class="n"><Emoji e={e.emoji} tam={22} /> {e.nombre}</span>
@@ -85,7 +90,7 @@
         <span class="t">{t ? mmss(t) : '—'}</span>
       </div>
     {/each}
-    <p class="pie-nota">Mejor tiempo registrado en simulacros. La barra crece cuanto más rápido vas respecto a la referencia de tu nivel ({mmss(TIEMPOS_BASE.ski * nivel.k)} en SkiErg, por ejemplo).</p>
+    <p class="pie-nota">Tu mejor tiempo en simulacros o en tus tests. La barra crece cuanto más rápido vas respecto a la referencia de tu nivel ({mmss(TIEMPOS_BASE.ski * nivel.k)} en SkiErg, por ejemplo).</p>
   </div>
 
   <h2 class="seccion"><Icono n="dumbbell" tam={22} /> Fuerza por zonas</h2>

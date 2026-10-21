@@ -1,6 +1,7 @@
 // Estimación de tiempo, estrategia de carrera y nutrición del día de carrera y de la semana previa.
 import { ESTACIONES, TIEMPOS_BASE, NIVELES } from '../../data/hyrox.js';
 import { ritmos, mmss } from './ritmos.js';
+import { estacionesDeTests } from './tests.js';
 import { aMin, aHora } from '../horario.js';
 
 const PRO = 1.15; // las estaciones con pesos Pro cuestan más
@@ -19,10 +20,11 @@ export function mejoresEstaciones(registros = {}) {
  * Tiempo estimado por tramo (8 carreras + 8 estaciones + roxzone).
  * Usa tus marcas registradas cuando existen; si no, referencias por nivel.
  */
-export function estimarCarrera(config, perfil, registros = {}) {
+export function estimarCarrera(config, perfil, registros = {}, tests = []) {
   const nivel = NIVELES[config.nivel] || NIVELES.intermedio;
   const rit = ritmos(config, perfil);
-  const mejores = mejoresEstaciones(registros);
+  // Tus tiempos por estación: el último test manda; si no, tu mejor tiempo en simulacros
+  const mejores = { ...mejoresEstaciones(registros), ...estacionesDeTests(tests) };
   const mujer = perfil?.sexo === 'm';
   const kCat = config.categoria === 'pro' ? PRO : config.categoria === 'doubles' ? DOUBLES : 1;
   // Las carreras se van ralentizando con la fatiga

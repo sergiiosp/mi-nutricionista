@@ -14,6 +14,7 @@ const CARGADORES = {
   camara: () => import('../components/CamaraGuia.svelte'),
   cocina: () => import('../components/ModoCocina.svelte'),
   tuPlan: () => import('../components/TuPlan.svelte'),
+  test: () => import('../components/RegistrarTest.svelte'),
   informe: () => import('../components/Informe.svelte'),
 };
 
