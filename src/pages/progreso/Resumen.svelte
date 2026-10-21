@@ -4,6 +4,7 @@
   import Icono from '../../components/Icono.svelte';
   import Anillos from '../../components/Anillos.svelte';
   import RepasoSemanal from '../../components/RepasoSemanal.svelte';
+  import Descubrimientos from '../../components/Descubrimientos.svelte';
   import { abrirHoja } from '../../stores/ui.js';
   import { retosSemana } from '../../lib/retos.js';
   import { estado } from '../../stores/estado.js';
@@ -78,6 +79,8 @@
 </section>
 
 <RepasoSemanal />
+
+<Descubrimientos />
 
 <button class="informe-btn" onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={18} /> <span><b>Tu plan, explicado</b><small>Por qué tus números y qué esperar este mes</small></span> <Icono n="chevron-right" tam={18} /></button>
 <button class="informe-btn" onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={18} /> <span><b>Informe del mes</b><small>Peso, comida, entrenos y fotos en un PDF</small></span> <Icono n="chevron-right" tam={18} /></button>

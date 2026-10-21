@@ -114,6 +114,25 @@ await js(`
       x.hyrox.registros[s.id] = { estado: 'completa', rpe: 7, duracion: s.duracion, fecha: s.fecha, fechaRegistro: s.fecha,
         series: s.ejercicios?.length ? Object.fromEntries(s.ejercicios.slice(0, 3).map((ej, i) => [ej.id, [{ kg: 40 + i * 10, reps: 8 }, { kg: 42 + i * 10, reps: 8 }]])) : undefined };
     }
+    // Un mes apuntando (para «Lo que dicen tus datos»): más proteína → menos hambre, cenas tardías → peor sueño
+    // → peores sesiones, y fines de semana con más arroz
+    const dia = (i) => new Date(Date.UTC(2026, 9, 20 - i)).toISOString().slice(0, 10);
+    const tarde = (f) => Number(f.slice(8)) % 2 === 1;
+    x.feedback = { dias: {}, semanas: {} };
+    x.hyrox.forma = {};
+    for (let i = 5; i <= 40; i++) {
+      const f = dia(i);
+      const finde = [0, 6].includes(new Date(f + 'T12:00:00').getDay());
+      const pAlta = i % 3 !== 0;
+      x.registros[f] = [r('yogur_proteinas', pAlta ? 250 : 125, f, 'desayuno'), r('avena', 60, f, 'desayuno'), r('pollo_pechuga', pAlta ? 220 : 110, f, 'comida'), r('arroz', finde ? 200 : pAlta ? 90 : 150, f, 'comida'), r('platano', 120, f, 'merienda'), { ...r('pollo_pechuga', 120, f, 'cena'), hora: tarde(f) ? '22:40' : '20:45' }];
+      x.feedback.dias[f] = { hambre: pAlta ? 'normal' : 'mucha', energia: 'normal', digestion: 'bien' };
+    }
+    for (const reg of Object.values(x.hyrox.registros)) {
+      const ant = new Date(Date.UTC(+reg.fecha.slice(0, 4), +reg.fecha.slice(5, 7) - 1, +reg.fecha.slice(8) - 1)).toISOString().slice(0, 10);
+      const sueno = tarde(ant) ? 0 : 2;
+      x.hyrox.forma[reg.fecha] = { sueno, agujetas: 1, energia: 1, nivel: sueno ? 'bien' : 'suave' };
+      reg.sensacion = sueno ? 'bien' : 'mal';
+    }
   });
   await new Promise((r) => setTimeout(r, 400));`);
 
@@ -150,7 +169,7 @@ await ir('#comida'); await foto('comida-semana', 3);
 await pestaña('Recetas'); await foto('comida-recetas', 2);
 await pestaña('Compra'); await foto('comida-compra', 2);
 await pestaña('Batch'); await foto('comida-batch', 2);
-await ir('#progreso'); await foto('progreso-resumen', 2);
+await ir('#progreso'); await foto('progreso-resumen', 4);
 await pestaña('Entreno'); await foto('progreso-entreno', 2);
 await pestaña('Peso'); await foto('progreso-peso', 3);
 await js(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('Apuntar peso'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('progreso-peso-form', 1);
