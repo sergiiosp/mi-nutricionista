@@ -255,6 +255,12 @@ export function explicarPlan(e, o, hoy) {
     const objetivo = /Objetivo: ([0-9:]+)/.exec(pop.bloques?.[0]?.lineas?.[0] || '')?.[1];
     visual.carrera = { nombre: pop.titulo, fecha: pop.fecha, dias: diasEntre(hoy, pop.fecha), objetivo, ritmo: /\(([^)]+)\)/.exec(pop.bloques?.[0]?.lineas?.[0] || '')?.[1] };
   }
+  // Diario del coach: lo que ha cambiado en tu plan y por qué (y los ajustes automáticos del entreno)
+  const ICONO_DIARIO = { gasto: 'trending-up', peso: 'scale', libre: 'party-popper', forma: 'heart-pulse', perfil: 'user', manual: 'pencil', entreno: 'dumbbell' };
+  const auto = (plan?.semanas || []).filter((w) => w.ajuste?.motivo && w.lunes <= hoy).map((w) => ({ fecha: w.lunes, tipo: 'entreno', titulo: `Semana ${w.w + 1}: ${w.ajuste.factor > 1 ? 'más' : 'menos'} volumen`, motivo: w.ajuste.motivo }));
+  visual.diario = [...(e.diario || []), ...auto]
+    .sort((a, b) => b.fecha.localeCompare(a.fecha))
+    .map((d) => ({ ...d, icono: ICONO_DIARIO[d.tipo] || (d.tipo.startsWith('ev-') ? 'flag' : d.tipo.startsWith('vi-') ? 'map-pin' : d.tipo.startsWith('repaso') ? 'clipboard-list' : 'sparkles') }));
   // Totales de la semana
   const sesSem = visual.semana.filter((d) => d.ses);
   visual.totalSemana = { sesiones: sesSem.length, horas: sesSem.reduce((t, d) => t + (d.ses.duracion || 0), 0) / 60, hechas: sesSem.filter((d) => d.ses.hecha).length, kcal: Math.round(visual.semana.filter((d) => d.kcal).reduce((t, d) => t + d.kcal, 0) / Math.max(1, visual.semana.filter((d) => d.kcal).length)) };

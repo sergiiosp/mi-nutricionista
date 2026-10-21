@@ -29,6 +29,9 @@ export const VACIO = () => ({
   agenda: { eventos: [], viajes: [] },
   tomas: {}, // fecha → { idSuplemento: true }: suplementos tomados ese día
   despensa: {}, // alimento → { g, fecha }: lo que tienes en casa (lo cogido en la compra, menos lo que comes)
+  diario: [], // diario del coach: cada cambio del plan { fecha, tipo, titulo, motivo }
+  ultimaCopia: null,
+  copiaPospuesta: null, // «Más tarde» en el aviso de copia (vuelve a los 3 días) // fecha de la última copia guardada fuera del móvil
   coachVisto: null, // lunes de la última semana en que abriste «Tu plan» (para el aviso del lunes en Hoy)
   gasto: null, // última estimación del gasto real { fecha, listo, tdee, ingesta, kgSemana, formula, ajuste }
   propuestasVistas: {}, // propuestas de un toque ya respondidas // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }
@@ -43,6 +46,7 @@ function migrar(datos) {
   e.entrenoDia ||= {};
   e.mantener ||= {};
   e.tomas ||= {};
+  e.diario ||= [];
   if (!['sistema', 'manrope', 'geist'].includes(e.fuente)) e.fuente = 'sistema';
   e.despensa ||= {};
   e.agenda = { eventos: [], viajes: [], ...(datos.agenda || {}) };
@@ -157,6 +161,20 @@ export function borrarRegistro(fecha, id) {
 
 export function reiniciar() {
   estado.set(VACIO());
+}
+
+/** Diario del coach: apunta un cambio del plan con su motivo (los últimos 120). */
+export function anotarDiario(tipo, titulo, motivo = '') {
+  const hoy = new Date();
+  const fecha = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  actualizar((e) => {
+    const l = (e.diario ||= []);
+    // El mismo tipo de cambio dos veces el mismo día: se queda el último
+    const i = l.findIndex((x) => x.fecha === fecha && x.tipo === tipo);
+    const nota = { fecha, tipo, titulo, motivo };
+    if (i >= 0) l[i] = nota; else l.push(nota);
+    e.diario = l.slice(-120);
+  });
 }
 
 export function exportar() {

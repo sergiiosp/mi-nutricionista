@@ -1,5 +1,6 @@
 // Tu feedback: una nota rápida al cerrar el día y un repaso al final de la semana. Con ellos la app
 // propone ajustes (kcal, menú, platos) y prepara un resumen para pedir cambios más grandes.
+import { anotarDiario } from '../stores/estado.js';
 import { actualizar } from '../stores/estado.js';
 import { sumarDias } from './planificador.js';
 import { resumenSemanal } from './logros.js';
@@ -95,6 +96,7 @@ export function aplicarPropuestas(elegidas) {
       if (a.condicion) e.perfil.condiciones = [...new Set([...(e.perfil.condiciones || []), a.condicion])];
     }
   });
+  for (const p of elegidas) anotarDiario(`repaso-${p.id}`, p.texto, p.porque || 'De tu repaso semanal.');
   return { nuevoMenu: elegidas.some((p) => p.aplicar.nuevoMenu || p.aplicar.recetasNo || p.aplicar.condicion) };
 }
 

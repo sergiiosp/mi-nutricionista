@@ -15,7 +15,7 @@
   import { RECETAS } from '../data/recetas.js';
   import { ALERGENOS } from '../data/alimentos.js';
   import { num, fechaLarga, capital } from '../lib/formato.js';
-  import { listarCopiasLocales, restaurarCopiaLocal } from '../lib/copias.js';
+  import { listarCopiasLocales, restaurarCopiaLocal, guardarCopiaFuera, restaurarArchivo } from '../lib/copias.js';
 
   let { oneditar, sub = '' } = $props();
   const PESTAÑAS = [{ id: 'plan', nombre: 'Plan', emoji: '🎯' }, { id: 'salud', nombre: 'Salud', emoji: '💊' }, { id: 'conectar', nombre: 'Conectar', emoji: '🔗' }, { id: 'ajustes', nombre: 'Ajustes', emoji: '⚙️' }];
@@ -35,18 +35,13 @@
   };
   const nombreReceta = (id) => RECETAS.find((r) => r.id === id)?.nombre || id;
 
-  function descargar() {
-    const blob = new Blob([exportar()], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `pulso-${hoyISO()}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+  async function descargar() {
+    try { if (await guardarCopiaFuera()) avisar('Copia guardada (con tus fotos)', '💾'); } catch (e) { avisar(`No se pudo guardar: ${e.message}`, '⚠️'); }
   }
   async function restaurar(ev) {
     const f = ev.currentTarget.files?.[0];
     if (!f) return;
-    try { importar(await f.text()); avisar('Copia restaurada', '💾'); } catch (e) { avisar(`No se pudo restaurar: ${e.message}`, '⚠️'); }
+    try { await restaurarArchivo(await f.text()); avisar('Copia restaurada', '💾'); } catch (e) { avisar(`No se pudo restaurar: ${e.message}`, '⚠️'); }
   }
   // Copias automáticas de cada día en este móvil
   let copias = $state([]);
@@ -131,9 +126,9 @@
 
   <h2 class="seccion"><Icono e="💾" tam={18} /> Copia de seguridad</h2>
   <div class="tarjeta">
-    <p class="pie-nota">Tus datos se guardan en este dispositivo (y, si activas la sincronización en Conectar, cifrados en tu servidor con copia diaria). También puedes descargar una copia en un archivo (las fotos no se incluyen).</p>
+    <p class="pie-nota">Tus datos se guardan en este dispositivo (y, si activas la sincronización en Conectar, cifrados en tu servidor con copia diaria). También puedes guardar una copia completa, con tus fotos, en iCloud Drive o Archivos.</p>
     <div class="acciones-fila">
-      <button class="boton boton-sec boton-peq" onclick={descargar}>Descargar copia</button>
+      <button class="boton boton-sec boton-peq" onclick={descargar}>Guardar copia</button>
       <label class="boton boton-sec boton-peq">Restaurar copia<input type="file" accept="application/json" hidden onchange={restaurar} /></label>
       <button class="boton boton-peligro boton-peq" onclick={borrarTodo}>Borrar todo</button>
     </div>

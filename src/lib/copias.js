@@ -2,7 +2,7 @@
 // La del día se hace al abrir la app, antes de cualquier cambio, así siempre se puede volver atrás.
 import { get as leer, set as escribir, del as borrar, keys } from 'idb-keyval';
 import { get } from 'svelte/store';
-import { estado, importar } from '../stores/estado.js';
+import { estado, importar, actualizar } from '../stores/estado.js';
 import { hoyISO } from './planificador.js';
 
 const PREFIJO = 'copia:';
@@ -47,6 +47,57 @@ export async function restaurarCopiaLocal(fecha) {
   if (!copia) throw new Error('No encuentro esa copia');
   await escribir(`${PREFIJO}antes-de-restaurar`, { fecha: 'antes-de-restaurar', hora: new Date().toISOString(), datos: JSON.stringify(get(estado)), resumen: resumen(get(estado)) });
   importar(copia.datos);
+}
+
+// ── Copia fuera del móvil (iCloud Drive, Archivos…): todo, también las fotos de progreso ──────
+
+const aDataURL = (blob) => new Promise((ok, mal) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = mal; r.readAsDataURL(blob); });
+
+/** Archivo con todos tus datos y tus fotos de progreso (JSON). */
+export async function archivoCopia() {
+  const e = get(estado);
+  const fotos = {};
+  for (const f of e.fotosProgreso || []) {
+    try { const b = await leer(`foto:${f.id}`); if (b) fotos[f.id] = await aDataURL(b); } catch { /* foto perdida */ }
+  }
+  const texto = JSON.stringify({ ...e, _fotos: fotos, _copia: { fecha: hoyISO(), app: 'Pulso' } });
+  return new File([texto], `pulso-${hoyISO()}.json`, { type: 'application/json' });
+}
+
+/**
+ * Guarda la copia fuera del móvil: en iPhone abre «Compartir» para elegir «Guardar en Archivos»
+ * (iCloud Drive); si no se puede compartir, se descarga. Devuelve true si se guardó.
+ */
+export async function guardarCopiaFuera() {
+  const archivo = await archivoCopia();
+  try {
+    if (navigator.canShare?.({ files: [archivo] })) {
+      await navigator.share({ files: [archivo], title: 'Copia de Pulso' });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(archivo);
+      a.download = archivo.name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }
+  } catch (err) {
+    if (err?.name === 'AbortError') return false; // cerraste el menú sin guardar
+    throw err;
+  }
+  actualizar((x) => { x.ultimaCopia = hoyISO(); });
+  return true;
+}
+
+/** Restaura un archivo de copia (con o sin fotos). Antes guarda cómo estaba todo. */
+export async function restaurarArchivo(texto) {
+  const datos = JSON.parse(texto);
+  await escribir(`${PREFIJO}antes-de-restaurar`, { fecha: 'antes-de-restaurar', hora: new Date().toISOString(), datos: JSON.stringify(get(estado)), resumen: resumen(get(estado)) });
+  for (const [id, url] of Object.entries(datos._fotos || {})) {
+    try { await escribir(`foto:${id}`, await (await fetch(url)).blob()); } catch { /* foto dañada */ }
+  }
+  delete datos._fotos;
+  delete datos._copia;
+  importar(JSON.stringify(datos));
 }
 
 /** Pide al navegador que no borre los datos de la app aunque falte espacio. */

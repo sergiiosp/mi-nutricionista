@@ -1,7 +1,7 @@
 <script>
   import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
-  import { estado, actualizar } from '../../stores/estado.js';
+  import { estado, actualizar, anotarDiario } from '../../stores/estado.js';
   import { avisar } from '../../stores/ui.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
@@ -56,6 +56,7 @@
     if (Math.abs(kcalAhora - kcalAntes) >= 30 || salto >= 2) {
       reajustarPlan();
       avisar(salto >= 2 ? `Tu peso real difiere ${num(salto, 1)} kg del que tenía: cantidades nuevas desde mañana` : `Guardado: tu plan pasa a ${kcalAhora} kcal desde mañana`, '⚖️');
+      anotarDiario('peso', `Tu plan pasa de ${kcalAntes} a ${kcalAhora} kcal`, salto >= 2 ? `Tu peso real (${num($estado.perfil.peso, 1)} kg) era ${num(salto, 1)} kg distinto del que tenía.` : `Con tu peso${extra.grasa ? ' y tu grasa' : ''} de hoy (${num(p, 1)} kg${extra.grasa ? `, ${num(extra.grasa, 1)} %` : ''}).`);
     } else avisar('Peso guardado', '⚖️');
   }
 
@@ -79,6 +80,7 @@
   function aplicarAjuste(n) {
     actualizar((e) => { e.perfil.ajusteKcal = (e.perfil.ajusteKcal || 0) + n; });
     reajustarPlan();
+    anotarDiario('manual', `${n > 0 ? 'Subes' : 'Bajas'} ${Math.abs(n)} kcal a mano`, rec.texto);
     avisar(`Ajuste aplicado (${n > 0 ? '+' : ''}${n} kcal)`, '✅');
   }
 

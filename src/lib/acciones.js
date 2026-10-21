@@ -1,6 +1,6 @@
 // Acciones de alto nivel sobre el estado (marcar comidas, saltar, cambiar platos, crear menús).
 import { get } from 'svelte/store';
-import { estado, actualizar, registroDePlan, borrarRegistro } from '../stores/estado.js';
+import { estado, actualizar, registroDePlan, borrarRegistro, anotarDiario } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos, alimentoPermitido, alimento } from './nutricion.js';
 const alimentoBruto = (id) => { try { return alimento(id).rendimiento || 1; } catch { return 1; } };
@@ -264,6 +264,7 @@ export function revisarGasto(forzar = false) {
   if (nuevo !== antes) {
     reajustarPlan();
     avisar(`Tu gasto real es ~${est.tdee} kcal: desde mañana ${nuevo > antes ? 'subo' : 'bajo'} ${Math.abs(nuevo - antes)} kcal`, '📈');
+    anotarDiario('gasto', `${nuevo > antes ? 'Subo' : 'Bajo'} ${Math.abs(nuevo - antes)} kcal al día`, `Con tus comidas y tu peso de las últimas semanas, gastas unas ${est.tdee} kcal (la fórmula decía ${objetivos.get}).`);
   }
   return registro;
 }
@@ -276,10 +277,12 @@ export function guardarDiaLibre({ fecha, franja = 'cena', ahorro }) {
   const desde = sumarDias(hoyISO(), 1);
   actualizar((x) => { x.perfil.diaLibre = { fecha, franja, ahorro, desde }; });
   reajustarPlan(desde);
+  anotarDiario('libre', `Día libre el ${fecha.slice(8)}/${fecha.slice(5, 7)}`, `Ahorras ${ahorro} kcal al día hasta la víspera para tener margen en esa ${franja}.`);
 }
 export function quitarDiaLibre() {
   actualizar((x) => { delete x.perfil.diaLibre; });
   reajustarPlan(sumarDias(hoyISO(), 1));
+  anotarDiario('libre', 'Día libre quitado', 'El menú vuelve a lo normal desde mañana.');
 }
 
 /**
@@ -293,6 +296,7 @@ export function guardarForma(fecha, datos) {
     if (!x.hyrox) return;
     x.hyrox.forma = { ...(x.hyrox.forma || {}), [fecha]: { ...datos, nivel } };
   });
+  if (nivel !== 'bien') anotarDiario('forma', nivel === 'suave' ? 'Sesión de hoy más suave' : 'Sesión de hoy de mantenimiento', `Me dijiste que llegabas ${nivel === 'suave' ? 'algo tocado' : 'fundido'} (sueño, agujetas y energía): menos volumen y algo menos de peso.`);
   return nivel;
 }
 export function borrarForma(fecha) {
@@ -375,6 +379,7 @@ export function guardarEvento(ev) {
     x.agenda.eventos = [...x.agenda.eventos.filter((y) => y.id !== ev.id), ev].sort((a, b) => a.fecha.localeCompare(b.fecha));
   });
   reajustarPlan();
+  anotarDiario(`ev-${ev.id}`, `${ev.nombre || 'Carrera'} el ${ev.fecha.slice(8)}/${ev.fecha.slice(5, 7)}`, Number(ev.km) >= 15 ? 'Semana de puesta a punto antes, carga de hidratos la víspera y recuperación el día después.' : 'La sesión de ese día se sustituye por la carrera.');
 }
 export function guardarViaje(v) {
   actualizar((x) => {
@@ -383,6 +388,7 @@ export function guardarViaje(v) {
   });
   rehacerDiasViaje();
   reajustarPlan();
+  anotarDiario(`vi-${v.id}`, `Viaje del ${v.desde.slice(8)} al ${v.hasta.slice(8)}/${v.hasta.slice(5, 7)}`, 'Esos días: caminar en vez de entrenar y menú para comer fuera o del súper.');
 }
 export function borrarDeAgenda(id) {
   actualizar((x) => {

@@ -209,6 +209,24 @@
     {@render detalle('vas', ['vas'])}
   </section>
 
+  <!-- Diario del coach -->
+  <section class="bloque-plan">
+    <h3><Icono n="notebook-pen" tam={18} /> Lo que he cambiado y por qué</h3>
+    {#if v.diario.length}
+      <ol class="diario">
+        {#each v.diario.slice(0, abiertos.diario ? 40 : 5) as d, i (d.fecha + d.tipo + i)}
+          <li>
+            <span class="di-ic"><Icono n={d.icono} tam={15} grosor={2.2} /></span>
+            <div><small>{fechaCorta(d.fecha)}</small><b>{d.titulo}</b>{#if d.motivo}<p>{d.motivo}</p>{/if}</div>
+          </li>
+        {/each}
+      </ol>
+      {#if v.diario.length > 5}<button class="ver" onclick={() => alternar('diario')}>{abiertos.diario ? 'Ver menos' : `Ver los ${v.diario.length}`} <Icono n={abiertos.diario ? 'chevron-up' : 'chevron-down'} tam={15} /></button>{/if}
+    {:else}
+      <p class="nota-sem">Aún no he cambiado nada. Cuando ajuste tus kcal, tu entreno o tu menú, lo verás aquí con el motivo.</p>
+    {/if}
+  </section>
+
   <p class="pie-nota">Se actualiza solo con lo que apuntas (comidas, entrenos y báscula). Es orientativo: no sustituye a un profesional.</p>
 </div>
 
@@ -359,4 +377,13 @@
   @media (prefers-reduced-motion: reduce) {
     .volumen i, .d-barra i, .c-pista i, .t-linea { transition: none; }
   }
+  /* Diario del coach */
+  .diario { list-style: none; margin: 0; padding: 0; position: relative; }
+  .diario::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: var(--linea); }
+  .diario li { position: relative; display: flex; gap: 12px; padding: 6px 0; }
+  .di-ic { position: relative; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; box-shadow: 0 0 0 3px var(--superficie); }
+  .diario div { display: grid; min-width: 0; }
+  .diario small { font-size: 0.72rem; font-weight: 600; color: var(--texto-3); }
+  .diario b { font-size: 0.9rem; }
+  .diario p { margin: 2px 0 0; font-size: 0.8rem; line-height: 1.4; color: var(--texto-2); }
 </style>

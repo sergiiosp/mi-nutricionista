@@ -9,7 +9,7 @@
   import Alternativas from './components/Alternativas.svelte';
   import Registrar from './registro/Registrar.svelte';
   import Hoy from './pages/Hoy.svelte';
-  import { estado, actualizar } from './stores/estado.js';
+  import { estado, actualizar, anotarDiario } from './stores/estado.js';
   import { ruta, ir } from './stores/ruta.js';
   import { hoja, cerrarHoja, abrirHoja, aviso, avisar, deshacerAviso } from './stores/ui.js';
   import { calcularObjetivos } from './lib/nutricion.js';
@@ -67,6 +67,7 @@
       if (!esEdicion) e.pesos = [{ fecha: hoyISO(), peso: perfil.peso }];
     });
     editando = false;
+    if (esEdicion) anotarDiario('perfil', 'Actualizaste tus datos', 'Recalculo kcal, macros y horario con lo nuevo.');
     if (!esEdicion || !$estado.plan || CLAVES_MENU.some((k) => JSON.stringify(anterior?.[k]) !== JSON.stringify(perfil[k]))) {
       crearPlan();
       avisar(esEdicion ? 'Perfil guardado y menú nuevo creado' : '¡Tu plan está listo!', '🎉');

@@ -91,6 +91,7 @@ await js(`
   localStorage.clear();
   const datos = JSON.stringify({ version: 2, perfil, plan: null, registros: {}, saltadas: {}, pesos, medidas: [{ fecha: '2026-09-21', cintura: 86 }, { fecha: '2026-10-12', cintura: 84.5 }],
     hyrox: { config: { inicio: '2026-09-22', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1440 }, enfoque: 'equilibrado', exigencia: 'normal' }, registros: {}, movidas: {} },
+    diario: [{ fecha: '2026-10-13', tipo: 'gasto', titulo: 'Subo 100 kcal al día', motivo: 'Con tus comidas y tu peso de las últimas semanas, gastas unas 2.640 kcal (la fórmula decía 2.495).' }, { fecha: '2026-10-19', tipo: 'peso', titulo: 'Tu plan pasa de 2300 a 2340 kcal', motivo: 'Con tu peso y tu grasa de hoy (80,1 kg, 16,9 %).' }],
     propuestasVistas: { 'media-2026-10-25': true }, tema: ${JSON.stringify(process.env.TEMA || 'oscuro')} });
   // La app guarda su estado al salir de la página: los datos de ejemplo se escriben después
   localStorage.setItem('mi-nutricionista:v1', datos);
