@@ -82,7 +82,8 @@
   <div class="tarjeta">
     <b>Tus estaciones</b>
     {#each ESTACIONES as e (e.id)}
-      {@const t = Math.min(...[estTests[e.id], st.records.estaciones[e.id]].filter(Boolean)) || null}
+      {@const tiempos = [estTests[e.id], st.records.estaciones[e.id]].filter(Boolean)}
+      {@const t = tiempos.length ? Math.min(...tiempos) : null}
       {@const ref = TIEMPOS_BASE[e.id] * nivel.k}
       <div class="est">
         <span class="n"><Emoji e={e.emoji} tam={22} /> {e.nombre}</span>
