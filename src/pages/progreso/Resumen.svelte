@@ -85,6 +85,7 @@
 <Descubrimientos />
 
 <button class="informe-btn" class:toca={rev.toca} onclick={() => abrirHoja('revision')}><Icono n="clipboard-list" tam={18} /> <span><b>Revisión del mes</b><small>{rev.enCurso ? 'A medias: sigue donde lo dejaste' : rev.toca ? 'Toca ya: báscula, medidas, fotos y test' : `Próxima: ${fechaCorta(rev.proxima)}`}</small></span> <Icono n="chevron-right" tam={18} /></button>
+<button class="informe-btn" onclick={() => abrirHoja('simulador')}><Icono n="shuffle" tam={18} /> <span><b>¿Y si…?</b><small>Simula otras kcal o sesiones y mira dónde llegas</small></span> <Icono n="chevron-right" tam={18} /></button>
 <button class="informe-btn" onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={18} /> <span><b>Tu plan, explicado</b><small>Por qué tus números y qué esperar este mes</small></span> <Icono n="chevron-right" tam={18} /></button>
 <button class="informe-btn" onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={18} /> <span><b>Informe del mes</b><small>Peso, comida, entrenos y fotos en un PDF</small></span> <Icono n="chevron-right" tam={18} /></button>
 

@@ -181,6 +181,11 @@
     {#each (sec.mes?.items || []).filter((i) => ['En tu agenda', 'Prioridad de salud'].includes(i.titulo)) as it (it.titulo)}
       <p class="nota" class:alerta={it.titulo === 'Prioridad de salud'}><Icono n={it.titulo === 'En tu agenda' ? 'calendar-days' : 'triangle-alert'} tam={16} /> <span>{it.texto}</span></p>
     {/each}
+    <button class="simular" onclick={() => abrirHoja('simulador')}>
+      <span class="si-ic"><Icono n="shuffle" tam={18} /></span>
+      <span class="si-txt"><b>¿Y si…?</b><small>Prueba otras kcal, más sesiones o un fin de semana más libre y mira dónde llegas</small></span>
+      <Icono n="chevron-right" tam={18} />
+    </button>
     {@render detalle('mes', ['mes', 'donde'])}
   </section>
 
@@ -232,6 +237,12 @@
 </div>
 
 <style>
+  .simular { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 12px 14px; border: 0; border-radius: 16px; background: var(--primario-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .si-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
+  .si-txt { flex: 1; min-width: 0; display: grid; }
+  .si-txt b { font-size: 0.95rem; }
+  .si-txt small { font-size: 0.76rem; line-height: 1.3; color: var(--texto-2); }
+  .simular > :global(svg:last-child) { color: var(--primario-fuerte); flex-shrink: 0; }
   /* Portada */
   .po-sup { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .po-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 600; }

@@ -18,6 +18,7 @@ const CARGADORES = {
   diaCarrera: () => import('../components/ModoCarrera.svelte'),
   informe: () => import('../components/Informe.svelte'),
   revision: () => import('../components/Revision.svelte'),
+  simulador: () => import('../components/Simulador.svelte'),
 };
 
 const promesas = {};

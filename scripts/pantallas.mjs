@@ -171,6 +171,8 @@ await pestaña('Compra'); await foto('comida-compra', 2);
 await pestaña('Batch'); await foto('comida-batch', 2);
 await ir('#progreso'); await foto('progreso-resumen', 4);
 await hoja('revision'); await foto('hoja-revision-portada', 1); await cerrar();
+await hoja('simulador'); await foto('hoja-simulador', 2);
+await js(`const r = document.querySelector('.sim input[type=range]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(r, String(+r.value - 400)); r.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((ok) => setTimeout(ok, 300));`); await foto('hoja-simulador-menos', 2); await cerrar();
 await hoja('revision', `{ paso: 2 }`); await foto('hoja-revision-medidas', 1); await cerrar();
 await hoja('revision', `{ paso: 5 }`); await foto('hoja-revision-resumen', 1); await cerrar();
 await pestaña('Entreno'); await foto('progreso-entreno', 2);
