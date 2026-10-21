@@ -166,6 +166,7 @@ await hoja('registrarSesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '20
 await hoja('estacion', `{ id: 'push' }`); await foto('hoja-estacion', 1); await cerrar();
 await hoja('guiaFuera', `{ sitio: 'asiatico' }`); await foto('hoja-guia-fuera', 2); await cerrar();
 await hoja('test', `{ id: 'ski1000' }`); await foto('hoja-test', 1); await cerrar();
+await hoja('diaCarrera', `{ fecha: '2027-02-20' }`); await foto('hoja-dia-carrera', 2); await cerrar();
 await hoja('informe', '{}'); await foto('hoja-informe', 3); await cerrar();
 await hoja('tuPlan', '{}'); await foto('hoja-tu-plan', 4);
 await js(`[...document.querySelectorAll('.ver')].slice(0, 2).forEach((b) => b.click()); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-tu-plan-detalle', 1); await cerrar();

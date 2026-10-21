@@ -27,6 +27,7 @@
   import AvisoCopia from '../components/AvisoCopia.svelte';
   import { retosSemana } from '../lib/retos.js';
   import { explicarPlan } from '../lib/coach.js';
+  import { planDiaCarrera } from '../lib/hyrox/diaCarrera.js';
   import FotoReceta from '../components/FotoReceta.svelte';
   import { sumarDias } from '../lib/planificador.js';
 
@@ -58,6 +59,9 @@
   const retos = $derived(retosSemana($estado, objetivos, hoy));
   const coach = $derived(explicarPlan($estado, objetivos, hoy));
   const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
+  // Carrera hoy o mañana: acceso directo al modo día de carrera
+  const carreraHoy = $derived(planDiaCarrera($estado, hoy));
+  const carreraManana = $derived(carreraHoy ? null : planDiaCarrera($estado, sumarDias(hoy, 1)));
   // Panel: qué bloque está abierto (ninguno al entrar: lo esencial ya se ve)
   let abierto = $state(null);
   const alternar = (k) => (abierto = abierto === k ? null : k);
@@ -226,6 +230,15 @@
       <Icono n="chevron-right" tam={14} />
     </a>
   </section>
+
+  {#if carreraHoy || carreraManana}
+    {@const c = carreraHoy || carreraManana}
+    <button class="modo-carrera" onclick={() => abrirHoja('diaCarrera', { fecha: carreraHoy ? hoy : sumarDias(hoy, 1) })}>
+      <span class="mcr-ic"><Icono n="flag" tam={22} /></span>
+      <span class="mcr-txt"><small>{carreraHoy ? 'Hoy es tu carrera' : 'Mañana corres'}</small><b>{c.nombre} · salida {c.hora}</b><span>{carreraHoy ? 'Abre el modo carrera: tu día hora a hora' : 'Mira el plan de mañana: desayuno, salida y geles'}</span></span>
+      <Icono n="chevron-right" tam={20} />
+    </button>
+  {/if}
 
   <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
     <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
@@ -426,6 +439,13 @@
   .r-semana :global(svg:first-child) { color: var(--primario); }
   .r-semana :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
 
+  /* Modo día de carrera */
+  .modo-carrera { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: 20px; background: var(--hero); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--brillo-naranja); }
+  .mcr-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: rgb(255 255 255 / 0.22); flex-shrink: 0; }
+  .mcr-txt { flex: 1; min-width: 0; display: grid; }
+  .mcr-txt small { font-size: 0.76rem; font-weight: 700; opacity: 0.85; }
+  .mcr-txt b { font-size: 1.05rem; }
+  .mcr-txt span { font-size: 0.8rem; opacity: 0.9; }
   /* Tu coach */
   .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }

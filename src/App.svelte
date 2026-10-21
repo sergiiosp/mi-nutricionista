@@ -88,8 +88,8 @@
   ];
   // Color de cada sección (Hoy naranja, Comida lima, Entreno violeta, Progreso azul)
   const seccion = $derived(['comida', 'entreno', 'progreso'].includes($ruta.pagina) ? $ruta.pagina : 'hoy');
-  const SECCION_HOJA = { test: 'entreno', tuPlan: 'hoy', cocina: 'comida', camara: 'progreso', informe: 'progreso', diaLibre: 'comida', guiaFuera: 'comida', receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
-  const TITULOS = { test: 'Apuntar un test', tuPlan: '', cocina: 'Modo cocina', camara: 'Foto de progreso', informe: 'Informe del mes', diaLibre: 'Día libre', guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
+  const SECCION_HOJA = { diaCarrera: 'entreno', test: 'entreno', tuPlan: 'hoy', cocina: 'comida', camara: 'progreso', informe: 'progreso', diaLibre: 'comida', guiaFuera: 'comida', receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
+  const TITULOS = { diaCarrera: '', test: 'Apuntar un test', tuPlan: '', cocina: 'Modo cocina', camara: 'Foto de progreso', informe: 'Informe del mes', diaLibre: 'Día libre', guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
 
 {#if !$estado.perfil || editando}

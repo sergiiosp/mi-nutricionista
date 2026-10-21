@@ -57,6 +57,8 @@
   <p class="pie-nota">En total podrías bajar unos {Math.round(opo.lista.reduce((s, x) => s + x.gana, 0) / 60)} min. Registra tus simulacros con tiempos por estación para afinarlo.</p>
 {/if}
 
+{#if plan?.carrera}<button class="boton boton-sec ancho-mc" onclick={() => abrirHoja('diaCarrera', { fecha: plan.carrera })}><Icono n="flag" tam={18} /> Modo día de carrera: tu día hora a hora</button>{/if}
+
 <h3 class="cab">Estrategia</h3>
 <ul class="estrategia">{#each estr.general as g (g)}<li>{g}</li>{/each}</ul>
 
@@ -152,4 +154,5 @@
   .g-gana { grid-row: 1 / 3; grid-column: 3; text-align: right; font-size: 1rem; color: var(--primario-fuerte); }
   .g-barra { grid-column: 2; height: 5px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .g-barra i { display: block; height: 100%; border-radius: 999px; background: var(--hero); }
+  .ancho-mc { width: 100%; margin-top: 14px; }
 </style>

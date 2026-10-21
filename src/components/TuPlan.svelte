@@ -11,6 +11,7 @@
   import { calcularObjetivos } from '../lib/nutricion.js';
   import { hoyISO } from '../lib/planificador.js';
   import { explicarPlan } from '../lib/coach.js';
+  import { abrirHoja } from '../stores/ui.js';
   import { FASES } from '../lib/hyrox/plan.js';
   import { entero, fechaCorta, num, diaSemana } from '../lib/formato.js';
 
@@ -106,11 +107,11 @@
     <p><small>Tu coach dice</small>{v.coach}</p>
   </div>
   {#if v.carrera}
-    <div class="carrera">
+    <button class="carrera" onclick={() => abrirHoja('diaCarrera', { fecha: v.carrera.fecha })}>
       <span class="ca-ic"><Icono n="flag" tam={20} /></span>
       <span class="ca-txt"><b>{v.carrera.nombre}</b><small>{diaSemana(v.carrera.fecha)} {Number(v.carrera.fecha.slice(8))} · {v.carrera.dias === 0 ? 'hoy' : v.carrera.dias === 1 ? 'mañana' : `en ${v.carrera.dias} días`}</small></span>
       {#if v.carrera.objetivo}<span class="ca-obj"><b class="cifra">{v.carrera.objetivo}</b><small>{v.carrera.ritmo || 'objetivo'}</small></span>{/if}
-    </div>
+    </button>
   {/if}
 
   <!-- Esta semana, día a día -->
@@ -340,6 +341,7 @@
   .coach-dice p { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
   .coach-dice small { display: block; margin-bottom: 2px; font-size: 0.72rem; font-weight: 600; color: var(--primario-fuerte); }
   /* Próxima carrera */
+  .carrera { width: 100%; border: 0; font: inherit; text-align: left; color: var(--texto); cursor: pointer; }
   .carrera { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 12px 14px; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); }
   .ca-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .ca-txt { flex: 1; min-width: 0; display: grid; }
