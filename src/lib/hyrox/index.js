@@ -1,5 +1,5 @@
 // Acceso al plan HYROX desde el estado de la app (con memoria para no recalcularlo en cada render).
-import { generarPlanHyrox, sesionesNutricion } from './plan.js';
+import { generarPlanHyrox, sesionesNutricion, semanaDe } from './plan.js';
 import { hoyISO } from '../planificador.js';
 
 let ultimaClave = null;
@@ -33,13 +33,16 @@ export function proveedorDe(e) {
   if (!plan && !Object.keys(cambios).length) return null;
   const limite = plan ? plan.carrera || plan.fin : null;
   const delPlan = (fecha) => (plan && fecha >= plan.inicio && fecha <= limite ? sesionesNutricion(plan, fecha) : null);
-  return (fecha) => {
+  const proveedor = (fecha) => {
     const cambio = cambios[fecha];
     const sesiones = delPlan(fecha);
     if (cambio === 'no') return (sesiones || []).filter((s) => s.carga); // descanso (la carga de hidratos pre-carrera se mantiene)
     if (cambio === 'si' && !(sesiones || []).some((s) => !s.carga && s.tipo !== 'recuperacion')) return [...(sesiones || []), sesionExtra(e.perfil)];
     return sesiones;
   };
+  // Fase del plan en esa fecha: la nutrición cambia con ella (específico y puesta a punto, a mantenimiento)
+  proveedor.fase = (fecha) => (plan && fecha >= plan.inicio && fecha <= limite ? semanaDe(plan, fecha)?.fase || null : null);
+  return proveedor;
 }
 
 /** Sesiones (visibles) de un día. */

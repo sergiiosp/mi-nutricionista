@@ -1,7 +1,7 @@
 // «Tu plan» explicado como lo haría tu nutricionista y tu entrenador: por qué tus números, dónde estás,
 // qué esperar este mes y esta semana, y cómo vas. Todo sale de tus datos (báscula, registros, plan y agenda).
 // Cada punto: { titulo, cifra, texto (lo esencial), detalle (lo técnico, se despliega) }.
-import { OBJETIVOS, TRABAJO, PASOS } from './nutricion.js';
+import { OBJETIVOS, TRABAJO, PASOS, ritmoFase } from './nutricion.js';
 import { sumarDias } from './planificador.js';
 import { planDe } from './hyrox/index.js';
 import { semanaDe, FASES } from './hyrox/plan.js';
@@ -39,16 +39,20 @@ export function explicarPlan(e, o, hoy) {
   const ent = o.porTipo.entreno;
   const desc = o.porTipo.descanso;
   const ajustes = (perfil.ajusteGasto || 0) + (perfil.ajusteKcal || 0);
+  // Las kcal de la fase actual del plan (en específico y puesta a punto, mantenimiento)
+  const rFase = ritmoFase(obj, ritmo, sem?.fase);
+  const kcalFase = rFase === ritmo ? o.kcal : Math.round(Math.max(o.get * (1 + rFase) + ajustes, o.base.minimo) / 10) * 10;
 
   // ── Por qué tus números ──
   const numeros = [
     {
-      titulo: 'Calorías', cifra: `${entero(o.kcal)} kcal/día`,
+      titulo: 'Calorías', cifra: `${entero(kcalFase)} kcal/día`,
       texto: `${entero(ent.kcal)} los días de entreno y ${entero(desc.kcal)} los de descanso. ${ritmo < 0 ? `Un ${Math.round(-ritmo * 100)} % por debajo de lo que gastas: lo justo para perder grasa sin frenar el músculo.` : ritmo > 0 ? `Un ${Math.round(ritmo * 100)} % por encima de lo que gastas, para construir músculo.` : 'Lo que gastas, para mantenerte.'}`,
       detalle: [
         `Metabolismo basal: ${entero(o.tmb)} kcal, ${o.metodoTmb === 'magra' ? `calculado con tu masa magra (${num(o.magraKg, 1)} kg, fórmula Katch-McArdle), más fiable si tienes más músculo de la media` : 'calculado con peso, altura y edad (Mifflin-St Jeor); con el % de grasa de la báscula afino más'}.`,
         comp?.bmr ? `Tu báscula dice ${entero(comp.bmr)} kcal de basal: ${Math.abs(comp.bmr - o.tmb) < 100 ? 'casi lo mismo, buena señal' : 'difiere algo; me fío más de tu gasto real cuando haya datos'}.` : null,
         `Con tu día a día (${TRABAJO[perfil.trabajo]?.nombre.toLowerCase() || 'actividad normal'}${PASOS[perfil.pasos] ? `, ${PASOS[perfil.pasos].nombre} pasos` : ''}) gastas unas ${entero(desc.get)} kcal en descanso; cada sesión suma unas ${entero(o.kcalSesion)} kcal.`,
+        sem && sem.fase !== 'base' && ritmo < 0 ? `En fase ${FASES[sem.fase].nombre.toLowerCase()} ${sem.fase === 'construccion' ? 'el déficit es más suave' : 'comes a mantenimiento'}: ahora la prioridad es rendir en los entrenos.` : sem?.fase === 'base' && ritmo < 0 ? 'En la fase base aprovechamos para perder grasa; en el bloque específico pasarás a mantenimiento para rendir.' : null,
         ajustes ? `Ajuste aplicado: ${signo(ajustes, 0)} kcal${perfil.ajusteGasto ? ' (por tu gasto real medido)' : ''}${perfil.ajusteKcal ? ' (por tu repaso semanal)' : ''}.` : 'Sin ajustes por ahora: cuando haya 2 semanas de datos, el gasto real afina esta cifra solo.',
       ].filter(Boolean),
     },
@@ -219,9 +223,9 @@ export function explicarPlan(e, o, hoy) {
     { n: 'Basal', v: Math.round(o.tmb), sub: o.metodoTmb === 'magra' ? 'con tu masa magra' : 'peso, altura y edad' },
     { n: 'Día a día', v: Math.round(desc.get - o.tmb), sub: TRABAJO[perfil.trabajo]?.nombre.toLowerCase() || 'actividad' },
     { n: 'Entreno', v: Math.round(o.get - desc.get), sub: `${o.diasEntreno} días/sem` },
-    { n: obj === 'ganar' ? 'Superávit' : obj === 'mantener' ? 'Ajuste' : 'Déficit', v: Math.round(o.kcal - o.get), sub: ritmo ? `${signo(ritmo * 100, 0)} %${ajustes ? ` y ${signo(ajustes, 0)} kcal` : ''}` : ajustes ? `${signo(ajustes, 0)} kcal` : 'ninguno' },
+    { n: rFase > 0 ? 'Superávit' : rFase < 0 ? 'Déficit' : 'Ajuste', v: Math.round(kcalFase - o.get), sub: rFase ? `${signo(rFase * 100, 0)} %${ajustes ? ` y ${signo(ajustes, 0)} kcal` : ''}` : ajustes ? `${signo(ajustes, 0)} kcal` : sem && ritmo < 0 ? `mantenimiento (fase ${FASES[sem.fase].nombre.toLowerCase()})` : 'ninguno' },
   ];
-  visual.total = o.kcal;
+  visual.total = kcalFase;
   const kcalP = o.proteina * 4, kcalC = o.hidratos * 4, kcalG = o.grasa * 9;
   const sumaM = kcalP + kcalC + kcalG || 1;
   visual.macros = [

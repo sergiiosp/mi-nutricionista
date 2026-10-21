@@ -165,7 +165,7 @@ export function contextoDia(perfil, objetivos, fecha, proveedor = null, viajes =
     const principal = sesiones.filter((s) => !s.carga && !['recuperacion', 'caminar'].includes(s.tipo)).sort((a, b) => b.duracion - a.duracion)[0];
     const entreno = !!principal;
     const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion, tipo: principal.tipo } : null);
-    return { entreno, horario, objDia: metaDia(objetivos, sesiones), sesiones, viaje };
+    return { entreno, horario, objDia: metaDia(objetivos, sesiones, proveedor.fase?.(fecha) || null), sesiones, viaje };
   }
   const entreno = esDiaEntreno(perfil, fecha);
   const horario = horarioDia(perfil, entreno);

@@ -175,12 +175,28 @@ export function calcularObjetivos(perfil) {
  * y los hidratos mínimos dependen del tipo de sesión. En carga y carrera no hay déficit.
  * @param sesiones [{ kcal, carbos (g/kg), carga?, tipo }]
  */
-export function metaDia(objetivos, sesiones) {
-  if (!sesiones?.length) return objetivos.porTipo.descanso;
+/**
+ * Déficit según la fase del plan HYROX: en base, tu objetivo tal cual; en construcción, más suave;
+ * en el bloque específico y la puesta a punto, mantenimiento (la prioridad es rendir). En volumen, solo
+ * la puesta a punto pasa a mantenimiento.
+ */
+export function ritmoFase(objetivo, ritmo, fase) {
+  if (!fase || fase === 'base') return ritmo;
+  if (ritmo >= 0) return fase === 'taper' ? 0 : ritmo;
+  return fase === 'construccion' ? ritmo * 0.6 : 0;
+}
+
+export function metaDia(objetivos, sesiones, fase = null) {
   const b = objetivos.base;
+  const rFase = ritmoFase(b.objetivo, b.ritmo, fase);
+  if (!sesiones?.length) {
+    if (rFase === b.ritmo) return objetivos.porTipo.descanso;
+    const kcal = Math.round(Math.max(b.getDescanso * (1 + rFase) + b.ajuste, b.minimo) / 10) * 10;
+    return { ...repartoMacros(kcal, b.proteina, b.grasaBase, b.pesoRef), get: Math.round(b.getDescanso) };
+  }
   const extra = sesiones.reduce((s, x) => s + (x.kcal || 0), 0);
   const sinDeficit = sesiones.some((x) => x.carga || x.tipo === 'carrera');
-  const ritmo = sinDeficit ? Math.max(b.ritmo, 0) : b.ritmo;
+  const ritmo = sinDeficit ? Math.max(rFase, 0) : rFase;
   // Perdiendo grasa se priorizan los hidratos alrededor del entreno, pero sin forzar superávit
   const recorte = !sinDeficit && ['perder', 'recomposicion'].includes(b.objetivo) ? 0.75 : 1;
   const minCarbos = Math.max(0, ...sesiones.map((x) => x.carbos || 0)) * b.peso * recorte;
