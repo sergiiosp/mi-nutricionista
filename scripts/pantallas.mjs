@@ -176,8 +176,11 @@ await js(`const r = document.querySelector('.sim input[type=range]'); const set 
 await hoja('revision', `{ paso: 2 }`); await foto('hoja-revision-medidas', 1); await cerrar();
 await hoja('revision', `{ paso: 5 }`); await foto('hoja-revision-resumen', 1); await cerrar();
 await pestaña('Entreno'); await foto('progreso-entreno', 2);
-await pestaña('Peso'); await foto('progreso-peso', 3);
+await pestaña('Cuerpo'); await foto('progreso-peso', 3);
 await js(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('Apuntar peso'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('progreso-peso-form', 1);
+await pestaña('Cintura'); await foto('progreso-medidas', 1);
+await pestaña('Fotos'); await foto('progreso-fotos', 1);
+await hoja('logros'); await foto('hoja-logros', 1); await cerrar();
 await ir('#ajustes'); await foto('ajustes', 3);
 await ir('#hoy');
 await hoja('registrar', `{ fecha: '2026-10-20', franja: 'merienda' }`); await foto('hoja-registrar', 2); await cerrar();

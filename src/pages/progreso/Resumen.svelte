@@ -5,6 +5,7 @@
   import Anillos from '../../components/Anillos.svelte';
   import RepasoSemanal from '../../components/RepasoSemanal.svelte';
   import Descubrimientos from '../../components/Descubrimientos.svelte';
+  import LogrosResumen from '../../components/LogrosResumen.svelte';
   import { abrirHoja } from '../../stores/ui.js';
   import { retosSemana } from '../../lib/retos.js';
   import { estado } from '../../stores/estado.js';
@@ -68,27 +69,6 @@
   {#if r.registro > 1}<p class="racha"><Icono n="flame" tam={15} grosor={2.2} /> {r.registro} días seguidos apuntando</p>{/if}
 </section>
 
-<section class="tarjeta retos" aria-label="Retos de la semana">
-  <div class="rt-cab"><b>Retos de la semana</b>{#if retos.racha}<span class="rt-racha"><Icono n="flame" tam={14} grosor={2.2} /> {retos.racha} {retos.racha === 1 ? 'semana' : 'semanas'} seguidas</span>{/if}</div>
-  {#each retos.lista as x (x.id)}
-    <div class="rt" class:hecho={x.hecho}>
-      <span class="rt-ic">{#if x.hecho}<Icono n="check" tam={15} grosor={3} />{:else}<Icono n={x.icono} tam={15} grosor={2.2} />{/if}</span>
-      <span class="rt-txt"><b>{x.nombre} <span class="cifra">{x.valor}/{x.meta}</span></b><small>{x.detalle}</small></span>
-      <span class="rt-pista" aria-hidden="true"><i style="width:{Math.min(100, (x.valor / x.meta) * 100)}%"></i></span>
-    </div>
-  {/each}
-  <p class="pie-nota">Cumpliendo 2 de 3 cada semana sumas racha.</p>
-</section>
-
-<RepasoSemanal />
-
-<Descubrimientos />
-
-<button class="informe-btn" class:toca={rev.toca} onclick={() => abrirHoja('revision')}><Icono n="clipboard-list" tam={18} /> <span><b>Revisión del mes</b><small>{rev.enCurso ? 'A medias: sigue donde lo dejaste' : rev.toca ? 'Toca ya: báscula, medidas, fotos y test' : `Próxima: ${fechaCorta(rev.proxima)}`}</small></span> <Icono n="chevron-right" tam={18} /></button>
-<button class="informe-btn" onclick={() => abrirHoja('simulador')}><Icono n="shuffle" tam={18} /> <span><b>¿Y si…?</b><small>Simula otras kcal o sesiones y mira dónde llegas</small></span> <Icono n="chevron-right" tam={18} /></button>
-<button class="informe-btn" onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={18} /> <span><b>Tu plan, explicado</b><small>Por qué tus números y qué esperar este mes</small></span> <Icono n="chevron-right" tam={18} /></button>
-<button class="informe-btn" onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={18} /> <span><b>Informe del mes</b><small>Peso, comida, entrenos y fotos en un PDF</small></span> <Icono n="chevron-right" tam={18} /></button>
-
 {#if s.porDia.some((d) => d.r)}
   <section class="tarjeta dias" aria-label="Calorías por día">
     <div class="d-cab"><b>Cada día</b><span class="d-ley"><i class="ok"></i>en objetivo <i class="pr"></i>proteína</span></div>
@@ -106,10 +86,8 @@
         </div>
       {/each}
     </div>
-  </section>
-
   {#if s.diasRegistrados}
-    <ul class="tarjeta medias">
+    <ul class="medias">
       <li>
         <span><small>Kcal de media</small><b class="cifra">{entero(s.kcal)}</b></span>
         <div class="m-pista"><i style="width:{Math.min(100, (s.kcal / s.objetivoKcal) * 100)}%;background:{COLORES.kcal}"></i></div>
@@ -124,14 +102,41 @@
   {:else}
     <p class="pie-nota sin-medias"><Icono n="calendar-days" tam={15} /> Las medias salen con los días ya terminados: mañana verás la de hoy.</p>
   {/if}
+  </section>
 {:else}
   <div class="tarjeta vacia-semana"><Icono n="chart-column" tam={26} /><p>Cuando registres tus comidas verás aquí tus calorías y tu proteína de cada día.</p></div>
 {/if}
+
+<section class="tarjeta retos" aria-label="Retos de la semana">
+  <div class="rt-cab"><b>Retos de la semana</b>{#if retos.racha}<span class="rt-racha"><Icono n="flame" tam={14} grosor={2.2} /> {retos.racha} {retos.racha === 1 ? 'semana' : 'semanas'} seguidas</span>{/if}</div>
+  {#each retos.lista as x (x.id)}
+    <div class="rt" class:hecho={x.hecho}>
+      <span class="rt-ic">{#if x.hecho}<Icono n="check" tam={15} grosor={3} />{:else}<Icono n={x.icono} tam={15} grosor={2.2} />{/if}</span>
+      <span class="rt-txt"><b>{x.nombre} <span class="cifra">{x.valor}/{x.meta}</span></b><small>{x.detalle}</small></span>
+      <span class="rt-pista" aria-hidden="true"><i style="width:{Math.min(100, (x.valor / x.meta) * 100)}%"></i></span>
+    </div>
+  {/each}
+  <p class="pie-nota">Cumpliendo 2 de 3 cada semana sumas racha.</p>
+</section>
 
 <div class="tarjeta consejos">
   <div class="cab"><span class="ic-cab"><Icono n="lightbulb" tam={18} /></span><b>Tu nutricionista dice</b></div>
   {#each s.consejos as c (c)}<p>{c}</p>{/each}
 </div>
+
+<RepasoSemanal />
+
+<Descubrimientos />
+
+<section class="herramientas" aria-label="Herramientas">
+  <button class:toca={rev.toca} onclick={() => abrirHoja('revision')}><Icono n="clipboard-list" tam={20} /><b>Revisión del mes</b><small>{rev.enCurso ? 'A medias' : rev.toca ? 'Toca ya' : `Próxima: ${fechaCorta(rev.proxima)}`}</small></button>
+  <button onclick={() => abrirHoja('simulador')}><Icono n="shuffle" tam={20} /><b>¿Y si…?</b><small>Simula kcal y sesiones</small></button>
+  <button onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={20} /><b>Tu plan, explicado</b><small>Qué esperar este mes</small></button>
+  <button onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={20} /><b>Informe del mes</b><small>En PDF, con fotos</small></button>
+</section>
+
+<LogrosResumen />
+
 
 <style>
   /* Anillos */
@@ -149,13 +154,13 @@
   .titular span { font-size: 0.86rem; color: var(--texto-2); }
   .racha { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 0.8rem; font-weight: 700; color: var(--amarillo); }
 
-  .informe-btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; margin: 10px 0 0; padding: 8px 14px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .informe-btn > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
-  .informe-btn > :global(svg:last-child) { margin-left: auto; color: var(--texto-3); flex-shrink: 0; }
-  .informe-btn span { display: grid; }
-  .informe-btn.toca { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 40%, transparent); }
-  .informe-btn.toca small { color: var(--primario-fuerte); font-weight: 700; }
-  .informe-btn small { font-size: 0.76rem; color: var(--texto-2); }
+  .herramientas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .herramientas button { display: grid; justify-items: start; align-content: start; gap: 2px; min-height: 96px; padding: 12px 13px; border: 0; border-radius: 18px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .herramientas button > :global(svg) { margin-bottom: 6px; color: var(--primario); }
+  .herramientas b { font-size: 0.88rem; line-height: 1.2; }
+  .herramientas small { font-size: 0.74rem; color: var(--texto-2); }
+  .herramientas .toca { box-shadow: inset 0 0 0 1.5px var(--primario); background: var(--primario-claro); }
+  .herramientas .toca small { color: var(--primario-fuerte); font-weight: 700; }
   .retos { margin-top: 12px; }
   .rt-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
   .rt-racha { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--amarillo); font-size: 0.74rem; font-weight: 700; }
@@ -190,7 +195,7 @@
   .col.hoy small { color: var(--primario-fuerte); }
 
   /* Medias */
-  .medias { list-style: none; display: grid; gap: 14px; }
+  .medias { list-style: none; display: grid; gap: 14px; margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--linea); }
   .medias li { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 6px 10px; }
   .medias span { display: grid; }
   .medias span small, .m-obj { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
@@ -198,7 +203,7 @@
   .m-pista { grid-column: 1 / -1; grid-row: 2; height: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .m-pista i { display: block; height: 100%; border-radius: 999px; }
   .m-obj { padding-bottom: 3px; }
-  .sin-medias { display: flex; align-items: center; gap: 8px; }
+  .sin-medias { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; }
 
   .consejos .cab { display: flex; align-items: center; gap: 10px; color: var(--primario); }
   .vacia-semana { display: flex; gap: 12px; align-items: center; color: var(--primario); }

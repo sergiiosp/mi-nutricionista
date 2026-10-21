@@ -110,7 +110,7 @@ export function calcularAvisos(e, prefs = prefsAvisos(), ahora = Date.now()) {
     }
 
     if (prefs.pesarse && new Date(`${fecha}T12:00`).getDay() === Number(prefs.diaPeso) && !e.pesos.some((p) => p.fecha === fecha)) {
-      lista.push({ t: t(fecha, prefs.horaPeso), titulo: '⚖️ Toca pesarse', cuerpo: 'En ayunas y después de ir al baño. Apúntalo en Progreso para ajustar tu plan.', url: '#progreso/peso', etiqueta: `peso-${fecha}` });
+      lista.push({ t: t(fecha, prefs.horaPeso), titulo: '⚖️ Toca pesarse', cuerpo: 'En ayunas y después de ir al baño. Apúntalo en Progreso → Cuerpo para ajustar tu plan.', url: '#progreso/peso', etiqueta: `peso-${fecha}` });
     }
   }
   return lista.filter((a) => a.t > ahora + MIN).sort((a, b) => a.t - b.t).slice(0, 250).map(({ franja, ...a }) => a);

@@ -28,7 +28,7 @@
   function empezar() { empezarRevision(); paso = 1; }
   const siguiente = () => { paso = Math.min(5, paso + 1); document.querySelector('.hoja-cuerpo')?.scrollTo({ top: 0 }); };
 
-  // 1 · Báscula: lo esencial (el resto, en Progreso → Peso)
+  // 1 · Báscula: lo esencial (el resto, en Progreso → Cuerpo)
   const BASCULA = [
     { k: 'grasa', n: 'Grasa', u: '%', r: [3, 60] },
     { k: 'musculo', n: 'Músculo', u: 'kg', r: [15, 120] },
@@ -138,7 +138,7 @@
           </label>
         {/each}
       </div>
-      <p class="pie-nota">De tu báscula, lo que tengas. El resto de datos (BMR, edad corporal…) puedes añadirlos en Progreso → Peso.</p>
+      <p class="pie-nota">De tu báscula, lo que tengas. El resto de datos (BMR, edad corporal…) puedes añadirlos en Progreso → Cuerpo.</p>
       {#if pasos[0].hecho}<p class="ya"><Icono n="circle-check" tam={16} /> Ya te has pesado en esta revisión ({num(ultimoPeso.peso, 1)} kg)</p>{/if}
       <div class="acciones"><button class="boton boton-sec" onclick={siguiente}>{pasos[0].hecho ? 'Seguir' : 'Saltar'}</button><button class="boton" onclick={guardarBascula}>Guardar y seguir</button></div>
 

@@ -21,7 +21,6 @@
   const o = $derived(calcularObjetivos($estado.perfil));
   const t = $derived(tendencia(pesos));
   const rec = $derived(recomendacion(pesos, $estado.perfil, o));
-  const inicial = $derived(pesos[0]?.peso);
   const actual = $derived(pesos.at(-1)?.peso);
 
   const numero = (v) => (String(v).trim() === '' ? null : Number(String(v).replace(',', '.')));
@@ -86,13 +85,6 @@
   });
 </script>
 
-{#if pesos.length}
-  <div class="panel">
-    <div class="bloque bajo"><span class="b-cab"><Icono n="scale" tam={15} grosor={2.2} /> Actual</span><b class="b-num cifra">{num(actual, 1)}</b><span class="b-sub">kg</span></div>
-    <div class="bloque bajo"><span class="b-cab">Cambio</span><b class="b-num cifra">{actual - inicial > 0 ? '+' : ''}{num(actual - inicial, 1)}</b><span class="b-sub">kg desde {fechaCorta(pesos[0].fecha)}</span></div>
-    <div class="bloque bajo"><span class="b-cab">Ritmo</span><b class="b-num cifra">{t ? `${t.kgSemana > 0 ? '+' : ''}${num(t.kgSemana, 2)}` : '—'}</b><span class="b-sub">kg/semana</span></div>
-  </div>
-{/if}
 
 {#if !formAbierto && pesos.length}
   <button class="boton ancho-peso" onclick={() => (formAbierto = true)}><Icono n="plus" tam={18} grosor={2.4} /> Apuntar peso y báscula</button>

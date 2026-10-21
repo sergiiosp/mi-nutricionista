@@ -1,25 +1,23 @@
 <script>
   import Segmentos from '../components/Segmentos.svelte';
   import Resumen from './progreso/Resumen.svelte';
-  import Peso from './progreso/Peso.svelte';
-  import Medidas from './progreso/Medidas.svelte';
-  import Fotos from './progreso/Fotos.svelte';
-  import Logros from './progreso/Logros.svelte';
+  import Cuerpo from './progreso/Cuerpo.svelte';
   import EntrenoStats from './progreso/Entreno.svelte';
   import { ir } from '../stores/ruta.js';
 
   let { sub = '' } = $props();
   const OPCIONES = [
     { id: 'resumen', nombre: 'Semana', emoji: '📊' },
+    { id: 'cuerpo', nombre: 'Cuerpo', emoji: '⚖️' },
     { id: 'entreno', nombre: 'Entreno', emoji: '🏋️' },
-    { id: 'peso', nombre: 'Peso', emoji: '⚖️' },
-    { id: 'medidas', nombre: 'Medidas', emoji: '📏' },
-    { id: 'fotos', nombre: 'Fotos', emoji: '📸' },
-    { id: 'logros', nombre: 'Logros', emoji: '🏅' },
   ];
-  let pestaña = $state(OPCIONES.some((o) => o.id === sub) ? sub : 'resumen');
+  // Peso, medidas y fotos viven dentro de Cuerpo (los enlaces antiguos #progreso/peso siguen funcionando)
+  const PARTES = ['peso', 'medidas', 'fotos'];
+  const pestañaDe = (s) => (PARTES.includes(s) ? 'cuerpo' : OPCIONES.some((o) => o.id === s) ? s : s === 'logros' ? 'resumen' : null);
+  let pestaña = $state(pestañaDe(sub) || 'resumen');
+  const parte = $derived(PARTES.includes(sub) ? sub : 'peso');
   // Si un enlace lleva a otra pestaña de esta misma sección (#seccion/pestaña), se cambia
-  $effect(() => { if (OPCIONES.some((o) => o.id === sub)) pestaña = sub; });
+  $effect(() => { const p = pestañaDe(sub); if (p) pestaña = p; });
 </script>
 
 <h1 class="titulo">Progreso</h1>
@@ -27,7 +25,4 @@
 
 {#if pestaña === 'resumen'}<Resumen />
 {:else if pestaña === 'entreno'}<EntrenoStats />
-{:else if pestaña === 'peso'}<Peso />
-{:else if pestaña === 'medidas'}<Medidas />
-{:else if pestaña === 'fotos'}<Fotos />
-{:else}<Logros />{/if}
+{:else}<Cuerpo {parte} />{/if}
