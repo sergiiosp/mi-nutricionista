@@ -3,6 +3,7 @@
   // el titular de cómo vas, las kcal de cada día y lo que dice tu nutricionista.
   import Icono from '../../components/Icono.svelte';
   import Anillos from '../../components/Anillos.svelte';
+  import Numero from '../../components/Numero.svelte';
   import RepasoSemanal from '../../components/RepasoSemanal.svelte';
   import Descubrimientos from '../../components/Descubrimientos.svelte';
   import LogrosResumen from '../../components/LogrosResumen.svelte';
@@ -57,9 +58,9 @@
   <div class="anillos-fila">
     <Anillos {anillos} />
     <ul class="leyenda">
-      <li style="--c:{COLORES.kcal}"><small>Kcal en objetivo</small><b class="cifra">{s.diasKcal}<span>/{META} días</span></b></li>
-      <li style="--c:{COLORES.p}"><small>Proteína</small><b class="cifra">{s.diasProteina}<span>/{META} días</span></b></li>
-      {#if entrenos}<li style="--c:{COLORES.e}"><small>Entrenos</small><b class="cifra">{entrenos.hechas}<span>/{entrenos.total}</span></b></li>{/if}
+      <li style="--c:{COLORES.kcal}"><small>Kcal en objetivo</small><b class="cifra"><Numero valor={s.diasKcal} desde={0} /><span>/{META} días</span></b></li>
+      <li style="--c:{COLORES.p}"><small>Proteína</small><b class="cifra"><Numero valor={s.diasProteina} desde={0} /><span>/{META} días</span></b></li>
+      {#if entrenos}<li style="--c:{COLORES.e}"><small>Entrenos</small><b class="cifra"><Numero valor={entrenos.hechas} desde={0} /><span>/{entrenos.total}</span></b></li>{/if}
     </ul>
   </div>
   <div class="titular" class:bien={titular.bien}>

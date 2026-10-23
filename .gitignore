@@ -10,3 +10,6 @@ servidor/.wrangler/
 
 # Pruebas de pantallas (scripts/pantallas.mjs)
 pantallas/
+
+# Vídeos de /brag
+brag-output*/

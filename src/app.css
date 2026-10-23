@@ -36,6 +36,8 @@
   --dato-kcal: #b4e35a;
   --dato-p: var(--coral);
   --dato-e: #a08cff;
+  /* El tono vivo al que llega el degradado de cada anillo */
+  --dato-kcal-2: #e3ff96; --dato-p-2: #ff8aa8; --dato-e-2: #cfc3ff;
   --brillo-naranja: 0 10px 30px rgb(255 91 31 / 0.35);
   --sombra: 0 0 0 1px var(--linea);
   --sombra-fuerte: 0 0 0 1px var(--linea), 0 18px 40px rgb(0 0 0 / 0.55);
@@ -58,6 +60,7 @@
 :root[data-theme="light"] {
   --fondo: #f2f2f5; --superficie: #ffffff; --superficie-2: #ececf0; --superficie-3: #e2e2e8; --borde: #dedee5;
   --linea: rgb(10 10 20 / 0.07); --texto: #0d0d12; --texto-2: #5f5f6b; --texto-3: #8a8a96; --dato-kcal: #3f9a1c; --dato-e: #6a4fe0;
+  --dato-kcal-2: #8fd43a; --dato-p-2: #ff6b8f; --dato-e-2: #a08cff;
   --primario: #f2500f; --primario-fuerte: #d9430a; --primario-claro: #ffe9df; --sobre-primario: #0a0a0c;
   --coral: #e8314f; --coral-claro: #ffe3e8; --amarillo: #e09a00; --amarillo-claro: #fff1d1;
   --lila: #7a5cf0; --lila-claro: #eee8ff; --azul: #1f7ae0; --azul-claro: #e1eeff; --exito: #12a46a; --exito-claro: #dcf6ea;
@@ -70,6 +73,7 @@
   :root[data-theme="system"] {
     --fondo: #f2f2f5; --superficie: #ffffff; --superficie-2: #ececf0; --superficie-3: #e2e2e8; --borde: #dedee5;
     --linea: rgb(10 10 20 / 0.07); --texto: #0d0d12; --texto-2: #5f5f6b; --texto-3: #8a8a96; --dato-kcal: #3f9a1c; --dato-e: #6a4fe0;
+  --dato-kcal-2: #8fd43a; --dato-p-2: #ff6b8f; --dato-e-2: #a08cff;
     --primario: #f2500f; --primario-fuerte: #d9430a; --primario-claro: #ffe9df; --sobre-primario: #0a0a0c;
     --coral: #e8314f; --coral-claro: #ffe3e8; --amarillo: #e09a00; --amarillo-claro: #fff1d1;
     --lila: #7a5cf0; --lila-claro: #eee8ff; --azul: #1f7ae0; --azul-claro: #e1eeff; --exito: #12a46a; --exito-claro: #dcf6ea;
@@ -132,6 +136,10 @@
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
+/* Números que ruedan (NumberFlow): el hueco que deja arriba y abajo para el giro no debe hacer más alta la línea */
+/* (deja dos rellenos: el de la máscara y el de cada cifra, con la misma fórmula que usa NumberFlow) */
+number-flow-svelte { margin-block: calc(-2 * round(nearest, calc(var(--number-flow-mask-height, 0.25em) / 2), 1px)); }
+
 /* Ajustes → Apariencia → «Tamaño de texto del iPhone»: toda la app sigue el tamaño elegido en iOS */
 @supports (font: -apple-system-body) { :root[data-texto="sistema"] { font: -apple-system-body; } }
 html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; background: var(--fondo); }

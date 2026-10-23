@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@lucide/svelte": "1.57.0",
+    "@number-flow/svelte": "0.4.2",
     "barcode-detector": "^3.2.2",
     "idb-keyval": "^6.3.0",
     "qrcode-generator": "2.0.4"

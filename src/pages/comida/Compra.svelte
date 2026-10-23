@@ -1,4 +1,5 @@
 <script>
+  import Numero from '../../components/Numero.svelte';
   import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
   import { PRECIOS_INFO } from '../../data/precios.js';
@@ -97,7 +98,7 @@
       <span class="tk-lbl"><Icono n="receipt" tam={15} grosor={2.2} /> {progreso && progreso < 100 ? 'Te falta por coger' : 'Ticket estimado'}</span>
       <label class="tk-solo"><input type="checkbox" checked={$estado.compra.soloRestantes} onchange={(ev) => actualizar((e) => { e.compra.soloRestantes = ev.currentTarget.checked; })} /> Solo lo que queda</label>
     </div>
-    <b class="tk-total cifra cifra-xl">{euros(progreso && progreso < 100 ? falta : ticket)}</b>
+    <b class="tk-total cifra cifra-xl"><Numero valor={progreso && progreso < 100 ? falta : ticket} decimales={2} sufijo=" €" /></b>
     <div class="tk-pista" aria-hidden="true"><span style="--p:{progreso}%"></span></div>
     <p class="tk-sub"><span class="cifra">{comprar.filter((i) => marcados[i.id]).length}/{comprar.length}</span> cogidos{#if progreso && progreso < 100} · ticket {euros(ticket)}{/if} · comes <b class="cifra">{euros(lista.costeConsumo)}</b> esta semana</p>
     <div class="tk-acciones">

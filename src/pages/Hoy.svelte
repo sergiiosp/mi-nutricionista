@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import Icono from '../components/Icono.svelte';
-  import Cifra from '../components/Cifra.svelte';
+  import Numero from '../components/Numero.svelte';
   import TarjetaComida from '../components/TarjetaComida.svelte';
   import TarjetaSesion from '../components/TarjetaSesion.svelte';
   import { planDe, sesionesDia } from '../lib/hyrox/index.js';
@@ -216,10 +216,10 @@
     <Anillos {anillos} tam={124} grosor={13} />
     <div class="r-filas">
       <button class="r-fila" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} style="--c:{COLOR.kcal}" onclick={() => alternar('comida')}>
-        <small>Kcal</small><b class="cifra">{entero(d.consumido.kcal)}<span>/{entero(d.objetivo.kcal)}</span></b>
+        <small>Kcal</small><b class="cifra"><Numero valor={Math.round(d.consumido.kcal)} desde={0} /><span>/{entero(d.objetivo.kcal)}</span></b>
       </button>
       <button class="r-fila" class:activo={abierto === 'comida'} style="--c:{COLOR.p}" onclick={() => alternar('comida')}>
-        <small>Proteína</small><b class="cifra">{Math.round(d.consumido.p)}<span>/{Math.round(d.objetivo.p)} g</span></b>
+        <small>Proteína</small><b class="cifra"><Numero valor={Math.round(d.consumido.p)} desde={0} /><span>/{Math.round(d.objetivo.p)} g</span></b>
       </button>
       <button class="r-fila" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} style="--c:{COLOR.e}" onclick={() => alternar('entreno')}>
         <small>{entrenoHoy ? 'Entreno' : 'Descanso'}</small>
@@ -257,7 +257,7 @@
     <div class="marcador">
         <div>
           <span class="lbl">{d.pasado ? 'Por encima de tu objetivo' : 'Te quedan'}</span>
-          <b class="num cifra cifra-xl" class:pasado={d.pasado}><Cifra valor={Math.abs(d.objetivo.kcal - d.consumido.kcal)} /></b>
+          <b class="num cifra cifra-xl" class:pasado={d.pasado}><Numero valor={Math.round(Math.abs(d.objetivo.kcal - d.consumido.kcal))} desde={0} /></b>
           <span class="lbl">kcal</span>
         </div>
         <div class="dcha">
