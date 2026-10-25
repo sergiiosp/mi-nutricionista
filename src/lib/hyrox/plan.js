@@ -85,7 +85,10 @@ function ajusteSemana(sesionesPrevias, registros, hoy) {
  * config: { inicio, fechaCarrera, categoria, nivel, dias[], hora, material{}, lesiones[], marcas{} }
  */
 export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
-  const { config, registros = {}, movidas = {}, sinGym = {}, forma = {} } = hyrox;
+  const { registros = {}, movidas = {}, sinGym = {}, forma = {} } = hyrox;
+  // Un plan guardado antes de que existieran el enfoque y la exigencia sigue lo que el configurador da por
+  // elegido (HYROX + físico, muy exigente), no otra cosa
+  const config = { ...hyrox.config, enfoque: hyrox.config.enfoque || 'equilibrado', exigencia: hyrox.config.exigencia || 'muy' };
   const inicio = lunesDe(config.inicio);
   const carrera = config.fechaCarrera && config.fechaCarrera > inicio ? config.fechaCarrera : null;
   const N = carrera ? Math.min(30, Math.max(2, Math.ceil((diasEntre(inicio, carrera) + 1) / 7))) : 12;
@@ -99,6 +102,12 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
   const largoFase = (f) => ({ base: nBase, construccion: nConst, especifico: nEsp, taper })[f] || 1;
   const dias = [...new Set(config.dias || [])].sort((a, b) => ordenSemana(a) - ordenSemana(b));
   const simCompletoSemana = carrera && N >= 10 ? resto - 3 : -1;
+  // Días de viaje en los que entrenas sin máquinas: las sesiones salen con peso corporal, parque y cuestas
+  const diasSinGym = new Set();
+  for (const v of agenda?.viajes || []) {
+    if (v.entreno !== 'sinGym' || !v.desde || !v.hasta) continue;
+    for (let f = v.desde; f <= v.hasta; f = sumarDias(f, 1)) diasSinGym.add(f);
+  }
 
   const semanas = [];
   const sesiones = [];
@@ -133,6 +142,8 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
     let nFuerza = 0;
     let nTorso = 0;
     const pierna = config.enfoque === 'equilibrado' && dias.length >= 3;
+    // Con un solo día de torso a la semana, ese día es de torso completo (pecho, espalda y brazos)
+    const unTorso = tipos.filter((t) => t === 'torso').length === 1;
     tipos.forEach((tipo, i) => {
       const d = dias[i];
       let fecha = sumarDias(lunes, ordenSemana(d));
@@ -141,7 +152,9 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
       const contenido = construirSesion({
         tipo, fase, p, factor: factor * (FACTOR_EXIGENCIA[config.exigencia] || 1), semana: w, config, perfil, rit,
         completo: w === simCompletoSemana, mitad: (w % 2 === 0 ? '1-4' : '5-8'),
-        variante: tipo === 'fuerza' ? (pierna ? 'P' : nFuerza++ % 2 === 0 ? 'A' : 'B') : tipo === 'torso' ? (nTorso++ % 2 === 0 ? 'A' : 'B') : 'A', sinGym: !!sinGym[id],
+        variante: tipo === 'fuerza' ? (pierna ? 'P' : nFuerza++ % 2 === 0 ? 'A' : 'B') : tipo === 'torso' ? (unTorso ? 'C' : nTorso++ % 2 === 0 ? 'A' : 'B') : 'A',
+        // Lo que marques en la sesión manda; si no, la fuerza y las estaciones de un viaje sin máquinas van sin gimnasio
+        sinGym: id in sinGym ? !!sinGym[id] : diasSinGym.has(movidas[id] || fecha) && ['fuerza', 'hyrox'].includes(TIPOS[tipo].clase),
       });
       const original = fecha;
       if (movidas[id]) fecha = movidas[id];
@@ -253,11 +266,42 @@ function sesionCarrera(ev, km, rit, perfil = null) {
   };
 }
 
-const sesionCaminar = () => ({
-  tipo: 'caminar', titulo: 'Caminar por la ciudad', emoji: '🚶', color: 'azul', rpe: 2, duracion: 90, distancia: 0,
+// De viaje: caminar como único entreno (90 min) o además de la sesión sin máquinas (60 min)
+const sesionCaminar = (min = 90) => ({
+  tipo: 'caminar', titulo: 'Caminar por la ciudad', emoji: '🚶', color: 'azul', rpe: 2, duracion: min, distancia: 0,
   calentamiento: [], vueltaCalma: [], notas: [], ejercicios: [], sinGym: true,
-  bloques: [{ titulo: 'Hoy', lineas: ['Camina a buen paso: entre 8.000 y 12.000 pasos en el día', 'Sube escaleras cuando puedas', 'Si te apetece, 10-15 min de movilidad en el hotel'] }],
+  bloques: [{ titulo: 'Hoy', lineas: min >= 90
+    ? ['Camina a buen paso: entre 8.000 y 12.000 pasos en el día', 'Sube escaleras cuando puedas', 'Si te apetece, 10-15 min de movilidad en el hotel']
+    : ['Además del entreno, camina a buen paso: entre 6.000 y 10.000 pasos en el día', 'Sube escaleras cuando puedas'] }],
 });
+
+// Saltos y sprints: fuera los días en que las piernas vienen cargadas de una carrera
+const EXPLOSIVOS = new Set(['cajon', 'zancada_salto', 'sprint_cuesta']);
+
+/** Fuerza más ligera: una serie menos en cada ejercicio, menos peso y, si se pide, sin saltos ni sprints. */
+function ligera(s, nota, sinSaltos = false) {
+  const menos = (t) => t.replace(/(\d+) × /g, (_, n) => `${Math.max(2, Number(n) - 1)} × `);
+  const fuera = sinSaltos ? EXPLOSIVOS : new Set();
+  const nombres = new Set([...fuera].map((id) => EJERCICIOS[id].nombre));
+  return {
+    ...s, titulo: `${s.titulo} · ligera`, duracion: Math.round(s.duracion * 0.65), rpe: Math.max(4, s.rpe - 2),
+    ejercicios: s.ejercicios.filter((x) => !fuera.has(x.id)).map((x) => ({ ...x, series: Math.max(2, x.series - 1) })),
+    bloques: s.bloques.map((b) => ({ ...b, lineas: b.lineas.filter((l) => !nombres.has(l.split(':')[0])).map(menos) })),
+    notas: [nota, ...(s.notas || [])],
+  };
+}
+
+/** Rodaje suave en lugar de la sesión: para llegar fresco a una carrera o recuperarte de ella. */
+function rodajeSuave(s, { dur, titulo, lineas, nota }, rit) {
+  return {
+    ...s, tipo: 'rodaje', titulo, emoji: TIPOS.rodaje.emoji, color: TIPOS.rodaje.color, rpe: 3,
+    duracion: dur, distancia: Math.round((dur * 60 / rit.z2) * 10) / 10, ejercicios: [],
+    calentamiento: ['5 min caminando o trotando muy suave'],
+    bloques: [{ titulo: `${dur} min suaves`, lineas }],
+    vueltaCalma: ['Estira suave 5 min'],
+    notas: [nota],
+  };
+}
 
 /**
  * Aplica la agenda (carreras populares y viajes) sobre el plan. Devuelve las sesiones que caen fuera
@@ -284,25 +328,13 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
         w.sesiones = w.sesiones.map((s) => {
           if (s.tipo === 'carrera' || antes(s) < 4 || antes(s) > 6) return s;
           // Fuerza: mismos ejercicios, una serie menos y menos peso
-          if (s.ejercicios?.length) {
-            const menos = (t) => t.replace(/(\d+) × /g, (_, n) => `${Math.max(2, Number(n) - 1)} × `);
-            return {
-              ...s, titulo: `${s.titulo} · ligera`, duracion: Math.round(s.duracion * 0.65), rpe: Math.max(4, s.rpe - 2),
-              ejercicios: s.ejercicios.map((x) => ({ ...x, series: Math.max(2, x.series - 1) })),
-              bloques: s.bloques.map((b) => ({ ...b, lineas: b.lineas.map(menos) })),
-              notas: [`Semana de tu ${nombreEv}: una serie menos en cada ejercicio y un 70 % del peso de siempre. Nada de pierna pesada.`, ...(s.notas || [])],
-            };
-          }
+          if (s.ejercicios?.length) return ligera(s, `Semana de tu ${nombreEv}: una serie menos en cada ejercicio y un 70 % del peso de siempre. Nada de pierna pesada.`);
           // Carrera, series, umbral, estaciones…: rodaje suave corto para llegar fresco
-          const dur = 30;
-          return {
-            ...s, tipo: 'rodaje', titulo: 'Rodaje suave de semana de carrera', emoji: TIPOS.rodaje.emoji, color: TIPOS.rodaje.color, rpe: 3,
-            duracion: dur, distancia: Math.round((dur * 60 / rit.z2) * 10) / 10, ejercicios: [],
-            calentamiento: ['5 min caminando o trotando muy suave'],
-            bloques: [{ titulo: `${dur} min suaves`, lineas: [`Ritmo ${mmss(rit.z2)}/km o más lento: debes poder hablar`, 'Al final, 4 progresiones de 80 m para soltar piernas'] }],
-            vueltaCalma: ['Estira suave 5 min'],
-            notas: [`Semana de tu ${nombreEv}: hoy toca soltar piernas, no entrenar fuerte.`],
-          };
+          return rodajeSuave(s, {
+            dur: 30, titulo: 'Rodaje suave de semana de carrera',
+            lineas: [`Ritmo ${mmss(rit.z2)}/km o más lento: debes poder hablar`, 'Al final, 4 progresiones de 80 m para soltar piernas'],
+            nota: `Semana de tu ${nombreEv}: hoy toca soltar piernas, no entrenar fuerte.`,
+          }, rit);
         });
       }
       quitar((s) => antes(s) >= 0 && antes(s) <= 3);
@@ -311,6 +343,23 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
       quitar((s) => s.fecha === despues);
       poner({ id: `rec-${ev.id}`, fecha: despues, fechaOriginal: despues, hora: config.hora || '18:30',
         ...construirSesion({ tipo: 'recuperacion', fase: 'base', config, perfil, rit }), titulo: 'Recuperación tras la carrera' });
+      // Vuelta: hasta el día +4 (+9 tras un maratón), rodajes suaves y pierna ligera sin saltos; el torso, normal
+      const finVuelta = km >= 30 ? 9 : 4;
+      for (const w of semanas) {
+        w.sesiones = w.sesiones.map((s) => {
+          const d = -antes(s);
+          if (d < 2 || d > finVuelta || ['carrera', 'torso', 'recuperacion', 'caminar', 'popular'].includes(s.tipo)) return s;
+          if (s.ejercicios?.length) return ligera(s, `Vuelta tras tu ${nombreEv}: las piernas aún están cargadas. Una serie menos, un 70 % del peso y nada de saltos ni sprints.`, true);
+          const dur = d === 2 ? 25 : d === 3 ? 30 : 35;
+          return rodajeSuave(s, {
+            dur, titulo: d === 2 ? 'Trote suave de vuelta' : 'Rodaje suave de vuelta',
+            lineas: d === 2
+              ? [`Ritmo ${mmss(rit.z2 + 20)}/km o más lento`, 'Si notas las piernas muy cargadas, mejor 30 min de bici o elíptica']
+              : [`Ritmo ${mmss(rit.z2 + (d === 3 ? 10 : 0))}/km o más lento: debes poder hablar`, ...(d >= 4 ? ['Al final, 4 progresiones de 80 m si las piernas responden'] : [])],
+            nota: `Vuelta tras tu ${nombreEv}: estos días, solo rodajes suaves. Las series y los simulacros vuelven cuando las piernas estén frescas.`,
+          }, rit);
+        });
+      }
       cargasExtra.push(sumarDias(F, -1));
       if (km >= 30) cargasExtra.push(sumarDias(F, -2));
     } else {
@@ -318,13 +367,29 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
     }
     poner({ id: `ev-${ev.id}`, fecha: F, fechaOriginal: F, hora: ev.hora || '09:00', ...sesionCarrera(ev, km, rit, perfil) });
   }
-  // Viajes: cada día, caminar en lugar del entreno (la carrera, si cae en el viaje, se mantiene)
+  // Viajes (la carrera, si cae en uno, se mantiene): según cómo entrenes allí, caminar en lugar del entreno,
+  // la sesión sin máquinas y además caminar, o el plan de siempre si hay gimnasio
   for (const v of agenda.viajes || []) {
     if (!v.desde || !v.hasta) continue;
+    const modo = v.entreno || 'caminar';
+    if (modo === 'gym') continue;
     for (let f = v.desde; f <= v.hasta; f = sumarDias(f, 1)) {
       if (eventos.some((e) => e.fecha === f)) continue;
-      quitar((s) => s.fecha === f);
-      poner({ id: `cam-${f}`, fecha: f, fechaOriginal: f, hora: '11:00', ...sesionCaminar() });
+      if (modo === 'caminar') {
+        quitar((s) => s.fecha === f);
+        poner({ id: `cam-${f}`, fecha: f, fechaOriginal: f, hora: '11:00', ...sesionCaminar() });
+        continue;
+      }
+      // Sin máquinas: la sesión del día ya sale adaptada; caminando mucho, la carrera puede ser algo más corta
+      let entrena = false;
+      for (const w of semanas) {
+        w.sesiones = w.sesiones.map((s) => {
+          if (s.fecha !== f || ['recuperacion', 'caminar'].includes(s.tipo)) return s;
+          entrena = true;
+          return ['rodaje', 'largo'].includes(s.tipo) ? { ...s, notas: [...(s.notas || []), 'De viaje: si ese día ya llevas más de 15.000 pasos, acorta la carrera un 20 %.'] } : s;
+        });
+      }
+      poner({ id: `cam-${f}`, fecha: f, fechaOriginal: f, hora: '11:00', ...sesionCaminar(entrena ? 60 : 90) });
     }
   }
   return sueltas;

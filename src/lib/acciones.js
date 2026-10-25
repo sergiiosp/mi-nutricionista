@@ -464,7 +464,8 @@ export function guardarViaje(v) {
   });
   rehacerDiasViaje();
   reajustarPlan();
-  anotarDiario(`vi-${v.id}`, `Viaje del ${v.desde.slice(8)} al ${v.hasta.slice(8)}/${v.hasta.slice(5, 7)}`, 'Esos días: caminar en vez de entrenar y menú para comer fuera o del súper.');
+  const entreno = { sinGym: 'entrenos sin máquinas y caminar', gym: 'tu entreno de siempre' }[v.entreno] || 'caminar en vez de entrenar';
+  anotarDiario(`vi-${v.id}`, `Viaje del ${v.desde.slice(8)} al ${v.hasta.slice(8)}/${v.hasta.slice(5, 7)}`, `Esos días: ${entreno} y menú para comer fuera o del súper.`);
 }
 export function borrarDeAgenda(id) {
   actualizar((x) => {
@@ -523,14 +524,15 @@ export function borrarRegistroSesion(id) {
   }
 }
 
-/** Marca (o desmarca) que una sesión la harás sin gimnasio: peso corporal, parque y cuestas. */
-export function alternarSinGym(id) {
-  let ahora = false;
+/**
+ * Marca (o desmarca) que una sesión la harás sin gimnasio: peso corporal, parque y cuestas. Se guarda también
+ * el «con gimnasio», para que en un viaje sin máquinas puedas decir que ese día sí tienes uno.
+ */
+export function alternarSinGym(id, actual = false) {
+  const ahora = !actual;
   actualizar((x) => {
     x.hyrox.sinGym ||= {};
-    ahora = !x.hyrox.sinGym[id];
-    if (ahora) x.hyrox.sinGym[id] = true;
-    else delete x.hyrox.sinGym[id];
+    x.hyrox.sinGym[id] = ahora;
   });
   reajustarPlan();
   return ahora;

@@ -112,7 +112,7 @@
     <label class="opcion"><input type="radio" name="exigencia" value="exigente" bind:group={exigencia} /><span><b>Exigente</b><small>Más series y volumen</small></span></label>
     <label class="opcion"><input type="radio" name="exigencia" value="muy" bind:group={exigencia} /><span><b>Muy exigente</b><small>Cerca del fallo, superseries y dropsets</small></span></label>
   </fieldset>
-  {#if enfoque === 'equilibrado' && dias.length < 6}<p class="pie-nota">Con 6 días tienes 2 sesiones de torso y brazos; con {dias.length}, {dias.length >= 3 ? 'una' : 'ninguna'}.</p>{/if}
+  {#if enfoque === 'equilibrado' && dias.length < 6}<p class="pie-nota">Con 6 días tienes 2 sesiones de torso y brazos; con {dias.length}, {dias.length >= 3 ? 'una de torso completo' : 'ninguna'}.</p>{/if}
 
   <h2 class="seccion"><Emoji e="🏋️" tam={24} /> Material de tu gimnasio</h2>
   <div class="chips-sel">

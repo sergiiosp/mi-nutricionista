@@ -51,7 +51,7 @@ const { generarPlanHyrox } = await import('../src/lib/hyrox/plan.js');
 const { estimarCarrera } = await import('../src/lib/hyrox/carrera.js');
 const { hms } = await import('../src/lib/hyrox/ritmos.js');
 const perfilH = { sexo: 'h', peso: 82.5, horaEntreno: '18:30' };
-const configH = { inicio: '2026-10-12', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5, 6], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1500 } };
+const configH = { inicio: '2026-10-12', fechaCarrera: '2027-02-20', categoria: 'open', nivel: 'intermedio', dias: [1, 2, 4, 5, 6], hora: '18:30', material: {}, lesiones: [], marcas: { t5k: 1500 }, enfoque: 'hyrox', exigencia: 'normal' };
 let fallosH = 0;
 const comprobar = (cond, texto) => { console.log(`${cond ? '✓' : '✗'} ${texto}`); if (!cond) fallosH++; };
 const ph = generarPlanHyrox({ config: configH }, perfilH, '2026-10-12');

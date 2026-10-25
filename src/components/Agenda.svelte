@@ -24,10 +24,19 @@
   let desde = $state('');
   let hasta = $state('');
   let comida = $state(['fuera', 'super']);
+  let entreno = $state('sinGym');
   let error = $state('');
 
   const COMIDA = [['fuera', 'Restaurantes'], ['super', 'Súper sin cocina'], ['cocina', 'Con cocina']];
   const textoComida = (l) => l.map((c) => COMIDA.find(([v]) => v === c)?.[1].toLowerCase()).filter(Boolean).join(' y ');
+  // Cómo entrenas de viaje (los viajes de antes, sin esto, son de solo caminar)
+  const ENTRENO = [['sinGym', 'Sin máquinas'], ['caminar', 'Solo caminar'], ['gym', 'Hay gimnasio']];
+  const textoEntreno = (v) => ({ sinGym: 'sin máquinas', gym: 'con gimnasio' })[v.entreno] || 'caminar';
+  const NOTA_ENTRENO = {
+    sinGym: 'Esos días: tus sesiones con peso corporal, parque y cuestas, más caminar, y un menú que no pide cocina.',
+    caminar: 'Esos días: caminar en vez de entrenar y un menú que no pide cocina.',
+    gym: 'Esos días: tu entreno de siempre y un menú que no pide cocina.',
+  };
 
   function guardarCarrera() {
     const km = dist === 'otra' ? Number(String(kmOtra).replace(',', '.')) : DISTANCIAS.find(([v]) => v === dist)[2];
@@ -41,8 +50,8 @@
     if (!desde || !hasta) { error = 'Pon el primer y el último día del viaje'; return; }
     if (hasta < desde) { error = 'El último día no puede ser antes del primero'; return; }
     if (!comida.length) { error = 'Elige cómo vas a comer'; return; }
-    guardarViaje({ id: nuevoId(), nombre: nombreV.trim() || 'Viaje', desde, hasta, comida: [...comida] });
-    avisar('Viaje añadido: esos días, caminar y menú para comer fuera', '🧳');
+    guardarViaje({ id: nuevoId(), nombre: nombreV.trim() || 'Viaje', desde, hasta, comida: [...comida], entreno });
+    avisar(entreno === 'sinGym' ? 'Viaje añadido: entrenos sin máquinas y menú para comer fuera' : entreno === 'gym' ? 'Viaje añadido: menú para comer fuera' : 'Viaje añadido: esos días, caminar y menú para comer fuera', '🧳');
     abierto = null; error = ''; desde = ''; hasta = ''; nombreV = '';
   }
   function abrir(t) { abierto = abierto === t ? null : t; error = ''; }
@@ -62,7 +71,7 @@
       {#each viajes as v (v.id)}
         <li>
           <span class="ic viaje"><Icono n="map-pin" tam={18} /></span>
-          <span class="txt"><b>{v.nombre}</b><small class="cifra">{dias(v.desde, v.hasta)} · {textoComida(v.comida)}</small></span>
+          <span class="txt"><b>{v.nombre}</b><small class="cifra">{dias(v.desde, v.hasta)} · {textoEntreno(v)} · {textoComida(v.comida)}</small></span>
           <button class="borrar" aria-label="Quitar {v.nombre}" onclick={() => borrarDeAgenda(v.id)}><Icono n="trash" tam={17} /></button>
         </li>
       {/each}
@@ -98,6 +107,11 @@
         <label class="campo"><span>Primer día</span><input type="date" min={hoy} bind:value={desde} /></label>
         <label class="campo"><span>Último día</span><input type="date" min={desde || hoy} bind:value={hasta} /></label>
       </div>
+      <fieldset class="chips" aria-label="Cómo vas a entrenar"><legend>¿Cómo vas a entrenar?</legend>
+        {#each ENTRENO as [v, n] (v)}
+          <label class:activo={entreno === v}><input type="radio" name="entreno-viaje" value={v} bind:group={entreno} /> {n}</label>
+        {/each}
+      </fieldset>
       <fieldset class="chips" aria-label="Cómo vas a comer"><legend>¿Cómo vas a comer?</legend>
         {#each COMIDA as [v, n] (v)}
           <label class:activo={comida.includes(v)}><input type="checkbox" value={v} bind:group={comida} /> {n}</label>
@@ -105,7 +119,7 @@
       </fieldset>
       {#if error}<p class="error">{error}</p>{/if}
       <button class="boton ancho" onclick={guardarElViaje}>Añadir viaje</button>
-      <p class="pie-nota">Esos días: caminar en vez de entrenar y un menú que no pide cocina. No entran en tu lista de la compra.</p>
+      <p class="pie-nota">{NOTA_ENTRENO[entreno]} No entran en tu lista de la compra.</p>
     </div>
   {/if}
 </div>

@@ -148,6 +148,8 @@ export const EJERCICIOS = {
   pike: { grupo: 'hombro', nombre: 'Flexiones en pica', emoji: '🙇', tecnica: 'Cadera arriba formando una V; baja la cabeza entre las manos: trabajan los hombros.' },
   fondos_banco: { grupo: 'triceps', nombre: 'Fondos en banco', emoji: '💪', tecnica: 'Manos en un banco detrás de ti, baja doblando los codos hasta 90°.' },
   chin_ups: { grupo: 'espalda', nombre: 'Dominadas supinas', emoji: '🧗', tecnica: 'Palmas hacia ti: más bíceps. Si no salen, negativas lentas de 4 s.' },
+  curl_mochila: { grupo: 'biceps', nombre: 'Curl con mochila o garrafas', emoji: '💪', tecnica: 'Una mochila cargada (libros, botellas de agua) o dos garrafas: codos pegados, sube sin balancear y baja en 3 s.' },
+  extension_cuerpo: { grupo: 'triceps', nombre: 'Extensión de tríceps con peso corporal', emoji: '💪', tecnica: 'Manos en el borde de un banco o una barra baja y cuerpo recto: dobla solo los codos llevando la frente hacia las manos y empuja. Cuanto más bajo el apoyo, más cuesta.' },
 };
 
 // Grupos musculares para ver la progresión de fuerza por zonas

@@ -28,7 +28,7 @@
   // Las sesiones de fuerza y de estaciones se pueden hacer sin gimnasio
   const sinGymPosible = $derived(s && ['fuerza', 'hyrox'].includes(TIPOS[s.tipo]?.clase) && !['carrera', 'activacion'].includes(s.tipo));
   function sinGym() {
-    const ahora = alternarSinGym(s.id);
+    const ahora = alternarSinGym(s.id, !!s.sinGym);
     avisar(ahora ? 'Sesión cambiada: sin máquinas, con peso corporal y una cuesta' : 'Vuelve la sesión de gimnasio', ahora ? '🏃' : '🏋️');
   }
 

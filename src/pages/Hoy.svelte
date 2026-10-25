@@ -21,6 +21,7 @@
   import { semanaDe } from '../lib/hyrox/plan.js';
   import { rachas } from '../lib/logros.js';
   import PropuestaSemana from '../components/PropuestaSemana.svelte';
+  import PropuestaHyrox from '../components/PropuestaHyrox.svelte';
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
   import ComoLlegas from '../components/ComoLlegas.svelte';
@@ -208,6 +209,7 @@
   </header>
 
   <PropuestaSemana />
+  <PropuestaHyrox />
   <AvisoCopia />
   <AvisoRevision />
 

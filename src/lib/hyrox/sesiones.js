@@ -59,7 +59,17 @@ function aRegistrables(lista, lesiones) {
     })
     .filter((x) => x.grupo && !/\d\s*(s|m)\b/.test(x.reps) && x.id !== 'sprint_cuesta');
 }
-const masSeries = (txt, k) => (k ? txt.replace(/^(\d+) ×/, (_, n) => `${Number(n) + k} ×`) : txt);
+const masSeries = (txt, k) => (k ? txt.replace(/^(\d+) ×/, (_, n) => `${Math.max(2, Number(n) + k)} ×`) : txt);
+// Si la alternativa por una lesión ya está en la lista, el ejercicio sale una sola vez
+function sinRepetir(lista, lesiones) {
+  const vistos = new Set();
+  return lista.filter(([id]) => {
+    const real = ejercicio(id, lesiones).id;
+    if (vistos.has(real)) return false;
+    vistos.add(real);
+    return true;
+  });
+}
 
 const MEDIA = { ski: '500 m', push: '25 m', pull: '25 m', bbj: '40 m', row: '500 m', farmers: '100 m', lunges: '50 m', wallballs: '50 reps' };
 const COMPLETA = { ski: '1.000 m', push: '50 m', pull: '50 m', bbj: '80 m', row: '1.000 m', farmers: '200 m', lunges: '100 m', wallballs: '100 reps' };
@@ -184,7 +194,10 @@ export function construirSesion(ctx) {
       }[fase] || [];
       const piernaSinGym = [['bulgara', '4 × 10 por pierna'], ['pm_una_pierna', '4 × 10 por pierna'], ['zancada_salto', '3 × 10'], ['sprint_cuesta', '6 × 15 s'], ['plancha', '3 × 45 s']];
       let lista = P ? (sinGym && fase !== 'taper' ? piernaSinGym : pierna) : sinGym && fase !== 'taper' ? sinMaquinas : conGym;
-      if (fase !== 'taper') lista = lista.map(([id, s]) => [id, masSeries(s, ex.series)]);
+      // En una semana de descarga, una serie menos en cada ejercicio (como dice el título del bloque)
+      const menos = factor < 0.9 ? 1 : 0;
+      if (fase !== 'taper') lista = lista.map(([id, s]) => [id, masSeries(s, ex.series - menos)]);
+      lista = sinRepetir(lista, lesiones);
       titulo = P
         ? (sinGym ? 'Pierna sin gimnasio' : fase === 'taper' ? 'Pierna ligera' : 'Pierna completa')
         : sinGym
@@ -205,20 +218,33 @@ export function construirSesion(ctx) {
       break;
     }
     case 'torso': {
-      // Hipertrofia de torso y brazos: A (empuje: pecho, hombro, tríceps) y B (tirón: espalda, bíceps)
-      const B = variante === 'B';
+      // Hipertrofia de torso y brazos: A (empuje: pecho, hombro y tríceps), B (tirón: espalda y bíceps) y,
+      // si la semana solo tiene un día de torso, C (completo). Bíceps y tríceps entran en las tres.
+      const V = ['A', 'B', 'C'].includes(variante) ? variante : 'A';
       const reps = fase === 'construccion' ? ['6-8', '8-10', '10-12'] : ['8-10', '10-12', '12-15'];
       const n = fase === 'especifico' ? 3 : 4; // en la fase específica, algo menos de volumen para llegar fresco a los simulacros
-      const conGym = B
-        ? [['dominadas', `${n} × ${reps[0]} (lastradas si te salen más)`], ['remo_mancuerna', `${n} × ${reps[1]}`], ['jalon', `3 × ${reps[2]}`], ['face_pull', '3 × 15'], ['curl_inclinado', `3 × ${reps[1]}`], ['curl_martillo', `3 × ${reps[2]}`], ['press_frances', `3 × ${reps[1]}`]]
-        : [['press_banca', `${n} × ${reps[0]}`], ['press_inclinado', `3 × ${reps[1]}`], ['cruces_polea', `3 × ${reps[2]}`], ['press', `3 × ${reps[0]}`], ['elevaciones', '4 × 12-15'], ['fondos', `3 × ${reps[1]}`], ['curl_barra', `3 × ${reps[1]}`]];
-      const sinMaquinas = B
-        ? [['dominadas_parque', '5 × las que puedas (-1)'], ['chin_ups', '4 × las que puedas (-1)'], ['remo_invertido', '4 × 10-15'], ['plancha', '3 × 45 s']]
-        : [['flexiones', '5 × las que puedas (-1)'], ['flexiones_declinadas', '3 × las que puedas (-1)'], ['pike', '4 × 8-12'], ['flexiones_diamante', '3 × las que puedas (-1)'], ['fondos_banco', '3 × 12-20']];
-      let lista = fase === 'taper' ? conGym.slice(0, 3).map(([id]) => [id, '2 × 8 (ligero)']) : sinGym ? sinMaquinas : conGym;
-      // La serie extra va a los dos ejercicios grandes (en el resto ya aprietan las técnicas)
-      if (fase !== 'taper') lista = lista.map(([id, s], i) => [id, i < 2 ? masSeries(s, ex.series) : s]);
-      titulo = `${sinGym ? 'Torso sin gimnasio' : 'Torso'} ${B ? 'B: espalda y bíceps' : 'A: pecho, hombro y tríceps'}`;
+      const conGym = {
+        A: [['press_banca', `${n} × ${reps[0]}`], ['press_inclinado', `3 × ${reps[1]}`], ['cruces_polea', `3 × ${reps[2]}`], ['press', `3 × ${reps[0]}`], ['elevaciones', '4 × 12-15'], ['fondos', `3 × ${reps[1]}`], ['extension_triceps', `3 × ${reps[2]}`], ['curl_barra', `3 × ${reps[1]}`]],
+        B: [['dominadas', `${n} × ${reps[0]} (lastradas si te salen más)`], ['remo_mancuerna', `${n} × ${reps[1]}`], ['jalon', `3 × ${reps[2]}`], ['face_pull', '3 × 15'], ['curl_martillo', `3 × ${reps[1]}`], ['curl_inclinado', `3 × ${reps[2]}`], ['press_frances', `3 × ${reps[1]}`]],
+        C: [['press_banca', `${n} × ${reps[0]}`], ['dominadas', `${n} × ${reps[0]} (lastradas si te salen más)`], ['press_inclinado', `3 × ${reps[1]}`], ['remo_mancuerna', `3 × ${reps[1]}`], ['curl_martillo', `3 × ${reps[1]}`], ['curl_inclinado', `3 × ${reps[2]}`], ['press_frances', `3 × ${reps[1]}`], ['extension_triceps', `3 × ${reps[2]}`]],
+      }[V];
+      const sinMaquinas = {
+        A: [['flexiones', '5 × las que puedas (-1)'], ['flexiones_declinadas', '3 × las que puedas (-1)'], ['pike', '4 × 8-12'], ['flexiones_diamante', '3 × las que puedas (-1)'], ['fondos_banco', '3 × 12-20'], ['curl_mochila', '3 × 12-15']],
+        B: [['dominadas_parque', '5 × las que puedas (-1)'], ['chin_ups', '4 × las que puedas (-1)'], ['remo_invertido', '4 × 10-15'], ['curl_mochila', '4 × 12-15'], ['extension_cuerpo', '3 × 10-15'], ['plancha', '3 × 45 s']],
+        C: [['flexiones', '4 × las que puedas (-1)'], ['dominadas_parque', '4 × las que puedas (-1)'], ['pike', '3 × 8-12'], ['remo_invertido', '3 × 10-15'], ['curl_mochila', '4 × 12-15'], ['flexiones_diamante', '3 × las que puedas (-1)'], ['extension_cuerpo', '3 × 10-15']],
+      }[V];
+      const base = sinGym ? sinMaquinas : conGym;
+      // Puesta a punto: los tres primeros, ligeros, y un ejercicio de bíceps y otro de tríceps
+      const brazo = (g) => base.find(([id]) => ejercicio(id).grupo === g);
+      const taper = [...base.slice(0, 3).map(([id]) => [id, '2 × 8 (ligero)']), ...['biceps', 'triceps'].map(brazo).filter((x) => x && !base.slice(0, 3).includes(x)).map(([id]) => [id, '2 × 10 (ligero)'])];
+      let lista = fase === 'taper' ? taper : base;
+      // La serie extra va a los dos ejercicios grandes (en el resto ya aprietan las técnicas); en una semana de
+      // descarga, una serie menos en cada uno
+      const menos = factor < 0.9 ? 1 : 0;
+      if (fase !== 'taper') lista = lista.map(([id, s], i) => [id, masSeries(s, (i < 2 ? ex.series : 0) - menos)]);
+      lista = sinRepetir(lista, lesiones);
+      const NOMBRE = { A: 'A: pecho, hombro y tríceps', B: 'B: espalda y bíceps', C: 'completo: pecho, espalda y brazos' };
+      titulo = V === 'C' && sinGym ? 'Torso completo sin gimnasio' : `${sinGym ? 'Torso sin gimnasio' : 'Torso'} ${NOMBRE[V]}`;
       bloques.push({
         titulo: factor < 0.9 ? 'Ejercicios (una serie menos en cada uno)' : 'Ejercicios',
         lineas: lista.map(([id, series]) => {
@@ -228,9 +254,10 @@ export function construirSesion(ctx) {
       });
       ejercicios = aRegistrables(lista, lesiones);
       notas.push(`Hipertrofia: controla la bajada (2-3 s) y termina cada serie con ${ex.rir} repeticiones en reserva. Descansa 60-90 s (2 min en los primeros ejercicios).`);
-      if (ex.tecnicas && fase !== 'taper' && !sinGym) notas.push('Muy exigente: haz los dos ejercicios de brazos en superserie (uno detrás de otro sin descanso) y un dropset en la última serie de elevaciones o face pull.');
+      if (sinGym && fase !== 'taper') notas.push('Sin máquinas: para el curl, llena una mochila (libros, botellas de agua) o usa garrafas. Repeticiones lentas, 3 s al bajar.');
+      if (ex.tecnicas && fase !== 'taper' && !sinGym) notas.push('Muy exigente: haz bíceps y tríceps en superserie (uno detrás de otro, sin descanso) y un dropset en la última serie del último ejercicio de cada brazo.');
       notas.push('Sube peso o repeticiones cada semana que puedas: es lo que hace crecer el músculo.');
-      duracion = fase === 'taper' ? 30 : Math.round(60 * ex.duracion * Math.min(1, factor + 0.1));
+      duracion = fase === 'taper' ? 30 : Math.round((15 + lista.length * 6) * ex.duracion * Math.min(1, factor + 0.1));
       break;
     }
     case 'estaciones': {
