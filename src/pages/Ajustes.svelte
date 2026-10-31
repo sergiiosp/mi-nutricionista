@@ -159,7 +159,7 @@
   <details class="tarjeta creditos">
     <summary><Icono e="📜" tam={18} /> Créditos e información</summary>
     <p>Precios y productos: tienda online de Mercadona (datos públicos). Productos envasados: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL). Iconos: Lucide (ISC). Tipografía: Manrope (OFL).</p>
-    <p>Fotos de recetas de Wikimedia Commons:</p>
+    <p>Fotos de recetas de Wikimedia Commons y Canva:</p>
     <ul>
       {#each Object.entries(FOTOS_RECETAS) as [id, c] (id)}
         <li><a href={c.fuente} target="_blank" rel="noopener">{nombreReceta(id)}</a> — {c.autor} ({c.licencia})</li>

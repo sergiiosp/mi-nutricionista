@@ -1,4 +1,4 @@
-// Fotos de recetas de Wikimedia Commons (licencias libres). Créditos visibles en Ajustes → Créditos.
+// Fotos de recetas: de Wikimedia Commons (licencias libres) y algunas generadas con Canva. Créditos visibles en Ajustes → Créditos.
 export const FOTOS_RECETAS = {
  "porridge-proteico": {
   "autor": "Comotoze",
@@ -354,6 +354,26 @@ export const FOTOS_RECETAS = {
   "autor": "Andy Li",
   "licencia": "CC0",
   "fuente": "https://commons.wikimedia.org/wiki/File:NOT_avocado_on_toast_with_fried_egg_-_Black_Mocha_2025-08-12.jpg"
+ },
+ "recena-queso-batido-cacao": {
+  "autor": "Imagen generada con Canva",
+  "licencia": "Canva",
+  "fuente": "https://www.canva.com"
+ },
+ "recena-queso-batido-canela": {
+  "autor": "Imagen generada con Canva",
+  "licencia": "Canva",
+  "fuente": "https://www.canva.com"
+ },
+ "tortitas-lomo-pavo": {
+  "autor": "Imagen generada con Canva",
+  "licencia": "Canva",
+  "fuente": "https://www.canva.com"
+ },
+ "batido-whey-avena-platano": {
+  "autor": "Imagen generada con Canva",
+  "licencia": "Canva",
+  "fuente": "https://www.canva.com"
  }
 };
 
