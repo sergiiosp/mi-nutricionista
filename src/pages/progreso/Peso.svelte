@@ -23,6 +23,21 @@
   const rec = $derived(recomendacion(pesos, $estado.perfil, o));
   const actual = $derived(pesos.at(-1)?.peso);
 
+  // Cabecera al estilo de Cal AI: dónde estás, cuánto llevas del camino y cuándo llegarías a tu objetivo
+  const meta = $derived.by(() => {
+    if (!pesos.length) return null;
+    const inicio = pesos[0].peso;
+    const obj = Number($estado.perfil.pesoObjetivo) || null;
+    const falta = obj ? obj - actual : null;
+    const hecho = obj && inicio !== obj ? Math.min(1, Math.max(0, (inicio - actual) / (inicio - obj))) : null;
+    // Ritmo: el real de tus pesajes si va hacia el objetivo; si no, el que marca tu plan
+    const ritmo = t && falta && Math.sign(t.kgSemana) === Math.sign(falta) && Math.abs(t.kgSemana) >= 0.05 ? t.kgSemana
+      : falta && Math.sign(o.cambioSemanalKg) === Math.sign(falta) ? o.cambioSemanalKg : null;
+    const semanas = ritmo ? Math.ceil(Math.abs(falta / ritmo)) : null;
+    const llegada = semanas && semanas <= 104 ? new Date(Date.now() + semanas * 7 * 864e5).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: semanas > 40 ? 'numeric' : undefined }) : null;
+    return { inicio, obj, falta, hecho, ritmo, semanas, llegada, real: ritmo === t?.kgSemana, pesadoHoy: pesos.at(-1).fecha === hoy };
+  });
+
   const numero = (v) => (String(v).trim() === '' ? null : Number(String(v).replace(',', '.')));
   function guardar(ev) {
     ev.preventDefault();
@@ -85,6 +100,26 @@
   });
 </script>
 
+
+{#if meta}
+  <section class="tarjeta peso-meta" aria-label="Tu peso y tu objetivo">
+    <div class="m-cab">
+      <span><small>Peso actual</small><b class="cifra">{num(actual, 1)}<span>kg</span></b></span>
+      {#if meta.obj}<span class="m-obj"><small>Objetivo</small><b class="cifra">{num(meta.obj, 1)} kg</b></span>{/if}
+    </div>
+    {#if meta.hecho != null}
+      <div class="m-barra" role="img" aria-label="Llevas el {Math.round(meta.hecho * 100)} % del camino"><i style="width:{Math.max(3, meta.hecho * 100)}%"></i></div>
+      <div class="m-ext"><small>Empezaste en {num(meta.inicio, 1)} kg</small><small>{Math.abs(meta.falta) < 0.1 ? '¡En tu objetivo!' : `Te faltan ${num(Math.abs(meta.falta), 1)} kg`}</small></div>
+    {:else if pesos.length > 1}
+      <p class="m-ext"><small>Desde que empezaste: {signo(actual - meta.inicio)} kg</small></p>
+    {/if}
+    <div class="m-filas">
+      <div><Icono n="calendar" tam={16} /><span>Próximo pesaje</span><b>{meta.pesadoHoy ? 'mañana' : 'hoy'}, en ayunas</b></div>
+      {#if meta.llegada}<div><Icono n="flag" tam={16} /><span>Llegarías</span><b>hacia el {meta.llegada}</b></div>
+        <p class="pie-nota">A {num(Math.abs(meta.ritmo), 2)} kg por semana, {meta.real ? 'tu ritmo de las últimas semanas' : 'el ritmo que marca tu plan'}.</p>{/if}
+    </div>
+  </section>
+{/if}
 
 {#if !formAbierto && pesos.length}
   <button class="boton ancho-peso" onclick={() => (formAbierto = true)}><Icono n="plus" tam={18} grosor={2.4} /> Apuntar peso y báscula</button>
@@ -199,6 +234,22 @@
 {/if}
 
 <style>
+  /* Peso y objetivo */
+  .m-cab { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .m-cab > span { display: grid; }
+  .m-cab small, .m-ext small { font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }
+  .m-cab > span:first-child b { font-size: 2.4rem; line-height: 1; letter-spacing: -0.03em; }
+  .m-cab b span { font-size: 0.95rem; margin-left: 3px; color: var(--texto-2); }
+  .m-obj { text-align: right; }
+  .m-obj b { font-size: 1.1rem; }
+  .m-barra { height: 10px; margin-top: 14px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
+  .m-barra i { display: block; height: 100%; border-radius: 999px; background: var(--primario); }
+  .m-ext { display: flex; justify-content: space-between; gap: 8px; margin: 6px 0 0; }
+  .m-filas { display: grid; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linea); }
+  .m-filas div { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--texto-2); }
+  .m-filas div :global(svg) { color: var(--primario); flex-shrink: 0; }
+  .m-filas b { margin-left: auto; color: var(--texto); }
+  .m-filas .pie-nota { margin: 0; }
   /* Historial de pesos (antes en app.css) */
   .historial { list-style: none; padding: 0; margin: 10px 0 0; }
   .historial li { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; padding: 6px 0; border-top: 1px solid var(--superficie-2); font-size: 0.92rem; }

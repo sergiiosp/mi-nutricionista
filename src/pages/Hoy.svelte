@@ -22,6 +22,8 @@
   import { rutinaSuelo, horaSuelo } from '../lib/suelo.js';
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
+  import TiraSemana from '../components/TiraSemana.svelte';
+  import { recuperacion, esfuerzo } from '../lib/recuperacion.js';
   import ComoLlegas from '../components/ComoLlegas.svelte';
   import AvisoCopia from '../components/AvisoCopia.svelte';
   import AvisoRevision from '../components/AvisoRevision.svelte';
@@ -57,6 +59,8 @@
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const coach = $derived(explicarPlan($estado, objetivos, hoy));
+  const rec = $derived(recuperacion($estado, hoy));
+  const esf = $derived(esfuerzo($estado, hoy));
   const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
   // Carrera hoy o mañana: acceso directo al modo día de carrera
   const carreraHoy = $derived(planDiaCarrera($estado, hoy));
@@ -154,11 +158,6 @@
     if (entrenoHoy) return { t: 'Hoy entrenas', s: sesion ? `A las ${sesion.inicio}` : 'Más hidratos y kcal que un día de descanso' };
     return { t: 'Día de descanso', s: 'Camina, estira y llega a tu proteína' };
   });
-  const anillos = $derived([
-    { valor: d.consumido.kcal, meta: d.objetivo.kcal, color: COLOR.kcal },
-    { valor: d.consumido.p, meta: d.objetivo.p, color: COLOR.p },
-    ...(entrenoHoy && sesPrincipal ? [{ valor: regPrincipal ? 1 : 0, meta: 1, color: COLOR.e }] : []),
-  ]);
 
 
   // Lo ya hecho antes de «Ahora» se pliega en una fila (se despliega al tocar)
@@ -198,19 +197,33 @@
   <AvisoCopia />
   <AvisoRevision />
 
-  <!-- El día en anillos: kcal, proteína y entreno; cada fila se toca para ver el detalle -->
-  <section class="resumen-dia s-comida" aria-label="Tu día en cifras">
-    <Anillos {anillos} tam={124} grosor={13} />
-    <div class="r-filas">
-      <button class="r-fila" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} style="--c:{COLOR.kcal}" onclick={() => alternar('comida')}>
-        <small>Kcal</small><b class="cifra"><Numero valor={Math.round(d.consumido.kcal)} desde={0} /><span>/{entero(d.objetivo.kcal)}</span></b>
+  <!-- La semana de un vistazo y el día: kcal que te quedan, cada macro, tu recuperación y el entreno -->
+  <TiraSemana consumidoHoy={d.consumido.kcal} objetivoHoy={d.objetivo.kcal} />
+  <section class="dia-cifras s-comida" aria-label="Tu día en cifras">
+    <button class="kcal" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} onclick={() => alternar('comida')}>
+      <span class="k-txt">
+        <b class="cifra"><Numero valor={Math.round(Math.abs(d.objetivo.kcal - d.consumido.kcal))} desde={0} /></b>
+        <small>{d.consumido.kcal > d.objetivo.kcal ? 'kcal por encima' : 'kcal te quedan'} · llevas {entero(d.consumido.kcal)} de {entero(d.objetivo.kcal)}</small>
+      </span>
+      <span class="k-aro"><Anillos anillos={[{ valor: d.consumido.kcal, meta: d.objetivo.kcal, color: COLOR.kcal }]} tam={84} grosor={9} /><Icono n="flame" tam={22} /></span>
+    </button>
+    <div class="macros-3">
+      {#each [['Proteína', 'p', 'var(--coral)'], ['Hidratos', 'c', 'var(--amarillo)'], ['Grasa', 'g', 'var(--azul)']] as [n, k, c] (k)}
+        <button class="macro-c" onclick={() => alternar('comida')}>
+          <b class="cifra">{Math.max(0, Math.round(d.objetivo[k] - d.consumido[k]))}<span>g</span></b>
+          <small>{n} {d.consumido[k] > d.objetivo[k] ? 'cumplida' : 'te queda'}</small>
+          <span class="m-aro"><Anillos anillos={[{ valor: d.consumido[k], meta: d.objetivo[k], color: c }]} tam={46} grosor={5} /></span>
+        </button>
+      {/each}
+    </div>
+    <div class="fila-2">
+      <button class="mini s-entreno" onclick={() => abrirHoja('recuperacion')}>
+        <span class="mini-aro">{#if rec.contestada}<Anillos anillos={[{ valor: rec.valor, meta: 100, color: rec.valor >= 67 ? 'var(--dato-kcal)' : rec.valor >= 34 ? 'var(--amarillo)' : 'var(--coral)' }]} tam={40} grosor={5} />{/if}<Icono n="heart-pulse" tam={16} /></span>
+        <span class="mini-txt"><small>Recuperación</small><b class="cifra">{rec.contestada ? `${rec.valor} %` : '¿Cómo llegas?'}</b></span>
       </button>
-      <button class="r-fila" class:activo={abierto === 'comida'} style="--c:{COLOR.p}" onclick={() => alternar('comida')}>
-        <small>Proteína</small><b class="cifra"><Numero valor={Math.round(d.consumido.p)} desde={0} /><span>/{Math.round(d.objetivo.p)} g</span></b>
-      </button>
-      <button class="r-fila" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} style="--c:{COLOR.e}" onclick={() => alternar('entreno')}>
-        <small>{entrenoHoy ? 'Entreno' : 'Descanso'}</small>
-        <b class="r-texto">{#if !entrenoHoy}recupera y camina{:else if regPrincipal}hecho{:else if sesPrincipal}{sesPrincipal.hora} · {sesPrincipal.duracion} min{:else if sesion}a las {sesion.inicio}{:else}hoy{/if}</b>
+      <button class="mini s-entreno" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} onclick={() => alternar('entreno')}>
+        <span class="mini-aro"><Anillos anillos={[{ valor: regPrincipal ? 1 : 0, meta: 1, color: COLOR.e }]} tam={40} grosor={5} /><Icono n={entrenoHoy ? 'dumbbell' : 'moon'} tam={16} /></span>
+        <span class="mini-txt"><small>{entrenoHoy ? `Entreno${esf.hoy ? ` · ${esf.hoy.rpe}/10` : ''}` : 'Descanso'}</small><b>{#if !entrenoHoy}recupera y camina{:else if regPrincipal}hecho{:else if sesPrincipal}{sesPrincipal.hora} · {sesPrincipal.duracion} min{:else if sesion}a las {sesion.inicio}{:else}hoy{/if}</b></span>
       </button>
     </div>
   </section>
@@ -406,15 +419,29 @@
   .sub-titular { margin: 6px 0 0; color: var(--texto-2); font-size: 0.92rem; line-height: 1.35; }
 
   /* El día en anillos */
-  .resumen-dia { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 18px; padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 16%, transparent); }
-  .r-filas { display: grid; gap: 4px; min-width: 0; }
-  .r-fila { display: grid; justify-items: start; padding: 4px 8px; margin-left: -8px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .r-fila.activo { background: var(--superficie-2); }
-  .r-fila small { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
-  .r-fila small::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
-  .r-fila b { font-size: 1.25rem; line-height: 1.1; color: var(--c); }
-  .r-fila b span { font-size: 0.78rem; font-weight: 700; color: var(--texto-3); margin-left: 1px; }
-  .r-fila .r-texto { font-size: 0.95rem; font-weight: 700; }
+  /* El día en cifras: kcal grandes, una tarjeta por macro y la fila de recuperación y entreno */
+  .dia-cifras { display: grid; gap: 8px; }
+  .kcal { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 16px 16px 18px; border: 0; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .kcal.activo { box-shadow: inset 0 0 0 1.5px var(--primario), var(--sombra); }
+  .k-txt { display: grid; gap: 2px; min-width: 0; }
+  .k-txt b { font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; }
+  .k-txt small { font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
+  .k-aro, .m-aro, .mini-aro { position: relative; display: grid; place-items: center; flex-shrink: 0; }
+  .k-aro { width: 84px; height: 84px; color: var(--dato-kcal); }
+  .k-aro :global(svg.anillos), .m-aro :global(svg.anillos), .mini-aro :global(svg.anillos) { position: absolute; inset: 0; }
+  .macros-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .macro-c { display: grid; justify-items: start; gap: 2px; padding: 12px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .macro-c b { font-size: 1.3rem; line-height: 1.05; }
+  .macro-c b span { font-size: 0.8rem; margin-left: 1px; color: var(--texto-2); }
+  .macro-c small { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
+  .m-aro { width: 46px; height: 46px; margin-top: 8px; justify-self: center; }
+  .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mini { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 12px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .mini.activo { box-shadow: inset 0 0 0 1.5px var(--primario), var(--sombra); }
+  .mini-aro { width: 40px; height: 40px; color: var(--primario); }
+  .mini-txt { display: grid; min-width: 0; }
+  .mini-txt small { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
+  .mini-txt b { font-size: 0.92rem; line-height: 1.2; }
 
   /* Modo día de carrera */
   .modo-carrera { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: var(--r-l); background: var(--hero); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--brillo-naranja); }

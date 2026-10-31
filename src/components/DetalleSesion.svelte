@@ -41,6 +41,8 @@
   }
   // Cómo se hace cada ejercicio de la sesión (antes vivía en la pestaña Estaciones)
   const tecnicas = $derived((s?.ejercicios || []).filter((x, i, l) => EJERCICIOS[x.id]?.tecnica && l.findIndex((y) => y.id === x.id) === i).map((x) => EJERCICIOS[x.id]));
+  // Icono de cada bloque: pesas en fuerza, repetir en series y rondas, zapatillas en carrera
+  const iconoBloque = (b) => (s.ejercicios?.length ? 'dumbbell' : /×|rondas|repet/i.test(b.titulo) ? 'repeat' : /km|min|rodaje|ritmo|trote|carrera/i.test(b.titulo) ? 'footprints' : 'zap');
   // «Sentadilla con barra: 4 × 8» → nombre a la izquierda y series × reps a la derecha
   function partir(l) {
     const i = l.indexOf(': ');
@@ -90,19 +92,29 @@
     </div>
   {/if}
 
-  {#if s.calentamiento.length}
-    <h3><Icono e="🔥" tam={18} /> Calentamiento</h3>
-    <ul class="lista">{#each s.calentamiento as l (l)}<li>{l}</li>{/each}</ul>
-  {/if}
-  {#each s.bloques as b (b.titulo)}
-    <h3><Icono e="💪" tam={18} /> {b.titulo}</h3>
-    <ul class="ejercicios">
-      {#each b.lineas as l, i (i)}
-        {@const [n, d] = partir(l)}
-        <li><span>{n}</span>{#if d}<b class="cifra">{d}</b>{/if}</li>
-      {/each}
-    </ul>
-  {/each}
+  <!-- La sesión, paso a paso (al estilo de Bevel): calentamiento, cada bloque y la vuelta a la calma -->
+  <h3><Icono n="route" tam={18} /> La sesión, paso a paso</h3>
+  <ol class="pasos">
+    {#if s.calentamiento.length}
+      <li class="paso"><span class="p-ic"><Icono n="flame" tam={16} grosor={2.2} /></span>
+        <div class="p-cuerpo"><b>Calentamiento</b>{#each s.calentamiento as l (l)}<p>{l}</p>{/each}</div></li>
+    {/if}
+    {#each s.bloques as b (b.titulo)}
+      <li class="paso"><span class="p-ic"><Icono n={iconoBloque(b)} tam={16} grosor={2.2} /></span>
+        <div class="p-cuerpo"><b>{b.titulo}</b>
+          <ul class="p-lineas">
+            {#each b.lineas as l, i (i)}
+              {@const [n, d] = partir(l)}
+              <li><span>{n}</span>{#if d}<b class="cifra">{d}</b>{/if}</li>
+            {/each}
+          </ul>
+        </div></li>
+    {/each}
+    {#if s.vueltaCalma.length}
+      <li class="paso"><span class="p-ic"><Icono n="wind" tam={16} grosor={2.2} /></span>
+        <div class="p-cuerpo"><b>Vuelta a la calma</b>{#each s.vueltaCalma as l (l)}<p>{l}</p>{/each}</div></li>
+    {/if}
+  </ol>
   {#if tecnicas.length}
     <details class="tecnica">
       <summary><Icono n="info" tam={18} /> Cómo se hace cada ejercicio <Icono n="chevron-down" tam={18} /></summary>
@@ -110,10 +122,6 @@
     </details>
   {/if}
   {#each s.notas as n (n)}<p class="nota"><Icono e="💡" tam={18} /> {n}</p>{/each}
-  {#if s.vueltaCalma.length}
-    <h3><Icono e="🧘" tam={18} /> Vuelta a la calma</h3>
-    <ul class="lista">{#each s.vueltaCalma as l (l)}<li>{l}</li>{/each}</ul>
-  {/if}
 
   {#if meta}
     <div class="comida">
@@ -165,6 +173,18 @@
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
   .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 700; font-size: 0.78rem; }
+  .pasos { list-style: none; margin: 0; padding: 0; display: grid; }
+  .paso { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding-bottom: 14px; }
+  .paso:not(:last-child)::before { content: ""; position: absolute; left: 16px; top: 34px; bottom: 0; width: 2px; border-radius: 2px; background: color-mix(in srgb, var(--primario) 25%, transparent); }
+  .p-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--primario-claro); color: var(--primario-fuerte); }
+  .p-cuerpo { display: grid; gap: 2px; padding: 10px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
+  .p-cuerpo > b { font-size: 0.95rem; }
+  .p-cuerpo > p { margin: 2px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
+  .p-lineas { list-style: none; margin: 4px 0 0; padding: 0; }
+  .p-lineas li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; font-size: 0.88rem; }
+  .p-lineas li + li { border-top: 1px solid var(--linea); }
+  .p-lineas span { color: var(--texto); }
+  .p-lineas b { flex-shrink: 0; max-width: 50%; text-align: right; font-weight: 700; }
   .porque dl { display: grid; margin: 0; padding: 2px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
   .porque dl div { padding: 10px 0; }
   .porque dl div + div { border-top: 1px solid var(--linea); }
@@ -179,10 +199,7 @@
   .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 500; font-size: 0.92rem; color: var(--texto-2); }
   /* Ejercicios: filas con el nombre y las series × reps alineadas, en cifras */
   .ejercicios { list-style: none; margin: 0; padding: 2px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
-  .ejercicios li { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 11px 0; font-size: 0.92rem; }
-  .ejercicios li + li { border-top: 1px solid var(--linea); }
   .ejercicios span { font-weight: 600; color: var(--texto); }
-  .ejercicios b { flex-shrink: 0; max-width: 48%; text-align: right; font-weight: 700; color: var(--texto); }
   .tecnica { margin-top: 10px; padding: 12px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
   .tecnica summary { display: flex; align-items: center; gap: 10px; min-height: 28px; font-weight: 700; font-size: 0.92rem; list-style: none; cursor: pointer; }
   .tecnica summary::-webkit-details-marker { display: none; }
