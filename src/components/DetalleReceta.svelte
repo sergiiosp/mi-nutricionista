@@ -42,6 +42,7 @@
   {#if diaIdx !== undefined && franja}
     <button class="boton boton-sec ancho" onclick={() => abrirHoja('alternativas', { diaIdx, franja })}><Icono e="🔄" tam={18} /> Cambiar este plato</button>
   {/if}
+  <button class="enlace comentar" onclick={() => abrirHoja('buzon', { objeto: { tipo: 'comida', recetaId, ingredientes, diaIdx, franja } })}><Icono n="message-square-text" tam={17} /> Comentar esta {franja ? 'comida' : 'receta'}</button>
 </div>
 
 <style>
@@ -56,6 +57,7 @@
   .grandes span { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
   .grandes .p { background: var(--coral-claro); } .grandes .c { background: var(--amarillo-claro); } .grandes .g { background: var(--azul-claro); }
   .ancho { width: 100%; margin-top: 12px; }
+  .comentar { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 8px; font-size: 0.9rem; }
   .prep { display: flex; align-items: center; gap: 8px; }
   .cocinar { margin-left: auto; }
   .adaptada { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.84rem; color: var(--texto-2); }

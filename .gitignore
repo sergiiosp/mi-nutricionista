@@ -13,3 +13,6 @@ pantallas/
 
 # Vídeos de /brag
 brag-output*/
+
+# Capturas del buzón de Pulso (scripts/buzon.mjs)
+buzon/

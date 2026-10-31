@@ -7,3 +7,6 @@ CREATE TABLE IF NOT EXISTS avisos (endpoint TEXT NOT NULL, t INTEGER NOT NULL, t
 CREATE INDEX IF NOT EXISTS avisos_t ON avisos (t);
 CREATE INDEX IF NOT EXISTS avisos_endpoint ON avisos (endpoint);
 CREATE TABLE IF NOT EXISTS ajustes (clave TEXT PRIMARY KEY, valor TEXT NOT NULL);
+-- Buzón: notas desde la app (sin cifrar, para poder leerlas y contestarlas desde el ordenador)
+CREATE TABLE IF NOT EXISTS buzon (id TEXT PRIMARY KEY, creada INTEGER NOT NULL, tipo TEXT, tema TEXT, texto TEXT NOT NULL, contexto TEXT, foto TEXT, estado TEXT NOT NULL DEFAULT 'enviada', respuesta TEXT, actualizada INTEGER);
+CREATE INDEX IF NOT EXISTS buzon_creada ON buzon (creada);

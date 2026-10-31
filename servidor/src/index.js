@@ -1,20 +1,15 @@
 // Servidor de Mi Nutricionista: sincronización cifrada entre dispositivos, copias diarias,
 // y recordatorios (Web Push). Cloudflare Workers + D1, plan gratuito.
 import { clavesVapid, enviarPush } from './push.js';
-import { CORS, json } from './util.js';
+import { buzon } from './buzon.js';
+import { CORS, json, error, sha256 } from './util.js';
 
 const MAX_DATOS = 1_800_000; // bytes (D1 admite filas de hasta 2 MB)
 const DIAS_COPIAS = 30;
 const MIN = 60_000;
 
-const error = (texto, status = 400) => json({ error: texto }, status);
 // D1 devuelve los BLOB como ArrayBuffer o como lista de números según la versión
 const binario = (datos, extra = {}) => new Response(new Uint8Array(datos), { headers: { 'Content-Type': 'application/octet-stream', 'Cache-Control': 'no-store', ...CORS, ...extra } });
-
-async function sha256(texto) {
-  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
-  return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
 
 /** La cuenta se identifica por el hash del token (el token sale de tu clave secreta, que nunca llega aquí). */
 async function cuentaDe(req, env) {
@@ -40,6 +35,8 @@ async function rutas(req, env, url) {
     await env.DB.prepare('DELETE FROM emparejamientos WHERE codigo = ?').bind(String(codigo)).run();
     return json({ sobre: fila.sobre });
   }
+  // Buzón de notas (tiene su propia clave: no hace falta la sincronización)
+  if (p === '/buzon' || p.startsWith('/buzon/')) return buzon(req, env, url, ahora);
 
   // ── Con cuenta ─────────────────────────────────────────────────────────
   const cuenta = await cuentaDe(req, env);

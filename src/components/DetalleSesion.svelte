@@ -122,6 +122,7 @@
       </div>
     {/if}
   {/if}
+  <button class="enlace comentar" onclick={() => abrirHoja('buzon', { objeto: { tipo: 'sesion', id: s.id } })}><Icono n="message-square-text" tam={17} /> Comentar esta sesión</button>
 {/if}
 
 <style>
@@ -138,6 +139,7 @@
   .tinte { position: absolute; inset: 0; z-index: 1; background: var(--c); mix-blend-mode: color; opacity: 0.85; }
   .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.1) 0%, rgb(8 8 12 / 0.85) 100%); }
   .cab .datos span { background: rgb(255 255 255 / 0.14); color: #fff; }
+  .comentar { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 12px; font-size: 0.9rem; }
   .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }

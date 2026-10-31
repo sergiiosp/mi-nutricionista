@@ -16,6 +16,7 @@
   import { crearPlan, reajustarPlan, completarMenu } from './lib/acciones.js';
   import { hoyISO } from './lib/planificador.js';
   import { cargar, precargarTodo } from './lib/perezosas.js';
+  import { iniciarBuzon, sinLeer } from './lib/buzon.js';
   import { onMount } from 'svelte';
 
   // Pantallas que se cargan aparte (ver lib/perezosas.js): se pintan en cuanto llegan
@@ -25,6 +26,9 @@
     return vistas[k];
   }
   onMount(precargarTodo);
+  // Buzón: envía las notas que se quedaron sin conexión y trae las respuestas
+  onMount(iniciarBuzon);
+  const nuevasBuzon = $derived(sinLeer($estado));
 
   let editando = $state(false);
 
@@ -90,7 +94,7 @@
   // Color de cada sección (Hoy naranja, Comida lima, Entreno violeta, Progreso azul)
   const seccion = $derived(['comida', 'entreno', 'progreso'].includes($ruta.pagina) ? $ruta.pagina : 'hoy');
   const SECCION_HOJA = { logros: 'progreso', simulador: 'hoy', revision: 'progreso', diaCarrera: 'entreno', test: 'entreno', tuPlan: 'hoy', cocina: 'comida', camara: 'progreso', informe: 'progreso', diaLibre: 'comida', guiaFuera: 'comida', receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
-  const TITULOS = { logros: 'Logros', simulador: '', revision: '', diaCarrera: '', test: 'Apuntar un test', tuPlan: '', cocina: 'Modo cocina', camara: 'Foto de progreso', informe: 'Informe del mes', diaLibre: 'Día libre', guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
+  const TITULOS = { buzon: 'Buzón', logros: 'Logros', simulador: '', revision: '', diaCarrera: '', test: 'Apuntar un test', tuPlan: '', cocina: 'Modo cocina', camara: 'Foto de progreso', informe: 'Informe del mes', diaLibre: 'Día libre', guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
 
 {#if !$estado.perfil || editando}
@@ -99,7 +103,13 @@
 {:else}
   <header class="cabecera">
     <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Pulso</a>
-    <a href="#ajustes" class="boton-plan" class:activo={$ruta.pagina === 'ajustes'} aria-label="Mi plan y ajustes"><Icono n="user" tam={20} /></a>
+    <div class="cab-botones">
+      <button class="boton-plan" aria-label={nuevasBuzon ? `Buzón: ${nuevasBuzon} ${nuevasBuzon === 1 ? 'respuesta nueva' : 'respuestas nuevas'}` : 'Buzón: comenta la app, la dieta o los entrenos'}
+        onclick={() => abrirHoja('buzon')}>
+        <Icono n="message-square-text" tam={20} />{#if nuevasBuzon}<span class="nuevo-buzon" aria-hidden="true"></span>{/if}
+      </button>
+      <a href="#ajustes" class="boton-plan" class:activo={$ruta.pagina === 'ajustes'} aria-label="Mi plan y ajustes"><Icono n="user" tam={20} /></a>
+    </div>
   </header>
 
   <div class="halo-seccion s-{seccion}" aria-hidden="true"></div>

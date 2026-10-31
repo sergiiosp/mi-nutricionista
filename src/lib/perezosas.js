@@ -20,6 +20,7 @@ const CARGADORES = {
   revision: () => import('../components/Revision.svelte'),
   simulador: () => import('../components/Simulador.svelte'),
   logros: () => import('../pages/progreso/Logros.svelte'),
+  buzon: () => import('../components/Buzon.svelte'),
 };
 
 const promesas = {};

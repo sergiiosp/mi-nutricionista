@@ -8,3 +8,9 @@ export const CORS = {
 };
 
 export const json = (datos, status = 200, extra = {}) => new Response(JSON.stringify(datos), { status, headers: { 'Content-Type': 'application/json', ...CORS, ...extra } });
+export const error = (texto, status = 400) => json({ error: texto }, status);
+
+export async function sha256(texto) {
+  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
+  return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
