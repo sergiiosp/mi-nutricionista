@@ -18,7 +18,7 @@ const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = process.argv[2] === 'base';
 const FILTRO = BASE ? process.argv[3] : process.argv[2];
 const DIR = path.join(RAIZ, 'pantallas');
-const SALIDA = path.join(DIR, (process.env.TEMA === 'claro' ? 'claro-' : '') + (BASE ? 'base' : 'actual'));
+const SALIDA = path.join(DIR, (process.env.MAQUETA ? `maqueta-${process.env.MAQUETA}-` : '') + (process.env.TEMA === 'claro' ? 'claro-' : '') + (BASE ? 'base' : 'actual'));
 const UMBRAL = 0.002; // más de un 0,2 % de píxeles distintos = la pantalla ha cambiado
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.rmSync(SALIDA, { recursive: true, force: true });
@@ -140,6 +140,7 @@ await js(`
 const hechas = [];
 async function foto(nombre, trozos = 1) {
   if (FILTRO && !nombre.startsWith(FILTRO)) return;
+  if (process.env.MAQUETA) await js(`document.documentElement.dataset.maqueta = ${JSON.stringify(process.env.MAQUETA)};`);
   await espera(700);
   const enHoja = await js(`return !!document.querySelector('.hoja-cuerpo');`);
   const alto = await js(`const h = document.querySelector('.hoja-cuerpo'); return h ? h.scrollHeight : document.documentElement.scrollHeight;`);
@@ -157,6 +158,7 @@ async function foto(nombre, trozos = 1) {
 // Una captura con un elemento concreto en el centro de la pantalla
 async function fotoEn(nombre, selector) {
   if (FILTRO && !nombre.startsWith(FILTRO)) return;
+  if (process.env.MAQUETA) await js(`document.documentElement.dataset.maqueta = ${JSON.stringify(process.env.MAQUETA)};`);
   await js(`document.querySelector('${selector}')?.scrollIntoView({ block: 'center' });`);
   await espera(500);
   const r = await cdp('Page.captureScreenshot', { format: 'png' });

@@ -555,3 +555,23 @@ h2 .icono, h3 .icono, summary .icono { color: var(--primario); vertical-align: -
 .boton .icono { vertical-align: 0; }
 .chip-sup .icono { color: var(--primario); vertical-align: -0.2em; }
 .dia-obj-cab .icono { color: var(--primario); vertical-align: -0.2em; }
+
+/* ── Maqueta «Cal AI» (solo se activa con data-maqueta="calai"; en pruebas) ──────────────────
+   Claro y sobrio: fondo casi blanco, tarjetas blancas, negro para lo que se toca y el color
+   solo en los datos (macros). Sin colores por sección, degradados ni halos. */
+:root[data-maqueta="calai"],
+:root[data-maqueta="calai"] .s-hoy, :root[data-maqueta="calai"] .s-comida,
+:root[data-maqueta="calai"] .s-entreno, :root[data-maqueta="calai"] .s-progreso {
+  --fondo: #f7f7f9; --superficie: #ffffff; --superficie-2: #f2f2f4; --superficie-3: #e9e9ee;
+  --linea: rgb(0 0 0 / 0.06); --texto: #111114; --texto-2: #6b6b75; --texto-3: #9a9aa3;
+  --primario: #111114; --primario-fuerte: #111114; --primario-claro: #f2f2f4; --sobre-primario: #ffffff;
+  --coral: #e2695a; --amarillo: #e3a03f; --azul: #5b8def; --lila: #111114; --exito: #111114;
+  --coral-claro: #f2f2f4; --amarillo-claro: #f2f2f4; --azul-claro: #f2f2f4; --lila-claro: #f2f2f4; --exito-claro: #f2f2f4;
+  --aviso-fondo: #f2f2f4; --aviso-texto: #111114;
+  --dato-kcal: #111114; --dato-e: #111114; --dato-kcal-2: #111114; --dato-e-2: #6b6b75;
+  --hero: #111114; --brillo-naranja: 0 8px 20px rgb(0 0 0 / 0.16);
+  --tinte: transparent; --halo: transparent;
+  --sombra: 0 2px 12px rgb(0 0 0 / 0.05); --sombra-fuerte: 0 12px 30px rgb(0 0 0 / 0.1);
+}
+:root[data-maqueta="calai"] body { background: var(--fondo); }
+:root[data-maqueta="calai"] .halo-seccion { display: none; }

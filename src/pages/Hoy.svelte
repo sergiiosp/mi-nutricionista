@@ -191,11 +191,7 @@
     {#if titular.s}<p class="sub-titular">{titular.s}</p>{/if}
   </header>
 
-  <PropuestaSemana />
-  <PropuestaHyrox />
-  <PropuestaSuelo />
-  <AvisoCopia />
-  <AvisoRevision />
+
 
   <!-- La semana de un vistazo y el día: kcal que te quedan, cada macro, tu recuperación y el entreno -->
   <TiraSemana consumidoHoy={d.consumido.kcal} objetivoHoy={d.objetivo.kcal} />
@@ -237,16 +233,17 @@
     </button>
   {/if}
 
-  <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
-    <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
-    <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
-    <Icono n="chevron-right" tam={18} />
-  </button>
 
-  <TarjetaPreparar />
 
-  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
-    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
+
+
+  {#if proximo}
+    <h2 class="seccion">Ahora toca</h2>
+    {#if proximo.tipo === 'comida'}
+      <div class="s-comida"><TarjetaComida comida={proximo.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(proximo.c)} destacada portada porque={porQue(proximo.c)} /></div>
+    {:else}
+      <div class="s-entreno"><TarjetaSesion sesion={proximo.s} registro={$estado.hyrox?.registros?.[proximo.s.id]} /></div>
+    {/if}
   {/if}
 
   {#if abierto === 'comida'}
@@ -329,14 +326,26 @@
     </div>
   {/if}
 
-  {#if proximo}
-    <h2 class="seccion">Ahora toca</h2>
-    {#if proximo.tipo === 'comida'}
-      <div class="s-comida"><TarjetaComida comida={proximo.c} fecha={hoy} {diaIdx} franjaNombre={nombreFranja(proximo.c)} destacada portada porque={porQue(proximo.c)} /></div>
-    {:else}
-      <div class="s-entreno"><TarjetaSesion sesion={proximo.s} registro={$estado.hyrox?.registros?.[proximo.s.id]} /></div>
-    {/if}
+
+
+  <!-- Para ti: propuestas, avisos y tu plan, juntos y por debajo de lo que toca ahora -->
+  <div class="para-ti">
+  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
+    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
   {/if}
+  <PropuestaSemana />
+  <PropuestaHyrox />
+  <PropuestaSuelo />
+  <AvisoCopia />
+  <AvisoRevision />
+  <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
+    <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
+    <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
+    <Icono n="chevron-right" tam={18} />
+  </button>
+
+  <TarjetaPreparar />
+  </div>
 
   {#if resto.length}
     <h2 class="seccion">Tu día</h2>
@@ -452,6 +461,8 @@
   .mcr-txt span { font-size: 0.8rem; opacity: 0.9; }
   /* Tu semana */
   .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .para-ti { display: grid; gap: 10px; }
+  .para-ti:not(:has(*)) { display: none; }
   .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }
   .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .co-txt { flex: 1; min-width: 0; display: grid; }
