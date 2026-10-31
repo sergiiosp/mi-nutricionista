@@ -16,6 +16,8 @@ const PROTEINA = {
   comida: ['yogur_proteinas', 'queso_batido', 'gelatina_proteinas', 'edamame'],
   cena: ['yogur_proteinas', 'queso_batido', 'gelatina_proteinas', 'edamame'],
 };
+// Días de carga de hidratos: complementos de poca fibra y casi sin grasa
+const CARGA = ['platano', 'tortitas_arroz', 'tortitas_maiz'];
 // Lo máximo que tiene sentido añadir de cada uno
 const MAX = { platano: 220, kiwi: 170, mandarina: 210, pan_integral: 80, tortitas_maiz: 45, tortitas_arroz: 46, proteina_whey: 30, bebida_proteinas_fresa: 280, yogur_proteinas: 120, queso_batido: 200, gelatina_proteinas: 200, bebida_soja: 300, edamame: 150 };
 // Cómo se nombra en una frase («+ 4 tortitas de maíz y 1 plátano»)
@@ -43,8 +45,10 @@ const permitido = (perfil, tiene) => (id) => !tiene.has(id) && alimentoPermitido
  * Escala un plato a su objetivo { kcal, p, c, g } y, si sin desproporcionarse no llega, le añade complementos
  * (marcados con extra: true). Si falta proteína (más de 10 g), primero un complemento de proteína y el plato
  * se reescala con lo que queda, para no pasarse de kcal; luego, las kcal que falten, con hidratos.
+ * En un día de carga (opciones.carga), lo que le falte de hidratos al plato se completa con hidratos de poca fibra
+ * y el plato se ajusta al resto, para que no los compense con grasa.
  */
-export function platoCompleto(receta, obj, tipo, perfil) {
+export function platoCompleto(receta, obj, tipo, perfil, { carga = false } = {}) {
   let { ingredientes } = escalarReceta(receta, obj);
   if (!HIDRATOS[tipo] || !perfil) return ingredientes;
   const tiene = new Set(ingredientes.map((i) => i.a));
@@ -59,6 +63,22 @@ export function platoCompleto(receta, obj, tipo, perfil) {
     if (g) {
       añadir(id, g);
       const m = macrosDe(id, g);
+      ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }).ingredientes;
+    }
+  }
+  if (carga) {
+    let faltaC = obj.c - macrosComida([...ingredientes, ...extras]).c;
+    const antes = extras.length;
+    for (const id of CARGA) {
+      if (faltaC < 20) break;
+      if (!vale(id)) continue;
+      const g = gramosPara(id, faltaC, 'c');
+      if (!g) continue;
+      añadir(id, g);
+      faltaC -= macrosDe(id, g).c;
+    }
+    if (extras.length > antes) {
+      const m = macrosComida(extras);
       ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }).ingredientes;
     }
   }

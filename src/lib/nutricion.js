@@ -203,7 +203,9 @@ export function metaDia(objetivos, sesiones, fase = null) {
   let kcal = Math.max((b.getDescanso + extra) * (1 + ritmo) + (sinDeficit ? 0 : b.ajuste), b.minimo);
   if (minCarbos) kcal = Math.max(kcal, b.proteina * 4 + 0.6 * b.pesoRef * 9 + minCarbos * 4);
   kcal = Math.round(kcal / 10) * 10;
-  return { ...repartoMacros(kcal, b.proteina, b.grasaBase, b.pesoRef, minCarbos), get: Math.round(b.getDescanso + extra) };
+  // Día de carga de hidratos: el menú tira de hidratos de poca fibra y poca grasa (ver planificador y complementos)
+  const carga = sesiones.some((x) => x.carga);
+  return { ...repartoMacros(kcal, b.proteina, b.grasaBase, b.pesoRef, minCarbos), get: Math.round(b.getDescanso + extra), ...(carga ? { carga: true } : {}) };
 }
 
 /** Objetivos de un día concreto (entreno o descanso). */

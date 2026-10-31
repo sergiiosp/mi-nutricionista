@@ -123,8 +123,18 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
 
     let tipos;
     if (fase === 'taper' && w === N - 1) {
-      // Semana de carrera: dos sesiones cortas al principio, activación la víspera y la carrera
-      tipos = dias.slice(0, 2).map((_, i) => (i === 0 ? 'series' : 'estaciones'));
+      // Semana de carrera: como mucho dos sesiones cortas y ninguna cerca de la carrera (series cortas hasta 2 días
+      // antes, estaciones hasta 3 días antes); la víspera, solo la activación. Si la carrera cae entre semana, sale
+      // una sola o ninguna: llegar fresco manda.
+      const pendientes = ['series', 'estaciones'];
+      const limite = (t) => sumarDias(carrera, t === 'estaciones' ? -3 : -2);
+      tipos = carrera
+        ? dias.map((d) => {
+          const t = pendientes.find((x) => sumarDias(lunes, ordenSemana(d)) <= limite(x));
+          if (t) pendientes.splice(pendientes.indexOf(t), 1);
+          return t || null;
+        })
+        : dias.slice(0, 2).map((_, i) => (i === 0 ? 'series' : 'estaciones'));
     } else {
       const base = fase === 'taper' ? 'especifico' : fase;
       const n = Math.min(7, Math.max(2, dias.length));
@@ -145,6 +155,7 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
     // Con un solo día de torso a la semana, ese día es de torso completo (pecho, espalda y brazos)
     const unTorso = tipos.filter((t) => t === 'torso').length === 1;
     tipos.forEach((tipo, i) => {
+      if (!tipo) return; // semana de carrera: ese día no toca
       const d = dias[i];
       let fecha = sumarDias(lunes, ordenSemana(d));
       if (carrera && fecha >= carrera) return; // nada el mismo día o después de la carrera

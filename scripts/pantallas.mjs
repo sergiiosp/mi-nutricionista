@@ -207,10 +207,17 @@ await hoja('test', `{ id: 'ski1000' }`); await foto('hoja-test', 1); await cerra
 await hoja('diaCarrera', `{ fecha: '2027-02-20' }`); await foto('hoja-dia-carrera', 2); await cerrar();
 await hoja('informe', '{}'); await foto('hoja-informe', 3); await cerrar();
 await hoja('tuPlan', '{}'); await foto('hoja-tu-plan', 4);
-await js(`[...document.querySelectorAll('.ver')].slice(0, 2).forEach((b) => b.click()); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-tu-plan-detalle', 1); await cerrar();
+await js(`[...document.querySelectorAll('.hoja-cuerpo .ver')].slice(0, 2).forEach((b) => b.click()); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-tu-plan-detalle', 1); await cerrar();
 await hoja('cocina', `(() => { const e = JSON.parse(localStorage.getItem('mi-nutricionista:v1')); const c = e.plan.dias[0].comidas[1]; return { recetaId: c.recetaId, ingredientes: c.ingredientes }; })()`); await foto('hoja-cocina', 1);
-await js(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('Empezar'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-cocina-paso', 1); await cerrar();
+await js(`[...document.querySelectorAll('.hoja-cuerpo button')].find((b) => b.textContent.includes('Empezar'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-cocina-paso', 1); await cerrar();
 await hoja('camara', `{ pose: 'frente' }`); await foto('hoja-camara', 1); await cerrar();
+
+// Suelo pélvico: la propuesta, la hoja con la rutina y, ya activada, en Tu día y en Tu perfil → Salud
+await ir('#hoy'); await fotoEn('hoy-propuesta-suelo', '[aria-label="Rutina de suelo pélvico"]');
+await hoja('suelo', '{}'); await foto('hoja-suelo', 3); await cerrar();
+await js(`(await import('/src/lib/acciones.js')).activarSuelo(); await new Promise((r) => setTimeout(r, 400));`);
+await ir('#hoy'); await fotoEn('hoy-suelo', '.suelo-fila');
+await ir('#ajustes/salud'); await foto('ajustes-salud', 1);
 
 // Día cerrado: todas las comidas de hoy hechas (al final, porque cambia los datos)
 await cerrar();

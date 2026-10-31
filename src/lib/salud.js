@@ -11,6 +11,7 @@ export const CONDICIONES = {
   tiroides: { nombre: 'Hipotiroidismo', emoji: '🦋' },
   digestivo: { nombre: 'Problemas digestivos (colon irritable, reflujo…)', emoji: '🫃' },
   renal: { nombre: 'Enfermedad renal', emoji: '🫘' },
+  hemorroides: { nombre: 'Hemorroides', emoji: '🌿' },
   embarazo: { nombre: 'Embarazo o lactancia', emoji: '🤰' },
   tca: { nombre: 'He tenido una relación difícil con la comida (TCA)', emoji: '🤍' },
 };
@@ -28,6 +29,7 @@ const CARDIOSALUDABLES = ['salmon', 'avena', 'lentejas', 'garbanzos', 'alubias',
 const AZUCARES = ['miel', 'confitura'];
 const INTEGRALES = ['arroz_integral', 'pasta_integral', 'pan_integral', 'pan_molde', 'avena', 'lentejas', 'garbanzos', 'alubias'];
 const FLATULENTOS = ['alubias', 'garbanzos', 'lentejas', 'cebolla', 'ajo', 'coliflor'];
+const CON_FIBRA = ['kiwi', 'avena', 'lentejas', 'garbanzos', 'alubias', 'alubias_pintas', 'pan_integral', 'arroz_integral', 'pasta_integral', 'brocoli', 'judias_verdes', 'calabacin', 'zanahoria'];
 
 /** Ingredientes con bonificación o penalización al elegir recetas. */
 export function preferenciasAlimentos(perfil) {
@@ -40,6 +42,7 @@ export function preferenciasAlimentos(perfil) {
   if (c.includes('colesterol')) { add(penal, GRASA_SATURADA); add(bonus, CARDIOSALUDABLES); }
   if (c.includes('diabetes')) { add(penal, AZUCARES); add(bonus, INTEGRALES); }
   if (c.includes('digestivo')) add(penal, FLATULENTOS);
+  if (c.includes('hemorroides')) add(bonus, CON_FIBRA);
   for (const x of penal) bonus.delete(x);
   return { bonus, penal };
 }
@@ -74,6 +77,7 @@ export function recomendaciones(perfil, objetivos) {
   if (perfil.compite && perfil.categoriaPeso) avisos.push({ nivel: 'info', texto: 'Compites por categoría de peso: llega al peso con la dieta de forma gradual. No hagas cortes de agua ni sauna sin supervisión profesional.' });
 
   // ── Alimentación según salud ──
+  if (c.includes('hemorroides')) alimentacion.push({ emoji: '🌿', titulo: 'Fibra y agua', texto: 'Tu menú tira de legumbres, integrales, avena y verdura cocinada. Dos kiwis pelados al día ayudan a ir al baño. Y bebe 2,5-3 l de agua: sin agua, la fibra estriñe. Los dos días antes de una carrera, menos fibra.' });
   if (c.includes('anemia')) alimentacion.push({ emoji: '🩸', titulo: 'Hierro', texto: 'He priorizado legumbres, carne roja magra, huevo y espinacas. Acompáñalos de vitamina C (pimiento, tomate, naranja, kiwi), que multiplica su absorción. Deja el café y el té para 1 h antes o después de comer: frenan la absorción del hierro.' });
   if (c.includes('hipertension')) alimentacion.push({ emoji: '🧂', titulo: 'Sal', texto: 'Menos embutido, salsa de soja y quesos curados en el menú. Cocina con especias, ajo y limón en vez de sal, y busca más fruta, verdura y legumbre (potasio).' });
   if (c.includes('colesterol')) alimentacion.push({ emoji: '🐟', titulo: 'Colesterol', texto: 'Más pescado, avena, legumbres, frutos secos y aceite de oliva; menos carne picada y quesos. La fibra soluble de la avena y las legumbres ayuda a bajar el LDL.' });
@@ -184,6 +188,7 @@ export function recomendaciones(perfil, objetivos) {
 
   // ── Hábitos ──
   habitos.push({ emoji: '💧', titulo: 'Agua', texto: `Unos ${String(objetivos.agua).replace('.', ',')} l al día${perfil.entrena ? ` y ${String(objetivos.aguaEntreno).replace('.', ',')} l los días de entreno` : ''}. Orina de color amarillo claro = vas bien.` });
+  if (c.includes('hemorroides')) habitos.push({ emoji: '🧘', titulo: 'En el baño', texto: 'No aguantes las ganas, no empujes y no pases más de 5 minutos sentado (sin el móvil). Un taburete bajo los pies endereza el recto y sale solo. Si sangras o duele, coméntalo con tu médico.' });
   if (perfil.sueno === 'poco' || perfil.sueno === 'justo') habitos.push({ emoji: '😴', titulo: 'Sueño', texto: 'Dormir menos de 7 h aumenta el hambre (sobre todo de dulce), empeora la recuperación y dificulta perder grasa. Intenta acostarte a la misma hora, sin pantallas la última media hora y con la habitación fresca y oscura.' });
   if (perfil.estres === 'alto') habitos.push({ emoji: '🧘', titulo: 'Estrés', texto: 'El estrés alto sube el apetito y empeora el sueño. Lo que mejor funciona: caminar a diario (mejor al aire libre), 5 min de respiración lenta (4 s inspirar, 6 s soltar), no saltarte comidas y limitar la cafeína. Si se mantiene, habla con un profesional.' });
   if ((perfil.cafes || 0) >= 4) habitos.push({ emoji: '☕', titulo: 'Café', texto: `Tomas ${perfil.cafes} cafés al día. Por encima de 4 (~400 mg) puede afectar a tu sueño y ansiedad. El último, antes de las ${restarHoras(dormir, 8)}.` });

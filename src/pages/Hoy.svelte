@@ -18,6 +18,8 @@
   import { slide } from 'svelte/transition';
   import PropuestaSemana from '../components/PropuestaSemana.svelte';
   import PropuestaHyrox from '../components/PropuestaHyrox.svelte';
+  import PropuestaSuelo from '../components/PropuestaSuelo.svelte';
+  import { rutinaSuelo, horaSuelo } from '../lib/suelo.js';
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
   import ComoLlegas from '../components/ComoLlegas.svelte';
@@ -85,6 +87,7 @@
   let listo = $state(false);
   onMount(() => setTimeout(() => (listo = true), 120));
 
+  const suelo = $derived($estado.perfil.sueloPelvico ? rutinaSuelo($estado.perfil.sueloPelvico.inicio, hoy) : null);
   const linea = $derived.by(() => {
     const items = d.comidas.map((c) => ({ tipo: 'comida', hora: c.hora || '', c }));
     if (hyroxActivo) for (const s of sesionesHoy) items.push({ tipo: 'hyrox', hora: s.hora, s });
@@ -92,7 +95,9 @@
     const franjas = d.comidas.map((c) => ({ id: c.franja, horaTexto: c.hora || '' }));
     for (const x of recordatoriosDia(recs, franjas, sesion)) items.push({ tipo: 'sup', hora: x.hora, x });
     for (const x of d.extras) items.push({ tipo: 'extra', hora: x.hora || '', x });
-    const orden = { sup: 0, entreno: 1, hyrox: 1, extra: 2, comida: 3 };
+    // Suelo pélvico: 5 minutos antes de dormir, si tienes la rutina
+    if (suelo) items.push({ tipo: 'suelo', hora: horaSuelo($estado.perfil) });
+    const orden = { sup: 0, suelo: 0, entreno: 1, hyrox: 1, extra: 2, comida: 3 };
     return items.sort((a, b) => a.hora.localeCompare(b.hora) || orden[a.tipo] - orden[b.tipo]);
   });
 
@@ -158,13 +163,13 @@
 
   // Lo ya hecho antes de «Ahora» se pliega en una fila (se despliega al tocar)
   let verHechas = $state(false);
-  const esHecho = (it) => (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || (it.tipo === 'hyrox' && $estado.hyrox?.registros?.[it.s.id]?.estado === 'completa') || (it.tipo === 'sup' && !!tomadas[it.x.id]);
+  const esHecho = (it) => (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || (it.tipo === 'hyrox' && $estado.hyrox?.registros?.[it.s.id]?.estado === 'completa') || (it.tipo === 'sup' && !!tomadas[it.x.id]) || (it.tipo === 'suelo' && !!tomadas.suelo);
   const hechasAntes = $derived(resto.filter((it, i) => i < posAhora && esHecho(it)));
   const plegarHechas = $derived(hechasAntes.length >= 2 && !verHechas);
   const kcalHechas = $derived(Math.round(hechasAntes.reduce((t, it) => t + (it.tipo === 'comida' ? macrosComida(it.c.situacion === 'hecha' && it.c.registro?.ingredientes ? it.c.registro.ingredientes : it.c.ingredientes || []).kcal * (it.c.situacion === 'saltada' || it.c.situacion === 'sobra' ? 0 : 1) : it.tipo === 'extra' ? it.x.macros.kcal : 0), 0)));
   // Solo se pregunta «¿Qué tal estaba?» por la última comida hecha sin valorar (una cada vez)
   const sinValorar = $derived(resto.filter((it) => it.tipo === 'comida' && it.c.situacion === 'hecha' && recetaPorId[it.c.recetaId] && !($estado.favoritas || []).includes(it.c.recetaId) && !($estado.perfil.recetasNo || []).includes(it.c.recetaId)).at(-1));
-  const nombreHecho = (it) => (it.tipo === 'comida' ? nombreFranja(it.c) : it.tipo === 'sup' ? it.x.texto.split(' ')[0] : it.tipo === 'hyrox' ? 'entreno' : it.x.nombre);
+  const nombreHecho = (it) => (it.tipo === 'comida' ? nombreFranja(it.c) : it.tipo === 'sup' ? it.x.texto.split(' ')[0] : it.tipo === 'hyrox' ? 'entreno' : it.tipo === 'suelo' ? 'suelo pélvico' : it.x.nombre);
   const resumenHechas = $derived.by(() => {
     const n = hechasAntes.map(nombreHecho);
     const txt = n.length > 3 ? `${n.slice(0, 3).join(', ')} y ${n.length - 3} más` : n.length > 1 ? `${n.slice(0, -1).join(', ')} y ${n.at(-1)}` : n[0];
@@ -189,6 +194,7 @@
 
   <PropuestaSemana />
   <PropuestaHyrox />
+  <PropuestaSuelo />
   <AvisoCopia />
   <AvisoRevision />
 
@@ -340,8 +346,8 @@
         {#if !(plegarHechas && hechasAntes.includes(it))}
         {#if i === posAhora}<li class="ahora" aria-label="Ahora, {ahora}"><span class="t-hora cifra">{ahora}</span><span class="t-ahora">Ahora</span></li>{/if}
         {@const reg = it.tipo === 'hyrox' ? $estado.hyrox?.registros?.[it.s.id] : null}
-        {@const hecho = (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || reg?.estado === 'completa' || (it.tipo === 'sup' && !!tomadas[it.x.id])}
-        <li class="paso" class:s-comida={it.tipo === 'comida' || it.tipo === 'extra'} class:s-entreno={it.tipo === 'hyrox' || it.tipo === 'entreno'} class:s-hoy={it.tipo === 'sup'} class:hecho class:pasado={i < posAhora}>
+        {@const hecho = (it.tipo === 'comida' && it.c.situacion !== 'pendiente') || it.tipo === 'extra' || reg?.estado === 'completa' || (it.tipo === 'sup' && !!tomadas[it.x.id]) || (it.tipo === 'suelo' && !!tomadas.suelo)}
+        <li class="paso" class:s-comida={it.tipo === 'comida' || it.tipo === 'extra'} class:s-entreno={it.tipo === 'hyrox' || it.tipo === 'entreno' || it.tipo === 'suelo'} class:s-hoy={it.tipo === 'sup'} class:hecho class:pasado={i < posAhora}>
           <span class="t-hora cifra">{it.hora || ''}</span>
           <span class="t-nodo" aria-hidden="true">{#if hecho}<Icono n="check" tam={11} grosor={3} />{/if}</span>
           <div class="t-cuerpo">
@@ -361,6 +367,12 @@
                 <span class="f-ic"><Icono n="dumbbell" tam={15} grosor={2.4} /></span>
                 <span class="f-txt"><small>Entreno</small><b>{deportes.map((x) => x.nombre).join(', ') || 'Tu sesión'}</b></span>
               </div>
+            {:else if it.tipo === 'suelo'}
+              <button class="fila suelo-fila" onclick={() => abrirHoja('suelo')}>
+                <span class="f-ic" class:ok={tomadas.suelo}><Icono n={tomadas.suelo ? 'check' : 'activity'} tam={15} grosor={2.4} /></span>
+                <span class="f-txt"><small>Suelo pélvico</small><b>Fase {suelo.fase.nombre.toLowerCase()} · semana {suelo.semana}</b></span>
+                <span class="f-dato">5 min</span>
+              </button>
             {:else if it.tipo === 'sup'}
               <button class="chip-toma" class:tomado={tomadas[it.x.id]} aria-pressed={!!tomadas[it.x.id]} title={it.x.porque} onclick={() => alternarToma(hoy, it.x.id)}>
                 {#if tomadas[it.x.id]}<Icono n="check" tam={14} grosor={2.6} />{:else}<Icono n="pill" tam={14} grosor={2.2} />{/if}

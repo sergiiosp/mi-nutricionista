@@ -83,12 +83,16 @@ function grasaRelativa(r) {
   return grasaRelativaCache[r.id];
 }
 
+// Legumbres: en los días de carga de hidratos, mejor otro plato (mucha fibra, pesadas antes de competir)
+const LEGUMBRES = new Set(['garbanzos', 'lentejas', 'alubias', 'alubias_pintas', 'hummus', 'hummus_piquillo', 'edamame', 'pasta_lentejas', 'guisantes', 'crema_lentejas']);
+const conLegumbre = (r) => r.ingredientes.some((i) => LEGUMBRES.has(i.a));
+
 // Lo que tienes en casa (despensa): el menú y las alternativas tiran antes de ello
 let DESPENSA = new Set();
 export function fijarDespensa(ids) { DESPENSA = new Set(ids || []); }
 
 function puntuar(receta, ctx) {
-  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas, estilos } = ctx;
+  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas, estilos, carga } = ctx;
   let s = aleatorio() * 3;
   const n = usos[receta.id] || 0;
   s -= n * (franja.tipo === 'desayuno' || franja.tipo === 'snack' ? 1.2 : 3.5);
@@ -110,6 +114,11 @@ function puntuar(receta, ctx) {
     const { grasa, fibra } = grasaRelativa(receta);
     s -= Math.max(0, grasa - 0.25) * 12 + Math.max(0, fibra - 8) * 0.3;
   }
+  if (carga) {
+    // Carga de hidratos (los dos días antes de la carrera): todo el día con poca grasa, poca fibra y sin legumbre
+    const { grasa, fibra } = grasaRelativa(receta);
+    s -= Math.max(0, grasa - 0.2) * 15 + Math.max(0, fibra - 6) * 0.6 + (conLegumbre(receta) ? 6 : 0);
+  }
   // Recetas que encajan mal en los macros de la franja (aun escaladas) salen menos
   s -= errorAjuste(receta) * 8;
   for (const i of receta.ingredientes) {
@@ -125,7 +134,7 @@ function puntuar(receta, ctx) {
 
 function crearComida(receta, franja, objDia, obj = objetivoFranja(objDia, franja), perfil = null) {
   // Si el plato, sin desproporcionarse, no llega: un complemento que pegue (tortitas, pan, fruta, un batido…)
-  const ingredientes = receta.fuera ? escalarReceta(receta, obj).ingredientes : platoCompleto(receta, obj, franja.tipo, perfil);
+  const ingredientes = receta.fuera ? escalarReceta(receta, obj).ingredientes : platoCompleto(receta, obj, franja.tipo, perfil, { carga: objDia?.carga });
   return { franja: franja.id, recetaId: receta.id, ingredientes, hora: franja.horaTexto, etiqueta: franja.etiqueta };
 }
 // Kcal que pone el complemento, frente al objetivo de la comida (mejor un plato que llegue solo)
@@ -217,7 +226,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   // Cada receta se escala una vez por franja y objetivo
   const escaladas = {};
   const comidaEscalada = (receta, franja, objDia, obj) => {
-    const k = `${obj.p}|${obj.c}|${obj.g}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}`;
+    const k = `${obj.p}|${obj.c}|${obj.g}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}|${objDia.carga ? 'carga' : ''}`;
     if (!escaladas[k]) {
       const comida = crearComida(receta, franja, objDia, obj, perfil);
       // Entre dos platos, el que llega por sí solo (sin complemento) sale antes: «otra cena» antes que añadidos
@@ -244,7 +253,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
         const lista = candidatas(perfil, franja, { favoritas, viaje });
         if (lista.length) {
           const errorAjuste = (r) => comidaEscalada(r, franja, objDia, obj).error;
-          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas), estilos };
+          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas), estilos, carga: !!objDia.carga };
           receta = lista.map((r) => [r, puntuar(r, ctx)]).sort((a, b) => b[1] - a[1])[0][0];
         }
       }
@@ -293,7 +302,9 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
       const desvio = Math.abs(m.kcal - obj.kcal) / obj.kcal + Math.abs(m.p - obj.p) / Math.max(obj.p, 1) + 0.3 * pesoExtras(comida, obj);
       const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa(r).grasa - 0.25) : 0;
       const enCasa = r.ingredientes.filter((i) => DESPENSA.has(i.a) && !ALIMENTOS[i.a]?.despensa).map((i) => i.a);
-      return { comida, macros: m, usos: usos[r.id] || 0, enCasa, orden: desvio + (usos[r.id] || 0) * 0.15 + pre - enCasa.length * 0.08 };
+      // En la carga de hidratos, las legumbres al final de la lista
+      const legumbre = objDia.carga && conLegumbre(r) ? 1 : 0;
+      return { comida, macros: m, usos: usos[r.id] || 0, enCasa, orden: desvio + (usos[r.id] || 0) * 0.15 + pre - enCasa.length * 0.08 + legumbre };
     })
     .sort((a, b) => a.orden - b.orden);
 }

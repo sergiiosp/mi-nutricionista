@@ -321,13 +321,18 @@ export function construirSesion(ctx) {
     default:
       break;
   }
+  // Con la rutina de suelo pélvico: en lo pesado, sin aguantar el aire apretando (empuja hacia abajo)
+  if (perfil?.sueloPelvico && ['fuerza', 'hyrox'].includes(T.clase) && !['carrera', 'activacion'].includes(tipo)) {
+    notas.push('Suelo pélvico: en lo más pesado, suelta el aire al pasar la parte dura y no aguantes la respiración apretando más de lo justo.');
+  }
 
   return {
     tipo,
     titulo,
     emoji: T.emoji,
     color: T.color,
-    rpe: Math.min(10, T.rpe + (T.clase === 'fuerza' && fase !== 'taper' ? ex.rpe : 0)),
+    // En la puesta a punto, las series son de chispa (pocas y sin forzar): no cuentan como un día duro
+    rpe: tipo === 'series' && fase === 'taper' ? 6 : Math.min(10, T.rpe + (T.clase === 'fuerza' && fase !== 'taper' ? ex.rpe : 0)),
     duracion: Math.round(duracion),
     distancia: Math.round(distancia * 10) / 10,
     calentamiento: sinGym && ['fuerza', 'hyrox'].includes(T.clase) ? ['8 min de trote suave', 'Movilidad dinámica de cadera, tobillos y hombros (5 min)', '10 sentadillas, 10 zancadas y 5 flexiones a ritmo suave'] : CALENTAMIENTO[T.clase] || [],

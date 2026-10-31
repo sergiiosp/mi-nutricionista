@@ -280,6 +280,23 @@ export function probarEnMenu(diaIdx, franja, recetaId, hoy = hoyISO()) {
   return true;
 }
 
+/**
+ * Rutina de suelo pélvico: empieza hoy (fase «Aprender») y sale cada noche en Tu día. Por las hemorroides, tus
+ * próximos menús llevan algo más de fibra (condición «hemorroides»).
+ */
+export function activarSuelo() {
+  actualizar((x) => {
+    x.perfil.sueloPelvico = { inicio: hoyISO() };
+    x.perfil.condiciones = [...new Set([...(x.perfil.condiciones || []), 'hemorroides'])];
+    x.propuestasVistas = { ...(x.propuestasVistas || {}), 'suelo-pelvico': true };
+  });
+  anotarDiario('suelo', 'Rutina de suelo pélvico', '5 minutos cada noche, por fases, y algo más de fibra en tus menús.');
+}
+/** Dejar la rutina (la fibra del menú sigue mientras tengas la condición en tu perfil). */
+export function desactivarSuelo() {
+  actualizar((x) => { delete x.perfil.sueloPelvico; });
+}
+
 /** Lo que llevas preparado del batch de un día (se guarda para que no se pierda al cerrar la hoja). */
 export function marcarPreparado(desde, titulo) {
   actualizar((x) => {

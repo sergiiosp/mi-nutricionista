@@ -5,7 +5,8 @@
   import Conectar from './ajustes/Conectar.svelte';
   import { ir } from '../stores/ruta.js';
   import { estado, actualizar, exportar, importar, reiniciar } from '../stores/estado.js';
-  import { avisar } from '../stores/ui.js';
+  import { avisar, abrirHoja } from '../stores/ui.js';
+  import { rutinaSuelo } from '../lib/suelo.js';
   import { calcularObjetivos, OBJETIVOS, DIETAS, TRABAJO, DEPORTES } from '../lib/nutricion.js';
   import { horarioDia } from '../lib/horario.js';
   import { recomendaciones, CONDICIONES } from '../lib/salud.js';
@@ -81,6 +82,11 @@
   <button class="boton ancho" onclick={oneditar}><Icono e="✏️" tam={18} /> Editar mis datos</button>
 {:else if pestaña === 'salud'}
   {#each recs.avisos as a (a.texto)}<p class="alerta {a.nivel === 'importante' ? 'alerta-fuerte' : ''}">{a.texto}</p>{/each}
+  <button class="tarjeta suelo" onclick={() => abrirHoja('suelo')}>
+    <span class="suelo-ic"><Icono n="activity" tam={20} /></span>
+    <span class="suelo-txt"><b>Suelo pélvico</b><small>{p.sueloPelvico ? `Fase ${rutinaSuelo(p.sueloPelvico.inicio, hoyISO()).fase.nombre.toLowerCase()} · semana ${rutinaSuelo(p.sueloPelvico.inicio, hoyISO()).semana} · 5 min cada noche` : '5 minutos al día, por fases. Sin empezar'}</small></span>
+    <Icono n="chevron-right" tam={18} />
+  </button>
   {#if recs.suplementos.length}
     <h2 class="seccion"><Icono e="💊" tam={18} /> Suplementos para ti</h2>
     <p class="pie-nota">Solo los que tienen sentido en tu caso. Dosis orientativas para adultos sanos: si tomas medicación o tienes alguna patología, consúltalo antes.</p>
@@ -181,6 +187,11 @@
   .h-cab { margin: 6px 0 4px; }
   .horario-mini .etq { margin-left: auto; }
   .lista { display: grid; gap: 8px; }
+  .suelo { display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 12px; border: 0; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .suelo-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
+  .suelo-txt { flex: 1; min-width: 0; display: grid; }
+  .suelo-txt small { font-size: 0.8rem; color: var(--texto-2); }
+  .suelo > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   .sup { margin: 0; padding: 0; }
   .sup summary { display: flex; align-items: center; gap: 12px; padding: 14px; list-style: none; cursor: pointer; }
   .sup summary::-webkit-details-marker { display: none; }
