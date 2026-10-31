@@ -11,43 +11,56 @@
   let abierto = $state(null);
   const aparatos = $derived($estado.perfil?.aparatos?.length ? $estado.perfil.aparatos : ['microondas', 'airfryer', 'plancha', 'olla']);
   const tieneInfo = (a) => !!(equivalenciaCocido(a, 100) || comoCocinar(a, aparatos));
+  // Lo que se añade para completar el día (tortitas, pan, fruta…) va aparte del plato
+  const principales = $derived(ingredientes.filter((i) => !i.extra));
+  const extras = $derived(ingredientes.filter((i) => i.extra));
 </script>
 
-<ul class="lista-ing" class:caja>
-  {#each ingredientes as i (i.a)}
-    {@const p = enlaces ? producto(i.a) : null}
-    {@const eq = equivalenciaCocido(i.a, i.g)}
-    {@const como = comoCocinar(i.a, aparatos)}
-    {@const previo = antes?.find((x) => x.a === i.a)?.g}
-    <li>
-      {#if tieneInfo(i.a)}
-        <button class="fila" class:abierto={abierto === i.a} aria-expanded={abierto === i.a} onclick={() => (abierto = abierto === i.a ? null : i.a)}>
-          <span class="cant">{cantidadTexto(i.a, i.g)}{#if eq}<small>crudo</small>{/if}</span>
-          <span class="nombre">{alimento(i.a).nombre}{#if previo && Math.abs(previo - i.g) >= 5}<small class="antes">antes {cantidadTexto(i.a, previo)}</small>{/if}</span>
-          <Icono n="info" tam={16} clase="mas-info" />
-        </button>
-        {#if abierto === i.a}
-          <div class="info" transition:slide={{ duration: 160 }}>
-            {#if eq}<p><b>{cantidadTexto(i.a, i.g)} en crudo ≈ {eq.gramos} g {eq.como}.</b> Si lo pesas ya hecho, busca unos {eq.gramos} g.</p>{/if}
-            {#if como}<p class="como"><Icono n={APARATOS[como.aparato].icono} tam={15} /> <span><b>{APARATOS[como.aparato].nombre}:</b> {como.texto}</span></p>{/if}
-            {#if p}<a href={p.url} target="_blank" rel="noopener">Ver en Mercadona</a>{/if}
-          </div>
-        {/if}
-      {:else}
-        <div class="fila">
-          <span class="cant">{cantidadTexto(i.a, i.g)}</span>
-          <span class="nombre">{#if p}<a href={p.url} target="_blank" rel="noopener">{alimento(i.a).nombre}</a>{:else}{alimento(i.a).nombre}{/if}{#if previo && Math.abs(previo - i.g) >= 5}<small class="antes">antes {cantidadTexto(i.a, previo)}</small>{/if}</span>
+{#snippet fila(i)}
+  {@const p = enlaces ? producto(i.a) : null}
+  {@const eq = equivalenciaCocido(i.a, i.g)}
+  {@const como = comoCocinar(i.a, aparatos)}
+  {@const previo = antes?.find((x) => x.a === i.a)?.g}
+  <li>
+    {#if tieneInfo(i.a)}
+      <button class="fila" class:abierto={abierto === i.a} aria-expanded={abierto === i.a} onclick={() => (abierto = abierto === i.a ? null : i.a)}>
+        <span class="cant">{cantidadTexto(i.a, i.g)}{#if eq}<small>crudo</small>{/if}</span>
+        <span class="nombre">{alimento(i.a).nombre}{#if previo && Math.abs(previo - i.g) >= 5}<small class="antes">antes {cantidadTexto(i.a, previo)}</small>{/if}</span>
+        <Icono n="info" tam={16} clase="mas-info" />
+      </button>
+      {#if abierto === i.a}
+        <div class="info" transition:slide={{ duration: 160 }}>
+          {#if eq}<p><b>{cantidadTexto(i.a, i.g)} en crudo ≈ {eq.gramos} g {eq.como}.</b> Si lo pesas ya hecho, busca unos {eq.gramos} g.</p>{/if}
+          {#if como}<p class="como"><Icono n={APARATOS[como.aparato].icono} tam={15} /> <span><b>{APARATOS[como.aparato].nombre}:</b> {como.texto}</span></p>{/if}
+          {#if p}<a href={p.url} target="_blank" rel="noopener">Ver en Mercadona</a>{/if}
         </div>
       {/if}
-    </li>
-  {/each}
+    {:else}
+      <div class="fila">
+        <span class="cant">{cantidadTexto(i.a, i.g)}</span>
+        <span class="nombre">{#if p}<a href={p.url} target="_blank" rel="noopener">{alimento(i.a).nombre}</a>{:else}{alimento(i.a).nombre}{/if}{#if previo && Math.abs(previo - i.g) >= 5}<small class="antes">antes {cantidadTexto(i.a, previo)}</small>{/if}</span>
+      </div>
+    {/if}
+  </li>
+{/snippet}
+
+<ul class="lista-ing" class:caja>
+  {#each principales as i (i.a)}{@render fila(i)}{/each}
 </ul>
+{#if extras.length}
+  <p class="acomp">Acompáñalo con<small>para llegar a lo que pide tu día sin desproporcionar el plato</small></p>
+  <ul class="lista-ing" class:caja>
+    {#each extras as i (i.a)}{@render fila(i)}{/each}
+  </ul>
+{/if}
 <p class="nota-crudo">Pesos en crudo (legumbres y conservas, escurridas). Toca un alimento con <Icono n="info" tam={13} /> para ver cuánto pesa hecho y cómo cocinarlo.</p>
 
 <style>
   .lista-ing { list-style: none; margin: 10px 0 0; padding: 0; display: grid; font-size: 0.92rem; }
   .lista-ing.caja { background: var(--superficie); padding: 6px 14px; border-radius: var(--radio-s); box-shadow: var(--sombra); }
   .lista-ing li + li { border-top: 1px solid var(--linea); }
+  .acomp { display: grid; margin: 14px 0 0; font-weight: 700; font-size: 0.9rem; }
+  .acomp small { font-weight: 500; font-size: 0.78rem; color: var(--texto-2); }
   .fila { width: 100%; display: grid; grid-template-columns: minmax(64px, max-content) 1fr auto; gap: 12px; align-items: center; min-height: 40px; padding: 6px 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
   .cant { display: grid; font-weight: 700; text-align: right; white-space: nowrap; }

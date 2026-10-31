@@ -7,6 +7,7 @@ import { REPARTOS, horarioDia, objetivoFranja, esDiaEntreno } from './horario.js
 import { preferenciasAlimentos } from './salud.js';
 import { comboDesdeId, esCombo, combosAleatorios, familiaDe } from './combos.js';
 import { adaptarReceta, adaptarActiva } from './sustituciones.js';
+import { platoCompleto } from './complementos.js';
 
 export { REPARTOS, objetivoFranja };
 
@@ -33,6 +34,18 @@ function rng(semilla) {
 function proteinaPrincipal(receta) {
   const p = receta.ingredientes.filter((i) => i.rol === 'P').sort((a, b) => b.g - a.g)[0];
   return p ? p.a : null;
+}
+
+// Estilo del plato, para que la semana no repita el mismo tipo (las recetas nuevas lo traen puesto)
+const ESTILOS = [
+  ['mexicano', /fajita|burrito|taco|quesadilla|chili|nacho/i],
+  ['asiatico', /wok|teriyaki|soja|tres delicias|oriental|salteado/i],
+  ['indio', /curry|dal\b|tikka/i],
+  ['italiano', /pizza|pasta|espagueti|macarr|bolo[ñn]esa|lasa[ñn]a/i],
+  ['cuchara', /crema|sopa|lentejas|garbanzos|alubias|cocido|estofad|potaje/i],
+];
+export function estiloDe(receta) {
+  return receta.estilo || ESTILOS.find(([, re]) => re.test(receta.nombre))?.[0] || 'casero';
 }
 
 export function candidatas(perfil, franja, { favoritas = [], viaje = null } = {}) {
@@ -75,7 +88,7 @@ let DESPENSA = new Set();
 export function fijarDespensa(ids) { DESPENSA = new Set(ids || []); }
 
 function puntuar(receta, ctx) {
-  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas } = ctx;
+  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas, estilos } = ctx;
   let s = aleatorio() * 3;
   const n = usos[receta.id] || 0;
   s -= n * (franja.tipo === 'desayuno' || franja.tipo === 'snack' ? 1.2 : 3.5);
@@ -83,6 +96,13 @@ function puntuar(receta, ctx) {
   if (favoritas?.has(receta.id)) s += 4; // tus favoritas salen a menudo (sin repetirse cada día)
   const prot = proteinaPrincipal(receta);
   if (prot && proteinasDia.includes(prot)) s -= 2.5;
+  if (['comida', 'cena'].includes(franja.tipo)) {
+    // Variedad: el mismo estilo (mexicano, asiático…) pocas veces por semana, y los alimentos de la cesta,
+    // mejor en un plato distinto que repitiendo el mismo
+    const e = estiloDe(receta);
+    s -= (estilos?.[e] || 0) * (e === 'casero' ? 0.4 : 1.2);
+    if (prot && !n && enUso.has(prot)) s += 0.8;
+  }
   if (perfil.presupuesto === 'ajustado') s -= ctx.costeRelativo(receta) * 2;
   if (perfil.sobras && franja.tipo === 'comida' && receta.batch) s += 0.8;
   if (franja.etiqueta === 'pre') {
@@ -103,10 +123,13 @@ function puntuar(receta, ctx) {
   return s;
 }
 
-function crearComida(receta, franja, objDia, obj = objetivoFranja(objDia, franja)) {
-  const escalada = escalarReceta(receta, obj);
-  return { franja: franja.id, recetaId: receta.id, ingredientes: escalada.ingredientes, hora: franja.horaTexto, etiqueta: franja.etiqueta };
+function crearComida(receta, franja, objDia, obj = objetivoFranja(objDia, franja), perfil = null) {
+  // Si el plato, sin desproporcionarse, no llega: un complemento que pegue (tortitas, pan, fruta, un batido…)
+  const ingredientes = receta.fuera ? escalarReceta(receta, obj).ingredientes : platoCompleto(receta, obj, franja.tipo, perfil);
+  return { franja: franja.id, recetaId: receta.id, ingredientes, hora: franja.horaTexto, etiqueta: franja.etiqueta };
 }
+// Kcal que pone el complemento, frente al objetivo de la comida (mejor un plato que llegue solo)
+const pesoExtras = (comida, obj) => macrosComida(comida.ingredientes.filter((i) => i.extra)).kcal / Math.max(obj.kcal, 1);
 
 /**
  * Lleva la cuenta del día comida a comida: si las anteriores se quedaron cortas (o se pasaron)
@@ -146,11 +169,13 @@ function balanceDia(objDia, franjas) {
 // Quedarse corto de proteína pesa más que pasarse, y mucho más si falta más de un 25 %:
 // con pocas recetas (dietas con restricciones) es mejor repetir plato que, por no repetir,
 // elegir uno que no llega a la proteína del día.
+// Pasarse de proteína (más de un 10 %) o de grasa (más de un 15 %) también pesa: el resto, mejor con hidratos.
 function errorComida(ingredientes, obj) {
   const m = macrosComida(ingredientes);
   const dp = (m.p - obj.p) / Math.max(obj.p, 1);
-  const prot = dp < 0 ? -1.6 * dp + 4 * Math.max(0, -dp - 0.25) : 0.8 * dp;
-  return Math.abs(m.kcal - obj.kcal) / obj.kcal + prot;
+  const prot = dp < 0 ? -1.6 * dp + 4 * Math.max(0, -dp - 0.25) : 0.8 * dp + 2 * Math.max(0, dp - 0.1);
+  const grasa = 0.8 * Math.max(0, (m.g - obj.g) / Math.max(obj.g, 1) - 0.15);
+  return Math.abs(m.kcal - obj.kcal) / obj.kcal + prot + grasa;
 }
 
 /** Datos de un día: si se entrena, su horario y su objetivo. */
@@ -176,9 +201,12 @@ export function contextoDia(perfil, objetivos, fecha, proveedor = null, viajes =
  * Genera un plan de N días empezando en `inicio` (fecha ISO yyyy-mm-dd).
  * perfil.sobras = true → la comida se cocina para dos días seguidos (táper).
  */
-export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null, favoritas = [], viajes = null } = {}) {
+export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Date.now(), proveedor = null, favoritas = [], viajes = null, recientes = [] } = {}) {
   const aleatorio = rng(semilla);
+  // Los platos de la semana anterior cuentan como ya usados: la nueva no los repite si hay otros que encajen
   const usos = {};
+  for (const id of recientes) usos[id] = (usos[id] || 0) + 1;
+  const estilos = {};
   const prefs = preferenciasAlimentos(perfil);
 
   // Coste medio de cada receta a ración base, para la preferencia de presupuesto
@@ -191,8 +219,9 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   const comidaEscalada = (receta, franja, objDia, obj) => {
     const k = `${obj.p}|${obj.c}|${obj.g}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}`;
     if (!escaladas[k]) {
-      const comida = crearComida(receta, franja, objDia, obj);
-      escaladas[k] = { comida, error: errorComida(comida.ingredientes, obj) };
+      const comida = crearComida(receta, franja, objDia, obj, perfil);
+      // Entre dos platos, el que llega por sí solo (sin complemento) sale antes: «otra cena» antes que añadidos
+      escaladas[k] = { comida, error: errorComida(comida.ingredientes, obj) + 0.35 * pesoExtras(comida, obj) };
     }
     return escaladas[k];
   };
@@ -215,12 +244,13 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
         const lista = candidatas(perfil, franja, { favoritas, viaje });
         if (lista.length) {
           const errorAjuste = (r) => comidaEscalada(r, franja, objDia, obj).error;
-          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas) };
+          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas), estilos };
           receta = lista.map((r) => [r, puntuar(r, ctx)]).sort((a, b) => b[1] - a[1])[0][0];
         }
       }
       if (!receta) continue;
       usos[receta.id] = (usos[receta.id] || 0) + 1;
+      if (['comida', 'cena'].includes(franja.tipo)) estilos[estiloDe(receta)] = (estilos[estiloDe(receta)] || 0) + 1;
       const prot = proteinaPrincipal(receta);
       if (prot) proteinasDia.push(prot);
       for (const i of receta.ingredientes) enUso.add(i.a);
@@ -258,9 +288,9 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
   return candidatas(perfil, franja, { favoritas, viaje })
     .filter((r) => r.id !== actual)
     .map((r) => {
-      const comida = crearComida(r, franja, objDia);
+      const comida = crearComida(r, franja, objDia, obj, perfil);
       const m = macrosComida(comida.ingredientes);
-      const desvio = Math.abs(m.kcal - obj.kcal) / obj.kcal + Math.abs(m.p - obj.p) / Math.max(obj.p, 1);
+      const desvio = Math.abs(m.kcal - obj.kcal) / obj.kcal + Math.abs(m.p - obj.p) / Math.max(obj.p, 1) + 0.3 * pesoExtras(comida, obj);
       const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa(r).grasa - 0.25) : 0;
       const enCasa = r.ingredientes.filter((i) => DESPENSA.has(i.a) && !ALIMENTOS[i.a]?.despensa).map((i) => i.a);
       return { comida, macros: m, usos: usos[r.id] || 0, enCasa, orden: desvio + (usos[r.id] || 0) * 0.15 + pre - enCasa.length * 0.08 };
@@ -283,7 +313,7 @@ export function completarPlan(plan, perfil, objetivos, proveedor = null, favorit
       const lista = candidatas(perfil, franja, { favoritas, viaje });
       if (!lista.length) continue;
       const receta = lista[(i * 7 + franja.id.length) % lista.length];
-      dia.comidas.push(crearComida(receta, franja, objDia));
+      dia.comidas.push(crearComida(receta, franja, objDia, undefined, perfil));
       n++;
     }
     dia.comidas.sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
@@ -315,7 +345,7 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde =
       .map((franja, idx) => {
         const receta = recetaPorId[porFranja[franja.id]?.recetaId];
         if (!receta) return null;
-        const comida = crearComida(receta, franja, objDia, balance.objetivo(idx));
+        const comida = crearComida(receta, franja, objDia, balance.objetivo(idx), p);
         balance.anotar(idx, comida.ingredientes);
         if (dia.libre?.franja === franja.id) {
           // La comida libre: el plato de base más el margen ahorrado (no va a la compra; comes lo que quieras)
@@ -323,7 +353,7 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde =
           const meta = { p: m.p, c: m.c + (dia.libre.extra * 0.55) / 4, g: m.g + (dia.libre.extra * 0.45) / 9 };
           meta.kcal = meta.p * 4 + meta.c * 4 + meta.g * 9;
           // Es un hueco, no una receta que cocinar: se escala sin los límites normales para que cuadre el margen
-          comida.ingredientes = escalarReceta(receta, meta, { P: [0.5, 6], C: [0.3, 8], G: [0.4, 8] }).ingredientes;
+          comida.ingredientes = escalarReceta(receta, meta, { P: [0.5, 6], C: [0.3, 8], G: [0.4, 8] }, { libre: true }).ingredientes;
           comida.libre = dia.libre.extra;
         }
         return comida;

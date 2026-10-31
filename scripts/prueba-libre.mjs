@@ -5,12 +5,14 @@ const { crearPlan, guardarDiaLibre, quitarDiaLibre } = await import('../src/lib/
 const { macrosComida } = await import('../src/lib/nutricion.js');
 const { hoyISO, sumarDias } = await import('../src/lib/planificador.js');
 const { listaCompra } = await import('../src/lib/compra.js');
+const { fijarPerfilRecetas } = await import('../src/lib/sustituciones.js');
 
 let fallos = 0;
 const ok = (c, t) => { console.log(`${c ? '✓' : '✗'} ${t}`); if (!c) fallos++; };
 const hoy = hoyISO();
 const perfil = { sexo: 'h', edad: 30, altura: 178, peso: 80, trabajo: 'sentado', trabajoInicio: '09:00', trabajoFin: '18:00', despertar: '07:00', dormir: '23:30', pasos: 'normal', entrena: true, deportes: ['fuerza'], diasEntreno: [1, 2, 4, 5], horaEntreno: '18:30', duracionEntreno: 60, intensidad: 'moderada', objetivo: 'recomposicion', ritmo: 'moderado', comidas: 4, alergias: [], noMeGusta: [], dieta: 'omnivora', condiciones: [], leche: 'avena', whey: true };
 actualizar((e) => { e.perfil = perfil; e.registros = {}; });
+fijarPerfilRecetas(perfil); // como en la app (main.js): las recetas salen adaptadas a tu perfil también al recalcular
 crearPlan();
 const dia = (f) => get(estado).plan.dias.find((d) => d.fecha === f);
 const kcal = (f) => Math.round(dia(f).comidas.reduce((s, c) => s + macrosComida(c.ingredientes).kcal, 0));

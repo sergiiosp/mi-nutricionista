@@ -7,6 +7,7 @@
   import { estado } from '../../stores/estado.js';
   import { avisar, abrirHoja } from '../../stores/ui.js';
   import { recetaPorId } from '../../lib/planificador.js';
+  import { textoComplementos } from '../../lib/complementos.js';
   import { calcularObjetivos, objetivosDia, macrosComida, costeComida } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
   import { crearPlan } from '../../lib/acciones.js';
@@ -136,6 +137,7 @@
             <span class="m-txt">
               <small>{nombreFranja(c)}{#if c.libre}<i class="m-etq">libre · come lo que quieras</i>{/if}{#if c.etiqueta}<i class="m-etq">{ETQ[c.etiqueta]}</i>{/if}{#if n}<i class="m-etq gris">{n}</i>{/if}</small>
               <b>{c.libre ? `${nombreFranja(c)} libre` : r?.nombre}</b>
+              {#if !c.libre && textoComplementos(c.ingredientes)}<small class="m-acomp">+ {textoComplementos(c.ingredientes)}</small>{/if}
             </span>
             <span class="m-kcal cifra">{Math.round(macrosComida(c.ingredientes).kcal)}<small>kcal</small></span>
           </button>
@@ -178,6 +180,7 @@
   .celda { display: flex; flex-direction: column; justify-content: space-between; gap: 4px; min-height: 76px; min-width: 0; padding: 7px; border: 0; border-radius: var(--r-s); text-align: left; font: inherit; color: var(--texto); cursor: pointer;
     background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--tinte) 80%, transparent), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
   .fila-cq.hoy .celda { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primario) 45%, transparent); }
+  .m-acomp { color: var(--primario-fuerte) !important; font-weight: 600; }
   .c-nombre { font-size: 0.68rem; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .c-kcal { font-size: 0.66rem; font-weight: 700; color: var(--primario-fuerte); }
   .vacia-c { background: none; box-shadow: none; }

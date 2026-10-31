@@ -1,6 +1,7 @@
 // Día dinámico: lo que llevas comido, lo que te falta y el reajuste de las comidas que quedan.
-import { macrosComida, sumarMacros, escalarReceta, objetivosDia, macrosDe, alimentoPermitido, alimento } from './nutricion.js';
+import { macrosComida, sumarMacros, objetivosDia, macrosDe, alimentoPermitido, alimento } from './nutricion.js';
 import { recetaPorId } from './planificador.js';
+import { platoCompleto, tipoFranja } from './complementos.js';
 
 const CERO = { kcal: 0, p: 0, c: 0, g: 0, f: 0 };
 // Comidas pequeñas que pueden sobrar un día con menos gasto (la de antes de dormir es la última en quitarse)
@@ -77,7 +78,7 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
       };
       meta.kcal = meta.p * 4 + meta.c * 4 + meta.g * 9;
       if (meta.kcal < 80) return; // sin margen: se deja como estaba y se avisa en la vista
-      const nuevos = escalarReceta(receta, meta).ingredientes;
+      const nuevos = platoCompleto(receta, meta, tipoFranja(c.franja), e.perfil);
       const antes = original[i].kcal;
       const despues = macrosComida(nuevos).kcal;
       if (Math.abs(despues - antes) / antes > 0.05) {

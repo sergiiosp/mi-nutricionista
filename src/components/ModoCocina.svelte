@@ -9,7 +9,7 @@
 
   let { recetaId, ingredientes } = $props();
   const receta = recetaPorId[recetaId];
-  const ings = ingredientes || receta.ingredientes;
+  const ings = (ingredientes || receta.ingredientes).filter((i) => !i.extra); // lo que acompaña (pan, fruta…) no se cocina
   const pasos = ['ingredientes', ...(receta.pasos || [])];
   let i = $state(0);
   let tengo = $state({});

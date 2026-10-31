@@ -37,6 +37,11 @@
     return { id, nombre: ALIMENTOS[id]?.nombre || id, producto: p, envases: n, coste: p ? n * p.precio : 0, extra: true, gramos: 0, bruto: 0 };
   }));
   let abierto = $state(null);
+  // «Para fajitas de pollo, pollo tikka en air fryer y 2 más»
+  const textoPlatos = (l) => {
+    const n = l.map((x) => x[0].toLowerCase() + x.slice(1));
+    return n.length <= 2 ? n.join(' y ') : `${n.slice(0, 2).join(', ')} y ${n.length - 2} más`;
+  };
   // Pasillos: se pliegan solos cuando ya lo tienes todo; tocando la cabecera, a tu gusto
   let plegados = $state({});
   let añadiendo = $state(false);
@@ -141,6 +146,7 @@
           <button class="info" aria-expanded={abierto === it.id} onclick={() => (abierto = abierto === it.id ? null : it.id)}>
             <b>{it.producto?.nombre || it.nombre}</b>
             <small>{casa ? 'Lo tienes en casa' : textoEnvases(it)}{#if it.extra} · fuera del menú{:else} · usas {Math.round(it.gramos)} {ALIMENTOS[it.id].medida || 'g'}{/if}{#if it.cambiado} · cantidad tuya{/if}</small>
+            {#if it.platos?.length && !casa}<small class="para">Para {textoPlatos(it.platos)}</small>{/if}
             {#if it.corto && !casa}<small class="corto">No te llega para el menú</small>{/if}
           </button>
           <span class="precio">{casa ? '—' : euros(it.coste)}</span>
@@ -223,6 +229,7 @@
   .item img, .img { width: 48px; height: 48px; border-radius: var(--r-s); object-fit: contain; background: #fff; padding: 3px; flex-shrink: 0; display: grid; place-items: center; }
   .info { flex: 1; min-width: 0; display: grid; padding: 0; border: 0; background: none; color: var(--texto); text-align: left; font: inherit; cursor: pointer; }
   .corto { color: var(--aviso-texto, var(--amarillo)) !important; }
+  .para { color: var(--texto-3); }
   .editor { display: grid; gap: 8px; padding: 10px 12px 14px; background: var(--superficie-2); border-radius: 0 0 14px 14px; }
   .envases { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-weight: 700; font-size: 0.86rem; }
   .envases small { color: var(--texto-2); font-weight: 600; }

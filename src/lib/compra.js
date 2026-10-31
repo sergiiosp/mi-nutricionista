@@ -17,15 +17,26 @@ const ORDEN_PASILLOS = [
  * @param plan  plan generado
  * @param dias  índices de los días a incluir (por defecto todos)
  */
+// «Pollo tikka en air fryer con arroz y salsa de yogur» → «Pollo tikka en air fryer»
+function nombreCorto(n = '') {
+  const antes = n.split(' con ')[0];
+  return antes.includes(' ') ? antes : n.replace(/ \(.*?\)/g, '').split(',')[0];
+}
+
 export function listaCompra(plan, dias = null) {
   const totales = {};
+  const platos = {}; // para qué platos es cada cosa (la misma cesta sirve para recetas distintas)
   const especias = new Set();
   plan.dias.forEach((dia, i) => {
     if (dias && !dias.includes(i)) return;
     if (dia.viaje) return; // de viaje compras allí o comes fuera
     for (const c of dia.comidas) {
       if (c.libre) continue; // comida libre: no se compra nada para ella
-      for (const ing of c.ingredientes) totales[ing.a] = (totales[ing.a] || 0) + ing.g;
+      const nombre = nombreCorto(recetaPorId[c.recetaId]?.nombre);
+      for (const ing of c.ingredientes) {
+        totales[ing.a] = (totales[ing.a] || 0) + ing.g;
+        (platos[ing.a] ||= new Set()).add(ing.extra ? 'acompañamientos' : nombre);
+      }
       for (const e of recetaPorId[c.recetaId]?.especias || []) especias.add(e);
     }
   });
@@ -48,6 +59,7 @@ export function listaCompra(plan, dias = null) {
       costeConsumo: costeDe(id, gramos),
       despensa: !!a.despensa,
       pasillo: p?.categoria || 'Otros',
+      platos: [...(platos[id] || [])],
     };
   });
 

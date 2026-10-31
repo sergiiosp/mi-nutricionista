@@ -99,8 +99,10 @@ export function crearPlan(inicio = hoyISO()) {
     const hoy = hoyISO();
     const objetivos = calcularObjetivos(x.perfil);
     const prov = proveedorDe(x);
-    const nuevo = generarPlan(x.perfil, objetivos, { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: x.favoritas || [], viajes: viajesDe(x) });
     const previos = x.plan?.dias || [];
+    // Los platos de los últimos 7 días, para que la semana nueva no los repita
+    const recientes = previos.filter((d) => d.fecha < inicio).slice(-7).flatMap((d) => d.comidas.map((c) => c.recetaId));
+    const nuevo = generarPlan(x.perfil, objetivos, { inicio, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: x.favoritas || [], viajes: viajesDe(x), recientes });
     nuevo.dias = nuevo.dias.map((d) => (d.fecha <= hoy && previos.find((v) => v.fecha === d.fecha)) || d);
     const i = nuevo.dias.findIndex((d) => d.fecha === hoy);
     if (i >= 0 && previos.some((v) => v.fecha === hoy)) {

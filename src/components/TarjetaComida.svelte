@@ -11,6 +11,7 @@
   import ElegirAlimento from './ElegirAlimento.svelte';
   import { racionTipica } from '../lib/raciones.js';
   import { recetaPorId } from '../lib/planificador.js';
+  import { textoComplementos } from '../lib/complementos.js';
   import { macrosComida, costeComida, cantidadTexto, alimento } from '../lib/nutricion.js';
   import { marcarHecha, alternarSaltada, quitarRegistro, tomarBatido, mantenerComida } from '../lib/acciones.js';
   import { estado } from '../stores/estado.js';
@@ -70,6 +71,8 @@
   const ETQ = { pre: 'Pre-entreno', post: 'Post-entreno' };
   // Comida libre (día libre reservado): margen de kcal en vez de receta
   const nombre = $derived(comida.libre ? `${franjaNombre} libre` : receta?.nombre);
+  // Lo que se añade al plato para llegar a tu día (tortitas, pan, fruta, un batido…)
+  const acompaña = $derived(comida.libre ? '' : textoComplementos(comida.ingredientes || []));
   const tieneFoto = $derived(!!FOTOS_RECETAS[receta?.id] && !receta?.sinFoto);
   // Sin foto: el plato visto desde arriba, en anillo (proteína, hidrato, verdura)
   const anillo = $derived.by(() => {
@@ -107,6 +110,7 @@
       {#if comida.libre}<span class="pc-libre" aria-hidden="true"><Icono n="party-popper" tam={86} grosor={1.4} /></span>{:else if !tieneFoto}<span class="pc-anillo" style="background:{anillo}" aria-hidden="true"></span>{/if}
       <button class="pc-titulo" onclick={verReceta}>{nombre}</button>
       {#if porque}<p class="pc-porque">{porque}</p>{/if}
+      {#if acompaña}<p class="pc-acomp">Acompáñala con {acompaña}</p>{/if}
       <div class="pc-cifras">
         <div><b class="cifra">{Math.round(m.kcal)}</b><small>kcal</small></div>
         <div><b class="cifra">{Math.round(m.p)}<span>g</span></b><small>proteína</small></div>
@@ -128,6 +132,7 @@
           {#if nota}<span class="etq etq-nota">{nota}</span>{/if}
         </div>
         <button class="titulo" onclick={verReceta}>{nombre}</button>
+        {#if acompaña}<p class="acomp">+ {acompaña}</p>{/if}
         <Macros {m} peque />
         <div class="meta"><span><Icono n="clock" tam={13} /> {receta?.tiempo} min</span><span><Icono n="euro" tam={13} /> {euros(costeComida(comida.ingredientes))}</span>{#if receta?.fuera || receta?.viaje}<button class="meta-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={13} /> Qué pedir</button>{/if}</div>
       </div>
@@ -274,6 +279,7 @@
   .pc-anillo { position: absolute; top: 50%; right: -78px; width: 210px; aspect-ratio: 1; border-radius: 50%; transform: translateY(-58%); opacity: 0.38; -webkit-mask: radial-gradient(circle, transparent 50%, #000 51.5%); mask: radial-gradient(circle, transparent 50%, #000 51.5%); }
   .pc-titulo { margin-top: auto; padding: 18px 0 0; border: 0; background: none; color: #fff; font: inherit; font-size: 1.42rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; text-align: left; text-wrap: balance; cursor: pointer; position: relative; }
   .pc-porque { margin: 6px 0 0; font-size: 0.84rem; font-weight: 600; color: color-mix(in srgb, var(--primario) 70%, #fff); }
+  .pc-acomp { margin: 4px 0 0; font-size: 0.82rem; font-weight: 600; color: rgb(255 255 255 / 0.82); }
   .pc-cifras { display: flex; gap: 18px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgb(255 255 255 / 0.16); }
   .pc-cifras div { display: grid; }
   .pc-cifras b { font-size: 1.3rem; line-height: 1.1; color: #fff; }
@@ -306,6 +312,7 @@
   .etq-nota { background: var(--superficie-2); color: var(--texto-2); }
   .titulo { padding: 0; border: 0; background: none; text-align: left; font-weight: 600; font-size: 0.97rem; line-height: 1.3; cursor: pointer; color: var(--texto); margin-top: 2px; }
   .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px; font-size: 0.76rem; color: var(--texto-3); }
+  .acomp { margin: 1px 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--primario-fuerte); }
   .meta span { display: inline-flex; align-items: center; gap: 4px; }
   .s-hecha .titulo { color: var(--texto-2); }
   .s-saltada .fila, .s-sustituida .fila { opacity: 0.45; }

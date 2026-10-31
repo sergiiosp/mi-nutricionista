@@ -7,6 +7,8 @@
 // prefiere: momento del día en que encaja mejor (penaliza ligeramente el otro)
 // tiempo: minutos aproximados · batch: aguanta bien en táper 2-3 días
 
+import { RECETAS_VARIEDAD } from './recetas-variedad.js';
+
 export const RECETAS = [
 
   // ── Sin olla: microondas, air fryer, plancha o sin cocinar ───────────────
@@ -1514,4 +1516,6 @@ export const RECETAS = [
     ],
     pasos: ['Unta el pan con tomate y aceite y rellénalo con el pavo.'],
   },
+  // Más formas de cocinar lo de siempre (data/recetas-variedad.js)
+  ...RECETAS_VARIEDAD,
 ];

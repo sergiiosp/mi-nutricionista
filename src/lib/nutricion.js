@@ -284,9 +284,23 @@ function formatoNum(n) {
 
 // ── Escalado de recetas ────────────────────────────────────────────────────
 
-const LIMITES = { P: [0.5, 2.6], C: [0.3, 3.2], G: [0.4, 3] };
-// Pesos del ajuste: errores de proteína, hidratos, grasa y calorías (todos en kcal)
-const PESOS = [1.6, 1, 1, 1.2];
+const LIMITES = { P: [0.5, 2.6], C: [0.35, 2.6], G: [0.4, 2.2] };
+// Cuánto puede crecer un grupo respecto a otro: el plato crece entero, no un solo alimento. Más proteína
+// con menos hidrato es un plato normal (dietas con pocas kcal); el triple de tortillas con el mismo
+// relleno, o más aceite y queso que el resto, no.
+const PROPORCION = { P: { C: 6, G: 6 }, C: { P: 1.6, G: 2.5 }, G: { P: 1.5, C: 1.5 } };
+// Pesos del ajuste (proteína, hidratos, grasa y calorías, todo en kcal), según quede por debajo o por encima
+// del objetivo: pasarse de proteína o de grasa pesa mucho y de kcal también (nada lo arregla luego); si faltan
+// kcal, las pone sobre todo el hidrato y, si no cabe, un complemento
+const PESOS = { bajo: [1.6, 1, 1, 0.3], alto: [4, 1, 3, 1.2] };
+
+/** Cuánto puede crecer en un plato lo que se cuenta (tortillas, huevos, rebanadas…): 2 → 3, 3 → 4, 4 → 6. */
+function topeUnidades(ing) {
+  const a = alimento(ing.a);
+  if (a.redondeo !== 'unidad' || !a.unidad) return Infinity;
+  const base = Math.max(1, Math.round(ing.g / a.unidad.g));
+  return (Math.max(base + 1, Math.floor(base * 1.5)) * a.unidad.g) / ing.g;
+}
 
 function vector(m) {
   return [m.p * 4, m.c * 4, m.g * 9, m.kcal];
@@ -303,38 +317,55 @@ function redondear(id, g) {
 
 /**
  * Ajusta las cantidades de una receta para acercarse a un objetivo { kcal, p, c, g }.
- * Escala por grupos (proteína, hidratos, grasa) con mínimos cuadrados acotados.
+ * Escala por grupos (proteína, hidratos, grasa) con mínimos cuadrados acotados, pero el plato crece entero:
+ * los grupos no se separan más de lo que marca PROPORCION, lo que se cuenta (tortillas, huevos…) tiene tope y la
+ * verdura y la salsa acompañan. Lo que no quepa lo añade un complemento (lib/complementos.js).
+ * { libre: true }: sin esas reglas (la comida libre es un hueco de kcal, no un plato que cocinar).
  */
-export function escalarReceta(receta, objetivo, limites = receta.limites || LIMITES) {
+export function escalarReceta(receta, objetivo, limites = receta.limites || LIMITES, { libre = false } = {}) {
   const grupos = { P: [], C: [], G: [] };
   const fijos = [];
   for (const ing of receta.ingredientes) {
     (ing.rol ? grupos[ing.rol] : fijos).push(ing);
   }
+  // La verdura y la salsa acompañan al plato; los condimentos (unos gramos de cacao, matcha…) no
+  const acompaña = (ing) => !libre && ing.g >= 30;
   const T = vector(objetivo);
-  const F = vector(sumarMacros(fijos.map((i) => macrosDe(i.a, i.g))));
+  const F0 = vector(sumarMacros(fijos.filter(acompaña).map((i) => macrosDe(i.a, i.g))));
+  const Fc = vector(sumarMacros(fijos.filter((i) => !acompaña(i)).map((i) => macrosDe(i.a, i.g))));
   const roles = Object.keys(grupos).filter((r) => grupos[r].length);
   const M = Object.fromEntries(roles.map((r) => [r, vector(sumarMacros(grupos[r].map((i) => macrosDe(i.a, i.g))))]));
+  const techo = Object.fromEntries(roles.map((r) => [r, Math.min(limites[r][1], ...(libre ? [] : grupos[r].map(topeUnidades)))]));
   const x = Object.fromEntries(roles.map((r) => [r, 1]));
+  let fijo = 1; // lo que no tiene rol (verdura, salsa…) crece o mengua con el plato
 
-  // Descenso por coordenadas con límites (converge en pocas iteraciones con 3 variables)
-  for (let it = 0; it < 60; it++) {
-    for (const r of roles) {
-      let num = 0;
-      let den = 0;
-      for (let i = 0; i < 4; i++) {
-        let resto = T[i] - F[i];
-        for (const o of roles) if (o !== r) resto -= x[o] * M[o][i];
-        num += PESOS[i] * M[r][i] * resto;
-        den += PESOS[i] * M[r][i] * M[r][i];
+  for (let pasada = 0; pasada < (libre ? 1 : 3); pasada++) {
+    const F = F0.map((v, i) => v * fijo + Fc[i]);
+    // Descenso por coordenadas con límites (converge en pocas iteraciones con 3 variables)
+    for (let it = 0; it < 60; it++) {
+      for (const r of roles) {
+        let num = 0;
+        let den = 0;
+        const pesos = [0, 1, 2, 3].map((i) => (roles.reduce((s, o) => s + x[o] * M[o][i], F[i]) > T[i] ? PESOS.alto : PESOS.bajo)[i]);
+        for (let i = 0; i < 4; i++) {
+          let resto = T[i] - F[i];
+          for (const o of roles) if (o !== r) resto -= x[o] * M[o][i];
+          num += pesos[i] * M[r][i] * resto;
+          den += pesos[i] * M[r][i] * M[r][i];
+        }
+        if (den <= 0) continue;
+        let min = limites[r][0];
+        let max = techo[r];
+        if (!libre) for (const o of roles) if (o !== r) { min = Math.max(min, x[o] / PROPORCION[o][r]); max = Math.min(max, x[o] * PROPORCION[r][o]); }
+        x[r] = min > max ? max : Math.min(max, Math.max(min, num / den));
       }
-      if (den > 0) x[r] = Math.min(limites[r][1], Math.max(limites[r][0], num / den));
     }
+    if (!libre && roles.length) fijo = Math.min(1.5, Math.max(0.8, roles.reduce((s, r) => s + x[r], 0) / roles.length));
   }
 
   const ingredientes = receta.ingredientes.map((ing) => ({
     a: ing.a,
-    g: redondear(ing.a, ing.rol ? ing.g * x[ing.rol] : ing.g),
+    g: redondear(ing.a, ing.rol ? ing.g * x[ing.rol] : acompaña(ing) ? ing.g * fijo : ing.g),
   }));
   return { recetaId: receta.id, ingredientes, factores: x };
 }

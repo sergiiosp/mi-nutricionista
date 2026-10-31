@@ -77,10 +77,11 @@ export function planBatch(plan, desde, dias = 4, aparatos = undefined) {
         const r = (recetasBatch[receta.id] ||= { receta, raciones: 0, cuando: [], ingredientes: {} });
         r.raciones++;
         r.cuando.push(cuando);
-        for (const i of c.ingredientes) r.ingredientes[i.a] = (r.ingredientes[i.a] || 0) + i.g;
+        // Lo que acompaña (pan, fruta, tortitas…) no se cocina en el táper
+        for (const i of c.ingredientes.filter((x) => !x.extra)) r.ingredientes[i.a] = (r.ingredientes[i.a] || 0) + i.g;
         continue;
       }
-      for (const i of c.ingredientes) {
+      for (const i of c.ingredientes.filter((x) => !x.extra)) {
         for (const [k, base] of Object.entries(BASES)) {
           if (base.ids.includes(i.a)) {
             const b = (bases[k][i.a] ||= { g: 0, cuando: new Set() });
