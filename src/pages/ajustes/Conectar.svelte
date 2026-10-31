@@ -7,7 +7,7 @@
   import Vincular from '../../components/nube/Vincular.svelte';
   import { estado } from '../../stores/estado.js';
   import { avisar } from '../../stores/ui.js';
-  import { nube, meta, sincronizar, crearCuenta, desvincular, borrarCuenta, enlaceVincular, crearCodigo, listarCopias, restaurarCopia } from '../../lib/nube/sincro.js';
+  import { nube, meta, guardarMeta, sincronizar, crearCuenta, desvincular, borrarCuenta, enlaceVincular, crearCodigo, listarCopias, restaurarCopia } from '../../lib/nube/sincro.js';
   import { formatoCodigo } from '../../lib/nube/cripto.js';
   import { prefsAvisos, soporteAvisos, activarAvisos, desactivarAvisos, cambiarPrefsAvisos, probarAviso, calcularAvisos } from '../../lib/nube/avisos.js';
   import { fechaCorta, num } from '../../lib/formato.js';
@@ -19,6 +19,22 @@
   let codigo = $state(null);
   let ahora = $state(Date.now());
   let copias = $state(null);
+  // Enlace de recuperación: la clave de tu cuenta, para recuperar los datos si este móvil se borra
+  let guardadoEnlace = $state(meta.recuperacion || null);
+  async function guardarEnlace() {
+    const url = enlaceVincular();
+    const texto = 'Pulso · enlace de recuperación. Si se borran los datos de la app, abre Pulso, toca «Recupera tus datos» → Enlace y pega este enlace. No lo compartas: da acceso a todos tus datos.';
+    try {
+      if (navigator.share) await navigator.share({ title: 'Pulso · enlace de recuperación', text: texto, url });
+      else { await navigator.clipboard.writeText(url); avisar('Enlace copiado: pégalo en Notas o en Contraseñas', '🔑'); }
+    } catch (e) {
+      if (e?.name === 'AbortError') return; // cerraste el menú de compartir sin guardarlo
+      try { await navigator.clipboard.writeText(url); avisar('Enlace copiado: pégalo en Notas o en Contraseñas', '🔑'); } catch { avisar('No he podido copiarlo', '⚠️'); return; }
+    }
+    meta.recuperacion = Date.now();
+    guardarMeta();
+    guardadoEnlace = meta.recuperacion;
+  }
   let prefs = $state(prefsAvisos());
   const soporte = soporteAvisos();
 
@@ -127,6 +143,12 @@
       <p class="pie-nota">Se sincroniza todo menos las fotos (se quedan en cada dispositivo).</p>
     </div>
 
+    <div class="tarjeta recuperacion" class:pendiente={!guardadoEnlace}>
+      <p class="intro"><b>Por si se borra este móvil.</b> Tus datos están cifrados y la clave solo vive en tus dispositivos: sin ella, la copia del servidor no se puede leer. Guarda este enlace en Notas o en Contraseñas de iCloud. Si un día se borra todo, abre Pulso, toca «Recupera tus datos» → Enlace y pégalo.</p>
+      <button class="boton ancho" onclick={guardarEnlace}><Icono n="key-round" tam={18} /> Guardar enlace de recuperación</button>
+      <p class="pie-nota">{guardadoEnlace ? `Lo guardaste el ${fechaCorta(new Date(guardadoEnlace).toISOString().slice(0, 10))}.` : 'Aún no lo has guardado.'} No lo compartas: da acceso a todos tus datos.</p>
+    </div>
+
     <!-- ── Copias ─────────────────────────────────────────────────── -->
     <h2 class="seccion"><Emoji e="💾" tam={24} /> Copias de seguridad</h2>
     <div class="tarjeta">
@@ -228,4 +250,5 @@
   .fila-peso select, .fila-peso input { min-height: 40px; padding: 6px 10px; border-radius: var(--r-s); border: 1.5px solid var(--borde); background: var(--superficie); color: var(--texto); font-weight: 700; font-family: inherit; }
   .zona-peligro { margin-top: 18px; }
   .zona-peligro summary { font-weight: 700; cursor: pointer; color: var(--texto-2); }
+  .recuperacion.pendiente { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--amarillo) 60%, transparent), var(--sombra); }
 </style>

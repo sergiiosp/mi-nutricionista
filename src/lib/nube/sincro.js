@@ -232,7 +232,7 @@ export function iniciarNube() {
 
 /** Activa la nube en este dispositivo con una cuenta nueva y sube tus datos. */
 export async function crearCuenta() {
-  Object.assign(meta, { clave: nuevaClave(), rev: -1, t: {}, sucio: true, ultima: null });
+  Object.assign(meta, { clave: nuevaClave(), rev: -1, t: {}, sucio: true, ultima: null, recuperacion: null });
   ctx = null;
   try {
     await apiJSON('/cuenta', { cuerpo: {} });
@@ -281,7 +281,7 @@ export function desvincular() {
   clearInterval(reloj);
   clearTimeout(tSubir);
   arrancada = false;
-  Object.assign(meta, { clave: null, rev: -1, t: {}, sucio: false, ultima: null });
+  Object.assign(meta, { clave: null, rev: -1, t: {}, sucio: false, ultima: null, recuperacion: null });
   ctx = null;
   guardarMeta();
   ponerNube({ activa: false, estado: 'ok', ultima: null, error: '' });

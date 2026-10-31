@@ -47,7 +47,7 @@
 
 {#if !perfil}
   <div class="contenido ya-uso">
-    <button class="boton-texto" onclick={() => (vinculando = true)}><Icono e="🔗" tam={18} /> ¿Ya usas la app en otro dispositivo? <b>Vincúlalo</b></button>
+    <button class="boton-texto" onclick={() => (vinculando = true)}><Icono e="🔗" tam={18} /> ¿Ya usabas Pulso? <b>Recupera tus datos</b></button>
   </div>
 {/if}
 {#if vinculando}
