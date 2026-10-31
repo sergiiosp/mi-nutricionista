@@ -1,25 +1,30 @@
 <script>
-  import Icono from '../../components/Icono.svelte';
-  import Emoji from '../../components/Emoji.svelte';
-  import FotoReceta from '../../components/FotoReceta.svelte';
-  import { estado } from '../../stores/estado.js';
-  import { abrirHoja } from '../../stores/ui.js';
-  import { hoyISO } from '../../lib/planificador.js';
-  import { planBatch, CONSERVAR } from '../../lib/batch.js';
-  import { APARATOS } from '../../data/coccion.js';
-  import { cantidadTexto, alimento } from '../../lib/nutricion.js';
-  import { fechaCorta } from '../../lib/formato.js';
+  // Preparar de una vez (batch cooking): qué cocinar hoy para los próximos días, en orden, con cómo hacerlo
+  // y cómo conservarlo. Lo abre la tarjeta de Hoy el día que toca preparar (o Comida → Semana cuando quieras).
+  import Icono from './Icono.svelte';
+  import Emoji from './Emoji.svelte';
+  import FotoReceta from './FotoReceta.svelte';
+  import { estado } from '../stores/estado.js';
+  import { abrirHoja } from '../stores/ui.js';
+  import { hoyISO } from '../lib/planificador.js';
+  import { planBatch, CONSERVAR } from '../lib/batch.js';
+  import { marcarPreparado } from '../lib/acciones.js';
+  import { APARATOS } from '../data/coccion.js';
+  import { cantidadTexto, alimento } from '../lib/nutricion.js';
+  import { fechaCorta } from '../lib/formato.js';
 
-  let dias = $state(4);
-  let hechas = $state({});
+  let { desde = hoyISO(), dias: diasIniciales = 4 } = $props();
+  let dias = $derived(diasIniciales); // se puede cambiar con los botones de 3, 4 o 7 días
   let abierta = $state(null);
   const plan = $derived($estado.plan);
-  const batch = $derived(plan ? planBatch(plan, hoyISO(), dias, $estado.perfil?.aparatos) : null);
+  const batch = $derived(plan ? planBatch(plan, desde, dias, $estado.perfil?.aparatos) : null);
+  // Lo que ya tienes hecho se guarda: si cierras la hoja a medias, sigue marcado
+  const hechas = $derived($estado.preparar?.desde === desde ? $estado.preparar.hechas : {});
   const hechasN = $derived(batch ? batch.tareas.filter((t) => hechas[t.titulo]).length : 0);
 </script>
 
-{#if !batch}
-  <div class="tarjeta vacia"><Emoji e="🥡" tam={56} /><p>Crea un menú y te digo qué cocinar de una vez.</p></div>
+{#if !batch?.dias.length}
+  <div class="tarjeta vacia"><Emoji e="🥡" tam={56} /><p>{batch ? 'Esos días comes fuera: no hay nada que preparar.' : 'Crea un menú y te digo qué cocinar de una vez.'}</p></div>
 {:else}
   <div class="tarjeta intro">
     <div class="intro-cab">
@@ -32,7 +37,7 @@
       <div><b>{hechasN}/{batch.tareas.length}</b><small>pasos hechos</small></div>
     </div>
     <div class="filtros">
-      {#each [3, 4, 7] as n (n)}<button class="filtro" class:activo={dias === n} onclick={() => (dias = n)}>{n} días</button>{/each}
+      {#each [3, 4, 7] as n (n)}<button class="filtro" class:activo={dias === n} aria-pressed={dias === n} onclick={() => (dias = n)}>{n} días</button>{/each}
     </div>
   </div>
 
@@ -43,7 +48,7 @@
         <div class="paso-cab">
           <span class="num">{i + 1}</span>
           {#if t.tipo === 'receta'}
-            <button class="foto" onclick={() => abrirHoja('receta', { recetaId: t.receta.id, ingredientes: t.ingredientes, titulo: `Batch · ${t.detalle}` })} aria-label="Ver receta">
+            <button class="foto" onclick={() => abrirHoja('receta', { recetaId: t.receta.id, ingredientes: t.ingredientes, titulo: `Para preparar · ${t.detalle}` })} aria-label="Ver receta">
               <FotoReceta receta={t.receta} alto={48} redondeo={12} tamEmoji={26} />
             </button>
           {:else}
@@ -54,7 +59,7 @@
             <small>{t.tipo === 'receta' ? t.detalle : t.lineas.map((l) => l.texto).join(' · ')}</small>
             <span class="ver">{abierta === i ? 'Ocultar' : 'Cómo hacerlo'} <Icono n={abierta === i ? 'chevron-up' : 'chevron-down'} tam={14} /></span>
           </button>
-          <button class="check" class:activo={hechas[t.titulo]} aria-label="Hecho: {t.titulo}" onclick={() => (hechas = { ...hechas, [t.titulo]: !hechas[t.titulo] })}>
+          <button class="check" class:activo={hechas[t.titulo]} aria-label="Hecho: {t.titulo}" onclick={() => marcarPreparado(desde, t.titulo)}>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
           </button>
         </div>

@@ -149,6 +149,7 @@
   {/if}
 
   <div class="acciones-plan">
+    <button class="boton boton-sec" onclick={() => abrirHoja('preparar', { desde: hoy > plan.dias[0].fecha ? hoy : plan.dias[0].fecha })}><Icono n="chef-hat" tam={18} /> Preparar comida para varios días</button>
     <button class="boton boton-sec" onclick={() => abrirHoja('diaLibre')}><Icono n="party-popper" tam={18} /> {$estado.perfil.diaLibre?.fecha >= hoy ? 'Tu día libre' : 'Reservar kcal para un día libre'}</button>
     <button class="boton boton-sec" onclick={() => nuevo(true)}><Icono e="🎲" tam={18} /> Otro menú con las mismas fechas</button>
     <button class="boton boton-sec" onclick={() => nuevo(false)}><Icono e="📅" tam={18} /> Nueva semana desde hoy</button>

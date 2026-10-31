@@ -19,7 +19,7 @@ export const recetaPorId = new Proxy(RECETARIO, {
 });
 
 // Generador pseudoaleatorio con semilla (mulberry32) para que un plan sea reproducible
-function rng(semilla) {
+export function rng(semilla) {
   let a = semilla >>> 0;
   return () => {
     a = (a + 0x6d2b79f5) >>> 0;
@@ -31,7 +31,7 @@ function rng(semilla) {
 }
 
 // Proteína principal de una receta (para no repetir la misma en comida y cena)
-function proteinaPrincipal(receta) {
+export function proteinaPrincipal(receta) {
   const p = receta.ingredientes.filter((i) => i.rol === 'P').sort((a, b) => b.g - a.g)[0];
   return p ? p.a : null;
 }
@@ -298,6 +298,22 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
     .sort((a, b) => a.orden - b.orden);
 }
 
+/** La comida de una franja del plan hecha con un plato concreto, a la medida de ese día. */
+export function comidaConReceta(plan, diaIdx, franjaId, receta, perfil, objetivos, proveedor = null) {
+  const dia = plan?.dias[diaIdx];
+  if (!dia || !receta) return null;
+  const { franja, objDia } = franjaDelDia(perfil, objetivos, dia, franjaId, proveedor);
+  return franja ? crearComida(receta, franja, objDia, objetivoFranja(objDia, franja), perfil) : null;
+}
+
+/** Para comer fuera en esa comida: el plato de restaurante que mejor encaja con tu día (null si para esa franja no hay). */
+export function opcionFuera(plan, diaIdx, franjaId, perfil, objetivos, proveedor = null) {
+  const dia = plan?.dias[diaIdx];
+  if (!dia) return null;
+  const fuera = [{ desde: dia.fecha, hasta: dia.fecha, comida: ['fuera'] }];
+  return alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedor, [], fuera).find((o) => recetaPorId[o.comida.recetaId]?.fuera)?.comida || null;
+}
+
 export function sustituir(plan, diaIdx, franjaId, comida) {
   const dia = plan.dias[diaIdx];
   dia.comidas = dia.comidas.map((c) => (c.franja === franjaId ? comida : c));
@@ -347,6 +363,8 @@ export function reescalarPlan(plan, perfil, objetivos, proveedor = null, desde =
         if (!receta) return null;
         const comida = crearComida(receta, franja, objDia, balance.objetivo(idx), p);
         balance.anotar(idx, comida.ingredientes);
+        // Si esa comida es fuera, se recuerda el plato de casa para poder volver a él
+        if (porFranja[franja.id].enCasa) comida.enCasa = porFranja[franja.id].enCasa;
         if (dia.libre?.franja === franja.id) {
           // La comida libre: el plato de base más el margen ahorrado (no va a la compra; comes lo que quieras)
           const m = macrosComida(comida.ingredientes);

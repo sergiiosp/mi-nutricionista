@@ -7,14 +7,15 @@
   import Macros from './Macros.svelte';
   import Segmentos from './Segmentos.svelte';
   import { estado } from '../stores/estado.js';
-  import { cerrarHoja, avisar } from '../stores/ui.js';
-  import { alternativas, recetaPorId, objetivoComida } from '../lib/planificador.js';
-  import { objetivosActuales, sustituirComida, alternarFavorita } from '../lib/acciones.js';
+  import { cerrarHoja, avisar, abrirHoja } from '../stores/ui.js';
+  import { alternativas, recetaPorId, objetivoComida, hoyISO } from '../lib/planificador.js';
+  import { objetivosActuales, sustituirComida, alternarFavorita, comerFuera, volverACasa } from '../lib/acciones.js';
   import { proveedorDe } from '../lib/hyrox/index.js';
   import { proponerCombos, montarCombo, gruposPermitidos, familiaDe, esCombo, textoIngrediente } from '../lib/combos.js';
   import { macrosComida } from '../lib/nutricion.js';
   import { ALIMENTOS } from '../data/alimentos.js';
   import { corto } from '../lib/composicion.js';
+  import { diaSemana } from '../lib/formato.js';
 
   let { diaIdx, franja, nevera = false } = $props();
   const e = get(estado);
@@ -40,6 +41,18 @@
     sustituirComida(diaIdx, franja, { franja, recetaId, ingredientes, hora: actual?.hora, etiqueta: actual?.etiqueta });
     cerrarHoja();
     avisar('Comida cambiada: cantidades ajustadas a tus macros', '✅');
+  }
+  // ¿Comes fuera? Un plato de restaurante a la medida de esta comida y, si es hoy, la guía de qué pedir
+  const fecha = $derived(e.plan.dias[diaIdx]?.fecha);
+  const puedeFuera = $derived(!!actual && !recetaPorId[actual.recetaId]?.fuera && ['desayuno', 'comida', 'cena'].includes(franja));
+  function irFuera() {
+    if (!comerFuera(diaIdx, franja)) return avisar('Para esta comida no tengo opciones de fuera', '⚠️');
+    cerrarHoja();
+    const deshacer = () => volverACasa(diaIdx, franja);
+    if (fecha === hoyISO()) {
+      abrirHoja('guiaFuera', { sitio: franja === 'desayuno' ? 'cafeteria' : 'menu' });
+      avisar('Comes fuera: te digo qué pedir', '🍽️', deshacer);
+    } else avisar(`El ${diaSemana(fecha)} comes fuera: no entra en la compra`, '🍽️', deshacer);
   }
   function favorita(id) {
     const guardada = alternarFavorita(id);
@@ -74,6 +87,13 @@
 
 {#if obj}
   <p class="objetivo">Esta comida: <b>{Math.round(obj.kcal)} kcal</b> y <b>{Math.round(obj.p)} g de proteína</b>. Todo lo que elijas se ajusta a eso.</p>
+{/if}
+{#if puedeFuera}
+  <button class="fuera" onclick={irFuera}>
+    <span class="fu-ic"><Icono n="map-pin" tam={18} grosor={2.2} /></span>
+    <span class="fu-txt"><b>¿Comes fuera?</b><small>Te dejo un plato de restaurante a tu medida y te digo qué pedir</small></span>
+    <Icono n="chevron-right" tam={18} />
+  </button>
 {/if}
 
 <Segmentos opciones={[{ id: 'opciones', nombre: 'Opciones', icono: 'list' }, { id: 'nevera', nombre: 'Lo que tengo', icono: 'package' }, { id: 'montar', nombre: 'Montar', icono: 'chef-hat' }]} bind:valor={pestaña} />
@@ -171,6 +191,12 @@
 
 <style>
   .objetivo { margin: 0 0 12px; font-size: 0.86rem; color: var(--texto-2); }
+  .fuera { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 12px; padding: 10px 12px; border: 0; border-radius: var(--r-m); background: var(--superficie-2); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .fu-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
+  .fu-txt { flex: 1; min-width: 0; display: grid; }
+  .fu-txt b { font-size: 0.92rem; }
+  .fu-txt small { font-size: 0.76rem; line-height: 1.3; color: var(--texto-2); }
+  .fuera > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   .objetivo b { color: var(--texto); }
   h3 { margin: 18px 0 8px; font-size: 0.95rem; }
   .cab-ideas { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

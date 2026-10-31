@@ -13,6 +13,7 @@ const CARGADORES = {
   diaLibre: () => import('../components/DiaLibre.svelte'),
   camara: () => import('../components/CamaraGuia.svelte'),
   cocina: () => import('../components/ModoCocina.svelte'),
+  preparar: () => import('../components/Preparar.svelte'),
   tuPlan: () => import('../components/TuPlan.svelte'),
   test: () => import('../components/RegistrarTest.svelte'),
   diaCarrera: () => import('../components/ModoCarrera.svelte'),

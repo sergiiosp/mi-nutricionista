@@ -7,6 +7,7 @@
   import { planDe } from '../../lib/hyrox/index.js';
   import { semanaDe, FASES } from '../../lib/hyrox/plan.js';
   import { TIPOS } from '../../lib/hyrox/sesiones.js';
+  import { porqueDe } from '../../lib/hyrox/porque.js';
   import { hoyISO, sumarDias } from '../../lib/planificador.js';
   import { diaSemana, fechaCorta } from '../../lib/formato.js';
   import { FOTOS_SESIONES } from '../../data/fotos.js';
@@ -69,6 +70,7 @@
           {#if reg}<span class="hecha"><Icono n="check" tam={14} grosor={2.8} /> {ESTADO[reg.estado] || 'Registrada'}</span>{/if}
         </div>
         <h2>{principal.titulo}</h2>
+        {#if porqueDe(principal)}<p class="portada-porque">{porqueDe(principal).corto}</p>{/if}
         <div class="cifras-hoy">
           <div><b class="cifra">{principal.duracion}</b><small>min</small></div>
           {#if principal.distancia}<div><b class="cifra">{String(principal.distancia).replace('.', ',')}</b><small>km</small></div>{/if}
@@ -191,6 +193,7 @@
   .tipo { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: rgb(255 255 255 / 0.14); font-size: 0.78rem; font-weight: 700; }
   .hecha { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: var(--exito); color: #062014; font-size: 0.76rem; font-weight: 700; }
   .portada h2 { margin: 120px 0 14px; text-shadow: 0 2px 18px rgb(0 0 0 / 0.35); font-size: 1.85rem; line-height: 1.08; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
+  .portada-porque { margin: -6px 0 14px; color: rgb(255 255 255 / 0.85); font-size: 0.92rem; font-weight: 600; }
   .cifras-hoy { display: flex; gap: 22px; margin-bottom: 18px; }
   .cifras-hoy div { display: grid; }
   .cifras-hoy b { font-size: 1.6rem; line-height: 1; font-weight: 700; letter-spacing: -0.03em; }

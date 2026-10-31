@@ -11,6 +11,7 @@
   import { hoyISO, sumarDias } from '../lib/planificador.js';
   import { mmss } from '../lib/hyrox/ritmos.js';
   import { EJERCICIOS } from '../data/hyrox.js';
+  import { porqueDe } from '../lib/hyrox/porque.js';
   import { diaSemana, diaCorto, fechaLarga, capital, entero } from '../lib/formato.js';
 
   let { id } = $props();
@@ -18,6 +19,7 @@
   const plan = $derived(planDe($estado));
   const s = $derived(plan?.sesiones.find((x) => x.id === id));
   const reg = $derived($estado.hyrox?.registros?.[id]);
+  const pq = $derived(porqueDe(s));
   const meta = $derived(s ? metaDia(calcularObjetivos($estado.perfil), proveedorDe($estado)?.(s.fecha) || []) : null);
   const semana = $derived(s ? plan.semanas[s.semana] : null);
   const opcionesMover = $derived(semana ? Array.from({ length: 7 }, (_, i) => sumarDias(semana.lunes, i)).filter((f) => f >= hoy && (!plan.carrera || f < plan.carrera)) : []);
@@ -57,6 +59,17 @@
       <div class="datos"><span><Icono e="⏱️" tam={18} /> {s.duracion} min</span>{#if s.distancia}<span><Icono e="📍" tam={18} /> {String(s.distancia).replace('.', ',')} km</span>{/if}<span><Icono e="💥" tam={18} /> Esfuerzo {s.rpe}/10</span></div>
     </div>
   </div>
+
+  {#if pq}
+    <section class="porque" aria-label="Por qué esta sesión">
+      <h3><Icono n="target" tam={18} /> Por qué esta sesión</h3>
+      <dl>
+        <div><dt>Qué buscas</dt><dd>{pq.objetivo}</dd></div>
+        <div><dt>Qué trabaja</dt><dd>{pq.estimulo}</dd></div>
+        <div><dt>Cómo deberías acabar</dt><dd>{pq.acabar}</dd></div>
+      </dl>
+    </section>
+  {/if}
 
   {#if reg}
     <div class="registro">
@@ -152,6 +165,11 @@
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
   .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 700; font-size: 0.78rem; }
+  .porque dl { display: grid; margin: 0; padding: 2px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
+  .porque dl div { padding: 10px 0; }
+  .porque dl div + div { border-top: 1px solid var(--linea); }
+  .porque dt { font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
+  .porque dd { margin: 2px 0 0; font-size: 0.9rem; line-height: 1.4; color: var(--texto); }
   .registro { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-l); background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
   .registro p { margin: 6px 0 0; font-style: italic; }
   .cargas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.82rem; }

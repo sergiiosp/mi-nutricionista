@@ -4,7 +4,7 @@ import { estado, actualizar, registroDePlan, borrarRegistro, anotarDiario } from
 import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos, alimentoPermitido, alimento } from './nutricion.js';
 const alimentoBruto = (id) => { try { return alimento(id).rendimiento || 1; } catch { return 1; } };
-import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias } from './planificador.js';
+import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias, opcionFuera, comidaConReceta, recetaPorId } from './planificador.js';
 import { estadoDia } from './dia.js';
 import { crearRegistro } from './registro.js';
 import { proveedorDe, planDe } from './hyrox/index.js';
@@ -15,6 +15,7 @@ import { mmss } from './hyrox/ritmos.js';
 import { grasaReferencia } from './cuerpo.js';
 import { num } from './formato.js';
 import { resumenRevision } from './revision.js';
+import { lunesDe, paraProbar } from './probar.js';
 
 export const objetivosActuales = () => calcularObjetivos(get(estado).perfil);
 export const viajesDe = (x) => x?.agenda?.viajes || [];
@@ -230,6 +231,65 @@ function cambiarProximas(id) {
 
 export function sustituirComida(diaIdx, franja, comida) {
   actualizar((x) => sustituir(x.plan, diaIdx, franja, comida));
+}
+
+/**
+ * Esa comida la haces fuera: pasa a un plato de restaurante a la medida de tu día (no va a la compra ni al
+ * batch) y se recuerda el de casa por si al final no sales. Devuelve false si para esa franja no hay opción.
+ */
+export function comerFuera(diaIdx, franja) {
+  const e = get(estado);
+  const actual = e.plan?.dias[diaIdx]?.comidas.find((c) => c.franja === franja);
+  const fuera = actual && !recetaPorId[actual.recetaId]?.fuera ? opcionFuera(e.plan, diaIdx, franja, e.perfil, objetivosActuales(), proveedorDe(e)) : null;
+  if (!fuera) return false;
+  actualizar((x) => sustituir(x.plan, diaIdx, franja, { ...fuera, hora: actual.hora, etiqueta: actual.etiqueta, enCasa: actual.recetaId }));
+  return true;
+}
+
+/** Al final comes en casa: vuelve el plato que tenías, con las cantidades de ese día. */
+export function volverACasa(diaIdx, franja) {
+  const e = get(estado);
+  const actual = e.plan?.dias[diaIdx]?.comidas.find((c) => c.franja === franja);
+  const comida = actual?.enCasa ? comidaConReceta(e.plan, diaIdx, franja, recetaPorId[actual.enCasa], e.perfil, objetivosActuales(), proveedorDe(e)) : null;
+  if (!comida) return false;
+  actualizar((x) => sustituir(x.plan, diaIdx, franja, { ...comida, hora: actual.hora, etiqueta: actual.etiqueta }));
+  return true;
+}
+
+/** Pone un plato concreto en una comida del menú (p. ej. uno de «Para probar»), con las cantidades de ese día. */
+export function ponerEnMenu(diaIdx, franja, recetaId) {
+  const e = get(estado);
+  const actual = e.plan?.dias[diaIdx]?.comidas.find((c) => c.franja === franja);
+  const comida = actual ? comidaConReceta(e.plan, diaIdx, franja, recetaPorId[recetaId], e.perfil, objetivosActuales(), proveedorDe(e)) : null;
+  if (!comida) return false;
+  actualizar((x) => sustituir(x.plan, diaIdx, franja, { ...comida, hora: actual.hora, etiqueta: actual.etiqueta }));
+  return true;
+}
+
+/** Un plato de «Para probar» a tu menú: se pone en esa comida y queda marcado en la lista de la semana. */
+export function probarEnMenu(diaIdx, franja, recetaId, hoy = hoyISO()) {
+  // La lista de la semana se guarda antes de tocar el menú: así no cambia al quitar el plato que había
+  const lista = paraProbar(get(estado), hoy).map((x) => x.receta.id);
+  if (!ponerEnMenu(diaIdx, franja, recetaId)) return false;
+  const fecha = get(estado).plan.dias[diaIdx].fecha;
+  const lunes = lunesDe(hoy);
+  actualizar((x) => {
+    const antes = x.probar?.lunes === lunes ? x.probar : null;
+    x.probar = { lunes, lista: antes?.lista?.length ? antes.lista : lista, puestas: { ...(antes?.puestas || {}), [recetaId]: { fecha, franja } } };
+  });
+  return true;
+}
+
+/** Lo que llevas preparado del batch de un día (se guarda para que no se pierda al cerrar la hoja). */
+export function marcarPreparado(desde, titulo) {
+  actualizar((x) => {
+    const p = x.preparar?.desde === desde ? x.preparar : { desde, hechas: {} };
+    x.preparar = { ...p, hechas: { ...p.hechas, [titulo]: !p.hechas[titulo] } };
+  });
+}
+/** «Hoy no»: la tarjeta de preparar desaparece hasta el próximo día de preparar. */
+export function ocultarPreparar(desde) {
+  actualizar((x) => { x.preparar = { ...(x.preparar?.desde === desde ? x.preparar : { desde, hechas: {} }), oculto: true }; });
 }
 
 /** Cambia si un día entrenas o descansas (null = lo que diga el plan) y recalcula la comida. */

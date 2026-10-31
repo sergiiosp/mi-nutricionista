@@ -54,6 +54,16 @@ export const CONSERVAR = [
 ];
 
 /**
+ * Días de preparar: el menú se cocina en dos tandas (los 4 primeros días y los 3 siguientes), porque la
+ * carne y el arroz aguantan unos 3-4 días en la nevera. Si hoy empieza una tanda, devuelve { desde, dias }.
+ */
+export function diaPreparar(plan, hoy) {
+  const i = plan?.dias.findIndex((d) => d.fecha === hoy) ?? -1;
+  if (i !== 0 && i !== 4) return null;
+  return { desde: hoy, dias: i === 0 ? 4 : plan.dias.length - 4 };
+}
+
+/**
  * @param plan menú
  * @param desde fecha ISO desde la que preparar
  * @param dias número de días a cubrir (lo normal: 3-4)
@@ -70,7 +80,7 @@ export function planBatch(plan, desde, dias = 4, aparatos = undefined) {
   for (const dia of seleccion) {
     for (const c of dia.comidas) {
       const receta = recetaPorId[c.recetaId];
-      if (!receta || c.libre || !['comida', 'cena'].includes(c.franja)) continue;
+      if (!receta || c.libre || receta.fuera || receta.viaje || !['comida', 'cena'].includes(c.franja)) continue; // lo de fuera no se cocina
       const cuando = `${nombreDia(dia.fecha)} ${NOMBRE_FRANJA[c.franja]}`;
       tapers.push({ cuando, nombre: receta.nombre, emoji: receta.emoji, pescado: c.ingredientes.some((i) => BASES.pescado.ids.includes(i.a)), fecha: dia.fecha });
       if (receta.batch) {

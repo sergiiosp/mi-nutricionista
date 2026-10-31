@@ -23,8 +23,10 @@
   import ComoLlegas from '../components/ComoLlegas.svelte';
   import AvisoCopia from '../components/AvisoCopia.svelte';
   import AvisoRevision from '../components/AvisoRevision.svelte';
+  import TarjetaPreparar from '../components/TarjetaPreparar.svelte';
   import { explicarPlan } from '../lib/coach.js';
   import { planDiaCarrera } from '../lib/hyrox/diaCarrera.js';
+  import { porqueDe } from '../lib/hyrox/porque.js';
   import FotoReceta from '../components/FotoReceta.svelte';
   import { sumarDias } from '../lib/planificador.js';
 
@@ -119,7 +121,6 @@
     }
     return { desayuno: 'Empieza el día con proteína', comida: 'La comida fuerte del día', cena: entrenoHoy ? 'Recupera sin acostarte lleno' : 'Ligera, para dormir mejor', merienda: 'Llegas a la cena sin hambre', media: 'Aguantas hasta la comida' }[c.franja] || '';
   }
-  const POR_QUE_SESION = { caminar: 'Suma pasos sin cargar las piernas', popular: 'Tu carrera: sal a tu ritmo objetivo', recuperacion: 'Movilidad suave para soltar' };
 
   // Momento del día: Hoy cambia por la mañana, por la tarde y por la noche
   const momento = $derived(ahora < '12:00' ? 'manana' : ahora < '20:30' ? 'tarde' : 'noche');
@@ -222,6 +223,8 @@
     <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
     <Icono n="chevron-right" tam={18} />
   </button>
+
+  <TarjetaPreparar />
 
   {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
     <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
@@ -352,7 +355,7 @@
                 <span class="f-txt"><small>Entreno</small><b>{it.s.titulo}</b></span>
                 <span class="f-dato">{it.s.duracion} min</span>
               </button>
-              {#if !hecho && POR_QUE_SESION[it.s.tipo]}<p class="t-porque">{POR_QUE_SESION[it.s.tipo]}</p>{/if}
+              {#if !hecho && porqueDe(it.s)}<p class="t-porque">{porqueDe(it.s).corto}</p>{/if}
             {:else if it.tipo === 'entreno'}
               <div class="fila">
                 <span class="f-ic"><Icono n="dumbbell" tam={15} grosor={2.4} /></span>

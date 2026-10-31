@@ -31,7 +31,7 @@ export function listaCompra(plan, dias = null) {
     if (dias && !dias.includes(i)) return;
     if (dia.viaje) return; // de viaje compras allí o comes fuera
     for (const c of dia.comidas) {
-      if (c.libre) continue; // comida libre: no se compra nada para ella
+      if (c.libre || recetaPorId[c.recetaId]?.fuera) continue; // comida libre o fuera: no se compra nada para ella
       const nombre = nombreCorto(recetaPorId[c.recetaId]?.nombre);
       for (const ing of c.ingredientes) {
         totales[ing.a] = (totales[ing.a] || 0) + ing.g;

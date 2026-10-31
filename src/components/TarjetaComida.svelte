@@ -13,11 +13,12 @@
   import { recetaPorId } from '../lib/planificador.js';
   import { textoComplementos } from '../lib/complementos.js';
   import { macrosComida, costeComida, cantidadTexto, alimento } from '../lib/nutricion.js';
-  import { marcarHecha, alternarSaltada, quitarRegistro, tomarBatido, mantenerComida } from '../lib/acciones.js';
+  import { marcarHecha, alternarSaltada, quitarRegistro, tomarBatido, mantenerComida, comerFuera, volverACasa } from '../lib/acciones.js';
   import { estado } from '../stores/estado.js';
   import { abrirHoja, avisar } from '../stores/ui.js';
   import { editarRegistro } from '../stores/estado.js';
-  import { euros } from '../lib/formato.js';
+  import { euros, diaSemana } from '../lib/formato.js';
+  import { hoyISO } from '../lib/planificador.js';
 
   /** comida: elemento de estadoDia().comidas (o del plan si editable=false) */
   /** destacada: es la próxima comida pendiente (su botón «Hecha» va en naranja) */
@@ -81,6 +82,25 @@
     return `conic-gradient(from -90deg, var(--coral) 0 ${p}%, var(--amarillo) ${p}% ${pc}%, var(--exito) ${pc}% 100%)`;
   });
 
+  // Platos que se cocinan (no lo de comer fuera ni lo que se toma tal cual): «Cocinar» abre el modo cocina
+  const cocinable = $derived(!comida.libre && !receta?.fuera && !receta?.viaje && (receta?.pasos?.length || 0) >= 2 && (receta?.tiempo || 0) > 5);
+  const cocinar = () => abrirHoja('cocina', { recetaId: comida.recetaId, ingredientes: comida.ingredientes });
+  // ¿Comes fuera? Solo si para esa comida hay platos de restaurante (desayuno, comida y cena)
+  const puedeFuera = $derived(!receta?.fuera && !comida.libre && ['desayuno', 'comida', 'cena'].includes(comida.franja) && diaIdx != null);
+  function irFuera() {
+    mas = false;
+    if (!comerFuera(diaIdx, comida.franja)) return avisar('Para esta comida no tengo opciones de fuera', '⚠️');
+    const deshacer = () => volverACasa(diaIdx, comida.franja);
+    if (fecha === hoyISO()) {
+      abrirHoja('guiaFuera', { sitio: comida.franja === 'desayuno' ? 'cafeteria' : 'menu' });
+      avisar('Comes fuera: te digo qué pedir', '🍽️', deshacer);
+    } else avisar(`El ${diaSemana(fecha)} comes fuera: no entra en la compra`, '🍽️', deshacer);
+  }
+  function irCasa() {
+    mas = false;
+    if (volverACasa(diaIdx, comida.franja)) avisar(`Vuelve tu ${franjaNombre.toLowerCase()} de casa`, '🏠');
+  }
+
   function verReceta() {
     abrirHoja('receta', { recetaId: comida.recetaId, ingredientes: comida.ingredientes, titulo: [comida.hora, franjaNombre].filter(Boolean).join(' · '), diaIdx, franja: comida.franja });
   }
@@ -105,7 +125,8 @@
         <span class="pc-tipo"><Icono n="utensils" tam={14} grosor={2.2} /> {franjaNombre}{comida.hora ? ` · ${comida.hora}` : ''}</span>
         {#if comida.etiqueta}<span class="pc-etq">{ETQ[comida.etiqueta]}</span>{/if}
         {#if comida.ajustada && situacion === 'pendiente'}<span class="pc-etq">Ajustada</span>{/if}
-        {#if receta?.fuera || receta?.viaje}<button class="pc-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={14} grosor={2.2} /> Qué pedir</button>{/if}
+        {#if receta?.fuera || receta?.viaje}<button class="pc-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={14} grosor={2.2} /> Qué pedir</button>
+        {:else if cocinable && situacion === 'pendiente'}<button class="pc-guia" onclick={cocinar}><Icono n="chef-hat" tam={14} grosor={2.2} /> Cocinar</button>{/if}
       </div>
       {#if comida.libre}<span class="pc-libre" aria-hidden="true"><Icono n="party-popper" tam={86} grosor={1.4} /></span>{:else if !tieneFoto}<span class="pc-anillo" style="background:{anillo}" aria-hidden="true"></span>{/if}
       <button class="pc-titulo" onclick={verReceta}>{nombre}</button>
@@ -134,7 +155,7 @@
         <button class="titulo" onclick={verReceta}>{nombre}</button>
         {#if acompaña}<p class="acomp">+ {acompaña}</p>{/if}
         <Macros {m} peque />
-        <div class="meta"><span><Icono n="clock" tam={13} /> {receta?.tiempo} min</span><span><Icono n="euro" tam={13} /> {euros(costeComida(comida.ingredientes))}</span>{#if receta?.fuera || receta?.viaje}<button class="meta-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={13} /> Qué pedir</button>{/if}</div>
+        <div class="meta"><span><Icono n="clock" tam={13} /> {receta?.tiempo} min</span><span><Icono n="euro" tam={13} /> {euros(costeComida(comida.ingredientes))}</span>{#if receta?.fuera || receta?.viaje}<button class="meta-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={13} /> Qué pedir</button>{:else if cocinable && situacion === 'pendiente'}<button class="meta-guia" onclick={cocinar}><Icono n="chef-hat" tam={13} /> Cocinar</button>{/if}</div>
       </div>
     </div>
   {/if}
@@ -228,6 +249,8 @@
     {#if !portada}{@render pieP()}{/if}
     {#if mas}
       <div class="acciones secundarias" transition:slide={{ duration: 160 }}>
+        {#if comida.enCasa}<button onclick={irCasa}><Icono n="house" tam={16} /> Al final como en casa</button>
+        {:else if puedeFuera}<button onclick={irFuera}><Icono n="map-pin" tam={16} /> Hoy como fuera</button>{/if}
         {@render botonCantidades()}
         {#if comida.pasada}{@render botonCambiar()}{/if}
         <button onclick={empezarEdicion}><Icono n="pencil" tam={16} /> Ajustar o quitar algo</button>

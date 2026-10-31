@@ -154,6 +154,16 @@ async function foto(nombre, trozos = 1) {
   }
   await js(`window.scrollTo(0, 0);`);
 }
+// Una captura con un elemento concreto en el centro de la pantalla
+async function fotoEn(nombre, selector) {
+  if (FILTRO && !nombre.startsWith(FILTRO)) return;
+  await js(`document.querySelector('${selector}')?.scrollIntoView({ block: 'center' });`);
+  await espera(500);
+  const r = await cdp('Page.captureScreenshot', { format: 'png' });
+  fs.writeFileSync(path.join(SALIDA, `${nombre}.png`), Buffer.from(r.result.data, 'base64'));
+  hechas.push(`${nombre}.png`);
+  await js(`window.scrollTo(0, 0);`);
+}
 const ir = (h) => js(`location.hash = '${h}'; await new Promise((r) => setTimeout(r, 400)); window.scrollTo(0, 0);`);
 const hoja = (tipo, props) => js(`(await import('/src/stores/ui.js')).abrirHoja('${tipo}', ${props}); await new Promise((r) => setTimeout(r, 800));`);
 const cerrar = () => js(`(await import('/src/stores/ui.js')).cerrarHoja(); await new Promise((r) => setTimeout(r, 400));`);
@@ -161,13 +171,15 @@ const pestaña = (texto) => js(`[...document.querySelectorAll('[role=tab]')].fin
 const PLAN = `(await import('/src/lib/hyrox/index.js')).planDe(JSON.parse(localStorage.getItem('mi-nutricionista:v1')))`;
 
 await ir('#hoy'); await foto('hoy', 4);
+await fotoEn('hoy-preparar', '.preparar');
 await ir('#entreno'); await foto('entreno-semana', 3);
 await pestaña('Plan'); await foto('entreno-plan', 3);
 await pestaña('Tu HYROX'); await foto('entreno-carrera', 2);
 await ir('#comida'); await foto('comida-semana', 3);
-await pestaña('Recetas'); await foto('comida-recetas', 2);
+await pestaña('Para probar'); await foto('comida-recetas', 2);
+await js(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('Ponlo en mi menú'))?.click(); await new Promise((r) => setTimeout(r, 300));`); await foto('comida-probar-huecos', 1);
 await pestaña('Compra'); await foto('comida-compra', 2);
-await pestaña('Batch'); await foto('comida-batch', 2);
+await hoja('preparar', `{ desde: '2026-10-20', dias: 4 }`); await foto('hoja-preparar', 2); await cerrar();
 await ir('#progreso'); await foto('progreso-resumen', 4);
 await hoja('revision'); await foto('hoja-revision-portada', 1); await cerrar();
 await hoja('revision', `{ paso: 2 }`); await foto('hoja-revision-fotos', 1); await cerrar();
@@ -181,6 +193,8 @@ await ir('#hoy');
 await hoja('registrar', `{ fecha: '2026-10-20', franja: 'merienda' }`); await foto('hoja-registrar', 2); await cerrar();
 await hoja('receta', `(() => { const e = JSON.parse(localStorage.getItem('mi-nutricionista:v1')); const c = e.plan.dias[0].comidas[1]; return { recetaId: c.recetaId, ingredientes: c.ingredientes, titulo: c.hora + ' · Comida', diaIdx: 0, franja: c.franja }; })()`); await foto('hoja-receta', 2); await cerrar();
 await hoja('alternativas', `{ diaIdx: 0, franja: 'cena' }`); await foto('hoja-alternativas', 1); await cerrar();
+await js(`document.querySelector('.comida-card.con-portada .solo-icono')?.click(); await new Promise((r) => setTimeout(r, 300));`); await fotoEn('hoy-mas-opciones', '.comida-card.con-portada .secundarias');
+await js(`document.querySelector('.comida-card.con-portada .solo-icono')?.click(); await new Promise((r) => setTimeout(r, 300));`);
 await js(`(await import('/src/stores/estado.js')).actualizar((x) => { x.despensa = { pechuga_pollo: { g: 800, fecha: '2026-10-18' }, arroz: { g: 900, fecha: '2026-10-18' }, merluza: { g: 400, fecha: '2026-10-19' } }; }); await new Promise((r) => setTimeout(r, 200));`);
 await hoja('alternativas', `{ diaIdx: 0, franja: 'cena', nevera: true }`); await foto('hoja-nevera', 1); await cerrar();
 await hoja('sesion', `{ id: ${PLAN}.sesiones.find((s) => s.fecha >= '2026-10-20').id }`); await foto('hoja-sesion', 2); await cerrar();
