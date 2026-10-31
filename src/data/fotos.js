@@ -374,6 +374,121 @@ export const FOTOS_RECETAS = {
   "autor": "Imagen generada con Canva",
   "licencia": "Canva",
   "fuente": "https://www.canva.com"
+ },
+ "batido-proteico": {
+  "autor": "Ourlibrary",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Banana_Smoothie.jpg"
+ },
+ "bol-salmon-aguacate": {
+  "autor": "Andy Li",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Salmon_%26_Tuna_Poke_Bowl_(M)_with_Spicy_Mayo_sauce_-_Kitokito_2025-04-25.jpg"
+ },
+ "burrito-pollo-alubias": {
+  "autor": "Sodanie Chea from Norwalk, Ca, United States",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Grilled_Chicken_Burrito_(7842256236).jpg"
+ },
+ "chili-ternera-arroz": {
+  "autor": "JIP",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Chili_con_carne_as_a_convenience_meal_at_the_office.jpg"
+ },
+ "fuera-legumbre-pescado": {
+  "autor": "JIP",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Homemade_lentil_stew_with_tuna_and_cucumber.jpg"
+ },
+ "garbanzos-pollo-espinacas": {
+  "autor": "Kari Sullivan from Austin, TX",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Spinach-Chickpea_Curry_(3117324894).jpg"
+ },
+ "hamburguesa-ternera-patatas": {
+  "autor": "Nenad Stojkovic from Srbija",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Homemade_burger_with_french_fries_on_wooden_board_(49106185363).jpg"
+ },
+ "merluza-limon-patatas": {
+  "autor": "Ewan Munro from London, UK",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Ship,_Wandsworth,_London_(4829658903).jpg"
+ },
+ "pasta-langostinos-ajillo": {
+  "autor": "PattayaPatrol",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:DFC_4054_Garlic_chili_spaghetti_tossed_with_shrimp_fresh_parsley_and_vibrant_veggies_-_a_simple_savory_seafood_pasta_delight.jpg"
+ },
+ "pizza-pollo-champis": {
+  "autor": "HaJunkiyada",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Homemade_tortilla_pizza.jpg"
+ },
+ "pollo-mostaza-miel": {
+  "autor": "Luca Nebuloni",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_delicacies_with_honey,_mustard_and_turmeric_(16717511506).jpg"
+ },
+ "pollo-tikka-airfryer": {
+  "autor": "Kelly Sue",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_Tikka_Masala_KellySue.JPG"
+ },
+ "quesadillas-pollo": {
+  "autor": "Daderot",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_quesadilla_-_Massachusetts.jpg"
+ },
+ "salmon-teriyaki-arroz": {
+  "autor": "Alpha from Melbourne, Australia",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Teriyaki_Salmon_Claypot_Rice_-_Claypot_King,_Glen_Waverley_(2993613849).jpg"
+ },
+ "shakshuka-huevos": {
+  "autor": "Junbinhuang",
+  "licencia": "CC BY 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Shakshuka_Dish.jpg"
+ },
+ "solomillo-pimienta-pure": {
+  "autor": "David Reber from Kansas City, USA",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:The_Food_at_Davids_Kitchen_089.jpg"
+ },
+ "tacos-merluza": {
+  "autor": "Douglas Muth",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Fish_tacos_in_Pittsburg.jpg"
+ },
+ "tortilla-pavo-pan": {
+  "autor": "MaedaAkihiko",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Omelette-Plate.jpg"
+ },
+ "tortitas-avena-claras": {
+  "autor": "Sumit Surai",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Banana_Chocolate_Pancake.jpg"
+ },
+ "tortitas-pavo-queso": {
+  "autor": "HaJunkiyada",
+  "licencia": "CC BY-SA 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Cottage_cheese_and_vegetables_on_rice_cakes.jpg"
+ },
+ "tostadas-francesas-proteicas": {
+  "autor": "Navin75",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Bananas_Foster_French_Toast_(15288002250).jpg"
+ },
+ "viaje-pollo-asado-pan": {
+  "autor": "naotakem",
+  "licencia": "CC BY 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:%22Kagawa_style%22_bone-in_roasted_chicken_thigh,_steamed_cabbage,_red_bell_pepper,_and_snow_peas_with_brown_rice_and_wakame_seaweed_soup_%E9%A6%99%E5%B7%9D%E9%AA%A8%E4%BB%98%E3%81%8D%E9%B6%8F%E3%81%AB%E8%92%B8%E3%81%97%E3%82%AD%E3%83%A3%E3%83%99%E3%83%84%E3%80%81%E3%83%91%E3%83%97%E3%83%AA%E3%82%AB%E3%80%81%E3%82%B5%E3%83%A4%E3%82%A8%E3%83%B3%E3%83%89%E3%82%A6%E3%80%81%E7%8E%84%E7%B1%B3%E3%83%AF%E3%82%AB%E3%83%A1%E3%82%B9%E3%83%BC%E3%83%97.jpg"
+ },
+ "wrap-pavo-espinacas": {
+  "autor": "Gordana Adzieva",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:%D0%A2%D0%BE%D1%80%D1%82%D0%B8%D1%99%D0%B8_%D1%81%D0%BE_%D1%98%D0%B0%D1%98%D1%86%D0%B5_%D0%B8_%D1%81%D0%BF%D0%B0%D0%BD%D0%B0%D1%9C.jpg"
  }
 };
 
@@ -478,5 +593,15 @@ export const FOTOS_SESIONES = {
   "autor": "U.S. Air Force photo by Senior Airman Haiden Morris",
   "licencia": "Public domain",
   "fuente": "https://commons.wikimedia.org/wiki/File:2025_Skelton_Gym_Powerlifting_Competition_(9326219).jpg"
+ },
+ "caminar": {
+  "autor": "Fons Heijnsbroek",
+  "licencia": "CC0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:People_are_walking_and_standing_in_the_street_Zeedijk_in_Amsterdam_old_city;_free_download_photo_in_high_resolutions_by_Fons_Heijnbroek,_street_photography_The_Netherlands,_CCO.tif"
+ },
+ "popular": {
+  "autor": "Stephen Craven",
+  "licencia": "CC BY-SA 2.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Marathon_runners_near_the_end_of_the_race_-_geograph.org.uk_-_6142899.jpg"
  }
 };
