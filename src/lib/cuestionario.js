@@ -332,7 +332,7 @@ export function resumenObjetivos(perfil, { conHorario = false } = {}) {
     if (recs.suplementos.length) {
       horario += `<h3>Suplementos que tienen sentido para ti</h3>
         <div class="chips-lista">${recs.suplementos.map((s) => `<span class="chip-sup">${iconoSVG(s.emoji, 15)} ${esc(s.nombre)}</span>`).join('')}</div>
-        <p class="pie-nota">Tienes las dosis, el momento y las precauciones en <b>Mi plan</b>.</p>`;
+        <p class="pie-nota">Tienes las dosis, el momento y las precauciones en <b>Tu perfil → Salud</b>.</p>`;
     }
     if (recs.avisos.length) horario += recs.avisos.map((a) => `<p class="alerta">${esc(a.texto)}</p>`).join('');
   }

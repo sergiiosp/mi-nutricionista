@@ -18,7 +18,7 @@
   import { listarCopiasLocales, restaurarCopiaLocal, guardarCopiaFuera, restaurarArchivo } from '../lib/copias.js';
 
   let { oneditar, sub = '' } = $props();
-  const PESTAÑAS = [{ id: 'plan', nombre: 'Plan', emoji: '🎯' }, { id: 'salud', nombre: 'Salud', emoji: '💊' }, { id: 'conectar', nombre: 'Conectar', emoji: '🔗' }, { id: 'ajustes', nombre: 'Ajustes', emoji: '⚙️' }];
+  const PESTAÑAS = [{ id: 'plan', nombre: 'Objetivos', emoji: '🎯' }, { id: 'salud', nombre: 'Salud', emoji: '💊' }, { id: 'conectar', nombre: 'Conectar', emoji: '🔗' }, { id: 'ajustes', nombre: 'Ajustes', emoji: '⚙️' }];
   let pestaña = $state(PESTAÑAS.some((x) => x.id === sub) ? sub : 'plan');
   $effect(() => { if (PESTAÑAS.some((x) => x.id === sub)) pestaña = sub; });
   const p = $derived($estado.perfil);
@@ -57,7 +57,7 @@
   }
 </script>
 
-<h1 class="titulo">Mi plan</h1>
+<h1 class="titulo">Tu perfil</h1>
 <Segmentos opciones={PESTAÑAS} bind:valor={pestaña} onchange={(id) => ir('ajustes', id)} />
 
 {#if pestaña === 'plan'}

@@ -73,7 +73,7 @@ export function propuestas(e, objetivos, hoy, repaso = {}) {
   }
   if (t && !lista.some((x) => x.id === 'kcal')) {
     if (objetivo === 'recomposicion' && t.kgSemana < -0.4) lista.push({ id: 'kcal', texto: 'Subo 100 kcal al día', porque: `Bajas ${String(Math.abs(t.kgSemana).toFixed(2)).replace('.', ',')} kg/semana: en recomposición es demasiado rápido y cuesta ganar músculo.`, aplicar: { ajusteKcal: 100 } });
-    if (objetivo === 'recomposicion' && t.kgSemana > 0.3) lista.push({ id: 'kcal', texto: 'Bajo 100 kcal al día', porque: 'Tu peso sube más de lo que interesa en recomposición. Mira también la cintura: si baja, no pasa nada.', aplicar: { ajusteKcal: -100 } });
+    if (objetivo === 'recomposicion' && t.kgSemana > 0.3) lista.push({ id: 'kcal', texto: 'Bajo 100 kcal al día', porque: 'Tu peso sube más de lo que interesa en recomposición. Mira también tus fotos: si te ves igual o mejor, no pasa nada.', aplicar: { ajusteKcal: -100 } });
   }
   if (repaso.recetasNo?.length) {
     const nombres = repaso.recetasNo.map((id) => recetaPorId[id]?.nombre).filter(Boolean);
@@ -108,8 +108,6 @@ export function textoResumen(e, objetivos, hoy, repaso = {}) {
   if (!s.diasRegistrados) l.push('Comida: sin días registrados esta semana');
   else l.push(`Comida: ${s.diasRegistrados} días registrados · media ${Math.round(s.kcal)} kcal (objetivo ${Math.round(s.objetivoKcal)}) · proteína ${Math.round(s.p)} g (objetivo ${Math.round(s.objetivoP)} g)`);
   if (s.tendencia) l.push(`Peso: ${s.tendencia.kgSemana > 0 ? '+' : ''}${s.tendencia.kgSemana.toFixed(2)} kg/semana`);
-  const med = [...(e.medidas || [])].sort((a, b) => a.fecha.localeCompare(b.fecha));
-  if (med.length > 1) l.push(`Cintura: ${med[0].cintura ?? '—'} → ${med.at(-1).cintura ?? '—'} cm · brazo: ${med[0].brazo ?? '—'} → ${med.at(-1).brazo ?? '—'} cm`);
   const plan = planDe(e);
   if (plan) {
     const regs = e.hyrox?.registros || {};

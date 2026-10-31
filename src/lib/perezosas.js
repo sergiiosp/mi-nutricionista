@@ -18,8 +18,6 @@ const CARGADORES = {
   diaCarrera: () => import('../components/ModoCarrera.svelte'),
   informe: () => import('../components/Informe.svelte'),
   revision: () => import('../components/Revision.svelte'),
-  simulador: () => import('../components/Simulador.svelte'),
-  logros: () => import('../pages/progreso/Logros.svelte'),
   buzon: () => import('../components/Buzon.svelte'),
 };
 

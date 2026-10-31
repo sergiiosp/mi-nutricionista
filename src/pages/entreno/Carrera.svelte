@@ -25,7 +25,7 @@
   const dias = $derived(plan?.carrera ? Math.round((new Date(`${plan.carrera}T12:00`) - new Date(`${hoyISO()}T12:00`)) / 86400000) : null);
 </script>
 
-<Portada foto="img/sesiones/carrera.webp" color="var(--primario)" alto={340} etiqueta="Tu carrera">
+<Portada foto="img/sesiones/carrera.webp" color="var(--primario)" alto={340} etiqueta="Tu HYROX">
   <div class="sup">
     <span class="chip">{plan?.carrera ? `${capital(fechaLarga(plan.carrera))}${config.horaCarrera ? ` · ${config.horaCarrera}` : ''}` : 'Sin fecha de carrera'}</span>
     {#if dias !== null && dias >= 0}<span class="chip fuerte cifra">{dias > 0 ? `${dias} días` : '¡Hoy!'}</span>{/if}

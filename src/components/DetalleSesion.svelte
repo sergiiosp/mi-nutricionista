@@ -37,6 +37,8 @@
     moviendo = false;
     avisar(`Movida al ${diaSemana(f)}`, '🔀');
   }
+  // Cómo se hace cada ejercicio de la sesión (antes vivía en la pestaña Estaciones)
+  const tecnicas = $derived((s?.ejercicios || []).filter((x, i, l) => EJERCICIOS[x.id]?.tecnica && l.findIndex((y) => y.id === x.id) === i).map((x) => EJERCICIOS[x.id]));
   // «Sentadilla con barra: 4 × 8» → nombre a la izquierda y series × reps a la derecha
   function partir(l) {
     const i = l.indexOf(': ');
@@ -88,6 +90,12 @@
       {/each}
     </ul>
   {/each}
+  {#if tecnicas.length}
+    <details class="tecnica">
+      <summary><Icono n="info" tam={18} /> Cómo se hace cada ejercicio <Icono n="chevron-down" tam={18} /></summary>
+      {#each tecnicas as x (x.nombre)}<div class="tc"><b>{x.nombre}</b><p>{x.tecnica}</p></div>{/each}
+    </details>
+  {/if}
   {#each s.notas as n (n)}<p class="nota"><Icono e="💡" tam={18} /> {n}</p>{/each}
   {#if s.vueltaCalma.length}
     <h3><Icono e="🧘" tam={18} /> Vuelta a la calma</h3>
@@ -157,6 +165,16 @@
   .ejercicios li + li { border-top: 1px solid var(--linea); }
   .ejercicios span { font-weight: 600; color: var(--texto); }
   .ejercicios b { flex-shrink: 0; max-width: 48%; text-align: right; font-weight: 700; color: var(--texto); }
+  .tecnica { margin-top: 10px; padding: 12px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
+  .tecnica summary { display: flex; align-items: center; gap: 10px; min-height: 28px; font-weight: 700; font-size: 0.92rem; list-style: none; cursor: pointer; }
+  .tecnica summary::-webkit-details-marker { display: none; }
+  .tecnica summary :global(svg:first-child) { color: var(--primario); }
+  .tecnica summary :global(svg:last-child) { margin-left: auto; color: var(--texto-3); transition: transform 0.2s var(--ease-out); }
+  .tecnica[open] summary :global(svg:last-child) { transform: rotate(180deg); }
+  .tc { padding: 9px 0; border-top: 1px solid var(--linea); }
+  .tc:first-of-type { margin-top: 8px; }
+  .tc b { font-size: 0.9rem; }
+  .tc p { margin: 2px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
   .nota { padding: 10px 12px; border-radius: var(--r-m); background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 500; }
   .comida { display: flex; gap: 12px; align-items: center; margin-top: 14px; padding: 12px 14px; border-radius: var(--r-l); background: linear-gradient(135deg, var(--primario-claro), var(--superficie)); }
   .comida small { display: block; color: var(--texto-2); font-weight: 600; }

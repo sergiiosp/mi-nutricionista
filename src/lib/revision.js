@@ -1,4 +1,4 @@
-// Revisión del mes: cada 4 semanas, en 10 minutos y en un solo sitio: báscula, medidas, fotos y un test.
+// Revisión del mes: cada 4 semanas, en 10 minutos y en un solo sitio: báscula, fotos y un test.
 // Cada paso se guarda al momento (si cierras a medias, sigues donde lo dejaste) y al final ves qué ha
 // cambiado desde la revisión anterior.
 import { sumarDias } from './planificador.js';
@@ -19,12 +19,11 @@ export function estadoRevision(e, hoy) {
   return { toca, aviso: toca && !pospuesta, enCurso, ultima, proxima: base ? sumarDias(base, ultima ? CADA : 14) : null, dias };
 }
 
-/** Los cuatro pasos y si ya están hechos en esta revisión (lo apuntado desde que empezó; un test de la última semana vale). */
+/** Los tres pasos y si ya están hechos en esta revisión (lo apuntado desde que empezó; un test de la última semana vale). */
 export function pasosRevision(e, inicio) {
   const poses = new Set((e.fotosProgreso || []).filter((f) => f.fecha >= inicio).map((f) => f.pose || 'frente'));
   return [
     { id: 'bascula', titulo: 'Báscula', icono: 'scale', texto: 'Peso, grasa, músculo y agua', hecho: (e.pesos || []).some((p) => p.fecha >= inicio) },
-    { id: 'medidas', titulo: 'Medidas', icono: 'ruler', texto: 'Cintura, cadera, pecho, brazo y muslo', hecho: (e.medidas || []).some((m) => m.fecha >= inicio) },
     { id: 'fotos', titulo: 'Fotos', icono: 'camera', texto: 'De frente, de lado y de espaldas', hecho: poses.size >= 3, poses: [...poses] },
     { id: 'test', titulo: 'Test', icono: 'timer', texto: 'Un 5 km a tope, o SkiErg o remo', hecho: (e.tests || []).some((t) => t.fecha >= sumarDias(inicio, -7)), opcional: true },
   ];
@@ -54,8 +53,6 @@ export function resumenRevision(e, inicio) {
   fila('peso', 'Peso', 'kg', 1, antesYAhora(e.pesos, 'peso', previa), (d) => (objetivo === 'perder' ? d < 0 : objetivo === 'ganar' ? d > 0 : Math.abs(d) <= 1 ? true : null));
   fila('grasa', 'Grasa', '%', 1, antesYAhora(e.pesos, 'grasa', previa), (d) => d < 0);
   fila('musculo', 'Músculo', 'kg', 1, antesYAhora(e.pesos, 'musculo', previa), (d) => d > 0);
-  fila('cintura', 'Cintura', 'cm', 1, antesYAhora(e.medidas, 'cintura', previa), (d) => d < 0);
-  fila('brazo', 'Brazo', 'cm', 1, antesYAhora(e.medidas, 'brazo', previa), (d) => d > 0);
   const t5k = antesYAhora((e.tests || []).filter((t) => t.id === '5k'), 'seg', previa);
   fila('5k', '5 km', 'seg', 0, t5k, (d) => d < 0);
   const buenas = filas.filter((f) => f.bien === true).length, malas = filas.filter((f) => f.bien === false).length;

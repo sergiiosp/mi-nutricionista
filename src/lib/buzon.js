@@ -120,7 +120,7 @@ export function iniciarBuzon() {
 
 // ── Contexto: lo que la app añade sola para saber de qué hablas ───────────
 
-const PANTALLAS = { hoy: 'Hoy', entreno: 'Entreno', comida: 'Comida', progreso: 'Progreso', ajustes: 'Mi plan' };
+const PANTALLAS = { hoy: 'Hoy', entreno: 'Entreno', comida: 'Comida', progreso: 'Progreso', ajustes: 'Tu perfil' };
 const FRANJAS = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Recena' };
 
 /** Tema que toca por defecto según desde dónde escribes. */

@@ -5,7 +5,6 @@
   import Semana from './entreno/Semana.svelte';
   import PlanFases from './entreno/PlanFases.svelte';
   import Carrera from './entreno/Carrera.svelte';
-  import Estaciones from './entreno/Estaciones.svelte';
   import { estado } from '../stores/estado.js';
   import { ir } from '../stores/ruta.js';
 
@@ -13,12 +12,12 @@
   const OPCIONES = [
     { id: 'semana', nombre: 'Semana', emoji: '📅' },
     { id: 'plan', nombre: 'Plan', emoji: '🗺️' },
-    { id: 'carrera', nombre: 'Carrera', emoji: '🏆' },
-    { id: 'estaciones', nombre: 'Estaciones', emoji: '🛷' },
+    { id: 'carrera', nombre: 'Tu HYROX', emoji: '🏆' },
   ];
-  let pestaña = $state(OPCIONES.some((o) => o.id === sub) ? sub : 'semana');
-  // Si un enlace lleva a otra pestaña de esta misma sección (#seccion/pestaña), se cambia
-  $effect(() => { if (OPCIONES.some((o) => o.id === sub)) pestaña = sub; });
+  // Las estaciones viven ahora en Tu HYROX (el enlace antiguo #entreno/estaciones lleva allí)
+  const pestañaDe = (s) => (s === 'estaciones' ? 'carrera' : OPCIONES.some((o) => o.id === s) ? s : null);
+  // La marca el enlace (#entreno/pestaña) y se puede cambiar tocando las pestañas
+  let pestaña = $derived(pestañaDe(sub) || 'semana');
   let configurando = $state(false);
 </script>
 
@@ -39,8 +38,7 @@
   <Segmentos opciones={OPCIONES} bind:valor={pestaña} onchange={(id) => ir('entreno', id)} />
   {#if pestaña === 'semana'}<Semana />
   {:else if pestaña === 'plan'}<PlanFases oneditar={() => (configurando = true)} />
-  {:else if pestaña === 'carrera'}<Carrera />
-  {:else}<Estaciones />{/if}
+  {:else}<Carrera />{/if}
 {/if}
 
 <style>

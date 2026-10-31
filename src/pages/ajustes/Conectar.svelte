@@ -1,6 +1,6 @@
 <script>
   import Icono from '../../components/Icono.svelte';
-  // Mi plan → Conectar: sincronización entre dispositivos, copias de seguridad y recordatorios
+  // Tu perfil → Conectar: sincronización entre dispositivos, copias de seguridad y recordatorios
   import { onMount } from 'svelte';
   import qrcode from 'qrcode-generator';
   import Emoji from '../../components/Emoji.svelte';
@@ -123,7 +123,7 @@
       </div>
       {#if vista === 'añadir' && qr}
         <div class="añadir">
-          <p><b>En el otro dispositivo</b> abre Pulso y, en la bienvenida o en Mi plan → Conectar, pulsa «Ya la uso en otro dispositivo». Después escanea este código:</p>
+          <p><b>En el otro dispositivo</b> abre Pulso y, en la bienvenida o en Tu perfil → Conectar, pulsa «Ya la uso en otro dispositivo». Después escanea este código:</p>
           <svg class="qr" viewBox="-2 -2 {qr.n + 4} {qr.n + 4}" role="img" aria-label="Código QR para vincular otro dispositivo">
             <rect x="-2" y="-2" width={qr.n + 4} height={qr.n + 4} fill="#fff" />
             <path d={qr.d} fill="#163a2c" />

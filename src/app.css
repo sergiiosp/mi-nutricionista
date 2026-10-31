@@ -56,7 +56,7 @@
 :root[data-fuente="manrope"] { --fuente: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 :root[data-fuente="geist"] { --fuente: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 
-/* Claro (opcional en Mi plan → Ajustes) */
+/* Claro (opcional en Tu perfil → Ajustes) */
 :root[data-theme="light"] {
   --fondo: #f2f2f5; --superficie: #ffffff; --superficie-2: #ececf0; --superficie-3: #e2e2e8; --borde: #dedee5;
   --linea: rgb(10 10 20 / 0.07); --texto: #0d0d12; --texto-2: #5f5f6b; --texto-3: #8a8a96; --dato-kcal: #3f9a1c; --dato-e: #6a4fe0;

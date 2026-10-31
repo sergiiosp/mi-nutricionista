@@ -10,16 +10,12 @@
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
   import { hoyISO, recetaPorId } from '../lib/planificador.js';
   import { estadoDia, sugerencias, faltas } from '../lib/dia.js';
-  import NotaDia from '../components/NotaDia.svelte';
   import { recomendaciones, recordatoriosDia } from '../lib/salud.js';
   import { esDiaEntreno, horarioDia, aMin, CLASE_SESION } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
   import { crearPlan, marcarEntrenoDia, quitarRegistro, alternarToma } from '../lib/acciones.js';
-  import { fechaLarga, saludo, entero, capital, num } from '../lib/formato.js';
+  import { fechaLarga, saludo, entero, capital } from '../lib/formato.js';
   import { slide } from 'svelte/transition';
-  import { tendencia } from '../lib/progreso.js';
-  import { semanaDe } from '../lib/hyrox/plan.js';
-  import { rachas } from '../lib/logros.js';
   import PropuestaSemana from '../components/PropuestaSemana.svelte';
   import PropuestaHyrox from '../components/PropuestaHyrox.svelte';
   import Valorar from '../components/Valorar.svelte';
@@ -27,7 +23,6 @@
   import ComoLlegas from '../components/ComoLlegas.svelte';
   import AvisoCopia from '../components/AvisoCopia.svelte';
   import AvisoRevision from '../components/AvisoRevision.svelte';
-  import { retosSemana } from '../lib/retos.js';
   import { explicarPlan } from '../lib/coach.js';
   import { planDiaCarrera } from '../lib/hyrox/diaCarrera.js';
   import FotoReceta from '../components/FotoReceta.svelte';
@@ -57,8 +52,6 @@
   const recs = $derived(recomendaciones($estado.perfil, objetivos));
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
-  const r = $derived(rachas($estado, objetivos, hoy));
-  const retos = $derived(retosSemana($estado, objetivos, hoy));
   const coach = $derived(explicarPlan($estado, objetivos, hoy));
   const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
   // Carrera hoy o mañana: acceso directo al modo día de carrera
@@ -67,15 +60,7 @@
   // Panel: qué bloque está abierto (ninguno al entrar: lo esencial ya se ve)
   let abierto = $state(null);
   const alternar = (k) => (abierto = abierto === k ? null : k);
-  const tend = $derived(tendencia($estado.pesos || []));
   const sesionHecha = $derived(sesionesHoy.some((s) => $estado.hyrox?.registros?.[s.id]?.estado === 'completa'));
-  const semanaEntreno = $derived.by(() => {
-    const plan = planDe($estado);
-    const sem = plan ? semanaDe(plan, hoy) : null;
-    if (!sem) return null;
-    const ses = sem.sesiones.filter((x) => x.tipo !== 'carrera');
-    return { total: ses.length, hechas: ses.filter((x) => ['completa', 'parcial'].includes($estado.hyrox?.registros?.[x.id]?.estado)).length };
-  });
   const NOMBRES = { desayuno: 'Desayuno', media: 'Media mañana', comida: 'Comida', merienda: 'Merienda', cena: 'Cena', recena: 'Antes de dormir' };
   const nombreFranja = (c) => (['media', 'merienda'].includes(c.franja) && c.hora ? (c.hora < '14:00' ? 'Media mañana' : 'Merienda') : NOMBRES[c.franja]);
 
@@ -169,13 +154,6 @@
     ...(entrenoHoy && sesPrincipal ? [{ valor: regPrincipal ? 1 : 0, meta: 1, color: COLOR.e }] : []),
   ]);
 
-  // Mañana: lo primero que toca (para la noche y el cierre del día)
-  const manana = $derived.by(() => {
-    const f = sumarDias(hoy, 1);
-    const dia = $estado.plan?.dias.find((x) => x.fecha === f);
-    const ses = sesionesDia($estado, f).find((x) => x.tipo !== 'carrera');
-    return { primera: dia?.comidas[0], ses };
-  });
 
   // Lo ya hecho antes de «Ahora» se pliega en una fila (se despliega al tocar)
   let verHechas = $state(false);
@@ -228,11 +206,6 @@
         <b class="r-texto">{#if !entrenoHoy}recupera y camina{:else if regPrincipal}hecho{:else if sesPrincipal}{sesPrincipal.hora} · {sesPrincipal.duracion} min{:else if sesion}a las {sesion.inicio}{:else}hoy{/if}</b>
       </button>
     </div>
-    <a class="r-semana s-progreso" href="#progreso">
-      <Icono n="chart-column" tam={14} grosor={2.2} />
-      Retos {retos.completados}/{retos.lista.length}{#if retos.racha} · racha de {retos.racha} {retos.racha === 1 ? 'semana' : 'semanas'}{/if}{#if semanaEntreno} · {semanaEntreno.hechas}/{semanaEntreno.total} sesiones{/if}{#if tend} · {tend.kgSemana > 0 ? '+' : ''}{num(tend.kgSemana, 1)} kg/sem{/if}
-      <Icono n="chevron-right" tam={14} />
-    </a>
   </section>
 
   {#if carreraHoy || carreraManana}
@@ -246,7 +219,7 @@
 
   <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
     <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
-    <span class="co-txt"><small>Tu coach · {coach.cabecera.toLowerCase()}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
+    <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
     <Icono n="chevron-right" tam={18} />
   </button>
 
@@ -341,17 +314,6 @@
     {:else}
       <div class="s-entreno"><TarjetaSesion sesion={proximo.s} registro={$estado.hyrox?.registros?.[proximo.s.id]} /></div>
     {/if}
-  {:else if d.comidas.length}
-    <section class="cierre" aria-label="Cierre del día">
-      <div class="ci-cab"><Icono n="moon" tam={18} grosor={2.2} /> <b>Cierre del día</b></div>
-      <div class="ci-datos">
-        <div style="--c:{COLOR.kcal}"><small>Kcal</small><b class="cifra">{entero(d.consumido.kcal)}</b><span>{Math.abs(d.consumido.kcal - d.objetivo.kcal) <= d.objetivo.kcal * 0.07 ? 'en tu objetivo' : d.consumido.kcal > d.objetivo.kcal ? `+${entero(d.consumido.kcal - d.objetivo.kcal)} sobre el objetivo` : `${entero(d.objetivo.kcal - d.consumido.kcal)} por debajo`}</span></div>
-        <div style="--c:{COLOR.p}"><small>Proteína</small><b class="cifra">{Math.round(d.consumido.p)} g</b><span>{d.consumido.p >= d.objetivo.p * 0.9 ? 'cumplida' : `faltan ${Math.round(d.objetivo.p - d.consumido.p)} g`}</span></div>
-      </div>
-      {#if manana.primera || manana.ses}
-        <p class="ci-manana"><b>Mañana:</b> {#if manana.ses}{minus(manana.ses.titulo.split(':')[0])} a las {manana.ses.hora}{manana.primera ? ' · ' : ''}{/if}{#if manana.primera}desayuno a las {manana.primera.hora}: {recetaPorId[manana.primera.recetaId]?.nombre}{/if}</p>
-      {/if}
-    </section>
   {/if}
 
   {#if resto.length}
@@ -419,7 +381,6 @@
     {#each d.dia?.consejos || [] as c (c)}<p class="nota-dia"><Icono n="info" tam={16} /> {c}</p>{/each}
   {/if}
 
-  {#if momento === 'noche' || cerrado}<NotaDia fecha={hoy} />{/if}
 </section>
 
 <style>
@@ -439,9 +400,6 @@
   .r-fila b { font-size: 1.25rem; line-height: 1.1; color: var(--c); }
   .r-fila b span { font-size: 0.78rem; font-weight: 700; color: var(--texto-3); margin-left: 1px; }
   .r-fila .r-texto { font-size: 0.95rem; font-weight: 700; }
-  .r-semana { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--linea); color: var(--texto-2); font-size: 0.8rem; font-weight: 600; text-decoration: none; }
-  .r-semana :global(svg:first-child) { color: var(--primario); }
-  .r-semana :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
 
   /* Modo día de carrera */
   .modo-carrera { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: var(--r-l); background: var(--hero); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--brillo-naranja); }
@@ -450,7 +408,7 @@
   .mcr-txt small { font-size: 0.76rem; font-weight: 700; opacity: 0.85; }
   .mcr-txt b { font-size: 1.05rem; }
   .mcr-txt span { font-size: 0.8rem; opacity: 0.9; }
-  /* Tu coach */
+  /* Tu semana */
   .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }
   .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
@@ -459,17 +417,6 @@
   .co-txt small i { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.66rem; }
   .co-txt b { font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
   .coach > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
-  /* Cierre del día */
-  .cierre { margin-top: 12px; padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--lila) 22%, transparent), transparent 60%), var(--superficie); box-shadow: var(--sombra); }
-  .ci-cab { display: flex; align-items: center; gap: 8px; color: var(--lila); }
-  .ci-cab b { color: var(--texto); }
-  .ci-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-  .ci-datos div { display: grid; }
-  .ci-datos small { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
-  .ci-datos b { font-size: 1.5rem; color: var(--c); line-height: 1.1; }
-  .ci-datos span { font-size: 0.78rem; color: var(--texto-2); }
-  .ci-manana { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--linea); font-size: 0.86rem; color: var(--texto-2); }
-  .ci-manana b { color: var(--texto); }
 
   /* Lo hecho, plegado */
   .fila.hechas { cursor: pointer; }

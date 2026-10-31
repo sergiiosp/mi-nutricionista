@@ -385,12 +385,9 @@ export function guardarPeso(fecha, p, extra = {}) {
   return salto >= 2 ? `Tu peso real difiere ${num(salto, 1)} kg del que tenía: cantidades nuevas desde mañana` : `Guardado: tu plan pasa a ${kcalAhora} kcal desde mañana`;
 }
 
-/** Revisión del mes: empezar (o seguir la que está a medias), apuntar medidas y terminar. */
+/** Revisión del mes: empezar (o seguir la que está a medias) y terminar. */
 export function empezarRevision() {
   actualizar((x) => { x.revision ||= { inicio: hoyISO() }; x.revisionPospuesta = null; });
-}
-export function guardarMedidas(fecha, datos) {
-  actualizar((x) => { x.medidas = (x.medidas || []).filter((m) => m.fecha !== fecha).concat([{ fecha, ...datos }]); });
 }
 export function posponerRevision() {
   actualizar((x) => { x.revisionPospuesta = hoyISO(); });

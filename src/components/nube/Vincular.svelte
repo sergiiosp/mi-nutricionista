@@ -36,7 +36,7 @@
 
   function leido(texto) {
     const m = String(texto).match(/#vincular=([\w-]{32})$/);
-    if (!m) { error = modo === 'enlace-pegado' ? 'Ese enlace no es de Pulso: copia entero el enlace de recuperación que guardaste.' : 'Ese QR no es de Pulso. Abre Mi plan → Conectar → «Añadir otro dispositivo» en el otro dispositivo.'; if (modo === 'qr') modo = 'codigo'; return; }
+    if (!m) { error = modo === 'enlace-pegado' ? 'Ese enlace no es de Pulso: copia entero el enlace de recuperación que guardaste.' : 'Ese QR no es de Pulso. Abre Tu perfil → Conectar → «Añadir otro dispositivo» en el otro dispositivo.'; if (modo === 'qr') modo = 'codigo'; return; }
     hacer(() => unirse(m[1]));
   }
 </script>
@@ -51,14 +51,14 @@
   <Segmentos opciones={[{ id: 'qr', nombre: 'QR', emoji: '📷' }, { id: 'codigo', nombre: 'Código', emoji: '⌨️' }, { id: 'enlace-pegado', nombre: 'Enlace', emoji: '🔑' }]} bind:valor={modo} />
   {#if modo === 'qr'}
     {#if !ocupado}<EscanerQR onleido={leido} />{:else}<p class="centro">Vinculando…</p>{/if}
-    <p class="pie-nota">En tu otro dispositivo: Mi plan → Conectar → «Añadir otro dispositivo».</p>
+    <p class="pie-nota">En tu otro dispositivo: Tu perfil → Conectar → «Añadir otro dispositivo».</p>
   {:else if modo === 'enlace-pegado'}
     <form class="tarjeta" onsubmit={(ev) => { ev.preventDefault(); leido(enlace.trim()); }}>
       <label class="campo"><span>Enlace de recuperación</span>
         <input class="enlace" type="url" bind:value={enlace} placeholder="https://…#vincular=…" autocomplete="off" autocapitalize="off" spellcheck="false" />
       </label>
       <button class="boton ancho" type="submit" disabled={ocupado || !enlace.trim()}>{ocupado ? 'Recuperando…' : 'Recuperar mis datos'}</button>
-      <p class="pie-nota">El que guardaste en Notas o Contraseñas desde Mi plan → Conectar → «Guardar enlace de recuperación». Pégalo entero.</p>
+      <p class="pie-nota">El que guardaste en Notas o Contraseñas desde Tu perfil → Conectar → «Guardar enlace de recuperación». Pégalo entero.</p>
     </form>
   {:else}
     <form class="tarjeta" onsubmit={(ev) => { ev.preventDefault(); hacer(() => canjearCodigo(codigo)); }}>
@@ -66,7 +66,7 @@
         <input class="codigo" bind:value={codigo} placeholder="ABCD-2345" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" />
       </label>
       <button class="boton ancho" type="submit" disabled={ocupado}>{ocupado ? 'Vinculando…' : 'Vincular'}</button>
-      <p class="pie-nota">Lo ves en tu otro dispositivo en Mi plan → Conectar → «Añadir otro dispositivo». Caduca a los 10 minutos.</p>
+      <p class="pie-nota">Lo ves en tu otro dispositivo en Tu perfil → Conectar → «Añadir otro dispositivo». Caduca a los 10 minutos.</p>
     </form>
   {/if}
 {/if}

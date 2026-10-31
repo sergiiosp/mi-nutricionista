@@ -88,11 +88,11 @@ export function calcularAvisos(e, prefs = prefsAvisos(), ahora = Date.now()) {
     if (prefs.inteligentes) {
       const despertar = e.perfil.despertar || '07:30';
       const dormir = e.perfil.dormir || '23:30';
-      // Los lunes, lo que toca esta semana (Tu plan)
+      // Los lunes, lo que toca esta semana (Tu semana)
       if (new Date(`${fecha}T12:00`).getDay() === 1) {
         try {
           const c = explicarPlan(e, calcularObjetivos(e.perfil), fecha);
-          lista.push({ t: t(fecha, aHora(aMin(despertar) + 45)), titulo: `Tu semana · ${c.cabecera.toLowerCase()}`, cuerpo: c.resumen, url: '#hoy', etiqueta: `coach-${fecha}` });
+          lista.push({ t: t(fecha, aHora(aMin(despertar) + 45)), titulo: c.etiqueta, cuerpo: c.resumen, url: '#hoy', etiqueta: `coach-${fecha}` });
         } catch { /* sin plan aún */ }
       }
       // Día de viaje: por la mañana, la guía para pedir fuera

@@ -62,7 +62,7 @@ export function recomendacion(pesos, perfil, objetivos) {
   if (objetivo === 'recomposicion') {
     if (pct > 0.25) return { tipo: 'ajuste', ajuste: -100, texto: `Tu peso sube (${ritmo}). Para recomponer te propongo bajar 100 kcal.` };
     if (pct < -0.6) return { tipo: 'ajuste', ajuste: 100, texto: `Estás bajando bastante (${ritmo}). Te propongo subir 100 kcal para proteger el músculo.` };
-    return { tipo: 'ok', texto: `Peso estable (${ritmo}). Fíjate también en la cintura y en tus marcas de entreno.` };
+    return { tipo: 'ok', texto: `Peso estable (${ritmo}). Fíjate también en tus fotos y en tus marcas de entreno.` };
   }
   // mantener
   if (Math.abs(pct) > 0.3) {

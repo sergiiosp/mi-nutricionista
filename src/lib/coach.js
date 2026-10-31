@@ -1,4 +1,4 @@
-// «Tu plan» explicado como lo haría tu nutricionista y tu entrenador: por qué tus números, dónde estás,
+// «Tu semana» explicada como lo haría tu nutricionista y tu entrenador: por qué tus números, dónde estás,
 // qué esperar este mes y esta semana, y cómo vas. Todo sale de tus datos (báscula, registros, plan y agenda).
 // Cada punto: { titulo, cifra, texto (lo esencial), detalle (lo técnico, se despliega) }.
 import { OBJETIVOS, TRABAJO, PASOS, ritmoFase } from './nutricion.js';
@@ -121,7 +121,7 @@ export function explicarPlan(e, o, hoy) {
       texto: `En 4 semanas, lo esperable si cumples: ${esp.grasa}, ${esp.musculo} y ${esp.peso}.`,
       detalle: [
         `Con tu plan, la báscula debería moverse unos ${signo(o.cambioSemanalKg * 4.3, 1)} kg en el mes.`,
-        'El peso de un día oscila ±1 kg por agua, sal y digestión: mira la tendencia y la cintura, no el número suelto.',
+        'El peso de un día oscila ±1 kg por agua, sal y digestión: mira la tendencia y tus fotos, no el número suelto.',
         obj === 'recomposicion' ? 'En recomposición la báscula engaña: que el peso no baje no es mala señal si baja la grasa y sube el músculo.' : null,
       ].filter(Boolean),
     },
@@ -194,7 +194,7 @@ export function explicarPlan(e, o, hoy) {
     ? `${FASES[sem.fase].nombre}${sem.deload ? ' (descarga)' : ''}: ${semana[0]?.texto.split('. ')[0].toLowerCase() || FASES[sem.fase].desc.toLowerCase()}.`
     : `${OBJETIVOS[obj]?.nombre}: ${o.proteina} g de proteína y ${entero(o.kcal)} kcal de media.`;
 
-  // ── Datos para los gráficos de «Tu plan» ──
+  // ── Datos para los gráficos de «Tu semana» ──
   const visual = {};
   if (plan && sem) {
     const tramos = [];
@@ -284,7 +284,9 @@ export function explicarPlan(e, o, hoy) {
   return {
     visual,
     lunes,
-    cabecera: plan && sem ? `Semana ${sem.w + 1} de ${plan.N}` : 'Tu plan',
+    cabecera: plan && sem ? `Semana ${sem.w + 1} de ${plan.N}` : 'Tu semana',
+    // El nombre de la tarjeta de Hoy y del aviso de los lunes: «Tu semana · 5 de 6»
+    etiqueta: plan && sem ? `Tu semana · ${sem.w + 1} de ${plan.N}` : 'Tu semana',
     resumen,
     secciones: [
       { id: 'semana', titulo: 'Esta semana', icono: 'calendar-days', items: semana },

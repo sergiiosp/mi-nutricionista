@@ -1,27 +1,23 @@
 <script>
-  // Progreso → Semana: tres anillos (días en tus kcal, días llegando a la proteína, entrenos hechos),
-  // el titular de cómo vas, las kcal de cada día y lo que dice tu nutricionista.
+  // Progreso → Cómo vas: tres anillos (días en tus kcal, días llegando a la proteína, entrenos hechos),
+  // las kcal de cada día, lo que dice tu nutricionista y tu repaso de la semana.
   import Icono from '../../components/Icono.svelte';
   import Anillos from '../../components/Anillos.svelte';
   import Numero from '../../components/Numero.svelte';
   import RepasoSemanal from '../../components/RepasoSemanal.svelte';
-  import Descubrimientos from '../../components/Descubrimientos.svelte';
-  import LogrosResumen from '../../components/LogrosResumen.svelte';
   import { abrirHoja } from '../../stores/ui.js';
-  import { retosSemana } from '../../lib/retos.js';
   import { estado } from '../../stores/estado.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
-  import { resumenSemanal, rachas } from '../../lib/logros.js';
+  import { resumenSemanal } from '../../lib/logros.js';
   import { planDe } from '../../lib/hyrox/index.js';
   import { semanaDe } from '../../lib/hyrox/plan.js';
   import { estadoRevision } from '../../lib/revision.js';
-  import { diaCorto, entero, num, fechaCorta } from '../../lib/formato.js';
+  import { diaCorto, entero, fechaCorta } from '../../lib/formato.js';
 
   const hoy = hoyISO();
   const objetivos = $derived(calcularObjetivos($estado.perfil));
   const s = $derived(resumenSemanal($estado, objetivos, hoy));
-  const r = $derived(rachas($estado, objetivos, hoy));
   const META = 6; // días de 7: uno de margen
   const entrenos = $derived.by(() => {
     const plan = planDe($estado);
@@ -37,19 +33,7 @@
     ...(entrenos ? [{ valor: entrenos.hechas, meta: entrenos.total, color: COLORES.e }] : []),
   ]);
 
-  // Titular: cómo va el peso según tu objetivo
-  const titular = $derived.by(() => {
-    const t = s.tendencia;
-    if (!t) return { cifra: null, texto: 'Pésate una vez por semana y aquí verás si vas bien' };
-    const k = t.kgSemana;
-    const obj = $estado.perfil?.objetivo;
-    const bien = obj === 'perder' ? k <= -0.15 && k >= -1 : obj === 'ganar' ? k >= 0.05 && k <= 0.45 : Math.abs(k) <= 0.4;
-    const texto = bien ? (obj === 'recomposicion' || !obj ? 'peso estable: lo que buscas en recomposición' : 'al ritmo que toca') : obj === 'perder' && k > -0.15 ? 'casi no baja: revisa el picoteo' : 'se mueve más de lo previsto';
-    return { cifra: `${k > 0 ? '+' : ''}${num(k, 2)} kg/sem`, texto, bien };
-  });
-
   const rev = $derived(estadoRevision($estado, hoy));
-  const retos = $derived(retosSemana($estado, objetivos, hoy));
   const maxKcal = $derived(Math.max(...s.porDia.map((d) => Math.max(d.r?.m.kcal || 0, d.r?.od.kcal || objetivos.kcal))) * 1.05);
 </script>
 
@@ -63,11 +47,6 @@
       {#if entrenos}<li style="--c:{COLORES.e}"><small>Entrenos</small><b class="cifra"><Numero valor={entrenos.hechas} desde={0} /><span>/{entrenos.total}</span></b></li>{/if}
     </ul>
   </div>
-  <div class="titular" class:bien={titular.bien}>
-    {#if titular.cifra}<b class="cifra">{titular.cifra}</b>{/if}
-    <span>{titular.texto}</span>
-  </div>
-  {#if r.registro > 1}<p class="racha"><Icono n="flame" tam={15} grosor={2.2} /> {r.registro} días seguidos apuntando</p>{/if}
 </section>
 
 {#if s.porDia.some((d) => d.r)}
@@ -108,18 +87,6 @@
   <div class="tarjeta vacia-semana"><Icono n="chart-column" tam={26} /><p>Cuando registres tus comidas verás aquí tus calorías y tu proteína de cada día.</p></div>
 {/if}
 
-<section class="tarjeta retos" aria-label="Retos de la semana">
-  <div class="rt-cab"><b>Retos de la semana</b>{#if retos.racha}<span class="rt-racha"><Icono n="flame" tam={14} grosor={2.2} /> {retos.racha} {retos.racha === 1 ? 'semana' : 'semanas'} seguidas</span>{/if}</div>
-  {#each retos.lista as x (x.id)}
-    <div class="rt" class:hecho={x.hecho}>
-      <span class="rt-ic">{#if x.hecho}<Icono n="check" tam={15} grosor={3} />{:else}<Icono n={x.icono} tam={15} grosor={2.2} />{/if}</span>
-      <span class="rt-txt"><b>{x.nombre} <span class="cifra">{x.valor}/{x.meta}</span></b><small>{x.detalle}</small></span>
-      <span class="rt-pista" aria-hidden="true"><i style="width:{Math.min(100, (x.valor / x.meta) * 100)}%"></i></span>
-    </div>
-  {/each}
-  <p class="pie-nota">Cumpliendo 2 de 3 cada semana sumas racha.</p>
-</section>
-
 <div class="tarjeta consejos">
   <div class="cab"><span class="ic-cab"><Icono n="lightbulb" tam={18} /></span><b>Tu nutricionista dice</b></div>
   {#each s.consejos as c (c)}<p>{c}</p>{/each}
@@ -127,17 +94,11 @@
 
 <RepasoSemanal />
 
-<Descubrimientos />
-
 <section class="herramientas" aria-label="Herramientas">
   <button class:toca={rev.toca} onclick={() => abrirHoja('revision')}><Icono n="clipboard-list" tam={20} /><b>Revisión del mes</b><small>{rev.enCurso ? 'A medias' : rev.toca ? 'Toca ya' : `Próxima: ${fechaCorta(rev.proxima)}`}</small></button>
-  <button onclick={() => abrirHoja('simulador')}><Icono n="shuffle" tam={20} /><b>¿Y si…?</b><small>Simula kcal y sesiones</small></button>
-  <button onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={20} /><b>Tu plan, explicado</b><small>Qué esperar este mes</small></button>
+  <button onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={20} /><b>Tu semana, explicada</b><small>Por qué tus números</small></button>
   <button onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={20} /><b>Informe del mes</b><small>En PDF, con fotos</small></button>
 </section>
-
-<LogrosResumen />
-
 
 <style>
   /* Anillos */
@@ -149,32 +110,14 @@
   .leyenda small::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
   .leyenda b { font-size: 1.45rem; line-height: 1.05; color: var(--c); }
   .leyenda b span { font-size: 0.8rem; font-weight: 700; color: var(--texto-3); margin-left: 2px; }
-  .titular { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linea); }
-  .titular b { font-size: 1.35rem; letter-spacing: -0.02em; }
-  .titular.bien b { color: var(--primario-fuerte); }
-  .titular span { font-size: 0.86rem; color: var(--texto-2); }
-  .racha { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 0.8rem; font-weight: 700; color: var(--amarillo); }
 
-  .herramientas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .herramientas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
   .herramientas button { display: grid; justify-items: start; align-content: start; gap: 2px; min-height: 96px; padding: 12px 13px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .herramientas button > :global(svg) { margin-bottom: 6px; color: var(--primario); }
   .herramientas b { font-size: 0.88rem; line-height: 1.2; }
   .herramientas small { font-size: 0.74rem; color: var(--texto-2); }
   .herramientas .toca { box-shadow: inset 0 0 0 1.5px var(--primario); background: var(--primario-claro); }
   .herramientas .toca small { color: var(--primario-fuerte); font-weight: 700; }
-  .retos { margin-top: 12px; }
-  .rt-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-  .rt-racha { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--amarillo); font-size: 0.74rem; font-weight: 700; }
-  .rt { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; padding: 8px 0; }
-  .rt + .rt { border-top: 1px solid var(--linea); }
-  .rt-ic { grid-row: 1 / 3; display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); }
-  .rt.hecho .rt-ic { background: var(--primario); color: var(--sobre-primario); }
-  .rt-txt { display: grid; }
-  .rt-txt b { font-size: 0.9rem; font-weight: 700; }
-  .rt-txt b span { margin-left: 4px; color: var(--primario-fuerte); }
-  .rt-txt small { font-size: 0.74rem; color: var(--texto-2); }
-  .rt-pista { height: 5px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
-  .rt-pista i { display: block; height: 100%; border-radius: 999px; background: var(--primario); }
   /* Cada día */
   .d-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .d-ley { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: var(--texto-3); }

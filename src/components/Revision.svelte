@@ -1,11 +1,11 @@
 <script>
-  // Revisión del mes, paso a paso: báscula → medidas → fotos → test → qué ha cambiado. Cada paso se guarda
+  // Revisión del mes, paso a paso: báscula → fotos → test → qué ha cambiado. Cada paso se guarda
   // al momento; la cámara y el test vuelven aquí al terminar.
   import Icono from './Icono.svelte';
   import { estado } from '../stores/estado.js';
   import { abrirHoja, cerrarHoja, avisar, celebrar } from '../stores/ui.js';
   import { estadoRevision, pasosRevision, resumenRevision } from '../lib/revision.js';
-  import { empezarRevision, guardarPeso, guardarMedidas, terminarRevision } from '../lib/acciones.js';
+  import { empezarRevision, guardarPeso, terminarRevision } from '../lib/acciones.js';
   import { guardarFoto } from '../lib/fotos.js';
   import { actualizar, nuevoId } from '../stores/estado.js';
   import { cambioCuerpo, veredicto } from '../lib/cuerpo.js';
@@ -26,7 +26,7 @@
   const ordenar = (l) => [...(l || [])].sort((a, b) => a.fecha.localeCompare(b.fecha));
 
   function empezar() { empezarRevision(); paso = 1; }
-  const siguiente = () => { paso = Math.min(5, paso + 1); document.querySelector('.hoja-cuerpo')?.scrollTo({ top: 0 }); };
+  const siguiente = () => { paso = Math.min(4, paso + 1); document.querySelector('.hoja-cuerpo')?.scrollTo({ top: 0 }); };
 
   // 1 · Báscula: lo esencial (el resto, en Progreso → Cuerpo)
   const BASCULA = [
@@ -52,25 +52,7 @@
     siguiente();
   }
 
-  // 2 · Medidas
-  const MEDIDAS = [
-    { k: 'cintura', n: 'Cintura', ayuda: 'A la altura del ombligo, sin meter tripa, al soltar el aire' },
-    { k: 'cadera', n: 'Cadera', ayuda: 'Pies juntos, por lo más saliente del glúteo' },
-    { k: 'pecho', n: 'Pecho', ayuda: 'A la altura de los pezones, brazos caídos' },
-    { k: 'brazo', n: 'Brazo', ayuda: 'Derecho, relajado, en lo más ancho del bíceps' },
-    { k: 'muslo', n: 'Muslo', ayuda: 'Derecho, a mitad entre la ingle y la rodilla' },
-  ];
-  const ultimas = $derived(Object.fromEntries(MEDIDAS.map((m) => [m.k, ordenar($estado.medidas).filter((x) => x[m.k]).at(-1)?.[m.k]])));
-  let medidas = $state({});
-  function guardarLasMedidas() {
-    const datos = Object.fromEntries(Object.entries(medidas).map(([k, v]) => [k, numero(v)]).filter(([, v]) => v > 0 && v < 250));
-    if (!Object.keys(datos).length) return avisar('Apunta al menos la cintura', '📏');
-    guardarMedidas(hoy, datos);
-    avisar('Medidas guardadas', '📏');
-    siguiente();
-  }
-
-  // 3 · Fotos
+  // 2 · Fotos
   const POSES = [['frente', 'De frente'], ['lado', 'De lado'], ['espalda', 'De espaldas']];
   async function subir(ev, pose) {
     const archivo = ev.currentTarget.files?.[0];
@@ -114,7 +96,7 @@
         </li>
       {/each}
     </ol>
-    <button class="boton ancho" onclick={empezar}><Icono n="play" tam={17} /> {$estado.revision ? `Seguir (${hechos} de 4 hechos)` : 'Empezar'}</button>
+    <button class="boton ancho" onclick={empezar}><Icono n="play" tam={17} /> {$estado.revision ? `Seguir (${hechos} de ${pasos.length} hechos)` : 'Empezar'}</button>
   {:else}
     <!-- Barra de pasos -->
     <nav class="barra-pasos" aria-label="Pasos de la revisión">
@@ -123,7 +105,7 @@
           <span class="bp-pista"></span><small>{p.titulo}</small>
         </button>
       {/each}
-      <button class:actual={paso === 5} onclick={() => (paso = 5)} aria-current={paso === 5 ? 'step' : undefined}><span class="bp-pista"></span><small>Resumen</small></button>
+      <button class:actual={paso === 4} onclick={() => (paso = 4)} aria-current={paso === 4 ? 'step' : undefined}><span class="bp-pista"></span><small>Resumen</small></button>
     </nav>
 
     {#if paso === 1}
@@ -143,42 +125,29 @@
       <div class="acciones"><button class="boton boton-sec" onclick={siguiente}>{pasos[0].hecho ? 'Seguir' : 'Saltar'}</button><button class="boton" onclick={guardarBascula}>Guardar y seguir</button></div>
 
     {:else if paso === 2}
-      <header class="cab-paso"><span class="cp-ic"><Icono n="ruler" tam={20} /></span><div><h3>Medidas</h3><p>Cinta métrica pegada a la piel pero sin apretar. En gris, tu medida anterior.</p></div></header>
-      <div class="medidas">
-        {#each MEDIDAS as m (m.k)}
-          <label class="medida">
-            <span class="md-txt"><b>{m.n}</b><small>{m.ayuda}</small></span>
-            <span class="con-unidad corta"><input inputmode="decimal" bind:value={medidas[m.k]} placeholder={ultimas[m.k] ? num(ultimas[m.k], 1) : '—'} aria-label={`${m.n} en cm`} /><em>cm</em></span>
-          </label>
-        {/each}
-      </div>
-      {#if pasos[1].hecho}<p class="ya"><Icono n="circle-check" tam={16} /> Medidas de esta revisión guardadas</p>{/if}
-      <div class="acciones"><button class="boton boton-sec" onclick={siguiente}>{pasos[1].hecho ? 'Seguir' : 'Saltar'}</button><button class="boton" onclick={guardarLasMedidas}>Guardar y seguir</button></div>
-
-    {:else if paso === 3}
       <header class="cab-paso"><span class="cp-ic"><Icono n="camera" tam={20} /></span><div><h3>Fotos</h3><p>Misma luz, misma ropa y mismo sitio que la última vez: la cámara te pone la foto anterior en transparencia para que encajes.</p></div></header>
       <div class="poses">
         {#each POSES as [k, n] (k)}
-          {@const hecha = pasos[2].poses.includes(k)}
+          {@const hecha = pasos[1].poses.includes(k)}
           <div class="pose" class:hecha>
             <span class="ps-ic">{#if hecha}<Icono n="check" tam={20} grosor={2.6} />{:else}<Icono n="person-standing" tam={22} />{/if}</span>
             <b>{n}</b>
-            <button class="boton boton-peq {hecha ? 'boton-sec' : ''}" onclick={() => abrirHoja('camara', { pose: k, volver: volver(3) })}>{hecha ? 'Repetir' : 'Hacer foto'}</button>
+            <button class="boton boton-peq {hecha ? 'boton-sec' : ''}" onclick={() => abrirHoja('camara', { pose: k, volver: volver(2) })}>{hecha ? 'Repetir' : 'Hacer foto'}</button>
             <label class="galeria">o de la galería<input type="file" accept="image/*" onchange={(ev) => subir(ev, k)} /></label>
           </div>
         {/each}
       </div>
       <p class="pie-nota"><Icono n="lock" tam={13} /> Se guardan solo en este dispositivo.</p>
-      <div class="acciones col"><button class="boton {pasos[2].hecho ? '' : 'boton-sec'}" onclick={siguiente}>{pasos[2].hecho ? 'Seguir' : 'Saltar este paso'}</button></div>
+      <div class="acciones col"><button class="boton {pasos[1].hecho ? '' : 'boton-sec'}" onclick={siguiente}>{pasos[1].hecho ? 'Seguir' : 'Saltar este paso'}</button></div>
 
-    {:else if paso === 4}
+    {:else if paso === 3}
       <header class="cab-paso"><span class="cp-ic"><Icono n="timer" tam={20} /></span><div><h3>Test</h3><p>Un 5 km a tope (o 1.000 m de SkiErg o remo) dice si tu forma mejora y ajusta tus ritmos. Si hoy no te toca, hazlo esta semana: cuenta igual.</p></div></header>
-      {#if pasos[3].hecho && testReciente}
+      {#if pasos[2].hecho && testReciente}
         <div class="test-hecho"><Icono n="circle-check" tam={20} /><span><b>Test de {testPorId[testReciente.id]?.corto || testReciente.id}: {mmss(testReciente.seg)}</b><small>{fechaCorta(testReciente.fecha)}</small></span></div>
       {/if}
       <div class="acciones col">
-        <button class="boton {pasos[3].hecho ? 'boton-sec' : ''}" onclick={() => abrirHoja('test', { volver: volver(4) })}><Icono n="timer" tam={17} /> {pasos[3].hecho ? 'Apuntar otro test' : 'Apuntar un test'}</button>
-        <button class="boton {pasos[3].hecho ? '' : 'boton-sec'}" onclick={siguiente}>{pasos[3].hecho ? 'Ver el resumen' : 'Esta vez no'}</button>
+        <button class="boton {pasos[2].hecho ? 'boton-sec' : ''}" onclick={() => abrirHoja('test', { volver: volver(3) })}><Icono n="timer" tam={17} /> {pasos[2].hecho ? 'Apuntar otro test' : 'Apuntar un test'}</button>
+        <button class="boton {pasos[2].hecho ? '' : 'boton-sec'}" onclick={siguiente}>{pasos[2].hecho ? 'Ver el resumen' : 'Esta vez no'}</button>
       </div>
 
     {:else}
@@ -196,7 +165,7 @@
         </ul>
       {/if}
       {#if juicio}<p class="juicio" class:mal={!juicio.bien}><Icono n={juicio.bien ? 'thumbs-up' : 'triangle-alert'} tam={16} /> {juicio.texto}</p>{/if}
-      {#if hechos < 4}<p class="pie-nota">Te faltan {4 - hechos} {4 - hechos === 1 ? 'paso' : 'pasos'}: puedes terminar igual y la próxima vez lo completas.</p>{/if}
+      {#if hechos < pasos.length}<p class="pie-nota">Te faltan {pasos.length - hechos} {pasos.length - hechos === 1 ? 'paso' : 'pasos'}: puedes terminar igual y la próxima vez lo completas.</p>{/if}
       <div class="acciones col">
         <button class="boton" onclick={() => terminar(true)}><Icono n="scroll-text" tam={17} /> Terminar y ver el informe del mes</button>
         <button class="boton boton-sec" onclick={() => terminar(false)}>Terminar</button>
@@ -221,7 +190,7 @@
   .lp-txt small { font-size: 0.78rem; color: var(--texto-2); }
   .ancho { width: 100%; }
 
-  .barra-pasos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 16px; }
+  .barra-pasos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
   .barra-pasos button { display: grid; gap: 5px; padding: 0; border: 0; background: none; font: inherit; color: var(--texto-3); cursor: pointer; text-align: left; }
   .bp-pista { height: 5px; border-radius: 999px; background: var(--superficie-3); }
   .barra-pasos small { font-size: 0.68rem; font-weight: 700; }
@@ -239,13 +208,6 @@
   .con-unidad em { font-style: normal; font-size: 0.8rem; font-weight: 700; color: var(--texto-3); min-width: 22px; }
   .grande input { font-size: 1.6rem; font-weight: 700; height: 60px; }
   .rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-  .medidas { display: grid; gap: 4px; }
-  .medida { display: grid; grid-template-columns: minmax(0, 1fr) 118px; align-items: center; gap: 12px; padding: 10px 0; }
-  .medida + .medida { border-top: 1px solid var(--linea); }
-  .md-txt { display: grid; }
-  .md-txt b { font-size: 0.95rem; }
-  .md-txt small { font-size: 0.74rem; line-height: 1.3; color: var(--texto-2); }
-  .corta input { height: 46px; text-align: right; font-size: 1.05rem; font-weight: 700; }
 
   .poses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .pose { display: grid; justify-items: center; gap: 8px; padding: 14px 8px 10px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); text-align: center; }
