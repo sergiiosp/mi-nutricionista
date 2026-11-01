@@ -73,8 +73,8 @@
   ul { margin: 12px 0; padding-left: 18px; display: grid; gap: 4px; color: var(--texto-2); font-size: 0.88rem; }
   ul b { color: var(--texto); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; border: 0; margin: 0 0 12px; padding: 0; }
-  .chips legend { width: 100%; margin-bottom: 6px; font-weight: 600; font-size: 0.88rem; }
-  .chips label { display: inline-flex; align-items: center; min-height: 38px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+  .chips legend { width: 100%; margin-bottom: 6px; font-weight: 500; font-size: 0.88rem; }
+  .chips label { display: inline-flex; align-items: center; min-height: 38px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 600; font-size: 0.82rem; cursor: pointer; }
   .chips .activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
   .chips input { position: absolute; opacity: 0; pointer-events: none; }
   .acciones { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }

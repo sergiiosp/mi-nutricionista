@@ -115,12 +115,12 @@
   .cab { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 12px 14px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .cab > :global(svg:first-child) { color: var(--primario); flex-shrink: 0; }
   .cab span { flex: 1; display: grid; }
-  .cab small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
+  .cab small { color: var(--texto-2); font-weight: 500; font-size: 0.78rem; }
   .cuerpo { padding: 0 14px 16px; }
   .preg { display: grid; gap: 6px; margin-bottom: 12px; }
-  .preg > span { font-weight: 700; font-size: 0.86rem; }
+  .preg > span { font-weight: 600; font-size: 0.86rem; }
   .ops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .ops button, .chips button { min-height: 44px; padding: 0 8px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .ops button, .chips button { min-height: 44px; padding: 0 8px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font-weight: 600; font-size: 0.8rem; cursor: pointer; }
   .ops button.activo, .chips button.activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chips button { text-align: left; padding: 8px 10px; line-height: 1.25; }
@@ -128,6 +128,6 @@
   .prop { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--linea); cursor: pointer; }
   .prop input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primario); flex-shrink: 0; }
   .prop span { display: grid; gap: 2px; }
-  .prop small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; line-height: 1.35; }
+  .prop small { color: var(--texto-2); font-weight: 500; font-size: 0.78rem; line-height: 1.35; }
   .ancho { width: 100%; margin-top: 10px; }
 </style>

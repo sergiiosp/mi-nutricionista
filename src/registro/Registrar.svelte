@@ -269,11 +269,11 @@
   .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .nav b { flex: 1; font-size: 1.05rem; }
   .atras { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; color: var(--texto); }
-  .franja-chip { padding: 5px 11px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.8rem; }
+  .franja-chip { padding: 5px 11px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 600; font-size: 0.8rem; }
   .franjas { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 10px; }
   .franjas::-webkit-scrollbar { display: none; }
-  .franjas button { flex-shrink: 0; display: grid; justify-items: center; padding: 8px 14px; border: 1.5px solid transparent; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
-  .franjas small { font-size: 0.7rem; color: var(--texto-2); font-weight: 700; }
+  .franjas button { flex-shrink: 0; display: grid; justify-items: center; padding: 8px 14px; border: 1.5px solid transparent; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); font-weight: 600; font-size: 0.86rem; cursor: pointer; color: var(--texto); }
+  .franjas small { font-size: 0.7rem; color: var(--texto-2); font-weight: 600; }
   .franjas button.activa { border-color: var(--primario); background: var(--primario-claro); }
   .opciones-grandes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; }
   .op { display: grid; justify-items: start; gap: 2px; padding: 16px; border: 0; border-radius: var(--r-l); cursor: pointer; text-align: left; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); transition: transform 0.15s var(--ease-out), background 0.2s var(--ease-out); }
@@ -293,39 +293,39 @@
   .h-cab :global(.icono) { width: 24px; height: 24px; padding: 5px; border-radius: 50%; background: var(--primario); color: var(--sobre-primario); box-sizing: border-box; }
   .h-cab small { color: var(--texto-3); }
   .habituales b { font-size: 0.86rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .habituales small { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
+  .habituales small { font-size: 0.72rem; font-weight: 500; color: var(--texto-2); }
   .ayer { display: grid; gap: 6px; margin: 12px 0 4px; }
   .ayer button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 12px 8px 8px; border: 1px dashed var(--borde); border-radius: var(--r-m); background: none; color: var(--texto); text-align: left; cursor: pointer; }
   .a-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
   .a-txt { flex: 1; min-width: 0; display: grid; }
-  .a-txt small { font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
-  .a-txt b { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .a-txt small { font-size: 0.74rem; font-weight: 600; color: var(--primario-fuerte); }
+  .a-txt b { font-size: 0.88rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .a-guia { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; margin-bottom: 10px; padding: 8px 12px; border: 0; border-radius: var(--r-m); background: var(--primario-claro); color: var(--texto-2); font: inherit; font-size: 0.86rem; text-align: left; cursor: pointer; }
   .a-guia span { flex: 1; }
-  .a-guia b { color: var(--texto); font-weight: 700; }
+  .a-guia b { color: var(--texto); font-weight: 600; }
   .a-guia :global(.icono) { color: var(--primario); flex-shrink: 0; }
-  .grupo { font-size: 0.7rem; font-weight: 700; color: var(--texto-3); margin: 18px 4px 8px; }
+  .grupo { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); margin: 18px 4px 8px; }
   .recientes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .recientes button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
   .recientes img, .ic { width: 42px; height: 42px; border-radius: var(--r-s); object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.92rem; }
-  .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
-  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; }
+  .txt small { color: var(--texto-2); font-weight: 500; font-size: 0.78rem; }
+  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 600; }
   .plato { margin: 0 0 14px; padding: 12px 14px; border-radius: var(--r-l); background: var(--primario-claro); }
   .plato-cab { display: flex; justify-content: space-between; align-items: baseline; }
-  .plato-cab .cifra { font-weight: 700; color: var(--primario-fuerte); }
+  .plato-cab .cifra { font-weight: 600; color: var(--primario-fuerte); }
   .plato ul { list-style: none; margin: 8px 0; padding: 0; }
   .plato li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--linea); }
   .pl-n { flex: 1; min-width: 0; display: grid; }
   .pl-n b { font-size: 0.88rem; line-height: 1.25; }
-  .pl-n small { color: var(--texto-2); font-weight: 600; font-size: 0.76rem; }
+  .pl-n small { color: var(--texto-2); font-weight: 500; font-size: 0.76rem; }
   .papelera { flex-shrink: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); cursor: pointer; }
   .papelera:active { color: var(--peligro); background: var(--superficie); }
-  .mia { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-weight: 600; font-size: 0.84rem; }
+  .mia { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-weight: 500; font-size: 0.84rem; }
   .mia-nombre { width: 100%; min-height: 44px; margin-top: 8px; padding: 8px 12px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: inherit; }
   .plato .boton { width: 100%; margin-top: 10px; }
   .plato .pie-nota { margin: 8px 0 0; text-align: center; }
-  .foto-adjunta { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--r-m); background: var(--primario-claro); margin-bottom: 10px; font-weight: 600; font-size: 0.84rem; }
+  .foto-adjunta { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--r-m); background: var(--primario-claro); margin-bottom: 10px; font-weight: 500; font-size: 0.84rem; }
   .foto-adjunta img { width: 52px; height: 52px; border-radius: var(--r-s); object-fit: cover; }
 </style>

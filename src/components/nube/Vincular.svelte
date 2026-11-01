@@ -76,5 +76,5 @@
   .centro { text-align: center; }
   .ancho { width: 100%; margin-top: 8px; }
   .enlace { font-size: max(1rem, 16px); }
-  .codigo { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.18em; text-align: center; text-transform: uppercase; }
+  .codigo { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.18em; text-align: center; text-transform: uppercase; }
 </style>

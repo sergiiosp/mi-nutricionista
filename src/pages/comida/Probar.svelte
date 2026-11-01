@@ -90,18 +90,18 @@
   .pp-fila { display: flex; gap: 12px; align-items: center; }
   .pp-foto { width: 68px; flex-shrink: 0; padding: 0; border: 0; background: none; cursor: pointer; }
   .pp-txt { flex: 1; min-width: 0; display: grid; gap: 3px; padding: 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .pp-etq { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
+  .pp-etq { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
   .pp-etq i { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); }
-  .pp-txt b { font-size: 0.92rem; font-weight: 600; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .pp-txt small { font-size: 0.76rem; font-weight: 600; color: var(--texto-2); }
+  .pp-txt b { font-size: 0.92rem; font-weight: 500; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pp-txt small { font-size: 0.76rem; font-weight: 500; color: var(--texto-2); }
   .pp-poner { width: 100%; margin-top: 10px; }
-  .pp-puesta { display: flex; align-items: center; gap: 6px; margin: 10px 2px 0; font-size: 0.82rem; font-weight: 700; color: var(--primario-fuerte); }
+  .pp-puesta { display: flex; align-items: center; gap: 6px; margin: 10px 2px 0; font-size: 0.82rem; font-weight: 600; color: var(--primario-fuerte); }
   .pp-huecos { display: grid; gap: 6px; margin-top: 10px; }
-  .pp-huecos p { margin: 0 2px 2px; font-size: 0.8rem; font-weight: 700; color: var(--texto-2); }
+  .pp-huecos p { margin: 0 2px 2px; font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
   .pp-huecos button:not(.pp-cancelar) { display: grid; gap: 1px; min-height: 48px; padding: 8px 12px; border: 0; border-radius: var(--r-m); background: var(--superficie-2); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .pp-huecos button b { font-size: 0.88rem; }
   .pp-huecos button small { font-size: 0.74rem; color: var(--texto-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pp-cancelar { min-height: 44px; border: 0; background: none; color: var(--texto-2); font: inherit; font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .pp-cancelar { min-height: 44px; border: 0; background: none; color: var(--texto-2); font: inherit; font-weight: 600; font-size: 0.84rem; cursor: pointer; }
   .pp-sin { padding: 0 2px; color: var(--texto-2); }
   .pp-vacio { padding: 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); font-size: 0.88rem; color: var(--texto-2); }
 </style>

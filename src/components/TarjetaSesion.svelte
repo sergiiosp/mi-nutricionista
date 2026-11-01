@@ -40,14 +40,14 @@
   .ic { width: 48px; height: 48px; border-radius: var(--r-m); display: grid; place-items: center; flex-shrink: 0; color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--superficie)); }
   .compacta .ic { width: 42px; height: 42px; }
   .txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
-  .txt b { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
+  .txt b { font-size: 0.95rem; font-weight: 500; line-height: 1.3; }
   .datos { display: flex; flex-wrap: wrap; gap: 3px 12px; color: var(--texto-2); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
   .datos span { display: inline-flex; align-items: center; gap: 4px; }
-  .etq-estado { flex-shrink: 0; padding: 4px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; background: var(--superficie-2); color: var(--texto-2); }
+  .etq-estado { flex-shrink: 0; padding: 4px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; background: var(--superficie-2); color: var(--texto-2); }
   .e-completa .etq-estado { background: var(--exito-claro); color: var(--exito); }
   .e-parcial .etq-estado { background: var(--amarillo-claro); color: var(--amarillo); }
   .e-no .etq-estado { background: var(--superficie-3); color: var(--texto-2); }
   .e-sin-registrar .etq-estado { background: var(--primario-claro); color: var(--primario-fuerte); }
   .e-completa .txt b { color: var(--texto-2); }
-  .registrar { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 11px; border: 0; border-top: 1px solid var(--linea); background: none; font-size: 0.86rem; font-weight: 700; color: var(--primario); cursor: pointer; }
+  .registrar { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 11px; border: 0; border-top: 1px solid var(--linea); background: none; font-size: 0.86rem; font-weight: 600; color: var(--primario); cursor: pointer; }
 </style>

@@ -110,12 +110,12 @@
 <style>
   .buscador-caja { position: sticky; top: 0; z-index: 2; padding-bottom: 8px; background: var(--fondo); }
   .lupa { position: absolute; left: 15px; top: 15px; color: var(--texto-2); }
-  input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: var(--r-m); border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 700; color: var(--texto); }
+  input { width: 100%; min-height: 50px; padding: 11px 14px 11px 44px; border-radius: var(--r-m); border: 0; background: var(--superficie); box-shadow: var(--sombra); font-weight: 600; color: var(--texto); }
   input:focus { outline: 2px solid var(--primario); }
   .centro { text-align: center; }
   .ancho { width: 100%; margin-top: 14px; }
   .grupo { font-size: 0.78rem; color: var(--texto-2); margin: 14px 4px 6px; }
-  .grupo small { text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .grupo small { text-transform: none; letter-spacing: 0; font-weight: 500; }
   .resultados { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .resultados button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); text-align: left; cursor: pointer; color: var(--texto); }
   @media (hover: hover) and (pointer: fine) { .resultados button:hover { box-shadow: var(--sombra), inset 0 0 0 2px var(--primario); } }
@@ -123,6 +123,6 @@
   .ic { background: var(--superficie-2); }
   .txt { flex: 1; min-width: 0; display: grid; }
   .txt b { font-size: 0.94rem; line-height: 1.25; }
-  .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
-  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 1.2rem; flex-shrink: 0; }
+  .txt small { color: var(--texto-2); font-weight: 500; font-size: 0.78rem; }
+  .mas { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 600; font-size: 1.2rem; flex-shrink: 0; }
 </style>

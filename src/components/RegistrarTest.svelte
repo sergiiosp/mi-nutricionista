@@ -48,7 +48,7 @@
 <style>
   .intro { margin: 0 0 12px; font-size: 0.88rem; color: var(--texto-2); line-height: 1.4; }
   .opciones-test { display: flex; flex-wrap: wrap; gap: 6px; }
-  .opciones-test button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .opciones-test button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); color: var(--texto-2); font: inherit; font-size: 0.82rem; font-weight: 500; cursor: pointer; }
   .opciones-test button.activo { background: var(--primario); color: var(--sobre-primario); }
   .campos { display: grid; gap: 8px; margin-top: 14px; }
   .ancho { width: 100%; margin-top: 14px; }

@@ -37,5 +37,5 @@
   .ic { width: 38px; height: 38px; border-radius: var(--r-s); display: grid; place-items: center; flex-shrink: 0; background: var(--primario-claro); color: var(--primario-fuerte); }
   .acciones { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
   .acciones .boton-sec { padding-inline: 20px; }
-  .ver-rutina { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; min-height: 44px; margin-top: 4px; border: 0; background: none; color: var(--primario-fuerte); font: inherit; font-weight: 700; font-size: 0.86rem; cursor: pointer; }
+  .ver-rutina { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; min-height: 44px; margin-top: 4px; border: 0; background: none; color: var(--primario-fuerte); font: inherit; font-weight: 600; font-size: 0.86rem; cursor: pointer; }
 </style>

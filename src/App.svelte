@@ -125,19 +125,19 @@
     {/key}
   </main>
 
+  <!-- Al estilo de Cal AI: las secciones en una pastilla flotante y el + negro aparte, a la derecha -->
   <nav class="navegacion" aria-label="Secciones">
-    {#each PESTAÑAS as p (p.id)}
-      {#if p.id === 'registrar'}
-        <button class="nav-mas" aria-label="Registrar comida" onclick={() => abrirHoja('registrar', { fecha: hoyISO() })}>
-          <Icono n="plus" tam={28} grosor={2.4} />
-        </button>
-      {:else}
+    <div class="nav-pastilla">
+      {#each PESTAÑAS.filter((p) => p.id !== 'registrar') as p (p.id)}
         <a href="#{p.id}" class="s-{p.id}" class:activo={$ruta.pagina === p.id} aria-current={$ruta.pagina === p.id ? 'page' : undefined}>
-          <Icono n={p.icono} tam={23} grosor={$ruta.pagina === p.id ? 2.2 : 1.8} />
+          <Icono n={p.icono} tam={22} grosor={$ruta.pagina === p.id ? 2.1 : 1.8} />
           <span>{p.nombre}</span>
         </a>
-      {/if}
-    {/each}
+      {/each}
+    </div>
+    <button class="nav-mas" aria-label="Registrar comida" onclick={() => abrirHoja('registrar', { fecha: hoyISO() })}>
+      <Icono n="plus" tam={28} grosor={2.4} />
+    </button>
   </nav>
 
   {#if $hoja}

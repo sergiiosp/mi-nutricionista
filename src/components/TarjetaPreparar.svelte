@@ -55,12 +55,12 @@
   .pr-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
   .listo .pr-ic { background: var(--primario); color: var(--sobre-primario); }
   .pr-txt { flex: 1; min-width: 0; display: grid; gap: 1px; }
-  .pr-txt small { font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
+  .pr-txt small { font-size: 0.74rem; font-weight: 600; color: var(--primario-fuerte); }
   .pr-txt b { font-size: 0.98rem; line-height: 1.25; text-wrap: balance; }
   .pr-cerrar { display: grid; place-items: center; width: 44px; height: 44px; margin: -6px -6px -6px 0; border: 0; border-radius: 50%; background: none; color: var(--texto-3); cursor: pointer; }
   .pr-que { margin: 10px 0 0; font-size: 0.86rem; color: var(--texto-2); }
   .pr-que::first-letter { text-transform: uppercase; }
-  .pr-datos { margin: 4px 0 0; font-size: 0.78rem; font-weight: 600; color: var(--texto-3); }
+  .pr-datos { margin: 4px 0 0; font-size: 0.78rem; font-weight: 500; color: var(--texto-3); }
   .pr-pista { height: 5px; margin-top: 8px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .pr-pista i { display: block; height: 100%; border-radius: 999px; background: var(--primario); transition: width 0.4s var(--ease-out); }
   .pr-acciones { display: flex; gap: 8px; margin-top: 12px; }

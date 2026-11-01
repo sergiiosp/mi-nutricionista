@@ -48,13 +48,13 @@
 <style>
   .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; }
   .meta span { display: inline-flex; align-items: center; gap: 5px; }
-  .sobre { margin: 0 0 6px; font-size: 0.84rem; font-weight: 700; color: var(--primario-fuerte); }
+  .sobre { margin: 0 0 6px; font-size: 0.84rem; font-weight: 600; color: var(--primario-fuerte); }
   h2 { margin: 16px 0 2px; font-size: 1.4rem; line-height: 1.2; }
-  .meta { color: var(--texto-2); font-weight: 600; font-size: 0.88rem; }
+  .meta { color: var(--texto-2); font-weight: 500; font-size: 0.88rem; }
   .grandes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 4px; }
   .grandes div { display: grid; text-align: center; padding: 10px 4px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
-  .grandes b { font-size: 1.1rem; font-weight: 700; }
-  .grandes span { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
+  .grandes b { font-size: 1.1rem; font-weight: 600; }
+  .grandes span { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
   .grandes .p { background: var(--coral-claro); } .grandes .c { background: var(--amarillo-claro); } .grandes .g { background: var(--azul-claro); }
   .ancho { width: 100%; margin-top: 12px; }
   .comentar { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 8px; font-size: 0.9rem; }

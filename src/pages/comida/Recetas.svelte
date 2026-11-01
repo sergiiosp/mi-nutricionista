@@ -63,9 +63,9 @@
   @media (hover: hover) and (pointer: fine) { .card:hover { transform: translateY(-2px); } }
   .imagen { position: relative; display: block; }
   .chips-img { position: absolute; left: 8px; top: 8px; display: flex; gap: 4px; }
-  .chip-img { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: rgb(10 10 12 / 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #fff; font-size: 0.68rem; font-weight: 700; }
+  .chip-img { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: rgb(10 10 12 / 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #fff; font-size: 0.68rem; font-weight: 600; }
   .cuerpo { display: grid; gap: 6px; padding: 10px 12px 12px; flex: 1; align-content: space-between; }
-  .cuerpo b { font-size: 0.9rem; font-weight: 600; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .mac { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
-  .mac .kcal { color: var(--primario-fuerte); font-weight: 700; }
+  .cuerpo b { font-size: 0.9rem; font-weight: 500; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .mac { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.74rem; font-weight: 500; color: var(--texto-2); }
+  .mac .kcal { color: var(--primario-fuerte); font-weight: 600; }
 </style>

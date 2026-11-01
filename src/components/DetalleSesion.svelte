@@ -169,10 +169,10 @@
   .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.1) 0%, rgb(8 8 12 / 0.85) 100%); }
   .cab .datos span { background: rgb(255 255 255 / 0.14); color: #fff; }
   .comentar { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 12px; font-size: 0.9rem; }
-  .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
+  .sobre { margin: 0 0 8px; font-size: 0.82rem; font-weight: 500; color: var(--texto-2); }
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
-  .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 700; font-size: 0.78rem; }
+  .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 600; font-size: 0.78rem; }
   .pasos { list-style: none; margin: 0; padding: 0; display: grid; }
   .paso { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding-bottom: 14px; }
   .paso:not(:last-child)::before { content: ""; position: absolute; left: 16px; top: 34px; bottom: 0; width: 2px; border-radius: 2px; background: color-mix(in srgb, var(--primario) 25%, transparent); }
@@ -184,24 +184,24 @@
   .p-lineas li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; font-size: 0.88rem; }
   .p-lineas li + li { border-top: 1px solid var(--linea); }
   .p-lineas span { color: var(--texto); }
-  .p-lineas b { flex-shrink: 0; max-width: 50%; text-align: right; font-weight: 700; }
+  .p-lineas b { flex-shrink: 0; max-width: 50%; text-align: right; font-weight: 600; }
   .porque dl { display: grid; margin: 0; padding: 2px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
   .porque dl div { padding: 10px 0; }
   .porque dl div + div { border-top: 1px solid var(--linea); }
-  .porque dt { font-size: 0.74rem; font-weight: 700; color: var(--primario-fuerte); }
+  .porque dt { font-size: 0.74rem; font-weight: 600; color: var(--primario-fuerte); }
   .porque dd { margin: 2px 0 0; font-size: 0.9rem; line-height: 1.4; color: var(--texto); }
-  .registro { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-l); background: var(--primario-claro); font-weight: 600; font-size: 0.9rem; }
+  .registro { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-l); background: var(--primario-claro); font-weight: 500; font-size: 0.9rem; }
   .registro p { margin: 6px 0 0; font-style: italic; }
   .cargas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.82rem; }
   .cargas li { display: flex; justify-content: space-between; gap: 10px; }
-  .cargas span { color: var(--texto-2); font-weight: 600; }
+  .cargas span { color: var(--texto-2); font-weight: 500; }
   .cargas b { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .lista { margin: 0; padding: 12px 14px 12px 32px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); display: grid; gap: 6px; font-weight: 500; font-size: 0.92rem; color: var(--texto-2); }
   /* Ejercicios: filas con el nombre y las series × reps alineadas, en cifras */
   .ejercicios { list-style: none; margin: 0; padding: 2px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
-  .ejercicios span { font-weight: 600; color: var(--texto); }
+  .ejercicios span { font-weight: 500; color: var(--texto); }
   .tecnica { margin-top: 10px; padding: 12px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
-  .tecnica summary { display: flex; align-items: center; gap: 10px; min-height: 28px; font-weight: 700; font-size: 0.92rem; list-style: none; cursor: pointer; }
+  .tecnica summary { display: flex; align-items: center; gap: 10px; min-height: 28px; font-weight: 600; font-size: 0.92rem; list-style: none; cursor: pointer; }
   .tecnica summary::-webkit-details-marker { display: none; }
   .tecnica summary :global(svg:first-child) { color: var(--primario); }
   .tecnica summary :global(svg:last-child) { margin-left: auto; color: var(--texto-3); transition: transform 0.2s var(--ease-out); }
@@ -212,12 +212,12 @@
   .tc p { margin: 2px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
   .nota { padding: 10px 12px; border-radius: var(--r-m); background: var(--amarillo-claro); font-size: 0.88rem; font-weight: 500; }
   .comida { display: flex; gap: 12px; align-items: center; margin-top: 14px; padding: 12px 14px; border-radius: var(--r-l); background: linear-gradient(135deg, var(--primario-claro), var(--superficie)); }
-  .comida small { display: block; color: var(--texto-2); font-weight: 600; }
+  .comida small { display: block; color: var(--texto-2); font-weight: 500; }
   .botones { display: flex; gap: 8px; margin-top: 16px; }
   .botones .boton { flex: 1; }
   .mover { margin-top: 10px; }
   .dias { display: flex; gap: 6px; flex-wrap: wrap; }
-  .dias button { display: grid; justify-items: center; width: 52px; padding: 8px 0; border-radius: var(--r-m); border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 700; color: var(--texto); }
+  .dias button { display: grid; justify-items: center; width: 52px; padding: 8px 0; border-radius: var(--r-m); border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 600; color: var(--texto); }
   .dias button.activo { border-color: var(--primario); background: var(--primario-claro); }
   .dias i { font-style: normal; font-size: 0.7rem; }
 </style>

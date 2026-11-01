@@ -34,6 +34,6 @@
   .rv-txt { flex: 1; min-width: 0; display: grid; }
   .rv-txt b { font-size: 0.93rem; }
   .rv-txt small { font-size: 0.78rem; color: var(--texto-2); }
-  .rv-ir { padding: 8px 14px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.82rem; font-weight: 700; flex-shrink: 0; }
+  .rv-ir { padding: 8px 14px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.82rem; font-weight: 600; flex-shrink: 0; }
   .rv-luego { display: grid; place-items: center; width: 40px; height: 64px; margin-right: 2px; border: 0; background: none; color: var(--texto-3); cursor: pointer; }
 </style>

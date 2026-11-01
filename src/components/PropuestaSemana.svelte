@@ -51,7 +51,7 @@
   .ic { width: 38px; height: 38px; border-radius: var(--r-s); display: grid; place-items: center; flex-shrink: 0; background: var(--primario-claro); color: var(--primario-fuerte); }
   ul { margin: 12px 0; padding-left: 18px; display: grid; gap: 4px; color: var(--texto-2); font-size: 0.88rem; }
   ul b { color: var(--texto); }
-  .hora { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-weight: 600; font-size: 0.88rem; }
+  .hora { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-weight: 500; font-size: 0.88rem; }
   .hora input { width: 120px; min-height: 42px; padding: 0 10px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; }
   .acciones { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
 </style>

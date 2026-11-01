@@ -79,7 +79,7 @@
   .centro { position: relative; display: grid; justify-items: center; }
   .centro b { font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; }
   .centro b small { font-size: 1.1rem; margin-left: 2px; }
-  .centro > small { font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }
+  .centro > small { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
   .frase { margin: 4px 0 0; font-size: 0.95rem; line-height: 1.4; }
   .media { margin: 0; font-size: 0.8rem; color: var(--texto-2); }
   .cab :global(.como), .cab :global(.como-fila) { width: 100%; text-align: left; }
@@ -96,13 +96,13 @@
   .esfuerzo { display: grid; gap: 8px; padding: 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .esfuerzo h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1rem; }
   .hoy-e { display: flex; justify-content: space-between; gap: 10px; margin: 0; font-size: 0.9rem; }
-  .hoy-e span { color: var(--texto-2); font-weight: 600; }
+  .hoy-e span { color: var(--texto-2); font-weight: 500; }
   .barras { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 90px; }
   .col { display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 4px; }
   .zona { position: relative; width: 60%; height: 100%; border-radius: var(--r-xs); background: var(--superficie-2); overflow: hidden; }
   .zona i { position: absolute; bottom: 0; left: 0; right: 0; border-radius: var(--r-xs); background: var(--dato-e); }
   .zona i.prevista { background: color-mix(in srgb, var(--dato-e) 35%, transparent); }
-  .col small { font-size: 0.7rem; font-weight: 700; color: var(--texto-3); }
+  .col small { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); }
   .col.hoy small { color: var(--texto); }
   .nota { margin: 0; font-size: 0.74rem; color: var(--texto-3); }
 </style>

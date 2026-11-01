@@ -234,10 +234,10 @@
 <style>
   /* Portada */
   .po-sup { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .po-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 600; }
+  .po-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 500; }
   .po-chip.fuerte { background: #fff; color: #111; }
   .po-abajo { margin-top: auto; }
-  .po-abajo > small { font-size: 0.82rem; font-weight: 600; color: rgb(255 255 255 / 0.8); }
+  .po-abajo > small { font-size: 0.82rem; font-weight: 500; color: rgb(255 255 255 / 0.8); }
   .po-abajo h2 { margin: 2px 0 0; font-size: 2rem; line-height: 1.05; color: #fff; letter-spacing: -0.03em; }
   .po-abajo p { margin: 6px 0 0; font-size: 0.88rem; color: rgb(255 255 255 / 0.85); }
   .po-meta { display: block; margin-top: 8px; font-size: 0.74rem; color: rgb(255 255 255 / 0.7); }
@@ -259,7 +259,7 @@
   /* Semana */
   .dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
   .dia { display: grid; justify-items: center; gap: 3px; padding: 8px 0 6px; border-radius: var(--r-m); }
-  .dia > small:first-child { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); }
+  .dia > small:first-child { font-size: 0.7rem; font-weight: 500; color: var(--texto-3); }
   .dia > b { font-size: 1rem; }
   .dia.hoy { background: var(--primario-claro); }
   .dia.hoy > small:first-child, .dia.hoy > b { color: var(--primario-fuerte); }
@@ -270,7 +270,7 @@
   .dia.clave .d-ic { box-shadow: 0 0 0 2px var(--primario); }
   .d-barra { position: relative; width: 10px; height: 44px; margin-top: 4px; border-radius: 5px; background: var(--superficie-2); overflow: hidden; }
   .d-barra i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 5px; background: var(--dato-kcal); }
-  .d-kcal { font-size: 0.66rem; color: var(--texto-3); font-weight: 600; }
+  .d-kcal { font-size: 0.66rem; color: var(--texto-3); font-weight: 500; }
 
   /* Cuenta de kcal */
   .cuenta { display: grid; gap: 10px; }
@@ -284,14 +284,14 @@
   .c-v { text-align: right; font-size: 0.92rem; }
   .c-v.neg { color: var(--coral); }
   .c-total { display: flex; align-items: baseline; justify-content: space-between; margin-top: 2px; padding-top: 10px; border-top: 1px solid var(--linea); }
-  .c-total span { font-size: 0.84rem; font-weight: 600; color: var(--texto-2); }
+  .c-total span { font-size: 0.84rem; font-weight: 500; color: var(--texto-2); }
   .c-total b { font-size: 1.6rem; color: var(--primario-fuerte); }
   .c-total b small { font-size: 0.78rem; color: var(--texto-3); }
   .macros-barra { display: flex; gap: 3px; height: 10px; margin-top: 16px; }
   .macros-barra i { border-radius: 5px; }
   .macros-ley { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
   .macros-ley div { display: grid; }
-  .macros-ley small { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
+  .macros-ley small { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 500; color: var(--texto-2); }
   .macros-ley small i { width: 8px; height: 8px; border-radius: 50%; }
   .macros-ley b { font-size: 1.15rem; }
   .macros-ley span { font-size: 0.7rem; color: var(--texto-3); }
@@ -303,7 +303,7 @@
   .esp.baja .esp-ic { background: color-mix(in srgb, var(--dato-kcal) 18%, transparent); color: var(--dato-kcal); }
   .esp.sube .esp-ic { background: color-mix(in srgb, var(--dato-e) 18%, transparent); color: var(--dato-e); }
   .esp.igual .esp-ic { background: var(--superficie-3); color: var(--texto-2); }
-  .esp small { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
+  .esp small { font-size: 0.74rem; font-weight: 500; color: var(--texto-2); }
   .esp b { font-size: 0.98rem; line-height: 1.2; }
   .esp-real { font-size: 0.7rem; color: var(--texto-3); }
 
@@ -313,12 +313,12 @@
   .mini-anillo { position: relative; display: grid; place-items: center; }
   .mini-anillo b { position: absolute; font-size: 1.05rem; }
   .mini-anillo b small { font-size: 0.66rem; color: var(--texto-3); }
-  .mini > small { font-size: 0.76rem; font-weight: 600; color: var(--texto-2); }
-  .frase { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px; border-radius: var(--r-m); background: var(--primario-claro); font-size: 0.88rem; font-weight: 600; line-height: 1.4; }
+  .mini > small { font-size: 0.76rem; font-weight: 500; color: var(--texto-2); }
+  .frase { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px; border-radius: var(--r-m); background: var(--primario-claro); font-size: 0.88rem; font-weight: 500; line-height: 1.4; }
   .frase :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 2px; }
 
   /* Detalle */
-  .ver { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin: 6px 0 -8px; padding: 0; border: 0; background: none; color: var(--primario); font: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .ver { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin: 6px 0 -8px; padding: 0; border: 0; background: none; color: var(--primario); font: inherit; font-size: 0.82rem; font-weight: 500; cursor: pointer; }
   .detalle { margin-top: 8px; padding: 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.84rem; line-height: 1.45; color: var(--texto-2); }
   .detalle p { margin: 8px 0 4px; }
   .detalle p:first-child { margin-top: 0; }
@@ -331,15 +331,15 @@
   .volumen i.descarga { opacity: 0.45; }
   .volumen i.actual { background: #fff; box-shadow: 0 0 12px rgb(255 255 255 / 0.6); opacity: 1; }
   .fases-ley { display: flex; gap: 2px; margin-top: 6px; }
-  .fases-ley span { display: flex; align-items: center; gap: 4px; min-width: 0; font-size: 0.62rem; font-weight: 600; color: rgb(255 255 255 / 0.65); white-space: nowrap; overflow: hidden; }
+  .fases-ley span { display: flex; align-items: center; gap: 4px; min-width: 0; font-size: 0.62rem; font-weight: 500; color: rgb(255 255 255 / 0.65); white-space: nowrap; overflow: hidden; }
   .fases-ley span.actual { color: #fff; }
   .fases-ley span:last-child { flex-shrink: 0; min-width: max-content; }
   .fases-ley i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
   /* Tu coach dice */
   .coach-dice { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 14px; border-radius: var(--r-l); background: radial-gradient(120% 120% at 0% 0%, var(--primario-claro), transparent 70%), var(--superficie); box-shadow: var(--sombra); }
   .cd-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--hero); color: #fff; flex-shrink: 0; }
-  .coach-dice p { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
-  .coach-dice small { display: block; margin-bottom: 2px; font-size: 0.72rem; font-weight: 600; color: var(--primario-fuerte); }
+  .coach-dice p { margin: 0; font-size: 0.95rem; font-weight: 500; line-height: 1.4; }
+  .coach-dice small { display: block; margin-bottom: 2px; font-size: 0.72rem; font-weight: 500; color: var(--primario-fuerte); }
   /* Próxima carrera */
   .carrera { width: 100%; border: 0; font: inherit; text-align: left; color: var(--texto); cursor: pointer; }
   .carrera { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 12px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
@@ -363,14 +363,14 @@
   .c-pista i { transition: width 0.55s var(--ease-out); }
   /* Esperado */
   .esp b { font-size: 0.9rem; }
-  .esp-estado { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+  .esp-estado { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; }
   .esp-estado.bien { background: color-mix(in srgb, var(--dato-kcal) 18%, transparent); color: var(--dato-kcal); }
   .esp-estado.mejor { background: color-mix(in srgb, var(--dato-e) 18%, transparent); color: var(--dato-e); }
   .esp-estado.ojo { background: var(--amarillo-claro); color: var(--amarillo); }
   /* Tendencia */
   .tend { margin-top: 14px; padding: 12px; border-radius: var(--r-m); background: var(--superficie-2); }
   .t-cab { display: flex; align-items: baseline; gap: 8px; }
-  .t-cab small { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
+  .t-cab small { font-size: 0.74rem; font-weight: 500; color: var(--texto-2); }
   .t-cab b { margin-left: auto; font-size: 0.95rem; }
   .t-cab .t-esp { font-weight: 500; color: var(--texto-3); }
   .tend svg { display: block; width: 100%; height: 70px; margin-top: 6px; overflow: visible; }
@@ -385,7 +385,7 @@
   .diario li { position: relative; display: flex; gap: 12px; padding: 6px 0; }
   .di-ic { position: relative; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--primario-claro); color: var(--primario); flex-shrink: 0; box-shadow: 0 0 0 3px var(--superficie); }
   .diario div { display: grid; min-width: 0; }
-  .diario small { font-size: 0.72rem; font-weight: 600; color: var(--texto-3); }
+  .diario small { font-size: 0.72rem; font-weight: 500; color: var(--texto-3); }
   .diario b { font-size: 0.9rem; }
   .diario p { margin: 2px 0 0; font-size: 0.8rem; line-height: 1.4; color: var(--texto-2); }
 </style>

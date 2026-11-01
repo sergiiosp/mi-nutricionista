@@ -120,8 +120,8 @@
   .sobre :global(svg) { flex-shrink: 0; color: var(--primario); }
   .sobre b { color: var(--texto); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; border: 0; margin: 0; padding: 0; }
-  .chips legend { width: 100%; margin-bottom: 6px; font-weight: 700; font-size: 0.84rem; }
-  .chips label, .chips button { display: inline-flex; align-items: center; min-height: 38px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+  .chips legend { width: 100%; margin-bottom: 6px; font-weight: 600; font-size: 0.84rem; }
+  .chips label, .chips button { display: inline-flex; align-items: center; min-height: 38px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
   .chips .activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
   .chips input { position: absolute; opacity: 0; pointer-events: none; }
   .campo-texto textarea { width: 100%; min-height: 110px; padding: 12px; border-radius: var(--r-m); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; font-size: max(1rem, 16px); line-height: 1.4; resize: vertical; box-sizing: border-box; }
@@ -135,15 +135,15 @@
   .notas li { padding: 12px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .notas li.nueva { box-shadow: 0 0 0 2px var(--primario), var(--sombra); }
   .n-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .n-tipo { font-size: 0.78rem; font-weight: 700; color: var(--texto-2); }
-  .n-estado { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: var(--superficie-2); color: var(--texto-2); }
+  .n-tipo { font-size: 0.78rem; font-weight: 600; color: var(--texto-2); }
+  .n-estado { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; background: var(--superficie-2); color: var(--texto-2); }
   .e-enmarcha { background: var(--amarillo-claro); color: color-mix(in srgb, var(--amarillo) 70%, var(--texto)); }
   .e-hecha { background: var(--primario-claro); color: var(--primario-fuerte); }
   .e-error { background: color-mix(in srgb, var(--peligro) 14%, transparent); color: var(--peligro); }
   .n-texto { margin: 6px 0 2px; white-space: pre-line; }
-  .n-fecha { color: var(--texto-3); font-weight: 600; font-size: 0.76rem; }
+  .n-fecha { color: var(--texto-3); font-weight: 500; font-size: 0.76rem; }
   .n-resp { display: grid; gap: 2px; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.9rem; }
   .n-resp b { font-size: 0.76rem; color: var(--primario-fuerte); }
-  .n-error { margin: 8px 0 0; color: var(--peligro); font-size: 0.82rem; font-weight: 600; }
+  .n-error { margin: 8px 0 0; color: var(--peligro); font-size: 0.82rem; font-weight: 500; }
   .n-borrar { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 0.82rem; color: var(--texto-3); }
 </style>

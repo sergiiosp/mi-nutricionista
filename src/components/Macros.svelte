@@ -11,9 +11,9 @@
 </div>
 
 <style>
-  .macros { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 6px 0 0; font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
+  .macros { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 6px 0 0; font-size: 0.8rem; font-weight: 500; color: var(--texto-2); }
   .kcal { font-size: 0.92rem; color: var(--texto); }
-  .kcal small { font-size: 0.7rem; font-weight: 600; color: var(--texto-2); margin-left: 2px; }
+  .kcal small { font-size: 0.7rem; font-weight: 500; color: var(--texto-2); margin-left: 2px; }
   .mk { display: inline-flex; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
   .mk i { width: 6px; height: 6px; border-radius: 50%; }
   .p i { background: var(--coral); } .c i { background: var(--amarillo); } .g i { background: var(--azul); }

@@ -72,25 +72,25 @@
   .suelo { display: grid; gap: 12px; }
   .cab { display: flex; gap: 14px; align-items: flex-start; }
   .ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--r-m); background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
-  .cab small { font-size: 0.76rem; font-weight: 700; color: var(--primario-fuerte); }
+  .cab small { font-size: 0.76rem; font-weight: 600; color: var(--primario-fuerte); }
   .cab h2 { margin: 2px 0 4px; font-size: 1.45rem; letter-spacing: -0.02em; }
   .cab p { margin: 0; font-size: 0.88rem; color: var(--texto-2); }
   .ejercicios { list-style: none; margin: 0; padding: 2px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .ejercicios li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; padding: 12px 0; }
   .ejercicios li + li { border-top: 1px solid var(--linea); }
-  .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 700; font-size: 0.8rem; }
+  .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 600; font-size: 0.8rem; }
   .ejercicios b { display: block; font-size: 0.95rem; }
-  .dosis { display: block; margin-top: 1px; font-size: 0.84rem; font-weight: 700; color: var(--primario-fuerte); }
+  .dosis { display: block; margin-top: 1px; font-size: 0.84rem; font-weight: 600; color: var(--primario-fuerte); }
   .ejercicios p { margin: 4px 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--texto-2); }
   .truco { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: var(--r-m); background: var(--amarillo-claro); font-size: 0.86rem; }
   .truco :global(svg) { flex-shrink: 0; margin-top: 2px; }
   .boton.hecho { background: var(--primario-claro); color: var(--primario-fuerte); box-shadow: inset 0 0 0 1.5px var(--primario); }
   .saber { padding: 12px 14px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
-  .saber summary { display: flex; align-items: center; gap: 8px; min-height: 28px; font-weight: 700; list-style: none; cursor: pointer; }
+  .saber summary { display: flex; align-items: center; gap: 8px; min-height: 28px; font-weight: 600; list-style: none; cursor: pointer; }
   .saber summary::-webkit-details-marker { display: none; }
   .saber summary :global(svg) { margin-left: auto; color: var(--texto-3); transition: transform 0.2s var(--ease-out); }
   .saber[open] summary :global(svg) { transform: rotate(180deg); }
   .saber p { margin: 8px 0 0; font-size: 0.88rem; line-height: 1.45; color: var(--texto-2); }
   .saber p b { color: var(--texto); }
-  .dejar { justify-self: center; min-height: 44px; border: 0; background: none; color: var(--texto-3); font: inherit; font-weight: 600; font-size: 0.84rem; cursor: pointer; }
+  .dejar { justify-self: center; min-height: 44px; border: 0; background: none; color: var(--texto-3); font: inherit; font-weight: 500; font-size: 0.84rem; cursor: pointer; }
 </style>

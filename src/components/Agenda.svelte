@@ -133,19 +133,19 @@
   .ic.carrera { background: var(--primario-claro); color: var(--primario-fuerte); }
   .ic.viaje { background: var(--azul-claro); color: var(--azul); }
   .txt { flex: 1; min-width: 0; display: grid; }
-  .txt small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
+  .txt small { color: var(--texto-2); font-weight: 500; font-size: 0.8rem; }
   .borrar { width: 40px; height: 40px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); display: grid; place-items: center; cursor: pointer; }
   .vacio { margin: 0 0 12px; color: var(--texto-2); font-size: 0.88rem; }
   .botones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .botones button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; border: 1px dashed var(--borde); border-radius: var(--r-m); background: none; color: var(--primario); font: inherit; font-weight: 700; cursor: pointer; }
+  .botones button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; border: 1px dashed var(--borde); border-radius: var(--r-m); background: none; color: var(--primario); font: inherit; font-weight: 600; cursor: pointer; }
   .botones button.activo { border-style: solid; border-color: var(--primario); background: var(--primario-claro); }
   .form { margin-top: 12px; display: grid; gap: 10px; }
   .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; border: 0; margin: 0; padding: 0; }
-  .chips legend { width: 100%; margin-bottom: 6px; font-weight: 700; font-size: 0.86rem; }
-  .chips button, .chips label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .chips legend { width: 100%; margin-bottom: 6px; font-weight: 600; font-size: 0.86rem; }
+  .chips button, .chips label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); font: inherit; font-weight: 600; font-size: 0.84rem; cursor: pointer; }
   .chips .activo { border-color: var(--primario); background: var(--primario-claro); color: var(--primario-fuerte); }
   .chips input { position: absolute; opacity: 0; pointer-events: none; }
   .ancho { width: 100%; }
-  .error { margin: 0; color: var(--peligro); font-weight: 700; font-size: 0.86rem; }
+  .error { margin: 0; color: var(--peligro); font-weight: 600; font-size: 0.86rem; }
 </style>

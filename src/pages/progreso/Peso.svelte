@@ -237,7 +237,7 @@
   /* Peso y objetivo */
   .m-cab { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
   .m-cab > span { display: grid; }
-  .m-cab small, .m-ext small { font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }
+  .m-cab small, .m-ext small { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
   .m-cab > span:first-child b { font-size: 2.4rem; line-height: 1; letter-spacing: -0.03em; }
   .m-cab b span { font-size: 0.95rem; margin-left: 3px; color: var(--texto-2); }
   .m-obj { text-align: right; }
@@ -261,15 +261,15 @@
   .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); }
   .ancho-peso { width: 100%; margin-top: 12px; }
   .tit-graf { display: block; margin-bottom: 6px; }
-  .rec p { font-weight: 600; }
-  .bascula { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; margin: 12px 0 0; font-weight: 700; font-size: 0.86rem; color: var(--primario-fuerte); }
-  .bascula small { color: var(--texto-3); font-weight: 600; }
+  .rec p { font-weight: 500; }
+  .bascula { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; margin: 12px 0 0; font-weight: 600; font-size: 0.86rem; color: var(--primario-fuerte); }
+  .bascula small { color: var(--texto-3); font-weight: 500; }
   .campos-bascula { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; }
   .campos-bascula .campo { margin: 6px 0; }
   .cu-mas { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--linea); }
   .cu-mas div { display: grid; }
-  .cu-mas dt { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); }
-  .cu-mas dd { margin: 0; font-size: 0.9rem; font-weight: 600; }
+  .cu-mas dt { font-size: 0.7rem; font-weight: 500; color: var(--texto-3); }
+  .cu-mas dd { margin: 0; font-size: 0.9rem; font-weight: 500; }
   .cu-mas small { display: block; font-size: 0.72rem; color: var(--texto-2); font-weight: 500; }
   .alerta-v { color: var(--amarillo); }
   .cu-agua.visceral :global(svg) { color: var(--amarillo); }
@@ -285,18 +285,18 @@
   .historial li { grid-template-columns: 64px 70px 1fr auto; gap: 8px; }
   /* Tu cuerpo */
   .cu-cab { display: flex; align-items: baseline; justify-content: space-between; }
-  .cu-cab small { font-size: 0.76rem; color: var(--texto-3); font-weight: 600; }
+  .cu-cab small { font-size: 0.76rem; color: var(--texto-3); font-weight: 500; }
   .cu-datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 10px; margin-top: 12px; }
   .cu-datos div { display: grid; }
-  .cu-datos small { font-size: 0.7rem; font-weight: 600; color: var(--texto-3); }
-  .cu-datos small:first-child { font-weight: 700; color: var(--texto-2); }
+  .cu-datos small { font-size: 0.7rem; font-weight: 500; color: var(--texto-3); }
+  .cu-datos small:first-child { font-weight: 600; color: var(--texto-2); }
   .cu-datos b { font-size: 1.35rem; line-height: 1.15; }
   .cu-datos b span { font-size: 0.78rem; margin-left: 1px; color: var(--texto-3); }
   .cu-cambio { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linea); }
-  .cu-desde { font-size: 0.76rem; font-weight: 600; color: var(--texto-3); margin-right: 2px; }
-  .chip-cambio { padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--texto); font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cu-desde { font-size: 0.76rem; font-weight: 500; color: var(--texto-3); margin-right: 2px; }
+  .chip-cambio { padding: 4px 10px; border-radius: 999px; background: var(--amarillo-claro); color: var(--texto); font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
   .chip-cambio.bien { background: var(--primario-claro); color: var(--primario-fuerte); }
-  .cu-juicio { margin: 10px 0 0; font-weight: 700; font-size: 0.9rem; }
+  .cu-juicio { margin: 10px 0 0; font-weight: 600; font-size: 0.9rem; }
   .cu-juicio.bien { color: var(--primario-fuerte); }
   .cu-agua { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.82rem; color: var(--texto-2); }
   .cu-agua :global(svg) { color: var(--azul); flex-shrink: 0; margin-top: 1px; }

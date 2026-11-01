@@ -1,15 +1,17 @@
 <script>
-  // La semana de un vistazo (lunes a domingo), al estilo de Cal AI: cada día con su anillo de kcal. Verde si
-  // cumpliste kcal y proteína, coral si no, vacío si no apuntaste. Al tocar un día pasado, su resumen debajo.
-  import Anillos from './Anillos.svelte';
+  // La semana de un vistazo (lunes a domingo), al estilo de Cal AI: cada día con un aro fino. Verde si
+  // cumpliste kcal y proteína, rojo si no, discontinuo si no apuntaste; hoy, lo que llevas en negro, y los
+  // que vienen, en gris. Al tocar un día pasado, su resumen debajo.
   import { estado } from '../stores/estado.js';
   import { calcularObjetivos } from '../lib/nutricion.js';
   import { hoyISO, sumarDias } from '../lib/planificador.js';
   import { resumenDia } from '../lib/logros.js';
   import { sesionesDia } from '../lib/hyrox/index.js';
-  import { diaCorto, diaSemana, entero, capital } from '../lib/formato.js';
+  import { diaSemana, entero, capital } from '../lib/formato.js';
 
   let { consumidoHoy = 0, objetivoHoy = 1 } = $props();
+  const NOMBRES = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  const R = 18; const C = 2 * Math.PI * R;
   const hoy = hoyISO();
   const lunes = sumarDias(hoy, -((new Date(`${hoy}T12:00`).getDay() + 6) % 7));
   const objetivos = $derived(calcularObjetivos($estado.perfil));
@@ -18,24 +20,27 @@
     const r = fecha < hoy ? resumenDia($estado, objetivos, fecha) : null;
     const entreno = sesionesDia($estado, fecha).filter((s) => s.tipo !== 'carrera');
     const hecho = entreno.some((s) => ['completa', 'parcial'].includes($estado.hyrox?.registros?.[s.id]?.estado));
-    return { fecha, r, futuro: fecha > hoy, hoy: fecha === hoy, entreno: entreno.length > 0, hecho, bien: r ? r.kcalOk && r.proteinaOk : false };
+    const estadoDia = fecha === hoy ? 'hoy' : fecha > hoy ? 'futuro' : !r ? 'vacio' : r.kcalOk && r.proteinaOk ? 'bien' : 'mal';
+    return { fecha, n: NOMBRES[i], r, estado: estadoDia, entreno: entreno.length > 0, hecho };
   }));
+  const progresoHoy = $derived(Math.min(1, consumidoHoy / Math.max(1, objetivoHoy)));
   let elegido = $state(null);
   const sel = $derived(dias.find((d) => d.fecha === elegido) || null);
 </script>
 
 <div class="tira" role="group" aria-label="Tu semana">
   {#each dias as d (d.fecha)}
-    <button class="dia" class:hoy={d.hoy} class:elegido={elegido === d.fecha} disabled={d.futuro || d.hoy}
-      aria-label="{capital(diaSemana(d.fecha))} {Number(d.fecha.slice(8))}{d.r ? (d.bien ? ': en objetivo' : ': fuera de objetivo') : d.futuro || d.hoy ? '' : ': sin apuntar'}"
+    <button class="dia {d.estado}" class:marcado={elegido ? elegido === d.fecha : d.estado === 'hoy'} disabled={d.estado === 'futuro' || d.estado === 'hoy'}
+      aria-label="{capital(diaSemana(d.fecha))} {Number(d.fecha.slice(8))}{d.estado === 'bien' ? ': en objetivo' : d.estado === 'mal' ? ': fuera de objetivo' : d.estado === 'vacio' ? ': sin apuntar' : ''}"
       onclick={() => (elegido = elegido === d.fecha ? null : d.fecha)}>
-      <small>{diaCorto(d.fecha)}</small>
-      <span class="aro" class:vacio={!d.r && !d.hoy}>
-        {#if d.hoy}<Anillos anillos={[{ valor: consumidoHoy, meta: objetivoHoy, color: 'var(--primario)' }]} tam={34} grosor={4} />
-        {:else if d.r}<Anillos anillos={[{ valor: d.r.m.kcal, meta: d.r.od.kcal, color: d.bien ? 'var(--dato-kcal)' : 'var(--coral)' }]} tam={34} grosor={4} />{/if}
+      <small>{d.n}</small>
+      <span class="aro">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+          <circle class="pista" cx="20" cy="20" r={R} />
+          {#if d.estado === 'hoy' && progresoHoy > 0}<circle class="avance" cx="20" cy="20" r={R} stroke-dasharray="{C * progresoHoy} {C}" transform="rotate(-90 20 20)" />{/if}
+        </svg>
         <b class="cifra">{Number(d.fecha.slice(8))}</b>
       </span>
-      <i class="punto" class:si={d.entreno} class:hecho={d.hecho} aria-hidden="true"></i>
     </button>
   {/each}
 </div>
@@ -47,20 +52,22 @@
 {/if}
 
 <style>
-  .tira { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin: 0 -4px 12px; }
-  .dia { display: grid; justify-items: center; gap: 3px; padding: 6px 0 4px; border: 0; border-radius: var(--r-m); background: none; color: var(--texto-2); font: inherit; cursor: pointer; }
+  .tira { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin: 0 -6px 14px; }
+  .dia { display: grid; justify-items: center; gap: 6px; padding: 8px 0 10px; border: 0; border-radius: var(--r-m); background: none; color: var(--texto-2); font: inherit; cursor: pointer; }
   .dia:disabled { cursor: default; }
-  .dia.hoy { background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); }
-  .dia.elegido { background: var(--superficie-2); }
-  .dia small { font-size: 0.7rem; font-weight: 700; }
-  .aro { position: relative; display: grid; place-items: center; width: 34px; height: 34px; }
-  .aro :global(svg) { position: absolute; inset: 0; }
-  .aro.vacio { border-radius: 50%; box-shadow: inset 0 0 0 2px var(--superficie-3); }
-  .dia:disabled .aro.vacio { box-shadow: inset 0 0 0 2px var(--superficie-2); }
-  .aro b { position: relative; font-size: 0.78rem; font-weight: 700; color: var(--texto); }
-  .punto { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
-  .punto.si { background: var(--superficie-3); }
-  .punto.hecho { background: var(--dato-e); }
+  .dia.marcado { background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); }
+  .dia small { font-size: 0.76rem; }
+  .dia.marcado small { font-weight: 500; }
+  .aro { position: relative; display: grid; place-items: center; width: 40px; height: 40px; }
+  .aro svg { position: absolute; inset: 0; }
+  .aro b { position: relative; font-size: 0.92rem; font-weight: 400; color: var(--texto); }
+  circle { fill: none; stroke-width: 2; }
+  .pista { stroke: var(--superficie-3); }
+  .avance { stroke: var(--texto); stroke-linecap: round; }
+  .bien .pista { stroke: var(--dia-ok, var(--dato-kcal)); }
+  .mal .pista { stroke: var(--dia-mal, var(--coral)); }
+  .vacio .pista { stroke: var(--texto-3); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .futuro { opacity: 0.45; }
   .detalle-dia { margin: -6px 0 12px; padding: 8px 12px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); font-size: 0.84rem; color: var(--texto-2); }
   .detalle-dia b { color: var(--texto); }
 </style>

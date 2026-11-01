@@ -46,5 +46,5 @@
   .cp-cab small { font-size: 0.82rem; color: var(--texto-2); line-height: 1.35; }
   .cp-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   .cp-acciones .boton { min-height: 46px; padding: 0 10px; font-size: 0.9rem; white-space: nowrap; }
-  .luego { display: block; margin: 6px auto 0; min-height: 36px; padding: 0 12px; border: 0; background: none; color: var(--texto-3); font: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+  .luego { display: block; margin: 6px auto 0; min-height: 36px; padding: 0 12px; border: 0; background: none; color: var(--texto-3); font: inherit; font-size: 0.8rem; font-weight: 500; cursor: pointer; }
 </style>

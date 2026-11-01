@@ -177,13 +177,13 @@
 
 <style>
   /* Nivel de evidencia de cada suplemento (antes en app.css) */
-  .evid { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
+  .evid { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
   .evid-alta { background: var(--primario-claro); color: var(--primario-fuerte); }
   .evid-moderada { background: var(--amarillo-claro); color: color-mix(in srgb, var(--amarillo) 70%, var(--texto)); }
   .evid-baja { background: var(--superficie-2); color: var(--texto-2); }
   .aviso-legal { margin-top: 22px; }
   .ancho { width: 100%; margin-top: 10px; }
-  .sub-apariencia { margin: 14px 0 6px; font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
+  .sub-apariencia { margin: 14px 0 6px; font-size: 0.82rem; font-weight: 500; color: var(--texto-2); }
   .h-cab { margin: 6px 0 4px; }
   .horario-mini .etq { margin-left: auto; }
   .lista { display: grid; gap: 8px; }
@@ -197,18 +197,18 @@
   .sup summary::-webkit-details-marker { display: none; }
   .sup-ic { width: 46px; height: 46px; border-radius: var(--r-m); display: grid; place-items: center; background: var(--lila-claro); flex-shrink: 0; }
   .sup-t { flex: 1; min-width: 0; display: grid; }
-  .sup-t small { color: var(--texto-2); font-weight: 700; }
+  .sup-t small { color: var(--texto-2); font-weight: 600; }
   .sup dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; padding: 0 14px 14px; font-size: 0.9rem; }
-  .sup dt { font-weight: 700; color: var(--texto-2); }
+  .sup dt { font-weight: 600; color: var(--texto-2); }
   .sup dd { margin: 0; }
   .consejo-item { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0; }
   .consejo-item p { margin: 3px 0 0; font-size: 0.92rem; }
   .copias summary { display: grid; gap: 2px; cursor: pointer; }
-  .copias summary small { color: var(--texto-2); font-weight: 600; font-size: 0.8rem; }
+  .copias summary small { color: var(--texto-2); font-weight: 500; font-size: 0.8rem; }
   .copias ul { list-style: none; margin: 10px 0 0; padding: 0; }
   .copias li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--linea); }
   .copias li span { display: grid; min-width: 0; }
-  .copias li small { color: var(--texto-2); font-weight: 600; font-size: 0.78rem; }
+  .copias li small { color: var(--texto-2); font-weight: 500; font-size: 0.78rem; }
   .copias li .boton { flex-shrink: 0; }
   .creditos { font-size: 0.85rem; }
   .creditos ul { padding-left: 18px; color: var(--texto-2); }

@@ -43,5 +43,5 @@
 
 <style>
   .intro { display: flex; gap: 14px; align-items: flex-start; background: linear-gradient(135deg, var(--amarillo-claro), var(--superficie) 70%); }
-  .intro p { margin: 4px 0 0; font-weight: 600; font-size: 0.92rem; }
+  .intro p { margin: 4px 0 0; font-weight: 500; font-size: 0.92rem; }
 </style>

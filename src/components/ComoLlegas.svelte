@@ -63,14 +63,14 @@
   .c-cab { display: flex; align-items: center; gap: 8px; color: var(--lila); margin-bottom: 6px; }
   .c-cab b { color: var(--texto); }
   .c-fila { display: grid; grid-template-columns: 74px 1fr; align-items: center; gap: 8px; padding: 6px 0; }
-  .c-fila > span { font-size: 0.82rem; font-weight: 700; color: var(--texto-2); }
+  .c-fila > span { font-size: 0.82rem; font-weight: 600; color: var(--texto-2); }
   .c-op { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; border-radius: var(--r-s); background: var(--superficie-2); }
-  .c-op button { min-height: 38px; border: 0; border-radius: var(--r-xs); background: none; color: var(--texto-2); font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out); }
+  .c-op button { min-height: 38px; border: 0; border-radius: var(--r-xs); background: none; color: var(--texto-2); font: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out); }
   .c-op button.activo { background: var(--lila); color: #14121f; }
   .ancho { width: 100%; margin-top: 10px; }
   .ajustada { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 6px 10px 14px; border-radius: var(--r-m); background: var(--lila-claro); font-size: 0.84rem; color: var(--texto-2); }
   .ajustada :global(svg) { color: var(--lila); flex-shrink: 0; }
   .ajustada b { color: var(--texto); }
   .ajustada span { flex: 1; }
-  .ajustada button { min-height: 40px; padding: 0 12px; border: 0; border-radius: var(--r-s); background: none; color: var(--lila); font: inherit; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .ajustada button { min-height: 40px; padding: 0 12px; border: 0; border-radius: var(--r-s); background: none; color: var(--lila); font: inherit; font-weight: 600; font-size: 0.8rem; cursor: pointer; }
 </style>

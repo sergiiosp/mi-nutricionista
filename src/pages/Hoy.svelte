@@ -23,6 +23,7 @@
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
   import TiraSemana from '../components/TiraSemana.svelte';
+  import IconoRelleno from '../components/IconoRelleno.svelte';
   import { recuperacion, esfuerzo } from '../lib/recuperacion.js';
   import ComoLlegas from '../components/ComoLlegas.svelte';
   import AvisoCopia from '../components/AvisoCopia.svelte';
@@ -60,6 +61,9 @@
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const coach = $derived(explicarPlan($estado, objetivos, hoy));
   const rec = $derived(recuperacion($estado, hoy));
+  let verRestantes = $state(false);
+  let paginas = $state();
+  let pagina = $state(0);
   const esf = $derived(esfuerzo($estado, hoy));
   const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
   // Carrera hoy o mañana: acceso directo al modo día de carrera
@@ -187,41 +191,47 @@
 <section class="hoy">
   <header class="cab-dia">
     <p class="fecha">{capital(fechaLarga(hoy))} · {saludo().toLowerCase()}{$estado.perfil.nombre ? `, ${$estado.perfil.nombre}` : ''}</p>
-    <h1 class="titular">{titular.t}</h1>
-    {#if titular.s}<p class="sub-titular">{titular.s}</p>{/if}
+    <p class="titular">{titular.t}</p>
   </header>
 
 
 
   <!-- La semana de un vistazo y el día: kcal que te quedan, cada macro, tu recuperación y el entreno -->
   <TiraSemana consumidoHoy={d.consumido.kcal} objetivoHoy={d.objetivo.kcal} />
-  <section class="dia-cifras s-comida" aria-label="Tu día en cifras">
-    <button class="kcal" class:activo={abierto === 'comida'} aria-expanded={abierto === 'comida'} onclick={() => alternar('comida')}>
+  <section class="dia-cifras" aria-label="Tu día en cifras">
+    <!-- Kcal al estilo de Cal AI: consumidas sobre el objetivo (al tocar la etiqueta, las que te quedan) -->
+    <div class="kcal">
       <span class="k-txt">
-        <b class="cifra"><Numero valor={Math.round(Math.abs(d.objetivo.kcal - d.consumido.kcal))} desde={0} /></b>
-        <small>{d.consumido.kcal > d.objetivo.kcal ? 'kcal por encima' : 'kcal te quedan'} · llevas {entero(d.consumido.kcal)} de {entero(d.objetivo.kcal)}</small>
-      </span>
-      <span class="k-aro"><Anillos anillos={[{ valor: d.consumido.kcal, meta: d.objetivo.kcal, color: COLOR.kcal }]} tam={84} grosor={9} /><Icono n="flame" tam={22} /></span>
-    </button>
-    <div class="macros-3">
-      {#each [['Proteína', 'p', 'var(--coral)'], ['Hidratos', 'c', 'var(--amarillo)'], ['Grasa', 'g', 'var(--azul)']] as [n, k, c] (k)}
-        <button class="macro-c" onclick={() => alternar('comida')}>
-          <b class="cifra">{Math.max(0, Math.round(d.objetivo[k] - d.consumido[k]))}<span>g</span></b>
-          <small>{n} {d.consumido[k] > d.objetivo[k] ? 'cumplida' : 'te queda'}</small>
-          <span class="m-aro"><Anillos anillos={[{ valor: d.consumido[k], meta: d.objetivo[k], color: c }]} tam={46} grosor={5} /></span>
+        <button class="k-cifra" aria-expanded={abierto === 'comida'} onclick={() => alternar('comida')}>
+          <b class="cifra"><Numero valor={Math.round(verRestantes ? Math.abs(d.objetivo.kcal - d.consumido.kcal) : d.consumido.kcal)} desde={0} /></b>{#if !verRestantes}<span>/{entero(d.objetivo.kcal)}</span>{/if}
         </button>
-      {/each}
+        <button class="k-modo" onclick={() => (verRestantes = !verRestantes)}>{verRestantes ? (d.consumido.kcal > d.objetivo.kcal ? 'Kcal de más' : 'Kcal restantes') : 'Kcal consumidas'} <Icono n="arrow-up-down" tam={14} /></button>
+      </span>
+      <button class="k-aro" aria-label="Ver lo que llevas hoy" onclick={() => alternar('comida')}><Anillos anillos={[{ valor: d.consumido.kcal, meta: d.objetivo.kcal, color: 'var(--texto)' }]} tam={104} grosor={10} /><IconoRelleno n="llama" tam={26} /></button>
     </div>
-    <div class="fila-2">
-      <button class="mini s-entreno" onclick={() => abrirHoja('recuperacion')}>
-        <span class="mini-aro">{#if rec.contestada}<Anillos anillos={[{ valor: rec.valor, meta: 100, color: rec.valor >= 67 ? 'var(--dato-kcal)' : rec.valor >= 34 ? 'var(--amarillo)' : 'var(--coral)' }]} tam={40} grosor={5} />{/if}<Icono n="heart-pulse" tam={16} /></span>
-        <span class="mini-txt"><small>Recuperación</small><b class="cifra">{rec.contestada ? `${rec.valor} %` : '¿Cómo llegas?'}</b></span>
-      </button>
-      <button class="mini s-entreno" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} onclick={() => alternar('entreno')}>
-        <span class="mini-aro"><Anillos anillos={[{ valor: regPrincipal ? 1 : 0, meta: 1, color: COLOR.e }]} tam={40} grosor={5} /><Icono n={entrenoHoy ? 'dumbbell' : 'moon'} tam={16} /></span>
-        <span class="mini-txt"><small>{entrenoHoy ? `Entreno${esf.hoy ? ` · ${esf.hoy.rpe}/10` : ''}` : 'Descanso'}</small><b>{#if !entrenoHoy}recupera y camina{:else if regPrincipal}hecho{:else if sesPrincipal}{sesPrincipal.hora} · {sesPrincipal.duracion} min{:else if sesion}a las {sesion.inicio}{:else}hoy{/if}</b></span>
-      </button>
+    <!-- Dos páginas que se deslizan: los macros y, al lado, el entreno y la recuperación -->
+    <div class="paginas" bind:this={paginas} onscroll={() => (pagina = Math.round(paginas.scrollLeft / paginas.clientWidth))}>
+      <div class="pagina macros-3">
+        {#each [['Proteína', 'p', 'var(--coral)', 'proteina'], ['Hidratos', 'c', 'var(--amarillo)', 'hidratos'], ['Grasa', 'g', 'var(--azul)', 'grasa']] as [n, k, c, ic] (k)}
+          <button class="macro-c" onclick={() => alternar('comida')}>
+            <span class="cifra"><b>{Math.round(d.consumido[k])}</b><span>/{Math.round(d.objetivo[k])}g</span></span>
+            <small>{n}</small>
+            <span class="m-aro" style="color:{c}"><Anillos anillos={[{ valor: d.consumido[k], meta: d.objetivo[k], color: c }]} tam={70} grosor={6} /><IconoRelleno n={ic} tam={20} /></span>
+          </button>
+        {/each}
+      </div>
+      <div class="pagina fila-2">
+        <button class="mini" onclick={() => abrirHoja('recuperacion')}>
+          <span class="mini-txt"><small>Recuperación</small><b class="cifra">{rec.contestada ? `${rec.valor} %` : '¿Cómo llegas?'}</b></span>
+          <span class="mini-aro"><Anillos anillos={[{ valor: rec.contestada ? rec.valor : 0, meta: 100, color: 'var(--texto)' }]} tam={70} grosor={6} /><IconoRelleno n="pulso" tam={22} /></span>
+        </button>
+        <button class="mini" class:activo={abierto === 'entreno'} aria-expanded={abierto === 'entreno'} onclick={() => alternar('entreno')}>
+          <span class="mini-txt"><small>{entrenoHoy ? `Entreno${esf.hoy ? ` · ${esf.hoy.rpe}/10` : ''}` : 'Descanso'}</small><b>{#if !entrenoHoy}Recupera y camina{:else if regPrincipal}Hecho{:else if sesPrincipal}{sesPrincipal.hora} · {sesPrincipal.duracion} min{:else if sesion}A las {sesion.inicio}{:else}Hoy{/if}</b></span>
+          <span class="mini-aro"><Anillos anillos={[{ valor: regPrincipal ? 1 : 0, meta: 1, color: 'var(--texto)' }]} tam={70} grosor={6} /><IconoRelleno n="pesas" tam={22} /></span>
+        </button>
+      </div>
     </div>
+    <div class="puntos" aria-hidden="true">{#each [0, 1] as k (k)}<i class:on={pagina === k}></i>{/each}</div>
   </section>
 
   {#if carreraHoy || carreraManana}
@@ -328,24 +338,7 @@
 
 
 
-  <!-- Para ti: propuestas, avisos y tu plan, juntos y por debajo de lo que toca ahora -->
-  <div class="para-ti">
-  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
-    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
-  {/if}
-  <PropuestaSemana />
-  <PropuestaHyrox />
-  <PropuestaSuelo />
-  <AvisoCopia />
-  <AvisoRevision />
-  <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
-    <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
-    <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
-    <Icono n="chevron-right" tam={18} />
-  </button>
 
-  <TarjetaPreparar />
-  </div>
 
   {#if resto.length}
     <h2 class="seccion">Tu día</h2>
@@ -380,7 +373,7 @@
             {:else if it.tipo === 'hyrox'}
               <button class="fila" onclick={() => abrirHoja('sesion', { id: it.s.id })}>
                 <span class="f-ic" class:ok={reg?.estado === 'completa'}><Icono n={reg?.estado === 'completa' ? 'check' : 'dumbbell'} tam={15} grosor={2.4} /></span>
-                <span class="f-txt"><small>Entreno</small><b>{it.s.titulo}</b></span>
+                <span class="f-txt"><small>Entreno{it.hora ? ` · ${it.hora}` : ''}</small><b>{it.s.titulo}</b></span>
                 <span class="f-dato">{it.s.duracion} min</span>
               </button>
               {#if !hecho && porqueDe(it.s)}<p class="t-porque">{porqueDe(it.s).corto}</p>{/if}
@@ -418,57 +411,86 @@
     {#each d.dia?.consejos || [] as c (c)}<p class="nota-dia"><Icono n="info" tam={16} /> {c}</p>{/each}
   {/if}
 
+
+  <!-- Para ti: propuestas, avisos y tu plan, juntos y por debajo de lo que toca ahora -->
+  <div class="para-ti">
+    <h2 class="seccion">Para ti</h2>
+  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
+    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
+  {/if}
+  <PropuestaSemana />
+  <PropuestaHyrox />
+  <PropuestaSuelo />
+  <AvisoCopia />
+  <AvisoRevision />
+  <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
+    <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
+    <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
+    <Icono n="chevron-right" tam={18} />
+  </button>
+
+  <TarjetaPreparar />
+  </div>
+
 </section>
 
 <style>
   /* Cabecera: la fecha pequeña y el titular del día */
-  .cab-dia { margin: 6px 0 16px; }
-  .fecha { margin: 0; color: var(--texto-2); font-weight: 600; font-size: 0.84rem; }
-  .titular { margin: 4px 0 0; font-size: 1.7rem; line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
-  .sub-titular { margin: 6px 0 0; color: var(--texto-2); font-size: 0.92rem; line-height: 1.35; }
+  .cab-dia { margin: 4px 0 12px; }
+  .fecha { margin: 0; color: var(--texto-2); font-weight: 500; font-size: 0.84rem; }
+  .titular { margin: 2px 0 0; font-size: 1.05rem; font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; }
+  .t-porque { margin: 6px 6px 2px; font-size: 0.8rem; color: var(--texto-2); }
 
   /* El día en anillos */
-  /* El día en cifras: kcal grandes, una tarjeta por macro y la fila de recuperación y entreno */
-  .dia-cifras { display: grid; gap: 8px; }
-  .kcal { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 16px 16px 18px; border: 0; border-radius: var(--r-xl); background: radial-gradient(120% 100% at 0% 0%, var(--halo), transparent 60%), var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .kcal.activo { box-shadow: inset 0 0 0 1.5px var(--primario), var(--sombra); }
-  .k-txt { display: grid; gap: 2px; min-width: 0; }
-  .k-txt b { font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; }
-  .k-txt small { font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
+  /* El día en cifras, al estilo de Cal AI */
+  .dia-cifras { display: grid; gap: 10px; }
+  .kcal { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 20px 24px 24px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
+  .k-txt { display: grid; gap: 8px; min-width: 0; }
+  .k-cifra { display: flex; align-items: baseline; gap: 2px; padding: 0; border: 0; background: none; color: var(--texto); font: inherit; cursor: pointer; text-align: left; }
+  .k-cifra b { font-size: 3rem; font-weight: 500; line-height: 1; letter-spacing: -0.04em; }
+  .k-cifra span { font-size: 1.1rem; color: var(--texto-3); }
+  .k-modo { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: var(--texto-2); font: inherit; font-size: 0.9rem; cursor: pointer; }
   .k-aro, .m-aro, .mini-aro { position: relative; display: grid; place-items: center; flex-shrink: 0; }
-  .k-aro { width: 84px; height: 84px; color: var(--dato-kcal); }
+  .k-aro { width: 104px; height: 104px; padding: 0; border: 0; background: none; color: var(--texto); cursor: pointer; }
   .k-aro :global(svg.anillos), .m-aro :global(svg.anillos), .mini-aro :global(svg.anillos) { position: absolute; inset: 0; }
-  .macros-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .macro-c { display: grid; justify-items: start; gap: 2px; padding: 12px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .macro-c b { font-size: 1.3rem; line-height: 1.05; }
-  .macro-c b span { font-size: 0.8rem; margin-left: 1px; color: var(--texto-2); }
-  .macro-c small { font-size: 0.72rem; font-weight: 600; color: var(--texto-2); }
-  .m-aro { width: 46px; height: 46px; margin-top: 8px; justify-self: center; }
-  .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .mini { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 12px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .mini.activo { box-shadow: inset 0 0 0 1.5px var(--primario), var(--sombra); }
-  .mini-aro { width: 40px; height: 40px; color: var(--primario); }
+  .paginas { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -2px; padding: 2px; }
+  .paginas::-webkit-scrollbar { display: none; }
+  .pagina { scroll-snap-align: start; }
+  .macros-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .macro-c { display: grid; justify-items: start; padding: 14px 14px 16px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .macro-c .cifra { display: flex; align-items: baseline; gap: 1px; }
+  .macro-c .cifra b { font-size: 1.25rem; font-weight: 500; line-height: 1.1; }
+  .macro-c .cifra span { font-size: 0.8rem; font-weight: 400; color: var(--texto-3); }
+  .macro-c small { margin-top: 2px; font-size: 0.82rem; color: var(--texto-2); }
+  .m-aro { width: 70px; height: 70px; margin-top: 14px; justify-self: center; }
+  .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini { display: grid; justify-items: start; gap: 12px; padding: 14px 14px 16px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .mini.activo { box-shadow: inset 0 0 0 1.5px var(--texto), var(--sombra); }
+  .mini-aro { justify-self: center; width: 70px; height: 70px; color: var(--texto); }
   .mini-txt { display: grid; min-width: 0; }
-  .mini-txt small { font-size: 0.72rem; font-weight: 700; color: var(--texto-2); }
-  .mini-txt b { font-size: 0.92rem; line-height: 1.2; }
+  .mini-txt small { font-size: 0.82rem; color: var(--texto-2); }
+  .mini-txt b { font-size: 1.05rem; font-weight: 500; line-height: 1.2; }
+  .puntos { display: flex; justify-content: center; gap: 7px; margin-top: 4px; }
+  .puntos i { width: 7px; height: 7px; border-radius: 50%; border: 1.2px solid var(--texto-3); transition: background 0.2s var(--ease-out); }
+  .puntos i.on { background: var(--texto); border-color: var(--texto); }
 
   /* Modo día de carrera */
   .modo-carrera { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: var(--r-l); background: var(--hero); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--brillo-naranja); }
   .mcr-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--r-m); background: rgb(255 255 255 / 0.22); flex-shrink: 0; }
   .mcr-txt { flex: 1; min-width: 0; display: grid; }
-  .mcr-txt small { font-size: 0.76rem; font-weight: 700; opacity: 0.85; }
+  .mcr-txt small { font-size: 0.76rem; font-weight: 600; opacity: 0.85; }
   .mcr-txt b { font-size: 1.05rem; }
   .mcr-txt span { font-size: 0.8rem; opacity: 0.9; }
   /* Tu semana */
   .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .para-ti { display: grid; gap: 10px; }
-  .para-ti:not(:has(*)) { display: none; }
+  .para-ti:not(:has(> :not(h2))) { display: none; }
   .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }
   .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .co-txt { flex: 1; min-width: 0; display: grid; }
-  .co-txt small { display: flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 600; color: var(--primario-fuerte); }
+  .co-txt small { display: flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 500; color: var(--primario-fuerte); }
   .co-txt small i { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.66rem; }
-  .co-txt b { font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
+  .co-txt b { font-size: 0.88rem; font-weight: 500; line-height: 1.3; }
   .coach > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
 
   /* Lo hecho, plegado */
@@ -478,12 +500,12 @@
   .f-fotos :global(.foto) { width: 30px; box-shadow: 0 0 0 2px var(--superficie); }
   .f-fotos :global(.foto + .foto) { margin-left: -10px; }
   .replegar-li { list-style: none; padding: 0 0 10px 68px; }
-  .replegar-hechas { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); font: inherit; font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+  .replegar-hechas { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); font: inherit; font-weight: 500; font-size: 0.78rem; cursor: pointer; }
 
   /* Suplementos: un chip pequeño en su hora */
-  .chip-toma { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 8px; padding: 0 14px 0 12px; border: 1px dashed color-mix(in srgb, var(--primario) 45%, transparent); border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
+  .chip-toma { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 8px; padding: 0 14px 0 12px; border: 1px dashed color-mix(in srgb, var(--primario) 45%, transparent); border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 0.84rem; font-weight: 600; cursor: pointer; }
   .chip-toma :global(svg) { color: var(--primario); }
-  .chip-toma small { font-weight: 600; font-size: 0.72rem; color: var(--texto-3); }
+  .chip-toma small { font-weight: 500; font-size: 0.72rem; color: var(--texto-3); }
   .chip-toma.tomado { border-style: solid; border-color: transparent; background: var(--primario-claro); color: var(--primario-fuerte); }
 
   .detalle { margin-top: 10px; padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
@@ -491,39 +513,30 @@
   .detalle :global(.sesion) { margin-top: 10px; }
 
   /* Tu día: línea de tiempo con la hora a la izquierda; cada paso con el color de lo que es */
-  .linea-dia { list-style: none; margin: 0; padding: 0; position: relative; }
-  .linea-dia::before { content: ""; position: absolute; left: 55px; top: 18px; bottom: 18px; width: 2px; border-radius: 2px; background: var(--linea); }
-  .paso, .ahora { position: relative; display: grid; grid-template-columns: 44px 24px minmax(0, 1fr); align-items: start; }
-  .paso { padding-bottom: 10px; }
-  .t-hora { padding: 17px 2px 0 0; font-size: 0.78rem; font-weight: 700; color: var(--texto-2); text-align: right; }
-  .paso.pasado .t-hora { color: var(--texto-3); }
-  .t-nodo { justify-self: center; margin-top: 18px; width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; background: var(--fondo); box-shadow: inset 0 0 0 2px var(--primario); color: var(--sobre-primario); z-index: 1; }
-  .paso.hecho .t-nodo { width: 18px; height: 18px; margin-top: 16px; background: var(--primario); box-shadow: 0 0 0 3px var(--fondo); }
-  .t-cuerpo { min-width: 0; padding-left: 6px; }
+  /* Tu día: una lista de tarjetas al estilo de Cal AI (la hora va en cada una) */
+  .linea-dia { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .paso { display: block; }
+  .t-hora, .t-nodo { display: none; }
+  .t-cuerpo { min-width: 0; }
   .t-cuerpo :global(.comida-card) { margin: 0; }
-  .t-porque { margin: 5px 0 0 4px; font-size: 0.76rem; color: var(--texto-3); line-height: 1.3; }
-  .ahora { align-items: center; padding: 0 0 10px; }
-  .ahora .t-hora { padding-top: 0; color: var(--primario); }
-  .t-ahora { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 700; color: var(--primario); }
-  .t-ahora::before { content: ""; width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 25%, transparent); }
-  .t-ahora::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--primario), transparent); }
-  .fila { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
+  li.ahora { display: none; }
+  .fila { width: 100%; display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
-  .f-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
+  .f-ic { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--superficie-2); color: var(--texto); flex-shrink: 0; }
   .f-ic.ok { background: var(--primario); color: var(--sobre-primario); }
   .f-txt { flex: 1; min-width: 0; display: grid; }
-  .f-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
-  .f-txt b { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .f-dato { font-weight: 700; font-size: 0.86rem; white-space: nowrap; color: var(--texto-2); }
+  .f-txt small { font-size: 0.8rem; color: var(--texto-2); }
+  .f-txt b { font-weight: 500; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .f-dato { font-weight: 600; font-size: 0.86rem; white-space: nowrap; color: var(--texto-2); }
   .completo { display: flex; gap: 10px; align-items: center; color: var(--texto-2); }
   .completo :global(.icono) { color: var(--primario); }
 
   .resumen { padding: 16px; border-radius: var(--r-xl); background: radial-gradient(120% 90% at 0% 0%, var(--tinte), transparent 65%), var(--superficie); box-shadow: var(--sombra); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .chip-hoy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: var(--superficie-2); font-size: 0.78rem; font-weight: 600; color: var(--texto-2); max-width: 100%; }
+  .chip-hoy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: var(--superficie-2); font-size: 0.78rem; font-weight: 500; color: var(--texto-2); max-width: 100%; }
   .chip-hoy.naranja { background: var(--primario-claro); color: var(--primario-fuerte); }
   .tipo-dia { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--superficie-2); }
-  .tipo-dia button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border: 0; border-radius: 999px; background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
+  .tipo-dia button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border: 0; border-radius: 999px; background: none; color: var(--texto-3); font-weight: 500; font-size: 0.78rem; cursor: pointer; transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out); }
   /* Zona táctil de 44 px sin cambiar el aspecto de la píldora */
   .tipo-dia button { position: relative; }
   .tipo-dia button::after { content: ""; position: absolute; inset: -8px 0; }
@@ -532,7 +545,7 @@
   .marcador { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 16px 0 14px; }
   .marcador > div { display: grid; }
   .marcador .dcha { text-align: right; }
-  .lbl { font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
+  .lbl { font-size: 0.8rem; font-weight: 500; color: var(--texto-2); }
   .num { font-size: 3.4rem; line-height: 1; letter-spacing: -0.05em; margin: 2px 0; }
   .num.pasado { color: var(--texto); }
   .dcha b { font-size: 1.6rem; line-height: 1.1; margin: 2px 0; }
@@ -546,22 +559,22 @@
   .tramo.siguiente .pista { box-shadow: inset 0 0 0 1.5px var(--primario); }
   .tramo.saltada { opacity: 0.45; }
   .tramo.extra .relleno { background: var(--lila); }
-  .t-nombre { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t-nombre { font-size: 0.74rem; font-weight: 500; color: var(--texto-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tramo.siguiente .t-nombre { color: var(--primario); }
   .t-kcal { font-size: 0.9rem; color: var(--texto); margin-top: -4px; }
-  .t-kcal.pendiente { color: var(--texto-3); font-weight: 600; }
+  .t-kcal.pendiente { color: var(--texto-3); font-weight: 500; }
   .macros-dia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linea); }
   .macro { display: grid; gap: 2px; }
-  .macro span { font-size: 0.76rem; font-weight: 600; color: var(--texto-2); }
+  .macro span { font-size: 0.76rem; font-weight: 500; color: var(--texto-2); }
   .macro b { font-size: 1rem; }
-  .macro small { font-size: 0.74rem; font-weight: 600; color: var(--texto-3); letter-spacing: 0; }
+  .macro small { font-size: 0.74rem; font-weight: 500; color: var(--texto-3); letter-spacing: 0; }
   .macro .pista { height: 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; margin-top: 4px; }
   .macro .relleno { width: 100%; height: 100%; border-radius: 999px; transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.9s var(--ease-out) 0.4s; }
   .b-p .relleno { background: var(--coral); } .b-c .relleno { background: var(--amarillo); } .b-g .relleno { background: var(--azul); }
 
   .aviso { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-m); margin: 12px 0; font-size: 0.85rem; color: var(--texto-2); background: var(--lila-claro); }
   .aviso :global(.icono) { color: var(--lila); margin-top: 1px; }
-  .aviso b { color: var(--texto); font-weight: 600; }
+  .aviso b { color: var(--texto); font-weight: 500; }
   .aviso.amarillo { background: var(--amarillo-claro); }
   .aviso.viaje { width: 100%; border: 0; font: inherit; text-align: left; cursor: pointer; align-items: center; }
   .aviso.viaje span { flex: 1; }
@@ -569,11 +582,11 @@
 
   .sugerencias { padding: 14px; }
   .sug-cab { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 6px; color: var(--amarillo); }
-  .sug-cab b { color: var(--texto); font-weight: 600; font-size: 0.92rem; }
+  .sug-cab b { color: var(--texto); font-weight: 500; font-size: 0.92rem; }
   .sug-cab small { display: block; color: var(--texto-2); font-size: 0.78rem; }
   .sug { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--linea); }
   .sug-txt { flex: 1; min-width: 0; display: grid; font-size: 0.86rem; }
-  .sug-txt b { font-weight: 600; }
+  .sug-txt b { font-weight: 500; }
   .sug-txt small { color: var(--texto-2); font-size: 0.74rem; }
   .sug-mas, .borrar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--primario); color: var(--sobre-primario); cursor: pointer; flex-shrink: 0; transition: transform 0.15s var(--ease-out); }
   .sug-mas:active { transform: scale(0.9); }
@@ -581,16 +594,16 @@
 
   .bloque-entreno { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .be-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-m); background: var(--primario-claro); color: var(--primario); }
-  .bloque-entreno b { font-weight: 600; }
+  .bloque-entreno b { font-weight: 500; }
   .bloque-entreno small { display: block; color: var(--texto-2); font-size: 0.78rem; }
-  .recordatorio { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
+  .recordatorio { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra); font-size: 0.8rem; font-weight: 500; color: var(--texto-2); }
   .recordatorio :global(.icono) { color: var(--lila); }
   .extra { display: flex; align-items: center; gap: 10px; padding: 10px 0 12px; border-bottom: 1px solid var(--linea); }
   .ic { width: 44px; height: 44px; border-radius: var(--r-s); object-fit: contain; background: var(--superficie-2); display: grid; place-items: center; flex-shrink: 0; color: var(--texto-2); }
   .txt { flex: 1; min-width: 0; display: grid; }
-  .txt b { font-weight: 600; font-size: 0.92rem; }
+  .txt b { font-weight: 500; font-size: 0.92rem; }
   .txt small { color: var(--texto-2); font-size: 0.74rem; }
-  .txt small:first-child { font-weight: 700; font-size: 0.74rem; color: var(--texto-3); }
+  .txt small:first-child { font-weight: 600; font-size: 0.74rem; color: var(--texto-3); }
   .nota-dia { display: flex; gap: 8px; align-items: flex-start; }
   .nota-dia :global(.icono) { color: var(--primario); margin-top: 2px; }
   .vacia { text-align: center; }

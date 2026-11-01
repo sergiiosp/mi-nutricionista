@@ -50,7 +50,7 @@
 <style>
   .ts-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .ts-cab small { font-size: 0.76rem; color: var(--texto-3); }
-  .toca { padding: 3px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.74rem; font-weight: 700; }
+  .toca { padding: 3px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.74rem; font-weight: 600; }
   ul { list-style: none; margin: 10px 0 0; padding: 0; }
   li { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
   li + li { border-top: 1px solid var(--linea); }
@@ -60,7 +60,7 @@
   .ts-txt small { font-size: 0.74rem; color: var(--texto-3); }
   .ts-t { display: grid; justify-items: end; min-width: 58px; }
   .ts-t b { font-size: 1rem; }
-  .ts-t small { font-size: 0.72rem; font-weight: 700; color: var(--amarillo); }
+  .ts-t small { font-size: 0.72rem; font-weight: 600; color: var(--amarillo); }
   .ts-t small.mejor { color: var(--dato-kcal); }
   .ancho { width: 100%; margin-top: 12px; }
 </style>

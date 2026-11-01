@@ -40,10 +40,10 @@
   .fichas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
   .fichas button { display: grid; gap: 2px; min-height: 84px; padding: 10px 11px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; transition: box-shadow 0.2s var(--ease-out), background 0.2s var(--ease-out); }
   .fichas button.activa { background: var(--primario-claro); box-shadow: inset 0 0 0 1.5px var(--primario); }
-  .f-cab { display: flex; align-items: center; gap: 5px; font-size: 0.74rem; font-weight: 700; color: var(--texto-2); }
+  .f-cab { display: flex; align-items: center; gap: 5px; font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
   .activa .f-cab { color: var(--primario-fuerte); }
   .fichas b { font-size: 1.3rem; line-height: 1.15; letter-spacing: -0.02em; }
-  .fichas b em { font-style: normal; font-size: 0.74rem; font-weight: 700; margin-left: 2px; color: var(--texto-3); }
-  .fichas small { font-size: 0.68rem; font-weight: 600; color: var(--texto-3); line-height: 1.2; }
+  .fichas b em { font-style: normal; font-size: 0.74rem; font-weight: 600; margin-left: 2px; color: var(--texto-3); }
+  .fichas small { font-size: 0.68rem; font-weight: 500; color: var(--texto-3); line-height: 1.2; }
   .fichas small.baja { color: var(--dato-kcal); }
 </style>

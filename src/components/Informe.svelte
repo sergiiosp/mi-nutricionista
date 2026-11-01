@@ -111,22 +111,22 @@
   .i-cab img { border-radius: var(--r-s); }
   .i-cab div { display: grid; }
   .i-cab b { font-size: 1.2rem; }
-  .i-cab small { color: #5f5f68; font-weight: 600; }
+  .i-cab small { color: #5f5f68; font-weight: 500; }
   h3 { margin: 16px 0 8px; font-size: 0.95rem; color: #16161a; }
   .i-datos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .i-datos div { display: grid; padding: 10px; border-radius: var(--r-s); background: #f3f3f6; }
-  .i-datos small { font-size: 0.72rem; font-weight: 700; color: #5f5f68; }
+  .i-datos small { font-size: 0.72rem; font-weight: 600; color: #5f5f68; }
   .i-datos b { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
   .i-datos span { font-size: 0.74rem; color: #5f5f68; }
   .i-tabla { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
-  .i-tabla th { text-align: left; font-size: 0.7rem; color: #5f5f68; font-weight: 700; padding: 6px 4px; border-bottom: 1px solid #ddd; }
+  .i-tabla th { text-align: left; font-size: 0.7rem; color: #5f5f68; font-weight: 600; padding: 6px 4px; border-bottom: 1px solid #ddd; }
   .i-tabla td { padding: 6px 4px; border-bottom: 1px solid #eee; }
   .i-tabla td + td, .i-tabla th + th { white-space: nowrap; text-align: right; }
-  .i-tabla td.sube { color: #2f8a3a; font-weight: 700; }
+  .i-tabla td.sube { color: #2f8a3a; font-weight: 600; }
   .i-fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .i-fotos figure { margin: 0; }
   .i-fotos img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--r-s); display: block; }
-  .i-fotos figcaption { margin-top: 4px; font-size: 0.74rem; font-weight: 700; color: #5f5f68; text-align: center; }
+  .i-fotos figcaption { margin-top: 4px; font-size: 0.74rem; font-weight: 600; color: #5f5f68; text-align: center; }
   .i-pie { margin: 16px 0 0; font-size: 0.7rem; color: #8a8a94; }
   .ancho { width: 100%; margin-top: 14px; }
   /* Al imprimir (o guardar en PDF) solo sale el informe, en blanco */

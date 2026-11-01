@@ -67,18 +67,18 @@
 
 <style>
   .mc-sup { display: flex; justify-content: space-between; gap: 8px; }
-  .mc-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 600; }
+  .mc-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 500; }
   .mc-abajo { margin-top: auto; display: grid; gap: 4px; color: #fff; }
-  .mc-abajo small { font-size: 0.86rem; font-weight: 600; color: rgb(255 255 255 / 0.8); }
+  .mc-abajo small { font-size: 0.86rem; font-weight: 500; color: rgb(255 255 255 / 0.8); }
   .mc-abajo > b { font-size: 1.9rem; line-height: 1.1; }
   .mc-abajo span { font-size: 0.86rem; color: rgb(255 255 255 / 0.85); }
   .proximo { display: grid; margin-top: 12px; padding: 12px 14px; border-radius: var(--r-m); background: var(--primario-claro); }
-  .proximo small { font-size: 0.76rem; font-weight: 600; color: var(--primario-fuerte); }
+  .proximo small { font-size: 0.76rem; font-weight: 500; color: var(--primario-fuerte); }
   .proximo b { font-size: 1.05rem; }
   .linea { list-style: none; margin: 14px 0 0; padding: 0; position: relative; }
   .linea::before { content: ""; position: absolute; left: 61px; top: 10px; bottom: 10px; width: 2px; background: var(--linea); }
   .linea > li { display: grid; grid-template-columns: 44px 36px minmax(0, 1fr); gap: 0 6px; padding: 6px 0; }
-  .h { padding-top: 8px; font-size: 0.8rem; font-weight: 700; color: var(--texto-2); text-align: right; }
+  .h { padding-top: 8px; font-size: 0.8rem; font-weight: 600; color: var(--texto-2); text-align: right; }
   .nodo { position: relative; display: grid; place-items: center; width: 32px; height: 32px; margin: 2px auto 0; border-radius: 50%; background: var(--superficie); box-shadow: 0 0 0 1.5px var(--linea), 0 0 0 4px var(--fondo); color: var(--primario); }
   .cuerpo { padding: 6px 10px 10px; border-radius: var(--r-m); }
   .cuerpo b { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }

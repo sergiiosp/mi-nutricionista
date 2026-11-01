@@ -59,15 +59,15 @@
   .lista-ing { list-style: none; margin: 10px 0 0; padding: 0; display: grid; font-size: 0.92rem; }
   .lista-ing.caja { background: var(--superficie); padding: 6px 14px; border-radius: var(--radio-s); box-shadow: var(--sombra); }
   .lista-ing li + li { border-top: 1px solid var(--linea); }
-  .acomp { display: grid; margin: 14px 0 0; font-weight: 700; font-size: 0.9rem; }
+  .acomp { display: grid; margin: 14px 0 0; font-weight: 600; font-size: 0.9rem; }
   .acomp small { font-weight: 500; font-size: 0.78rem; color: var(--texto-2); }
   .fila { width: 100%; display: grid; grid-template-columns: minmax(64px, max-content) 1fr auto; gap: 12px; align-items: center; min-height: 40px; padding: 6px 0; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; }
   button.fila { cursor: pointer; }
-  .cant { display: grid; font-weight: 700; text-align: right; white-space: nowrap; }
-  .cant small { font-size: 0.66rem; font-weight: 600; color: var(--texto-3); }
+  .cant { display: grid; font-weight: 600; text-align: right; white-space: nowrap; }
+  .cant small { font-size: 0.66rem; font-weight: 500; color: var(--texto-3); }
   .nombre { display: grid; min-width: 0; }
   .nombre a { color: inherit; text-decoration: underline; text-decoration-color: var(--borde); text-underline-offset: 3px; }
-  .antes { color: var(--lila); font-weight: 600; font-size: 0.78rem; }
+  .antes { color: var(--lila); font-weight: 500; font-size: 0.78rem; }
   .fila :global(.mas-info) { color: var(--texto-3); }
   .fila.abierto :global(.mas-info) { color: var(--primario); }
   .info { margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.84rem; line-height: 1.45; color: var(--texto-2); }
@@ -75,7 +75,7 @@
   .info b { color: var(--texto); }
   .como { display: flex; gap: 8px; align-items: flex-start; }
   .como :global(svg) { color: var(--primario); flex-shrink: 0; margin-top: 3px; }
-  .info a { color: var(--primario); font-weight: 700; }
+  .info a { color: var(--primario); font-weight: 600; }
   .nota-crudo { margin: 8px 0 0; font-size: 0.74rem; color: var(--texto-3); }
   .nota-crudo :global(svg) { vertical-align: -2px; }
 </style>

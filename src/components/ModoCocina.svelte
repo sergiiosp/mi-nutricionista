@@ -101,18 +101,18 @@
 <style>
   .cocina { display: flex; flex-direction: column; min-height: 70vh; }
   .c-cab { display: grid; gap: 8px; }
-  .c-num { font-size: 0.86rem; font-weight: 700; color: var(--primario-fuerte); }
+  .c-num { font-size: 0.86rem; font-weight: 600; color: var(--primario-fuerte); }
   .c-pista { height: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .c-pista i { display: block; height: 100%; border-radius: 999px; background: var(--hero); transition: width 0.3s var(--ease-out); }
   .c-paso { flex: 1; padding: 22px 0 12px; animation: entra 0.22s var(--ease-out); }
   @keyframes entra { from { opacity: 0; transform: translateX(14px); } }
   h2 { margin: 0 0 6px; font-size: 1.5rem; line-height: 1.15; }
   .c-sub { margin: 0 0 10px; color: var(--texto-2); }
-  .c-texto { margin: 0; font-size: 1.45rem; line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; text-wrap: pretty; }
+  .c-texto { margin: 0; font-size: 1.45rem; line-height: 1.4; font-weight: 500; letter-spacing: -0.01em; text-wrap: pretty; }
   .c-ings { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .c-ings button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 12px; border: 0; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; font-size: 1rem; text-align: left; cursor: pointer; }
   .c-ings button.tengo { opacity: 0.55; }
-  .c-ings b { font-weight: 700; }
+  .c-ings b { font-weight: 600; }
   .c-check { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--borde); flex-shrink: 0; color: var(--sobre-primario); }
   .tengo .c-check { background: var(--primario); border-color: var(--primario); }
   .c-timer { display: flex; align-items: center; gap: 14px; margin-top: 22px; }

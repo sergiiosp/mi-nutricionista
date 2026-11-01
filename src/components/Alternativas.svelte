@@ -205,7 +205,7 @@
   .fila { display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--linea); }
   .elegir { flex: 1; min-width: 0; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; padding: 10px 0; border: 0; background: none; text-align: left; cursor: pointer; color: var(--texto); }
   .info { display: grid; gap: 2px; min-width: 0; }
-  .info b { font-weight: 600; font-size: 0.92rem; line-height: 1.3; }
+  .info b { font-weight: 500; font-size: 0.92rem; line-height: 1.3; }
   .info small { color: var(--texto-2); font-size: 0.76rem; line-height: 1.35; }
   .info .nota { color: var(--texto-3); }
   .estrella { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: none; color: var(--texto-3); cursor: pointer; flex-shrink: 0; }
@@ -216,16 +216,16 @@
   .g-cab b { color: var(--texto); font-size: 0.92rem; }
   .g-cab small { margin-left: auto; color: var(--texto-3); font-size: 0.76rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip-montar { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto-2); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), border-color 0.15s var(--ease-out); }
+  .chip-montar { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto-2); font-weight: 500; font-size: 0.8rem; cursor: pointer; transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), border-color 0.15s var(--ease-out); }
   .chip-montar.activo { background: var(--primario); border-color: var(--primario); color: var(--sobre-primario); }
   .resultado { position: sticky; bottom: 0; margin-top: 12px; padding: 12px 14px; border-radius: var(--r-l); background: color-mix(in srgb, var(--superficie-2) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 -10px 30px rgb(0 0 0 / 0.35); }
   .resultado p { margin: 0; color: var(--texto-2); font-size: 0.86rem; }
-  .r-nombre { margin: 0 0 6px; font-weight: 600; font-size: 0.92rem; }
+  .r-nombre { margin: 0 0 6px; font-weight: 500; font-size: 0.92rem; }
   .r-items { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 3px; font-size: 0.86rem; color: var(--texto-2); }
   .r-macros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .rm { display: grid; gap: 1px; font-size: 0.72rem; color: var(--texto-2); }
   .rm b { font-size: 0.9rem; color: var(--texto); font-variant-numeric: tabular-nums; }
-  .rm small { font-size: 0.68rem; color: var(--texto-3); font-weight: 600; }
+  .rm small { font-size: 0.68rem; color: var(--texto-3); font-weight: 500; }
   .pista { height: 4px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; margin-top: 3px; }
   .relleno { width: 100%; height: 100%; border-radius: 999px; background: var(--primario); transform: translateX(calc(var(--p, 0%) - 100%)); transition: transform 0.3s var(--ease-out); }
   .rm-p .relleno { background: var(--coral); } .rm-c .relleno { background: var(--amarillo); } .rm-g .relleno { background: var(--azul); }

@@ -1,7 +1,7 @@
 <script>
   import { slide } from 'svelte/transition';
   import FotoReceta from './FotoReceta.svelte';
-  import Portada from './Portada.svelte';
+  import IconoRelleno from './IconoRelleno.svelte';
   import Valorar from './Valorar.svelte';
   import { FOTOS_RECETAS } from '../data/fotos.js';
   import { composicion } from '../lib/composicion.js';
@@ -108,38 +108,56 @@
 
 <article class="comida-card s-{situacion}" class:ajustada={comida.ajustada} class:plegada class:con-portada={portada && !plegada}>
 {#if plegada}
+  <!-- Fila al estilo de la lista de Cal AI: foto, plato, hora, kcal con la llama y los macros -->
   <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
     {#if receta && !comida.libre && (situacion === 'pendiente' || situacion === 'hecha')}
-      <span class="pl-foto"><FotoReceta {receta} alto={42} redondeo={11} />{#if situacion === 'hecha'}<span class="pl-check"><Icono n="check" tam={11} grosor={3} /></span>{/if}</span>
+      <span class="pl-foto"><FotoReceta {receta} alto={76} redondeo={14} tamEmoji={34} />{#if situacion === 'hecha'}<span class="pl-check"><Icono n="check" tam={11} grosor={3} /></span>{/if}</span>
     {:else}
-      <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={15} grosor={2.4} /></span>
+      <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={22} grosor={2} /></span>
     {/if}
-    <span class="pl-txt"><small>{comida.hora && !compacta ? `${comida.hora} · ` : ''}{franjaNombre}{situacion === 'saltada' ? ' · saltada' : situacion === 'sobra' ? ' · hoy no hace falta' : situacion === 'sustituida' ? ' · comiste otra cosa' : ''}</small><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : nombre}</b></span>
-    {#if situacion !== 'saltada' && situacion !== 'sobra'}<span class="pl-kcal cifra">{Math.round(situacion === 'sustituida' ? comida.otros.reduce((t, r) => t + r.macros.kcal, 0) : m.kcal)}<small> kcal</small></span>{/if}
-    <Icono n="chevron-down" tam={18} />
+    <span class="pl-txt">
+      <span class="pl-cab"><b>{situacion === 'sustituida' ? comida.otros.map((r) => r.nombre).join(', ') : nombre}</b><em>{situacion === 'hecha' ? '✓ ' : ''}{comida.hora || franjaNombre}</em></span>
+      {#if situacion === 'saltada' || situacion === 'sobra'}<small>{franjaNombre} · {situacion === 'saltada' ? 'saltada' : 'hoy no hace falta'}</small>
+      {:else}
+        {@const mm = situacion === 'sustituida' ? comida.otros.reduce((t, r) => ({ kcal: t.kcal + r.macros.kcal, p: t.p + r.macros.p, c: t.c + r.macros.c, g: t.g + r.macros.g }), { kcal: 0, p: 0, c: 0, g: 0 }) : m}
+        <span class="pl-kcal cifra"><IconoRelleno n="llama" tam={16} />{Math.round(mm.kcal)} kcal</span>
+        <span class="pl-mac">
+          {#each [['p', 'var(--coral)', 'proteina'], ['c', 'var(--amarillo)', 'hidratos'], ['g', 'var(--azul)', 'grasa']] as [k, c, ic] (k)}<span><span style="color:{c}"><IconoRelleno n={ic} tam={14} /></span>{Math.round(mm[k])}g</span>{/each}
+        </span>
+      {/if}
+    </span>
   </button>
 {:else}
   {#if portada}
-    <Portada foto={tieneFoto && !comida.libre ? `img/recetas/${receta.id}.webp` : ''} color="var(--primario)" alto={tieneFoto ? 270 : 230} duotono={false} etiqueta="Comida que toca ahora">
+    <!-- Al estilo de la ficha de Cal AI: la foto arriba y, encima, una hoja blanca con el plato, sus kcal y sus macros -->
+    <div class="pc">
+      <button class="pc-foto" onclick={verReceta} aria-label="Ver la receta">
+        {#if tieneFoto && !comida.libre}<img src="img/recetas/{receta.id}.webp" alt="" loading="lazy" />
+        {:else}<span class="pc-sin"><Icono n={comida.libre ? 'party-popper' : 'utensils'} tam={56} grosor={1.4} /></span>{/if}
+      </button>
       <div class="pc-sup">
-        <span class="pc-tipo"><Icono n="utensils" tam={14} grosor={2.2} /> {franjaNombre}{comida.hora ? ` · ${comida.hora}` : ''}</span>
-        {#if comida.etiqueta}<span class="pc-etq">{ETQ[comida.etiqueta]}</span>{/if}
-        {#if comida.ajustada && situacion === 'pendiente'}<span class="pc-etq">Ajustada</span>{/if}
+        <span class="pc-tipo">{franjaNombre}{comida.hora ? ` · ${comida.hora}` : ''}</span>
+        {#if comida.etiqueta}<span class="pc-tipo">{ETQ[comida.etiqueta]}</span>{/if}
+        {#if comida.ajustada && situacion === 'pendiente'}<span class="pc-tipo">Ajustada</span>{/if}
         {#if receta?.fuera || receta?.viaje}<button class="pc-guia" onclick={() => abrirHoja('guiaFuera', { sitio: receta.fuera ? 'menu' : 'super' })}><Icono n="lightbulb" tam={14} grosor={2.2} /> Qué pedir</button>
         {:else if cocinable && situacion === 'pendiente'}<button class="pc-guia" onclick={cocinar}><Icono n="chef-hat" tam={14} grosor={2.2} /> Cocinar</button>{/if}
       </div>
-      {#if comida.libre}<span class="pc-libre" aria-hidden="true"><Icono n="party-popper" tam={86} grosor={1.4} /></span>{:else if !tieneFoto}<span class="pc-anillo" style="background:{anillo}" aria-hidden="true"></span>{/if}
-      <button class="pc-titulo" onclick={verReceta}>{nombre}</button>
-      {#if porque}<p class="pc-porque">{porque}</p>{/if}
-      {#if acompaña}<p class="pc-acomp">Acompáñala con {acompaña}</p>{/if}
-      <div class="pc-cifras">
-        <div><b class="cifra">{Math.round(m.kcal)}</b><small>kcal</small></div>
-        <div><b class="cifra">{Math.round(m.p)}<span>g</span></b><small>proteína</small></div>
-        {#if receta?.tiempo}<div><b class="cifra">{receta.tiempo}<span>min</span></b><small>preparar</small></div>{/if}
-        <div><b class="cifra">{euros(costeComida(comida.ingredientes))}</b><small>coste</small></div>
+      <div class="pc-hoja">
+        <button class="pc-caja pc-nombre" onclick={verReceta}><span>{nombre}</span><Icono n="chevron-right" tam={18} /></button>
+        {#if porque || acompaña}<p class="pc-porque">{porque}{porque && acompaña ? '. ' : ''}{#if acompaña}Acompáñala con {acompaña}{/if}</p>{/if}
+        <div class="pc-caja pc-kcal">
+          <IconoRelleno n="llama" tam={26} />
+          <span><small>Calorías</small><b class="cifra">{Math.round(m.kcal)}</b></span>
+          <span class="pc-extra">{#if receta?.tiempo}<span><IconoRelleno n="reloj" tam={13} /> {receta.tiempo} min</span>{/if}<span>{euros(costeComida(comida.ingredientes))}</span></span>
+        </div>
+        <div class="pc-macros">
+          {#each [['Proteína', 'p', 'var(--coral)', 'proteina'], ['Hidratos', 'c', 'var(--amarillo)', 'hidratos'], ['Grasa', 'g', 'var(--azul)', 'grasa']] as [n, k, c, ic] (k)}
+            <div class="pc-caja"><span style="color:{c}"><IconoRelleno n={ic} tam={15} /></span><small>{n}</small><b class="cifra">{Math.round(m[k])}g</b></div>
+          {/each}
+        </div>
+        {#if editable && fecha && situacion === 'pendiente' && !editando}<div class="pc-acciones">{@render pieP()}</div>{/if}
       </div>
-      {#if editable && fecha && situacion === 'pendiente' && !editando}<div class="pc-acciones">{@render pieP()}</div>{/if}
-    </Portada>
+    </div>
   {:else}
     <div class="fila">
       <button class="miniatura" onclick={verReceta} aria-label="Ver receta">
@@ -292,57 +310,60 @@
   .con-portada > .acciones, .con-portada > .estado-linea, .con-portada > .ing-caja { padding: 0 4px; }
 
   /* Portada de la comida que toca */
-  .pc-sup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .pc-tipo { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 700; }
-  .pc-libre { position: absolute; top: 22px; right: 18px; color: color-mix(in srgb, var(--primario) 70%, transparent); opacity: 0.8; }
-  .pc-guia { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; margin-left: auto; padding: 0 11px; border: 0; border-radius: 999px; background: rgb(255 255 255 / 0.16); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font: inherit; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
-  .meta-guia { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: var(--primario); font: inherit; font-weight: 700; cursor: pointer; }
-  .pc-etq { padding: 6px 10px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.72rem; font-weight: 700; }
-  /* Sin foto: el plato en anillo, grande y medio fuera por la derecha, de fondo (no compite con el título) */
-  .pc-anillo { position: absolute; top: 50%; right: -78px; width: 210px; aspect-ratio: 1; border-radius: 50%; transform: translateY(-58%); opacity: 0.38; -webkit-mask: radial-gradient(circle, transparent 50%, #000 51.5%); mask: radial-gradient(circle, transparent 50%, #000 51.5%); }
-  .pc-titulo { margin-top: auto; padding: 18px 0 0; border: 0; background: none; color: #fff; font: inherit; font-size: 1.42rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; text-align: left; text-wrap: balance; cursor: pointer; position: relative; }
-  .pc-porque { margin: 6px 0 0; font-size: 0.84rem; font-weight: 600; color: color-mix(in srgb, var(--primario) 70%, #fff); }
-  .pc-acomp { margin: 4px 0 0; font-size: 0.82rem; font-weight: 600; color: rgb(255 255 255 / 0.82); }
-  .pc-cifras { display: flex; gap: 18px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgb(255 255 255 / 0.16); }
-  .pc-cifras div { display: grid; }
-  .pc-cifras b { font-size: 1.3rem; line-height: 1.1; color: #fff; }
-  .pc-cifras b span { font-size: 0.8rem; font-weight: 700; margin-left: 1px; color: rgb(255 255 255 / 0.7); }
-  .pc-cifras small { font-size: 0.7rem; font-weight: 600; color: rgb(255 255 255 / 0.62); }
-  .fila-plegada { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px 6px 6px; border: 0; border-radius: var(--r-m); background: var(--primario-claro); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .fila-plegada > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
-  .pl-ok { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario); color: var(--sobre-primario); flex-shrink: 0; }
-  .s-saltada .pl-ok { background: var(--superficie-3); color: var(--texto-2); }
-  .pl-ok.pendiente { background: var(--superficie-3); color: var(--primario); }
-  .s-pendiente .fila-plegada { background: var(--superficie); box-shadow: var(--sombra); }
-  .pl-txt { flex: 1; min-width: 0; display: grid; }
-  .pl-txt small { font-size: 0.72rem; font-weight: 700; color: var(--primario-fuerte); }
-  .pl-txt b { font-weight: 600; font-size: 0.9rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .pl-foto { position: relative; width: 42px; flex-shrink: 0; }
+  .pc { position: relative; overflow: hidden; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
+  .pc-foto { display: block; width: 100%; height: 220px; padding: 0; border: 0; background: var(--superficie-2); cursor: pointer; }
+  .pc-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .pc-sin { display: grid; place-items: center; height: 100%; color: var(--texto-3); }
+  .pc-sup { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .pc-tipo { padding: 6px 11px; border-radius: 999px; background: rgb(255 255 255 / 0.94); color: #111114; font-size: 0.8rem; font-weight: 500; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); }
+  .pc-guia { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; margin-left: auto; padding: 0 12px; border: 0; border-radius: 999px; background: rgb(255 255 255 / 0.94); color: #111114; font: inherit; font-size: 0.8rem; font-weight: 500; cursor: pointer; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); }
+  .pc-hoja { position: relative; margin-top: -22px; padding: 16px; border-radius: var(--r-l) var(--r-l) 0 0; background: var(--superficie); }
+  .pc-caja { border: 1px solid var(--superficie-3); border-radius: var(--r-m); background: var(--superficie); }
+  .pc-nombre { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; color: var(--texto); font: inherit; font-size: 1.1rem; font-weight: 500; letter-spacing: -0.01em; text-align: left; cursor: pointer; }
+  .pc-nombre :global(svg) { flex-shrink: 0; color: var(--texto-3); }
+  .pc-porque { margin: 10px 2px 0; font-size: 0.84rem; color: var(--texto-2); }
+  .pc-kcal { display: flex; align-items: center; gap: 14px; margin-top: 10px; padding: 14px 16px; }
+  .pc-kcal > span:nth-child(2) { display: grid; }
+  .pc-kcal small, .pc-macros small { font-size: 0.82rem; color: var(--texto-2); }
+  .pc-kcal b { font-size: 1.6rem; font-weight: 500; line-height: 1.1; }
+  .pc-extra { margin-left: auto; display: grid; justify-items: end; gap: 2px; font-size: 0.8rem; color: var(--texto-2); }
+  .pc-extra span { display: inline-flex; align-items: center; gap: 4px; }
+  .pc-macros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .pc-macros .pc-caja { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 6px; padding: 10px 12px; }
+  .pc-macros b { grid-column: 2; font-size: 1.1rem; font-weight: 500; }
+  .fila-plegada { width: 100%; display: flex; align-items: center; gap: 14px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .pl-ok { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 14px; background: var(--superficie-2); color: var(--texto-2); flex-shrink: 0; }
+  .pl-txt { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; }
+  .pl-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .pl-cab b { font-weight: 400; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pl-cab em { flex-shrink: 0; font-style: normal; font-size: 0.8rem; color: var(--texto-2); }
+  .pl-txt > small { font-size: 0.82rem; color: var(--texto-2); }
+  .pl-foto { position: relative; width: 76px; flex-shrink: 0; }
   .pl-foto :global(.foto) { width: 100%; }
-  .pl-check { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--primario); color: var(--sobre-primario); box-shadow: 0 0 0 2px var(--superficie); }
-  .s-hecha .pl-foto :global(.foto) { opacity: 0.7; }
-  .pl-kcal { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
-  .pl-kcal small { font-weight: 600; color: var(--texto-3); font-size: 0.72rem; }
-  .replegar { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin-top: 4px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+  .pl-check { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--texto); color: var(--superficie); box-shadow: 0 0 0 2px var(--superficie); }
+  .pl-kcal { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; font-size: 1.05rem; }
+  .pl-mac { display: flex; gap: 12px; font-size: 0.86rem; color: var(--texto-2); }
+  .pl-mac > span { display: inline-flex; align-items: center; gap: 3px; }
+  .replegar { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; margin-top: 4px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--texto-3); font-weight: 500; font-size: 0.78rem; cursor: pointer; }
   .fila { position: relative; display: flex; gap: 12px; align-items: flex-start; }
   .miniatura { padding: 0; border: 0; background: none; cursor: pointer; width: 84px; flex-shrink: 0; }
   .cuerpo { flex: 1; min-width: 0; display: grid; gap: 1px; }
-  .franja { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.74rem; font-weight: 700; color: var(--texto-3); }
+  .franja { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.74rem; font-weight: 600; color: var(--texto-3); }
   .etq { padding: 2px 7px; border-radius: 999px; font-size: 0.6rem; letter-spacing: 0.06em; }
   .etq-pre, .etq-post { background: var(--primario-claro); color: var(--primario-fuerte); }
   .etq-ajuste { background: var(--lila-claro); color: var(--lila); }
   .ajustada.s-pendiente .titulo { color: var(--texto); }
   .etq-nota { background: var(--superficie-2); color: var(--texto-2); }
-  .titulo { padding: 0; border: 0; background: none; text-align: left; font-weight: 600; font-size: 0.97rem; line-height: 1.3; cursor: pointer; color: var(--texto); margin-top: 2px; }
+  .titulo { padding: 0; border: 0; background: none; text-align: left; font-weight: 500; font-size: 0.97rem; line-height: 1.3; cursor: pointer; color: var(--texto); margin-top: 2px; }
   .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px; font-size: 0.76rem; color: var(--texto-3); }
-  .acomp { margin: 1px 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--primario-fuerte); }
+  .acomp { margin: 1px 0 2px; font-size: 0.8rem; font-weight: 500; color: var(--primario-fuerte); }
   .meta span { display: inline-flex; align-items: center; gap: 4px; }
   .s-hecha .titulo { color: var(--texto-2); }
   .s-saltada .fila, .s-sustituida .fila { opacity: 0.45; }
-  .estado-linea { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.8rem; font-weight: 600; color: var(--texto-2); }
-  .boton-linea { min-height: 44px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--primario); font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+  .estado-linea { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.8rem; font-weight: 500; color: var(--texto-2); }
+  .boton-linea { min-height: 44px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--primario); font-weight: 600; font-size: 0.82rem; cursor: pointer; }
   @media (hover: hover) and (pointer: fine) { .boton-linea:hover { background: var(--primario-claro); } }
-  .otro { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 0 0 0 10px; min-height: 44px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.84rem; font-weight: 600; color: var(--texto-2); }
+  .otro { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 0 0 0 10px; min-height: 44px; border-radius: var(--r-s); background: var(--superficie-2); font-size: 0.84rem; font-weight: 500; color: var(--texto-2); }
   .otro-nombre { flex: 1; min-width: 0; color: var(--texto); }
   .otro-nombre small { color: var(--texto-2); font-weight: 500; }
   .otro-kcal { white-space: nowrap; }
@@ -350,7 +371,7 @@
   @media (hover: hover) and (pointer: fine) { .borrar:hover { color: var(--texto); } }
   .ing-caja { margin-top: 12px; padding-top: 4px; border-top: 1px solid var(--linea); }
   .editor { margin-top: 12px; padding: 12px; border-radius: var(--r-m); background: var(--superficie); box-shadow: var(--sombra); }
-  .editor-cab { margin: 0 0 8px; font-weight: 600; font-size: 0.88rem; }
+  .editor-cab { margin: 0 0 8px; font-weight: 500; font-size: 0.88rem; }
   .editor-fila { display: grid; grid-template-columns: minmax(0, 1fr) 40px 58px 40px 40px; gap: 5px; align-items: center; padding: 6px 0; border-top: 1px solid var(--linea); }
   .editor-nombre { display: grid; font-size: 0.82rem; line-height: 1.25; min-width: 0; }
   .editor-nombre small { color: var(--texto-3); }
@@ -358,22 +379,22 @@
   .editor-fila .papelera { background: none; color: var(--texto-3); }
   .editor-fila .papelera:active { color: var(--peligro, #ff6b5b); background: var(--superficie-2); }
   @media (hover: hover) and (pointer: fine) { .editor-fila .papelera:hover { color: var(--peligro, #ff6b5b); background: var(--superficie-2); } }
-  .editor-fila input { width: 100%; min-height: 44px; padding: 4px 6px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .editor-mas { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 6px; padding: 0 10px; border: 1px dashed var(--borde); border-radius: var(--r-s); background: none; color: var(--primario); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+  .editor-fila input { width: 100%; min-height: 44px; padding: 4px 6px; border-radius: var(--r-s); border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .editor-mas { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 6px; padding: 0 10px; border: 1px dashed var(--borde); border-radius: var(--r-s); background: none; color: var(--primario); font-weight: 600; font-size: 0.84rem; cursor: pointer; }
   .editor-anadir { margin-top: 8px; padding: 8px; border-radius: var(--r-m); background: var(--fondo); max-height: 420px; overflow-y: auto; }
   .editor-total { margin: 10px 0 0; font-size: 0.82rem; color: var(--texto-2); }
   .editor-acciones { display: flex; gap: 8px; margin-top: 10px; }
-  .antes { display: block; color: var(--lila); font-weight: 600; font-size: 0.78rem; }
+  .antes { display: block; color: var(--lila); font-weight: 500; font-size: 0.78rem; }
   .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
   .acciones button {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 12px;
-    border-radius: var(--r-s); border: 0; background: var(--superficie-2); font-weight: 600; font-size: 0.8rem; cursor: pointer; color: var(--texto-2);
+    border-radius: var(--r-s); border: 0; background: var(--superficie-2); font-weight: 500; font-size: 0.8rem; cursor: pointer; color: var(--texto-2);
     transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), transform 0.12s var(--ease-out);
   }
   .acciones button.activo { background: var(--primario-claro); color: var(--primario-fuerte); }
   @media (hover: hover) and (pointer: fine) { .acciones button:hover { background: var(--primario-claro); color: var(--primario-fuerte); } }
   .acciones button:active { transform: scale(0.97); }
-  .acciones .principal { min-width: 92px; background: var(--primario); color: var(--sobre-primario); font-weight: 700; }
+  .acciones .principal { min-width: 92px; background: var(--primario); color: var(--sobre-primario); font-weight: 600; }
   @media (hover: hover) and (pointer: fine) { .acciones .principal:hover { background: var(--primario-fuerte); color: var(--sobre-primario); } }
   .acciones .principal.suave { background: var(--superficie-2); color: var(--texto); }
   .acciones .principal.suave :global(.icono) { color: var(--primario); }
@@ -381,11 +402,9 @@
   .acciones .principal.activo { background: var(--primario-claro); color: var(--primario-fuerte); box-shadow: inset 0 0 0 1.5px var(--primario); }
   .acciones .principal.activo :global(.icono) { animation: pop 260ms var(--ease-out); }
   .acciones .solo-icono { width: 44px; padding: 0; margin-left: auto; }
-  .pregunta { flex-basis: 100%; display: flex; align-items: center; gap: 6px; margin: 0 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--aviso-texto); }
+  .pregunta { flex-basis: 100%; display: flex; align-items: center; gap: 6px; margin: 0 0 2px; font-size: 0.8rem; font-weight: 500; color: var(--aviso-texto); }
   .secundarias { margin-top: 6px; }
-  .batido { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; margin-top: 8px; padding: 0 12px; border: 1px dashed var(--borde); border-radius: var(--r-s); background: none; color: var(--primario); font: inherit; font-weight: 700; font-size: 0.86rem; cursor: pointer; }
+  .batido { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; margin-top: 8px; padding: 0 12px; border: 1px dashed var(--borde); border-radius: var(--r-s); background: none; color: var(--primario); font: inherit; font-weight: 600; font-size: 0.86rem; cursor: pointer; }
   /* Botones dentro de la portada */
   .pc-acciones :global(.acciones) { margin-top: 14px; }
-  .pc-acciones :global(.acciones button:not(.principal)) { background: rgb(255 255 255 / 0.14); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .pc-acciones :global(.pregunta) { color: #ffd27a; }
 </style>
