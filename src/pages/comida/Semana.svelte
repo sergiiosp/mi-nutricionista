@@ -1,9 +1,9 @@
 <script>
   import Icono from '../../components/Icono.svelte';
   import Emoji from '../../components/Emoji.svelte';
-  import Portada from '../../components/Portada.svelte';
+  import Anillos from '../../components/Anillos.svelte';
+  import IconoRelleno from '../../components/IconoRelleno.svelte';
   import FotoReceta from '../../components/FotoReceta.svelte';
-  import { FOTOS_RECETAS } from '../../data/fotos.js';
   import { estado } from '../../stores/estado.js';
   import { avisar, abrirHoja } from '../../stores/ui.js';
   import { recetaPorId } from '../../lib/planificador.js';
@@ -41,10 +41,6 @@
   }
 
   // Portada del día: de fondo, la foto del plato fuerte (comida, si no la cena)
-  const fotoDia = $derived.by(() => {
-    const c = ['comida', 'cena', 'desayuno'].map((f) => dia?.comidas.find((x) => x.franja === f)).find((x) => x && FOTOS_RECETAS[x.recetaId] && !recetaPorId[x.recetaId]?.sinFoto);
-    return c ? `img/recetas/${c.recetaId}.webp` : '';
-  });
   const ETQ = { pre: 'pre-entreno', post: 'post-entreno' };
   const abrir = (c) => abrirCelda(sel, c);
 
@@ -101,28 +97,33 @@
   {#if dia}
     {@const od = dia.objetivo || objetivosDia(objetivos, dia.entreno)}
     {@const t = macrosComida(dia.comidas.flatMap((c) => c.ingredientes))}
-    <Portada foto={fotoDia} color="var(--primario)" alto={fotoDia ? 330 : 280} duotono={false} etiqueta="Menú del {diaSemana(dia.fecha)}">
+    <!-- El día, al estilo de Cal AI: kcal en grande sobre tu objetivo, cada macro en su caja y los platos en fila -->
+    <section class="dia-card" aria-label="Menú del {diaSemana(dia.fecha)}">
       <div class="p-sup">
-        <span class="p-chip"><Icono n={dia.entreno ? 'dumbbell' : 'moon'} tam={14} grosor={2.2} /> {capital(diaSemana(dia.fecha))} · {dia.entreno ? 'entreno' : 'descanso'}</span>
-        {#if dia.viaje}<span class="p-chip"><Icono n="map-pin" tam={14} grosor={2.2} /> de viaje</span>{/if}
-        {#if dia.libre}<span class="p-chip"><Icono n="party-popper" tam={14} grosor={2.2} /> día libre</span>{:else if dia.ahorro}<span class="p-chip">ahorro −{dia.ahorro} kcal</span>{/if}
+        <span class="p-chip"><Icono n={dia.entreno ? 'dumbbell' : 'moon'} tam={14} grosor={2} /> {capital(diaSemana(dia.fecha))} · {dia.entreno ? 'entreno' : 'descanso'}</span>
+        {#if dia.viaje}<span class="p-chip"><Icono n="map-pin" tam={14} grosor={2} /> de viaje</span>{/if}
+        {#if dia.libre}<span class="p-chip"><Icono n="party-popper" tam={14} grosor={2} /> día libre</span>{:else if dia.ahorro}<span class="p-chip">ahorro −{dia.ahorro} kcal</span>{/if}
         <span class="p-coste cifra">{euros(dia.comidas.reduce((x, c) => x + costeComida(c.ingredientes), 0))}</span>
       </div>
-      <div class="p-cifras">
-        <div class="p-kcal"><b class="cifra cifra-xl">{entero(t.kcal)}</b><small>{Math.abs(t.kcal - od.kcal) / od.kcal < 0.03 ? 'kcal · cuadra con tu objetivo' : `de ${entero(od.kcal)} kcal`}</small></div>
-        <div><b class="cifra">{Math.round(t.p)}<span>g</span></b><small>proteína</small></div>
-        <div><b class="cifra">{Math.round(t.c)}<span>g</span></b><small>hidratos</small></div>
-        <div><b class="cifra">{Math.round(t.g)}<span>g</span></b><small>grasa</small></div>
+      <div class="p-kcal">
+        <span class="p-num"><b class="cifra">{entero(t.kcal)}</b><span>/{entero(od.kcal)}</span></span>
+        <small>{Math.abs(t.kcal - od.kcal) / od.kcal < 0.03 ? 'Kcal del día · cuadra con tu objetivo' : 'Kcal del día'}</small>
+        <span class="p-aro"><Anillos anillos={[{ valor: t.kcal, meta: od.kcal, color: 'var(--texto)' }]} tam={84} grosor={8} /><IconoRelleno n="llama" tam={22} /></span>
+      </div>
+      <div class="p-macros">
+        {#each [['Proteína', 'p', 'var(--coral)', 'proteina'], ['Hidratos', 'c', 'var(--amarillo)', 'hidratos'], ['Grasa', 'g', 'var(--azul)', 'grasa']] as [n, k, c, ic] (k)}
+          <div><span style="color:{c}"><IconoRelleno n={ic} tam={15} /></span><small>{n}</small><b class="cifra">{Math.round(t[k])}g</b></div>
+        {/each}
       </div>
       <div class="tira" aria-label="Platos del día">
         {#each dia.comidas as c (c.franja)}
           <button class="t-plato" onclick={() => abrir(c)} aria-label="{nombreFranja(c)}: {recetaPorId[c.recetaId]?.nombre}">
-            <FotoReceta receta={recetaPorId[c.recetaId]} alto={74} redondeo={14} />
+            <FotoReceta receta={recetaPorId[c.recetaId]} alto={68} redondeo={14} />
             <small>{c.hora}</small>
           </button>
         {/each}
       </div>
-    </Portada>
+    </section>
     {#if dia.fecha === hoy}<a class="ver-hoy" href="#hoy"><Icono n="house" tam={16} /> Ver hoy con lo que llevas comido <Icono n="chevron-right" tam={16} /></a>{/if}
     {#if dia.viaje}<p class="pie-nota">De viaje: comidas para pedir fuera o comprar hechas. Estos días no entran en la lista de la compra.</p>{/if}
 
@@ -187,21 +188,26 @@
   .vacia-c { background: none; box-shadow: none; }
   /* Portada del día */
   .dias { margin-bottom: 12px; }
+  .dia-card { padding: 16px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .p-sup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .p-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 600; }
-  .p-coste { margin-left: auto; padding: 6px 11px; border-radius: 999px; background: rgb(0 0 0 / 0.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.82rem; font-weight: 600; }
-  .p-cifras { display: flex; align-items: flex-end; gap: 14px; margin-top: auto; padding-top: 24px; }
-  .p-cifras div { display: grid; }
-  .p-cifras b { font-size: 1.15rem; line-height: 1.1; color: #fff; }
-  .p-cifras b span { font-size: 0.78rem; margin-left: 1px; color: rgb(255 255 255 / 0.7); }
-  .p-cifras small { font-size: 0.7rem; font-weight: 500; color: rgb(255 255 255 / 0.65); }
-  .p-kcal { margin-right: auto; }
-  .p-kcal b { font-size: 2.6rem; letter-spacing: -0.04em; line-height: 1; }
-  .tira { display: flex; gap: 8px; margin: 14px -18px -4px; padding: 0 18px 2px; overflow-x: auto; scrollbar-width: none; }
+  .p-chip, .p-coste { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: var(--superficie-2); font-size: 0.8rem; color: var(--texto-2); }
+  .p-coste { margin-left: auto; color: var(--texto); font-weight: 500; }
+  .p-kcal { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 12px; margin-top: 14px; }
+  .p-num { display: flex; align-items: baseline; gap: 2px; }
+  .p-num b { font-size: 2.6rem; font-weight: 500; letter-spacing: -0.04em; line-height: 1; }
+  .p-num span { font-size: 1rem; color: var(--texto-3); }
+  .p-kcal small { grid-row: 2; margin-top: 6px; font-size: 0.86rem; color: var(--texto-2); }
+  .p-aro { grid-row: 1 / 3; grid-column: 2; position: relative; display: grid; place-items: center; width: 84px; height: 84px; color: var(--texto); }
+  .p-aro :global(svg.anillos) { position: absolute; inset: 0; }
+  .p-macros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .p-macros div { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 6px; padding: 10px 12px; border: 1px solid var(--superficie-3); border-radius: var(--r-m); }
+  .p-macros small { font-size: 0.8rem; color: var(--texto-2); }
+  .p-macros b { grid-column: 2; font-size: 1.1rem; font-weight: 500; }
+  .tira { display: flex; gap: 8px; margin: 14px -16px 0; padding: 0 16px 2px; overflow-x: auto; scrollbar-width: none; }
   .tira::-webkit-scrollbar { display: none; }
-  .t-plato { flex: 0 0 74px; display: grid; gap: 4px; padding: 0; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; }
-  .t-plato :global(.foto) { width: 100%; box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.18); }
-  .t-plato small { font-size: 0.7rem; font-weight: 600; color: rgb(255 255 255 / 0.75); text-align: center; }
+  .t-plato { flex: 0 0 68px; display: grid; gap: 4px; padding: 0; border: 0; background: none; color: var(--texto); font: inherit; cursor: pointer; }
+  .t-plato :global(.foto) { width: 100%; }
+  .t-plato small { font-size: 0.74rem; color: var(--texto-2); text-align: center; }
   .ver-hoy { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 6px 2px 0; color: var(--primario); font-weight: 600; font-size: 0.86rem; text-decoration: none; }
   .ver-hoy :global(svg:last-child) { margin-left: auto; color: var(--texto-3); }
 

@@ -1,6 +1,7 @@
 <script>
   // Portada: foto a sangre con el texto encima, pegado abajo. En Entreno la foto va en blanco y negro
   // teñida del color del tipo (duotono); en Comida, en su color (la comida tiene que apetecer).
+  // En el tema claro (al estilo de Cal AI), siempre en su color real, sin tinte y con un velo neutro.
   let { foto = '', color = 'var(--lila)', alto = 300, etiqueta = '', duotono = true, children } = $props();
 </script>
 
@@ -24,4 +25,8 @@
   .velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(8 8 12 / 0.3) 0%, rgb(8 8 12 / 0.1) 28%, rgb(8 8 12 / 0.8) 66%, rgb(8 8 12 / 0.94) 100%); }
   .color-real .velo { background: linear-gradient(180deg, rgb(8 8 12 / 0.35) 0%, rgb(8 8 12 / 0) 30%, rgb(8 8 12 / 0.7) 62%, rgb(8 8 12 / 0.92) 100%); }
   .dentro { position: relative; z-index: 2; flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 18px; }
+  :global(:root[data-theme="light"]) .tinte { display: none; }
+  :global(:root[data-theme="light"]) .foto-fondo { filter: saturate(1.05) contrast(1.02); }
+  :global(:root[data-theme="light"]) .portada { background: #1a1a1e; box-shadow: var(--sombra); }
+  :global(:root[data-theme="light"]) .velo { background: linear-gradient(180deg, rgb(0 0 0 / 0.28) 0%, rgb(0 0 0 / 0) 30%, rgb(0 0 0 / 0.55) 62%, rgb(0 0 0 / 0.82) 100%); }
 </style>

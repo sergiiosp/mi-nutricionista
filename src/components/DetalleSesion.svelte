@@ -220,4 +220,8 @@
   .dias button { display: grid; justify-items: center; width: 52px; padding: 8px 0; border-radius: var(--r-m); border: 2px solid transparent; background: var(--superficie); box-shadow: var(--sombra); cursor: pointer; font-weight: 600; color: var(--texto); }
   .dias button.activo { border-color: var(--primario); background: var(--primario-claro); }
   .dias i { font-style: normal; font-size: 0.7rem; }
+  /* Tema claro (al estilo de Cal AI): la foto en su color, sin tinte y con un velo neutro */
+  :global(:root[data-theme="light"]) .tinte { display: none; }
+  :global(:root[data-theme="light"]) .foto-fondo { filter: saturate(1.05) contrast(1.02); }
+  :global(:root[data-theme="light"]) .velo { background: linear-gradient(180deg, rgb(0 0 0 / 0.25) 0%, rgb(0 0 0 / 0) 30%, rgb(0 0 0 / 0.55) 62%, rgb(0 0 0 / 0.82) 100%); }
 </style>

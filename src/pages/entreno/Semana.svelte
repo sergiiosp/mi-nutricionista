@@ -259,4 +259,34 @@
   .marca.falta { padding: 4px 10px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-size: 0.74rem; font-weight: 600; }
   .libre { color: var(--texto-3); font-size: 0.86rem; font-weight: 500; }
   .agenda-link { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin-top: 14px; border-radius: var(--r-m); border: 1px dashed var(--borde); color: var(--primario); font-weight: 600; font-size: 0.86rem; text-decoration: none; }
+
+  /* ── Al estilo de Cal AI (tema claro): la foto limpia arriba y una hoja blanca con los datos ── */
+  :global(:root[data-theme="light"]) .portada { padding: 214px 16px 16px; min-height: 0; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); border-radius: var(--r-l); }
+  :global(:root[data-theme="light"]) .portada::before { content: ""; position: absolute; left: 0; right: 0; top: 190px; height: 40px; z-index: 1; border-radius: var(--r-l) var(--r-l) 0 0; background: var(--superficie); }
+  :global(:root[data-theme="light"]) .portada .foto-fondo { inset: 0 0 auto 0; height: 220px; filter: none; }
+  :global(:root[data-theme="light"]) .portada .tinte, :global(:root[data-theme="light"]) .portada .velo { display: none; }
+  :global(:root[data-theme="light"]) .portada .portada-sup { position: absolute; top: 12px; left: 12px; right: 12px; margin: 0; }
+  :global(:root[data-theme="light"]) .portada .tipo { background: rgb(255 255 255 / 0.94); color: #111114; font-weight: 500; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); }
+  :global(:root[data-theme="light"]) .portada .hecha { background: #111114; color: #fff; }
+  :global(:root[data-theme="light"]) .portada h2 { margin: 0 0 4px; text-shadow: none; font-size: 1.4rem; font-weight: 500; letter-spacing: -0.02em; }
+  :global(:root[data-theme="light"]) .portada-porque, :global(:root[data-theme="light"]) .portada-txt { margin: 0 0 12px; color: var(--texto-2); font-size: 0.86rem; font-weight: 400; }
+  :global(:root[data-theme="light"]) .cifras-hoy { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+  :global(:root[data-theme="light"]) .cifras-hoy div { padding: 10px 12px; border: 1px solid var(--superficie-3); border-radius: var(--r-m); }
+  :global(:root[data-theme="light"]) .cifras-hoy b { font-size: 1.25rem; font-weight: 500; }
+  :global(:root[data-theme="light"]) .cifras-hoy b span, :global(:root[data-theme="light"]) .cifras-hoy small { color: var(--texto-2); }
+  :global(:root[data-theme="light"]) .cifras-hoy small { order: -1; margin: 0 0 2px; font-size: 0.78rem; font-weight: 400; }
+  :global(:root[data-theme="light"]) .portada-acciones button { border-radius: 999px; font-weight: 500; }
+  :global(:root[data-theme="light"]) .b-claro { background: #111114; color: #fff; }
+  :global(:root[data-theme="light"]) .b-ghost { background: var(--superficie-2); color: var(--texto); }
+  :global(:root[data-theme="light"]) .sig { background: var(--superficie-2); color: var(--texto); }
+  :global(:root[data-theme="light"]) .sig-ic { background: var(--superficie); color: var(--texto); }
+  :global(:root[data-theme="light"]) .sig-txt small { color: var(--texto-2); }
+  :global(:root[data-theme="light"]) .ajuste { background: var(--superficie); box-shadow: var(--sombra); }
+  /* Lo próximo: foto arriba y el nombre debajo, en blanco */
+  :global(:root[data-theme="light"]) .prox { min-height: 0; padding: 120px 12px 12px; align-content: start; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); }
+  :global(:root[data-theme="light"]) .prox .foto-fondo { inset: 0 0 auto 0; height: 108px; filter: none; }
+  :global(:root[data-theme="light"]) .prox .tinte, :global(:root[data-theme="light"]) .prox .velo, :global(:root[data-theme="light"]) .prox-ic { display: none; }
+  :global(:root[data-theme="light"]) .prox b { font-weight: 500; font-size: 0.9rem; line-height: 1.25; }
+  :global(:root[data-theme="light"]) .prox small { color: var(--texto-2) !important; }
+  :global(:root[data-theme="light"]) .prox-dia { background: rgb(255 255 255 / 0.94) !important; color: #111114 !important; font-weight: 500 !important; }
 </style>
