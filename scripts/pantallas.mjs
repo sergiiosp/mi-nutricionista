@@ -197,6 +197,7 @@ await js(`[...document.querySelectorAll('.hoja-cuerpo button')].find((b) => b.te
   [...document.querySelectorAll('.hoja-cuerpo li button')].find((b) => b.textContent.includes('Arroz'))?.click(); await new Promise((r) => setTimeout(r, 400));`); await foto('hoja-cantidad', 2);
 await js(`[...document.querySelectorAll('.hoja-cuerpo [role=tab]')].find((b) => b.textContent.includes('En gramos'))?.click(); await new Promise((r) => setTimeout(r, 300));`); await foto('hoja-cantidad-gramos', 1); await cerrar();
 await hoja('recuperacion', '{}'); await foto('hoja-recuperacion', 2); await cerrar();
+await hoja('avisos', '{}'); await foto('hoja-avisos', 3); await cerrar();
 await js(`const a = await import('/src/lib/acciones.js'); const st = await import('/src/stores/estado.js');
   st.actualizar((x) => { for (const [f, d] of [['2026-10-13', [2, 1, 2]], ['2026-10-15', [2, 2, 1]], ['2026-10-17', [1, 1, 2]], ['2026-10-18', [2, 2, 2]]]) x.hyrox.forma = { ...(x.hyrox.forma || {}), [f]: { sueno: d[0], agujetas: d[1], energia: d[2], nivel: 'bien' } }; });
   a.guardarForma('2026-10-20', { sueno: 1, agujetas: 1, energia: 2 }); await new Promise((r) => setTimeout(r, 300));`);

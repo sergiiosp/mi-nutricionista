@@ -50,7 +50,7 @@
 {/if}
 
 <style>
-  .preparar { margin-top: 12px; padding: 14px; border-radius: var(--r-l); background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--primario) 14%, transparent), transparent 62%), var(--superficie); box-shadow: var(--sombra); }
+  .preparar { margin-top: 12px; padding: 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .pr-cab { display: flex; align-items: center; gap: 12px; }
   .pr-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario-fuerte); flex-shrink: 0; }
   .listo .pr-ic { background: var(--primario); color: var(--sobre-primario); }

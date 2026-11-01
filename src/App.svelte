@@ -15,6 +15,8 @@
   import { calcularObjetivos } from './lib/nutricion.js';
   import { crearPlan, reajustarPlan, completarMenu } from './lib/acciones.js';
   import { hoyISO } from './lib/planificador.js';
+  import { avisosPendientes } from './lib/avisos.js';
+  import { nube } from './lib/nube/sincro.js';
   import { cargar, precargarTodo } from './lib/perezosas.js';
   import { iniciarBuzon, sinLeer } from './lib/buzon.js';
   import { onMount } from 'svelte';
@@ -29,15 +31,24 @@
   // Buzón: envía las notas que se quedaron sin conexión y trae las respuestas
   onMount(iniciarBuzon);
   const nuevasBuzon = $derived(sinLeer($estado));
+  const avisos = $derived(avisosPendientes($estado, hoyISO(), $nube.activa).length);
 
   let editando = $state(false);
 
   // Tema claro / oscuro / automático
+  // «Sistema» sigue al móvil y aplica el tema claro o el oscuro completos (con todos sus retoques)
   $effect(() => {
     const t = $estado.tema;
-    document.documentElement.dataset.theme = t === 'claro' ? 'light' : t === 'sistema' ? 'system' : 'dark';
-    const claro = t === 'claro' || (t === 'sistema' && matchMedia('(prefers-color-scheme: light)').matches);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', claro ? '#f2f2f5' : '#0a0a0c');
+    const mq = matchMedia('(prefers-color-scheme: light)');
+    const aplicar = () => {
+      const claro = t === 'claro' || (t === 'sistema' && mq.matches);
+      document.documentElement.dataset.theme = claro ? 'light' : 'dark';
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', claro ? '#fbfbfc' : '#0a0a0c');
+    };
+    aplicar();
+    if (t !== 'sistema') return;
+    mq.addEventListener('change', aplicar);
+    return () => mq.removeEventListener('change', aplicar);
   });
 
   // Fuente: la del sistema (SF Pro en iPhone) o la que elijas en Ajustes → Apariencia
@@ -93,8 +104,8 @@
   ];
   // Color de cada sección (Hoy naranja, Comida lima, Entreno violeta, Progreso azul)
   const seccion = $derived(['comida', 'entreno', 'progreso'].includes($ruta.pagina) ? $ruta.pagina : 'hoy');
-  const SECCION_HOJA = { recuperacion: 'entreno', suelo: 'entreno', preparar: 'comida', revision: 'progreso', diaCarrera: 'entreno', test: 'entreno', tuPlan: 'hoy', cocina: 'comida', camara: 'progreso', informe: 'progreso', diaLibre: 'comida', guiaFuera: 'comida', receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
-  const TITULOS = { buzon: 'Buzón', recuperacion: 'Recuperación y esfuerzo', suelo: '', preparar: 'Preparar de una vez', revision: '', diaCarrera: '', test: 'Apuntar un test', tuPlan: '', cocina: 'Modo cocina', camara: 'Foto de progreso', informe: 'Informe del mes', diaLibre: 'Día libre', guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
+  const SECCION_HOJA = { avisos: 'hoy', recuperacion: 'entreno', suelo: 'entreno', preparar: 'comida', revision: 'progreso', diaCarrera: 'entreno', test: 'entreno', tuPlan: 'hoy', cocina: 'comida', camara: 'progreso', informe: 'progreso', diaLibre: 'comida', guiaFuera: 'comida', receta: 'comida', alternativas: 'comida', registrar: 'comida', sesion: 'entreno', registrarSesion: 'entreno', estacion: 'entreno' };
+  const TITULOS = { avisos: 'Avisos', buzon: 'Buzón', recuperacion: 'Recuperación y esfuerzo', suelo: '', preparar: 'Preparar de una vez', revision: '', diaCarrera: '', test: 'Apuntar un test', tuPlan: '', cocina: 'Modo cocina', camara: 'Foto de progreso', informe: 'Informe del mes', diaLibre: 'Día libre', guiaFuera: '', receta: '', alternativas: 'Elegir comida', registrar: 'Registrar comida', sesion: '', registrarSesion: '¿Qué tal la sesión?', estacion: '' };
 </script>
 
 {#if !$estado.perfil || editando}
@@ -104,6 +115,9 @@
   <header class="cabecera">
     <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Pulso</a>
     <div class="cab-botones">
+      <button class="boton-plan" aria-label={avisos ? `Avisos: ${avisos} pendientes` : 'Avisos: nada pendiente'} onclick={() => abrirHoja('avisos')}>
+        <Icono n="bell" tam={20} />{#if avisos}<span class="num-avisos cifra" aria-hidden="true">{avisos}</span>{/if}
+      </button>
       <button class="boton-plan" aria-label={nuevasBuzon ? `Buzón: ${nuevasBuzon} ${nuevasBuzon === 1 ? 'respuesta nueva' : 'respuestas nuevas'}` : 'Buzón: comenta la app, la dieta o los entrenos'}
         onclick={() => abrirHoja('buzon')}>
         <Icono n="message-square-text" tam={20} />{#if nuevasBuzon}<span class="nuevo-buzon" aria-hidden="true"></span>{/if}

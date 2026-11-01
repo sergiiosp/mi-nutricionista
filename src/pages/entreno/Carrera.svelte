@@ -155,4 +155,14 @@
   .g-barra { grid-column: 2; height: 5px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .g-barra i { display: block; height: 100%; border-radius: 999px; background: var(--hero); }
   .ancho-mc { width: 100%; margin-top: 14px; }
+
+  /* Tema claro: textos oscuros y cada parte del tiempo en su caja */
+  :global(:root[data-theme="light"]) .chip { background: var(--superficie-2); color: var(--texto); backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 500; }
+  :global(:root[data-theme="light"]) .chip.fuerte { background: var(--texto); color: var(--superficie); }
+  :global(:root[data-theme="light"]) .et { color: var(--texto-2); font-weight: 400; }
+  :global(:root[data-theme="light"]) .tiempo { font-weight: 500; }
+  :global(:root[data-theme="light"]) .partes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  :global(:root[data-theme="light"]) .partes div { padding: 10px 12px; border: 1px solid var(--superficie-3); border-radius: var(--r-m); }
+  :global(:root[data-theme="light"]) .partes b { font-weight: 500; }
+  :global(:root[data-theme="light"]) .partes small { color: var(--texto-2); font-weight: 400; }
 </style>

@@ -144,4 +144,10 @@
   .config { margin-top: 18px; }
   .ancho { width: 100%; margin-top: 6px; }
   .borrar { display: block; margin: 14px auto 2px; color: var(--texto-3); font-size: 0.84rem; }
+
+  /* Tema claro: textos oscuros sobre la hoja blanca de la portada */
+  :global(:root[data-theme="light"]) .chip { background: var(--superficie-2); color: var(--texto); backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 500; }
+  :global(:root[data-theme="light"]) .abajo h2 { font-size: 1.45rem; font-weight: 500; }
+  :global(:root[data-theme="light"]) .sub { color: var(--texto-2); font-weight: 400; }
+  :global(:root[data-theme="light"]) .marca { background: var(--texto); box-shadow: 0 0 0 2px var(--superficie); }
 </style>

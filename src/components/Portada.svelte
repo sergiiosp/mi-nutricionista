@@ -27,6 +27,10 @@
   .dentro { position: relative; z-index: 2; flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 18px; }
   :global(:root[data-theme="light"]) .tinte { display: none; }
   :global(:root[data-theme="light"]) .foto-fondo { filter: saturate(1.05) contrast(1.02); }
-  :global(:root[data-theme="light"]) .portada { background: #1a1a1e; box-shadow: var(--sombra); }
-  :global(:root[data-theme="light"]) .velo { background: linear-gradient(180deg, rgb(0 0 0 / 0.28) 0%, rgb(0 0 0 / 0) 30%, rgb(0 0 0 / 0.55) 62%, rgb(0 0 0 / 0.82) 100%); }
+
+  /* Tema claro, al estilo de la ficha de Cal AI: la foto arriba y el contenido en una hoja blanca */
+  :global(:root[data-theme="light"]) .portada { display: block; min-height: 0 !important; padding-top: 180px; color: var(--texto); background: var(--superficie); box-shadow: var(--sombra); border-radius: var(--r-l); }
+  :global(:root[data-theme="light"]) .foto-fondo { inset: 0 0 auto 0; height: 204px; }
+  :global(:root[data-theme="light"]) .velo { display: none; }
+  :global(:root[data-theme="light"]) .dentro { padding: 16px; border-radius: var(--r-l) var(--r-l) 0 0; background: var(--superficie); gap: 10px; }
 </style>

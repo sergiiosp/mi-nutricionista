@@ -15,6 +15,7 @@ const CARGADORES = {
   cocina: () => import('../components/ModoCocina.svelte'),
   preparar: () => import('../components/Preparar.svelte'),
   suelo: () => import('../components/SueloPelvico.svelte'),
+  avisos: () => import('../components/Avisos.svelte'),
   recuperacion: () => import('../components/Recuperacion.svelte'),
   tuPlan: () => import('../components/TuPlan.svelte'),
   test: () => import('../components/RegistrarTest.svelte'),

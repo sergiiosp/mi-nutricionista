@@ -388,4 +388,15 @@
   .diario small { font-size: 0.72rem; font-weight: 500; color: var(--texto-3); }
   .diario b { font-size: 0.9rem; }
   .diario p { margin: 2px 0 0; font-size: 0.8rem; line-height: 1.4; color: var(--texto-2); }
+
+  /* Tema claro: textos oscuros y barras de volumen sobre la hoja blanca */
+  :global(:root[data-theme="light"]) .po-chip { background: var(--superficie-2); color: var(--texto); backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 500; }
+  :global(:root[data-theme="light"]) .po-chip.fuerte { background: var(--texto); color: var(--superficie); }
+  :global(:root[data-theme="light"]) .po-abajo > small, :global(:root[data-theme="light"]) .po-abajo p, :global(:root[data-theme="light"]) .po-meta { color: var(--texto-2); }
+  :global(:root[data-theme="light"]) .po-abajo h2 { color: var(--texto); font-size: 1.6rem; font-weight: 500; }
+  :global(:root[data-theme="light"]) .volumen i { background: color-mix(in srgb, var(--c) 70%, var(--superficie)); }
+  :global(:root[data-theme="light"]) .volumen i.pasada { background: var(--c); opacity: 0.45; }
+  :global(:root[data-theme="light"]) .volumen i.actual { background: var(--texto); box-shadow: none; }
+  :global(:root[data-theme="light"]) .fases-ley span { color: var(--texto-3); }
+  :global(:root[data-theme="light"]) .fases-ley span.actual { color: var(--texto); }
 </style>

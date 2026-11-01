@@ -28,7 +28,7 @@
 {/if}
 
 <style>
-  .revision { position: relative; display: flex; align-items: center; margin-top: 12px; border-radius: var(--r-l); background: radial-gradient(120% 140% at 0% 0%, var(--primario-claro), transparent 70%), var(--superficie); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 30%, transparent); }
+  .revision { position: relative; display: flex; align-items: center; margin-top: 12px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .rv-abrir { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 6px 10px 14px; border: 0; background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .rv-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
   .rv-txt { flex: 1; min-width: 0; display: grid; }

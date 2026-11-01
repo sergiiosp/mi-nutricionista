@@ -88,4 +88,10 @@
   .ahora .cuerpo { background: var(--superficie); box-shadow: inset 0 0 0 1.5px var(--primario); }
   .ahora .nodo { background: var(--primario); color: var(--sobre-primario); }
   .pasado { opacity: 0.45; }
+
+  /* Tema claro: textos oscuros sobre la hoja blanca de la portada */
+  :global(:root[data-theme="light"]) .mc-chip { background: var(--superficie-2); color: var(--texto); backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 500; }
+  :global(:root[data-theme="light"]) .mc-abajo { color: var(--texto); }
+  :global(:root[data-theme="light"]) .mc-abajo small, :global(:root[data-theme="light"]) .mc-abajo span { color: var(--texto-2); }
+  :global(:root[data-theme="light"]) .mc-abajo > b { font-weight: 500; }
 </style>

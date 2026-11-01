@@ -14,11 +14,8 @@
   import { esDiaEntreno, horarioDia, aMin, CLASE_SESION } from '../lib/horario.js';
   import { crearRegistro } from '../lib/registro.js';
   import { crearPlan, marcarEntrenoDia, quitarRegistro, alternarToma } from '../lib/acciones.js';
-  import { fechaLarga, saludo, entero, capital } from '../lib/formato.js';
+  import { entero, capital } from '../lib/formato.js';
   import { slide } from 'svelte/transition';
-  import PropuestaSemana from '../components/PropuestaSemana.svelte';
-  import PropuestaHyrox from '../components/PropuestaHyrox.svelte';
-  import PropuestaSuelo from '../components/PropuestaSuelo.svelte';
   import { rutinaSuelo, horaSuelo } from '../lib/suelo.js';
   import Valorar from '../components/Valorar.svelte';
   import Anillos from '../components/Anillos.svelte';
@@ -26,10 +23,6 @@
   import IconoRelleno from '../components/IconoRelleno.svelte';
   import { recuperacion, esfuerzo } from '../lib/recuperacion.js';
   import ComoLlegas from '../components/ComoLlegas.svelte';
-  import AvisoCopia from '../components/AvisoCopia.svelte';
-  import AvisoRevision from '../components/AvisoRevision.svelte';
-  import TarjetaPreparar from '../components/TarjetaPreparar.svelte';
-  import { explicarPlan } from '../lib/coach.js';
   import { planDiaCarrera } from '../lib/hyrox/diaCarrera.js';
   import { porqueDe } from '../lib/hyrox/porque.js';
   import FotoReceta from '../components/FotoReceta.svelte';
@@ -59,13 +52,11 @@
   const recs = $derived(recomendaciones($estado.perfil, objetivos));
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
-  const coach = $derived(explicarPlan($estado, objetivos, hoy));
   const rec = $derived(recuperacion($estado, hoy));
   let verRestantes = $state(false);
   let paginas = $state();
   let pagina = $state(0);
   const esf = $derived(esfuerzo($estado, hoy));
-  const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
   // Carrera hoy o mañana: acceso directo al modo día de carrera
   const carreraHoy = $derived(planDiaCarrera($estado, hoy));
   const carreraManana = $derived(carreraHoy ? null : planDiaCarrera($estado, sumarDias(hoy, 1)));
@@ -137,32 +128,10 @@
 
   // Momento del día: Hoy cambia por la mañana, por la tarde y por la noche
   const momento = $derived(ahora < '12:00' ? 'manana' : ahora < '20:30' ? 'tarde' : 'noche');
-  const cerrado = $derived(d.comidas.length > 0 && d.comidas.every((c) => c.situacion !== 'pendiente'));
   const sesPrincipal = $derived(sesionesHoy.find((s) => !['carrera'].includes(s.tipo)) || null);
   const regPrincipal = $derived(sesPrincipal ? $estado.hyrox?.registros?.[sesPrincipal.id] : null);
   const minus = (t) => (t ? t[0].toLowerCase() + t.slice(1) : t);
   const COLOR = { kcal: 'var(--dato-kcal)', p: 'var(--dato-p)', e: 'var(--dato-e)' };
-
-  // Una frase que resume el día (lo que un coach te diría al abrir la app)
-  const titular = $derived.by(() => {
-    const pre = d.comidas.find((c) => c.etiqueta === 'pre' && c.situacion === 'pendiente');
-    const post = d.comidas.find((c) => c.etiqueta === 'post' && c.situacion === 'pendiente');
-    const pOk = d.consumido.p >= d.objetivo.p * 0.9;
-    if (cerrado && entrenoHoy && sesPrincipal && !regPrincipal && sesPrincipal.tipo !== 'caminar') return { t: 'Comidas hechas: te queda la sesión', s: `${capital(minus(sesPrincipal.titulo.split(':')[0]))} a las ${sesPrincipal.hora}` };
-    if (cerrado) return { t: pOk ? 'Día cerrado y proteína cumplida' : 'Día cerrado', s: `${entero(d.consumido.kcal)} kcal y ${Math.round(d.consumido.p)} g de proteína de ${Math.round(d.objetivo.p)} g` };
-    const carrera = sesionesHoy.find((x) => x.tipo === 'popular');
-    if (carrera) return { t: 'Hoy es tu carrera', s: `Sales a las ${carrera.hora}: desayuno de siempre 2-3 h antes y a disfrutar` };
-    if (d.dia?.viaje) return { t: 'Día de viaje', s: 'Come fuera con cabeza: mira qué pedir según el sitio' };
-    if (entrenoHoy && sesPrincipal && !regPrincipal && sesPrincipal.tipo !== 'caminar') {
-      const partes = [pre && `${nombreFranja(pre).toLowerCase()} pre a las ${pre.hora}`, post && `${nombreFranja(post).toLowerCase()} de recuperación a las ${post.hora}`].filter(Boolean);
-      return { t: `Hoy toca ${minus(sesPrincipal.titulo.split(':')[0])} a las ${sesPrincipal.hora}`, s: partes.length ? capital(partes.join(' y ')) : `${sesPrincipal.duracion} min` };
-    }
-    if (entrenoHoy && regPrincipal) return { t: 'Sesión hecha: toca recuperar', s: 'Proteína en lo que queda y a dormir pronto' };
-    if (sesPrincipal?.tipo === 'caminar') return { t: 'Hoy toca caminar', s: 'Suma pasos sin cargar las piernas' };
-    if (entrenoHoy) return { t: 'Hoy entrenas', s: sesion ? `A las ${sesion.inicio}` : 'Más hidratos y kcal que un día de descanso' };
-    return { t: 'Día de descanso', s: 'Camina, estira y llega a tu proteína' };
-  });
-
 
   // Lo ya hecho antes de «Ahora» se pliega en una fila (se despliega al tocar)
   let verHechas = $state(false);
@@ -189,13 +158,6 @@
 </script>
 
 <section class="hoy">
-  <header class="cab-dia">
-    <p class="fecha">{capital(fechaLarga(hoy))} · {saludo().toLowerCase()}{$estado.perfil.nombre ? `, ${$estado.perfil.nombre}` : ''}</p>
-    <p class="titular">{titular.t}</p>
-  </header>
-
-
-
   <!-- La semana de un vistazo y el día: kcal que te quedan, cada macro, tu recuperación y el entreno -->
   <TiraSemana consumidoHoy={d.consumido.kcal} objetivoHoy={d.objetivo.kcal} />
   <section class="dia-cifras" aria-label="Tu día en cifras">
@@ -246,6 +208,10 @@
 
 
 
+
+  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
+    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
+  {/if}
 
   {#if proximo}
     <h2 class="seccion">Ahora toca</h2>
@@ -412,33 +378,11 @@
   {/if}
 
 
-  <!-- Para ti: propuestas, avisos y tu plan, juntos y por debajo de lo que toca ahora -->
-  <div class="para-ti">
-    <h2 class="seccion">Para ti</h2>
-  {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
-    <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
-  {/if}
-  <PropuestaSemana />
-  <PropuestaHyrox />
-  <PropuestaSuelo />
-  <AvisoCopia />
-  <AvisoRevision />
-  <button class="coach" class:nuevo={coachNuevo} onclick={() => abrirHoja('tuPlan')}>
-    <span class="co-ic"><Icono n="sparkles" tam={18} /></span>
-    <span class="co-txt"><small>{coach.etiqueta}{#if coachNuevo}<i>nuevo</i>{/if}</small><b>{coach.resumen}</b></span>
-    <Icono n="chevron-right" tam={18} />
-  </button>
 
-  <TarjetaPreparar />
-  </div>
 
 </section>
 
 <style>
-  /* Cabecera: la fecha pequeña y el titular del día */
-  .cab-dia { margin: 4px 0 12px; }
-  .fecha { margin: 0; color: var(--texto-2); font-weight: 500; font-size: 0.84rem; }
-  .titular { margin: 2px 0 0; font-size: 1.05rem; font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; }
   .t-porque { margin: 6px 6px 2px; font-size: 0.8rem; color: var(--texto-2); }
 
   /* El día en anillos */
@@ -481,17 +425,6 @@
   .mcr-txt small { font-size: 0.76rem; font-weight: 600; opacity: 0.85; }
   .mcr-txt b { font-size: 1.05rem; }
   .mcr-txt span { font-size: 0.8rem; opacity: 0.9; }
-  /* Tu semana */
-  .coach { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
-  .para-ti { display: grid; gap: 10px; }
-  .para-ti:not(:has(> :not(h2))) { display: none; }
-  .coach.nuevo { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--primario) 55%, transparent); }
-  .co-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); flex-shrink: 0; }
-  .co-txt { flex: 1; min-width: 0; display: grid; }
-  .co-txt small { display: flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 500; color: var(--primario-fuerte); }
-  .co-txt small i { font-style: normal; padding: 1px 7px; border-radius: 999px; background: var(--primario); color: var(--sobre-primario); font-size: 0.66rem; }
-  .co-txt b { font-size: 0.88rem; font-weight: 500; line-height: 1.3; }
-  .coach > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
 
   /* Lo hecho, plegado */
   .fila.hechas { cursor: pointer; }
