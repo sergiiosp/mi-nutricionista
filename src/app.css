@@ -560,7 +560,7 @@ h2 .icono, h3 .icono, summary .icono { color: var(--primario); vertical-align: -
    color solo en los datos (macros). Sin colores por sección, degradados ni halos. */
 :root[data-theme="light"], :root[data-theme="light"] .s-hoy, :root[data-theme="light"] .s-comida, :root[data-theme="light"] .s-entreno, :root[data-theme="light"] .s-progreso {
   --fondo: #fbfbfc; --superficie: #ffffff; --superficie-2: #f2f2f4; --superficie-3: #e9e9ee;
-  --linea: rgb(0 0 0 / 0.06); --texto: #111114; --texto-2: #6b6b75; --texto-3: #9a9aa3;
+  --linea: rgb(0 0 0 / 0.06); --texto: #111114; --texto-2: #5c5c66; --texto-3: #737380;
   --primario: #111114; --primario-fuerte: #111114; --primario-claro: #f2f2f4; --sobre-primario: #ffffff;
   --coral: #e0675e; --amarillo: #e3a05c; --azul: #6b9be0; --dia-ok: #3fa66b; --dia-mal: #e0564f; --lila: #111114; --exito: #111114;
   --coral-claro: #f2f2f4; --amarillo-claro: #f2f2f4; --azul-claro: #f2f2f4; --lila-claro: #f2f2f4; --exito-claro: #f2f2f4;
@@ -573,7 +573,7 @@ h2 .icono, h3 .icono, summary .icono { color: var(--primario); vertical-align: -
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"], :root[data-theme="system"] .s-hoy, :root[data-theme="system"] .s-comida, :root[data-theme="system"] .s-entreno, :root[data-theme="system"] .s-progreso {
   --fondo: #fbfbfc; --superficie: #ffffff; --superficie-2: #f2f2f4; --superficie-3: #e9e9ee;
-  --linea: rgb(0 0 0 / 0.06); --texto: #111114; --texto-2: #6b6b75; --texto-3: #9a9aa3;
+  --linea: rgb(0 0 0 / 0.06); --texto: #111114; --texto-2: #5c5c66; --texto-3: #737380;
   --primario: #111114; --primario-fuerte: #111114; --primario-claro: #f2f2f4; --sobre-primario: #ffffff;
   --coral: #e0675e; --amarillo: #e3a05c; --azul: #6b9be0; --dia-ok: #3fa66b; --dia-mal: #e0564f; --lila: #111114; --exito: #111114;
   --coral-claro: #f2f2f4; --amarillo-claro: #f2f2f4; --azul-claro: #f2f2f4; --lila-claro: #f2f2f4; --exito-claro: #f2f2f4;
@@ -585,10 +585,10 @@ h2 .icono, h3 .icono, summary .icono { color: var(--primario); vertical-align: -
 }
 }
 :root[data-theme="light"] .halo-seccion { display: none; }
-:root[data-theme="light"] { background: radial-gradient(60% 260px at 85% 0%, #fde9df, transparent), radial-gradient(60% 240px at 10% 0%, #eeeaf8, transparent), var(--fondo) no-repeat; }
+:root[data-theme="light"] { background: radial-gradient(60% 260px at 85% 0%, #fde9df, transparent) no-repeat, radial-gradient(60% 240px at 10% 0%, #eeeaf8, transparent) no-repeat, var(--fondo); }
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"] .halo-seccion { display: none; }
-  :root[data-theme="system"] { background: radial-gradient(60% 260px at 85% 0%, #fde9df, transparent), radial-gradient(60% 240px at 10% 0%, #eeeaf8, transparent), var(--fondo) no-repeat; }
+  :root[data-theme="system"] { background: radial-gradient(60% 260px at 85% 0%, #fde9df, transparent) no-repeat, radial-gradient(60% 240px at 10% 0%, #eeeaf8, transparent) no-repeat, var(--fondo); }
 }
 /* Aros planos, como en Cal AI: sin degradado y con la pista en gris muy claro */
 :root[data-theme="light"] svg.anillos g { --c2: var(--c1) !important; }
@@ -597,3 +597,11 @@ h2 .icono, h3 .icono, summary .icono { color: var(--primario); vertical-align: -
   :root[data-theme="system"] svg.anillos g { --c2: var(--c1) !important; }
   :root[data-theme="system"] svg.anillos .pista { stroke: var(--superficie-3) !important; stroke-opacity: 1; }
 }
+/* Tema claro, al estilo de Cal AI: el color de los macros en un punto, el texto en gris o negro (se lee mejor) */
+:root[data-theme="light"] .t-p, :root[data-theme="light"] .t-c, :root[data-theme="light"] .t-g { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; color: var(--texto-2); }
+:root[data-theme="light"] .t-p::before, :root[data-theme="light"] .t-c::before, :root[data-theme="light"] .t-g::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+:root[data-theme="light"] .t-p { --c: var(--coral); } :root[data-theme="light"] .t-c { --c: var(--amarillo); } :root[data-theme="light"] .t-g { --c: var(--azul); }
+:root[data-theme="light"] .mo { border: 1px solid var(--superficie-3); background: var(--superficie); }
+:root[data-theme="light"] .mo b { color: var(--texto); font-weight: 500; }
+:root[data-theme="light"] .mo span { font-weight: 400; color: var(--texto-2); }
+:root[data-theme="light"] .etq-pre, :root[data-theme="light"] .etq-post { background: var(--superficie-2); color: var(--texto-2); }

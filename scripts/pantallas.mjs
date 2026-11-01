@@ -241,6 +241,13 @@ await js(`const st = await import('/src/stores/estado.js'); const e = JSON.parse
   await new Promise((r) => setTimeout(r, 300));`);
 await ir('#hoy'); await foto('hoy-cerrado', 3);
 
+// Bienvenida: sin perfil, el cuestionario del primer día (al final, porque borra el perfil de la prueba)
+await ir('#hoy');
+await js(`(await import('/src/stores/estado.js')).actualizar((x) => { x.perfil = null; }); await new Promise((r) => setTimeout(r, 600));`);
+await foto('bienvenida', 2);
+await js(`document.querySelector('input[name="nombre"]') && (document.querySelector('input[name="nombre"]').value = 'Sergio'); document.querySelector('form button[type="submit"]')?.click(); await new Promise((r) => setTimeout(r, 500));`);
+await foto('bienvenida-paso', 2);
+
 // ── Comparación con la base (en el propio navegador, con un canvas) ───────
 let cambiadas = [];
 if (!BASE) {

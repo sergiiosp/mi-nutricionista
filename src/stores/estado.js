@@ -38,6 +38,7 @@ export const VACIO = () => ({
   ultimaCopia: null,
   copiaPospuesta: null, // «Más tarde» en el aviso de copia (vuelve a los 3 días) // fecha de la última copia guardada fuera del móvil
   coachVisto: null, // lunes de la última semana en que abriste «Tu plan» (para el aviso del lunes en Hoy)
+  kcalRestantes: false, // en Hoy, ver las kcal que te quedan en vez de las consumidas (se recuerda)
   gasto: null, // última estimación del gasto real { fecha, listo, tdee, ingesta, kgSemana, formula, ajuste }
   buzon: { clave: null, notas: [] }, // notas para revisar juntos: la clave de este móvil en tu servidor y { id, tipo, tema, texto, estado, respuesta, leida }
   propuestasVistas: {}, // propuestas de un toque ya respondidas // carreras populares { id, fecha, nombre, km, hora } y viajes { id, desde, hasta, comida[] }

@@ -5,7 +5,7 @@
   import TarjetaComida from '../components/TarjetaComida.svelte';
   import TarjetaSesion from '../components/TarjetaSesion.svelte';
   import { planDe, sesionesDia } from '../lib/hyrox/index.js';
-  import { estado, añadirRegistro, horaActual } from '../stores/estado.js';
+  import { estado, actualizar, añadirRegistro, horaActual } from '../stores/estado.js';
   import { avisar, abrirHoja } from '../stores/ui.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
   import { hoyISO, recetaPorId } from '../lib/planificador.js';
@@ -53,7 +53,8 @@
   const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const rec = $derived(recuperacion($estado, hoy));
-  let verRestantes = $state(false);
+  // Kcal consumidas o restantes: lo que elijas se recuerda para la próxima vez
+  const verRestantes = $derived(!!$estado.kcalRestantes);
   let paginas = $state();
   let pagina = $state(0);
   const esf = $derived(esfuerzo($estado, hoy));
@@ -167,7 +168,7 @@
         <button class="k-cifra" aria-expanded={abierto === 'comida'} onclick={() => alternar('comida')}>
           <b class="cifra"><Numero valor={Math.round(verRestantes ? Math.abs(d.objetivo.kcal - d.consumido.kcal) : d.consumido.kcal)} desde={0} /></b>{#if !verRestantes}<span>/{entero(d.objetivo.kcal)}</span>{/if}
         </button>
-        <button class="k-modo" onclick={() => (verRestantes = !verRestantes)}>{verRestantes ? (d.consumido.kcal > d.objetivo.kcal ? 'Kcal de más' : 'Kcal restantes') : 'Kcal consumidas'} <Icono n="arrow-up-down" tam={14} /></button>
+        <button class="k-modo" onclick={() => actualizar((e) => { e.kcalRestantes = !e.kcalRestantes; })}>{verRestantes ? (d.consumido.kcal > d.objetivo.kcal ? 'Kcal de más' : 'Kcal restantes') : 'Kcal consumidas'} <Icono n="arrow-up-down" tam={14} /></button>
       </span>
       <button class="k-aro" aria-label="Ver lo que llevas hoy" onclick={() => alternar('comida')}><Anillos anillos={[{ valor: d.consumido.kcal, meta: d.objetivo.kcal, color: 'var(--texto)' }]} tam={104} grosor={10} /><IconoRelleno n="llama" tam={26} /></button>
     </div>
