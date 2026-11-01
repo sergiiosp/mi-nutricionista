@@ -113,7 +113,7 @@
   {#if Cuestionario}<Cuestionario perfil={editando ? $estado.perfil : null} onterminar={terminarCuestionario} oncancelar={() => (editando = false)} />{/if}
 {:else}
   <header class="cabecera">
-    <a href="#hoy" class="marca"><img src="icons/icon.svg" alt="" width="32" height="32" /> Pulso</a>
+    <a href="#hoy" class="marca"><svg class="marca-p" width="30" height="30" viewBox="0 0 512 512" aria-hidden="true"><path d="M150 410V102H286C358 102 404 148 404 210C404 272 358 318 286 318H150" fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" /><path d="M150 210H218L246 156L282 266L310 210H352" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" /></svg> Pulso</a>
     <div class="cab-botones">
       <button class="boton-plan" aria-label={avisos ? `Avisos: ${avisos} pendientes` : 'Avisos: nada pendiente'} onclick={() => abrirHoja('avisos')}>
         <Icono n="bell" tam={20} />{#if avisos}<span class="num-avisos cifra" aria-hidden="true">{avisos}</span>{/if}
