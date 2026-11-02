@@ -46,6 +46,8 @@ export function sustitutoDe(id, perfil) {
 }
 
 const cache = new Map();
+// Ingredientes que se ven en la foto del plato (si se cambian, la foto deja de ser fiel)
+const SE_VE = ['nueces', 'almendras', 'crema_cacahuete', 'frutos_secos_mix', 'crema_avellana', 'granola', 'cacahuete_polvo'];
 const claveDe = (perfil) => JSON.stringify([perfil.alergias, perfil.dieta, perfil.noMeGusta, perfil.leche]);
 
 /** Receta con los cambios que necesitas (la misma receta si no hace falta ninguno). */
@@ -64,13 +66,16 @@ export function adaptarReceta(receta, perfil) {
   let res = receta;
   if (cambios.length) {
     const cambiar = (t) => cambios.reduce((txt, [de, a]) => (PALABRAS[de] || []).reduce((x, re) => x.replace(re, CORTO[a] || ALIMENTOS[a].nombre.toLowerCase()), txt), t);
+    // Cambios que se ven en la foto: la original ya no vale, pero puede haber una de la versión adaptada
+    const vistos = [...new Set(cambios.filter(([de]) => SE_VE.includes(de)).map(([, a]) => a))];
     res = {
       ...receta,
       ingredientes,
       nombre: cambiar(receta.nombre),
       pasos: (receta.pasos || []).map(cambiar),
       consejo: receta.consejo ? cambiar(receta.consejo) : receta.consejo,
-      sinFoto: cambios.some(([de]) => ['nueces', 'almendras', 'crema_cacahuete', 'frutos_secos_mix', 'crema_avellana', 'granola', 'cacahuete_polvo'].includes(de)),
+      sinFoto: vistos.length > 0,
+      fotoAdaptada: vistos.length === 1 ? `${receta.id}--${vistos[0]}` : null,
       adaptada: cambios.map(([de, a]) => `${CORTO[a] || ALIMENTOS[a].nombre} en vez de ${ALIMENTOS[de].nombre.toLowerCase()}`),
     };
   }

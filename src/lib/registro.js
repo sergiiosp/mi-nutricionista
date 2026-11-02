@@ -4,6 +4,7 @@ import { macrosDe, macrosComida, escalarReceta, objetivosDia, cantidadTexto } fr
 import { horarioDia, objetivoFranja } from './horario.js';
 import { macrosProducto } from './off.js';
 import { nuevoId, horaActual } from '../stores/estado.js';
+import { fotoReceta } from './foto-receta.js';
 
 export const EMOJI_ALIMENTO = {
   pollo_pechuga: '🍗', pollo_contramuslo: '🍗', pavo_pechuga: '🦃', ternera_filete: '🥩', picada_vacuno: '🥩', picada_pollo: '🍗',
@@ -72,7 +73,7 @@ export function crearRegistro({ item, cantidad, fecha, franja, hora, foto, ctx =
     ref,
     nombre: d.nombre,
     emoji: d.emoji,
-    imagen: item.tipo === 'producto' ? item.producto.imagen : item.tipo === 'receta' ? `img/recetas/${item.receta.id}.webp` : null,
+    imagen: item.tipo === 'producto' ? item.producto.imagen : item.tipo === 'receta' ? fotoReceta(item.receta) : null,
     cantidad: { valor: cantidad, texto: d.texto(cantidad) },
     macros: d.macros(cantidad),
     item: item.tipo === 'producto' ? { tipo: 'producto', producto: item.producto } : undefined,

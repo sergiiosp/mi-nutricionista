@@ -31,7 +31,10 @@
   // Buzón: envía las notas que se quedaron sin conexión y trae las respuestas
   onMount(iniciarBuzon);
   const nuevasBuzon = $derived(sinLeer($estado));
-  const avisos = $derived(avisosPendientes($estado, hoyISO(), $nube.activa).length);
+  // La campana cuenta solo lo que te pide algo; la explicación de tu semana, si es nueva, enciende un punto
+  const pendientesAvisos = $derived(avisosPendientes($estado, hoyISO(), $nube.activa));
+  const avisos = $derived(pendientesAvisos.filter((a) => a.id !== 'semana-explicada').length);
+  const semanaNueva = $derived(pendientesAvisos.some((a) => a.id === 'semana-explicada'));
 
   let editando = $state(false);
 
@@ -115,8 +118,8 @@
   <header class="cabecera">
     <a href="#hoy" class="marca"><svg class="marca-p" width="30" height="30" viewBox="0 0 512 512" aria-hidden="true"><path d="M150 410V102H286C358 102 404 148 404 210C404 272 358 318 286 318H150" fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" /><path d="M150 210H218L246 156L282 266L310 210H352" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" /></svg> Pulso</a>
     <div class="cab-botones">
-      <button class="boton-plan" aria-label={avisos ? `Avisos: ${avisos} pendientes` : 'Avisos: nada pendiente'} onclick={() => abrirHoja('avisos')}>
-        <Icono n="bell" tam={20} />{#if avisos}<span class="num-avisos cifra" aria-hidden="true">{avisos}</span>{/if}
+      <button class="boton-plan" aria-label={avisos ? `Avisos: ${avisos} ${avisos === 1 ? 'pendiente' : 'pendientes'}` : semanaNueva ? 'Avisos: tu semana explicada, nueva' : 'Avisos: nada pendiente'} onclick={() => abrirHoja('avisos')}>
+        <Icono n="bell" tam={20} />{#if avisos}<span class="num-avisos cifra" aria-hidden="true">{avisos}</span>{:else if semanaNueva}<span class="nuevo-buzon" aria-hidden="true"></span>{/if}
       </button>
       <button class="boton-plan" aria-label={nuevasBuzon ? `Buzón: ${nuevasBuzon} ${nuevasBuzon === 1 ? 'respuesta nueva' : 'respuestas nuevas'}` : 'Buzón: comenta la app, la dieta o los entrenos'}
         onclick={() => abrirHoja('buzon')}>

@@ -51,14 +51,14 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Jam%C3%B3n_serrano_(by_Awersowy).jpg"
  },
  "pollo-arroz-brocoli": {
-  "autor": "Discover Lehigh Valley, PA",
-  "licencia": "CC BY 2.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_And_Broccoli_@_Bamboo_Asian_Cuisine.jpg"
+  "autor": "Aethereus Media",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/foo-cocido-HH7OwIqETRo"
  },
  "lentejas-verduras": {
-  "autor": "Horacio Cambeiro",
-  "licencia": "CC BY-SA 3.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Guiso_de_lentejas_argentino_con_chorizo.jpg"
+  "autor": "Holly Spangler",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-de-comida-lrtfNWl3dsE"
  },
  "garbanzos-espinacas-huevo": {
   "autor": "Toniher",
@@ -71,9 +71,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Grilled_Salmon_(15950616571).jpg"
  },
  "merluza-calabacin-arroz": {
-  "autor": "Juan Emilio Prades Bel",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Rodaja_de_merluza_a_la_plancha_y_salsa_de_picada_valenciana.jpg"
+  "autor": "Anh Nguyen",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-de-comida-s4FsoDtW-0A"
  },
  "espaguetis-bolonesa": {
   "autor": "No machine-readable author provided. Chingon assumed (based ",
@@ -106,14 +106,14 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Revuelto_de_setas_y_gambas,_gastronom%C3%ADa_de_Espa%C3%B1a.jpg"
  },
  "pavo-curry-arroz": {
-  "autor": "Infrogmation of New Orleans",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Friday_dinner_-_Curry_chicken_with_bell_peppers_and_rice_-_01.jpg"
+  "autor": "gabbiistudios",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/plato-de-pollo-tikka-masala-7ZGOtqVZtAk"
  },
  "lomo-patatas-pimientos": {
-  "autor": "MOs810",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Pork_loin_with_apricots_and_potatoes.jpg"
+  "autor": "Gennady Zakharin",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/cerdo-asado-con-patatas-y-laurel-GailJ3AsajU"
  },
  "fajitas-pollo": {
   "autor": "Elisa Arteaga from Caracas, Venezuela",
@@ -131,9 +131,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Zucchini_soup.JPG"
  },
  "merluza-pisto": {
-  "autor": "Juan Emilio Prades Bel",
-  "licencia": "CC BY 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Pisto,_sofrito_de_verduras.jpg"
+  "autor": "Loa Kon",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-pedazo-de-comida-en-un-plato-blanco-Hd_jJaiXrpU"
  },
  "ensalada-cuscus-pollo": {
   "autor": "Karen and Brad Emerson",
@@ -161,9 +161,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:02023_0151_Roasted_Chicken_and_Potatoes.jpg"
  },
  "salmon-esparragos-cuscus": {
-  "autor": "Daderot",
-  "licencia": "CC0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Grilled_salmon_and_asparagus_on_rice_-_Boston,_Massachusetts.jpg"
+  "autor": "Sebastian Coman Photography",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/pan-de-molde-en-plato-de-ceramica-blanca-Co-T6odt0es"
  },
  "ternera-ensalada-patata": {
   "autor": "Daderot",
@@ -196,9 +196,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Huevos_rotos_-_Madrid.JPG"
  },
  "berenjena-rellena": {
-  "autor": "BiHVolim",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Stuffed_eggplant_(Punjeni_patlid%C5%BEan).JPG"
+  "autor": "nrd",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-blanco-cubierto-con-comida-encima-de-una-mesa-pvM94H747QU"
  },
  "revuelto-tofu": {
   "autor": "Bart Everson",
@@ -241,9 +241,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_And_Broccoli_@_Bamboo_Asian_Cuisine.jpg"
  },
  "lomo-patata-microondas-judias": {
-  "autor": "Peachyeung316",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Black_porkchops_with_beans_and_baked_tomato_and_baked_potato.jpg"
+  "autor": "Kristina Petrick",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/plato-de-frijoles-35R0CMoBtX0"
  },
  "salmon-airfryer-arroz-esparragos": {
   "autor": "Daderot",
@@ -271,24 +271,24 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Chicken_noodle_soup_-_Massachusetts_2.jpg"
  },
  "sopa-cocido-garbanzos": {
-  "autor": "Javier Lastras from España/Spain",
-  "licencia": "CC BY 2.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Sopa_de_Cocido_Madrile%C3%B1o_(4334544132).jpg"
+  "autor": "Weronika Krztoń",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-tazon-de-comida-en-una-mesa-junto-a-un-limon-HJPd-_0bP-o"
  },
  "crema-verduras-pollo-huevo": {
-  "autor": "The Spanish Food",
-  "licencia": "CC BY-SA 2.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Crema_de_calabaza_asada.jpg"
+  "autor": "Aneta Pawlik",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/sopa-verde-en-cuenco-de-ceramica-blanca-1TgT-NS31tY"
  },
  "crema-calabaza-pavo": {
-  "autor": "SoHome Jacaranda Lilau, So Home Recreation Club (蘇戶康樂會) / PropLuxurians Health S",
-  "licencia": "CC BY-SA 3.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Pumpkin_Cream_Soup.jpg"
+  "autor": "Jametlene Reskp",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-de-sopa-sobre-una-mesa-de-madera-NzAZEE23_-Q"
  },
  "recena-yogur-proteico": {
-  "autor": "Urci dream",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Yogurt_vainilla_soja.jpg"
+  "autor": "Wesual Click",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/fresa-y-moras-encima-de-la-mesa-marron-LymX5D2sSWM"
  },
  "recena-cottage-frutos-rojos": {
   "autor": "Anna",
@@ -321,9 +321,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Bocadillo_de_tortilla_francesa,_pan_con_tomate_y_loncha_de_jam%C3%B3n_serrano_(Espa%C3%B1a).jpg"
  },
  "fuera-desayuno-cafeteria": {
-  "autor": "Jorge Gonzalez",
-  "licencia": "CC BY-SA 2.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Caf%C3%A9_con_leche_and_tostadas.jpg"
+  "autor": "Sonnie Hiles",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/taza-de-cafe-con-leche-y-panes-de-molde-y1vHhKsAFXc"
  },
  "viaje-yogur-platano-tortitas": {
   "autor": "Daderot",
@@ -391,9 +391,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:Grilled_Chicken_Burrito_(7842256236).jpg"
  },
  "chili-ternera-arroz": {
-  "autor": "JIP",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Chili_con_carne_as_a_convenience_meal_at_the_office.jpg"
+  "autor": "Jason Leung",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-primer-plano-de-un-plato-de-comida-con-arroz-rtmeCqgjRW0"
  },
  "fuera-legumbre-pescado": {
   "autor": "JIP",
@@ -456,9 +456,9 @@ export const FOTOS_RECETAS = {
   "fuente": "https://commons.wikimedia.org/wiki/File:The_Food_at_Davids_Kitchen_089.jpg"
  },
  "tacos-merluza": {
-  "autor": "Douglas Muth",
-  "licencia": "CC BY-SA 2.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Fish_tacos_in_Pittsburg.jpg"
+  "autor": "montatip lilitsanong",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/sandwich-de-huevo-en-plato-de-ceramica-blanca-iU26ZSJh9yw"
  },
  "tortilla-pavo-pan": {
   "autor": "MaedaAkihiko",
@@ -489,6 +489,101 @@ export const FOTOS_RECETAS = {
   "autor": "Gordana Adzieva",
   "licencia": "CC0",
   "fuente": "https://commons.wikimedia.org/wiki/File:%D0%A2%D0%BE%D1%80%D1%82%D0%B8%D1%99%D0%B8_%D1%81%D0%BE_%D1%98%D0%B0%D1%98%D1%86%D0%B5_%D0%B8_%D1%81%D0%BF%D0%B0%D0%BD%D0%B0%D1%9C.jpg"
+ },
+ "bol-queso-batido-frutos-rojos--almendra_tostada": {
+  "autor": "Shayna Douglas",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-tazon-de-cereal-con-arandanos-y-granola-z71M3cfW40c"
+ },
+ "tortitas-avena-claras--almendra_tostada": {
+  "autor": "Kelsey Curtis",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/panqueques-en-plato-de-ceramica-blanca-OWwYniuOyiU"
+ },
+ "tostada-cacahuete-platano--almendra_tostada": {
+  "autor": "gabbiistudios",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/desayuno-de-tostadas-francesas-con-platanos-wfWMw3UEuFg"
+ },
+ "yogur-nueces-manzana--almendra_tostada": {
+  "autor": "Lynnsey Schneider",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/manzana-roja-en-cuenco-de-ceramica-azul-J-ltVrZ2Z0o"
+ },
+ "alubias-langostinos": {
+  "autor": "THLT LCX",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/plato-de-pasta-en-cuenco-de-ceramica-blanca-BiGDZOkDnS0"
+ },
+ "pollo-teriyaki-brocoli": {
+  "autor": "Michael Kahn",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-tazon-negro-lleno-de-carne-y-brocoli-uLQEP0a5DOg"
+ },
+ "pinchos-pollo-cuscus": {
+  "autor": "Surja Sen Das Raj",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-blanco-cubierto-con-pollo-y-arroz-sZKGepvBAIw"
+ },
+ "pollo-limon-esparragos": {
+  "autor": "Tim Bish",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/plato-de-esparragos-al-lado-del-tenedor-i31hiD8LINA"
+ },
+ "pavo-quinoa-salteado": {
+  "autor": "Karolina Kołodziejczak",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/alimentos-cocinados-en-cuenco-de-ceramica-blanca-zPn53_jmW_k"
+ },
+ "ternera-pimientos-arroz": {
+  "autor": "Vincent Y @USA",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/tazon-de-arroz-cubierto-con-carne-y-verduras-kA8cYzvJzds"
+ },
+ "lomo-adobado-batata": {
+  "autor": "Christy Fontenot",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/filete-a-la-parrilla-patatas-asadas-zanahorias-y-salsas-sobre-una-tabla-6Ojvnk4_LEs"
+ },
+ "bocadillo-tortilla-pavo": {
+  "autor": "Eiliv Aceron",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/hamburguesa-en-plato-de-ceramica-blanca--6I_8fjP5OQ"
+ },
+ "dal-lentejas": {
+  "autor": "Paul",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-de-comida-93L024xGEUM"
+ },
+ "viaje-pavo-tortitas-fruta": {
+  "autor": "9picturebyng",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/galletas-marrones-sobre-plato-de-ceramica-blanca-z8hzzkJfP-k"
+ },
+ "queso-batido-pera-almendras": {
+  "autor": "Welcome",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-tazon-de-granola-y-yogur-con-una-cuchara-lE3LsH1Tx-I"
+ },
+ "solomillo-champis-arroz": {
+  "autor": "Griest Projects",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/pan-moreno-en-un-plato-de-ceramica-blanca-NHfF7houicM"
+ },
+ "tortitas-maiz-salmon": {
+  "autor": "Vicky Ng",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/huevo-con-salsa-de-naranja-en-plato-redondo-de-madera-marron-ITiXi1rN4xA"
+ },
+ "batido-proteico--almendra_tostada": {
+  "autor": "Imagen generada con Canva",
+  "licencia": "Canva",
+  "fuente": "https://www.canva.com"
+ },
+ "porridge-proteico--almendra_tostada": {
+  "autor": "Imagen generada con Canva",
+  "licencia": "Canva",
+  "fuente": "https://www.canva.com"
  }
 };
 

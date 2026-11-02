@@ -2,6 +2,7 @@
 import { writable, get } from 'svelte/store';
 import { macrosComida } from '../lib/nutricion.js';
 import { recetaPorId } from '../lib/planificador.js';
+import { fotoReceta } from '../lib/foto-receta.js';
 
 const CLAVE = 'mi-nutricionista:v1';
 
@@ -135,7 +136,7 @@ export function registroDePlan(comida, fecha, ingredientes = comida.ingredientes
     ref: comida.recetaId,
     nombre: receta?.nombre || 'Comida del plan',
     emoji: receta?.emoji,
-    imagen: receta ? `img/recetas/${receta.id}.webp` : null,
+    imagen: fotoReceta(receta),
     ingredientes,
     macros: macrosComida(ingredientes),
   };

@@ -49,7 +49,7 @@
           <span class="num">{i + 1}</span>
           {#if t.tipo === 'receta'}
             <button class="foto" onclick={() => abrirHoja('receta', { recetaId: t.receta.id, ingredientes: t.ingredientes, titulo: `Para preparar · ${t.detalle}` })} aria-label="Ver receta">
-              <FotoReceta receta={t.receta} alto={48} redondeo={12} tamEmoji={26} />
+              <FotoReceta receta={t.receta} alto={48} redondeo={12} />
             </button>
           {:else}
             <span class="ic"><Emoji e={t.emoji} tam={26} /></span>

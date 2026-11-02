@@ -3,8 +3,7 @@
   import FotoReceta from './FotoReceta.svelte';
   import IconoRelleno from './IconoRelleno.svelte';
   import Valorar from './Valorar.svelte';
-  import { FOTOS_RECETAS } from '../data/fotos.js';
-  import { composicion } from '../lib/composicion.js';
+  import { fotoReceta } from '../lib/foto-receta.js';
   import Macros from './Macros.svelte';
   import Icono from './Icono.svelte';
   import ListaIngredientes from './ListaIngredientes.svelte';
@@ -74,13 +73,7 @@
   const nombre = $derived(comida.libre ? `${franjaNombre} libre` : receta?.nombre);
   // Lo que se añade al plato para llegar a tu día (tortitas, pan, fruta, un batido…)
   const acompaña = $derived(comida.libre ? '' : textoComplementos(comida.ingredientes || []));
-  const tieneFoto = $derived(!!FOTOS_RECETAS[receta?.id] && !receta?.sinFoto);
-  // Sin foto: el plato visto desde arriba, en anillo (proteína, hidrato, verdura)
-  const anillo = $derived.by(() => {
-    const c = composicion(receta);
-    const p = Math.round(c.p * 100), pc = Math.round((c.p + c.c) * 100);
-    return `conic-gradient(from -90deg, var(--coral) 0 ${p}%, var(--amarillo) ${p}% ${pc}%, var(--exito) ${pc}% 100%)`;
-  });
+  const foto = $derived(fotoReceta(receta));
 
   // Platos que se cocinan (no lo de comer fuera ni lo que se toma tal cual): «Cocinar» abre el modo cocina
   const cocinable = $derived(!comida.libre && !receta?.fuera && !receta?.viaje && (receta?.pasos?.length || 0) >= 2 && (receta?.tiempo || 0) > 5);
@@ -111,7 +104,7 @@
   <!-- Fila al estilo de la lista de Cal AI: foto, plato, hora, kcal con la llama y los macros -->
   <button class="fila-plegada" onclick={() => (desplegada = true)} aria-expanded="false">
     {#if receta && !comida.libre && (situacion === 'pendiente' || situacion === 'hecha')}
-      <span class="pl-foto"><FotoReceta {receta} alto={76} redondeo={14} tamEmoji={34} />{#if situacion === 'hecha'}<span class="pl-check"><Icono n="check" tam={11} grosor={3} /></span>{/if}</span>
+      <span class="pl-foto"><FotoReceta {receta} alto={76} redondeo={14} />{#if situacion === 'hecha'}<span class="pl-check"><Icono n="check" tam={11} grosor={3} /></span>{/if}</span>
     {:else}
       <span class="pl-ok" class:pendiente={situacion === 'pendiente'}><Icono n={situacion === 'hecha' ? 'check' : situacion === 'saltada' || situacion === 'sobra' ? 'skip-forward' : situacion === 'sustituida' ? 'repeat' : 'utensils'} tam={22} grosor={2} /></span>
     {/if}
@@ -132,7 +125,7 @@
     <!-- Al estilo de la ficha de Cal AI: la foto arriba y, encima, una hoja blanca con el plato, sus kcal y sus macros -->
     <div class="pc">
       <button class="pc-foto" onclick={verReceta} aria-label="Ver la receta">
-        {#if tieneFoto && !comida.libre}<img src="img/recetas/{receta.id}.webp" alt="" loading="lazy" />
+        {#if foto && !comida.libre}<img src={foto} alt="" loading="lazy" />
         {:else}<span class="pc-sin"><Icono n={comida.libre ? 'party-popper' : 'utensils'} tam={56} grosor={1.4} /></span>{/if}
       </button>
       <div class="pc-sup">
@@ -161,7 +154,7 @@
   {:else}
     <div class="fila">
       <button class="miniatura" onclick={verReceta} aria-label="Ver receta">
-        <FotoReceta {receta} alto={84} redondeo={16} tamEmoji={44} />
+        <FotoReceta {receta} alto={84} redondeo={16} />
       </button>
       <div class="cuerpo">
         <div class="franja">

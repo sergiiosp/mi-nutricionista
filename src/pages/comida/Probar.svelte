@@ -44,7 +44,7 @@
       <li class="pp" class:abierto={eligiendo === x.receta.id}>
         <div class="pp-fila">
           <button class="pp-foto" aria-label="Ver receta de {x.receta.nombre}" onclick={() => abrirHoja('receta', { recetaId: x.receta.id, ingredientes: x.ing, titulo: `Ración para tu ${x.franja}` })}>
-            <FotoReceta receta={x.receta} alto={68} redondeo={14} tamEmoji={38} />
+            <FotoReceta receta={x.receta} alto={68} redondeo={14} />
           </button>
           <button class="pp-txt" onclick={() => abrirHoja('receta', { recetaId: x.receta.id, ingredientes: x.ing, titulo: `Ración para tu ${x.franja}` })}>
             <span class="pp-etq">{ESTILO[estiloDe(x.receta)] || capital(estiloDe(x.receta))} · {x.receta.tiempo} min{#if x.nueva}<i>nuevo para ti</i>{/if}</span>

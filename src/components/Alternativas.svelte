@@ -103,7 +103,7 @@
   {@const m = macrosComida(ingredientes)}
   <div class="fila">
     <button class="elegir" onclick={() => elegir(recetaId, ingredientes)}>
-      <FotoReceta receta={r} alto={56} redondeo={14} tamEmoji={34} />
+      <FotoReceta receta={r} alto={56} redondeo={14} />
       <span class="info">
         <b>{r.nombre}</b>
         {#if r.combo}<small>{ingredientes.map((i) => textoIngrediente(r.familia, i.a, i.g)).join(', ')}</small>{/if}

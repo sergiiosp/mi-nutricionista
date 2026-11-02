@@ -6,17 +6,17 @@
   import { macrosComida, costeComida, cantidadTexto, alimento, producto } from '../lib/nutricion.js';
   import { euros } from '../lib/formato.js';
   import { abrirHoja } from '../stores/ui.js';
-  import { FOTOS_RECETAS } from '../data/fotos.js';
+  import { fotoReceta } from '../lib/foto-receta.js';
 
   let { recetaId, ingredientes, titulo = '', diaIdx, franja } = $props();
   const receta = $derived(recetaPorId[recetaId]);
-  const tieneFotoReceta = $derived(!!FOTOS_RECETAS[recetaId] && !receta?.sinFoto);
+  const tieneFotoReceta = $derived(!!fotoReceta(receta));
   const m = $derived(macrosComida(ingredientes));
   const ESPECIAS = { sal: 'sal', pimienta: 'pimienta', pimenton: 'pimentón', comino: 'comino', curry: 'curry', oregano: 'orégano', canela: 'canela', perejil: 'perejil', limon: 'limón', ajo_polvo: 'ajo en polvo' };
 </script>
 
 <div class="detalle">
-  <FotoReceta receta={{ ...receta, ingredientes: ingredientes || receta.ingredientes }} alto={tieneFotoReceta ? 210 : 150} redondeo={24} tamEmoji={110} />
+  <FotoReceta receta={{ ...receta, ingredientes: ingredientes || receta.ingredientes }} alto={tieneFotoReceta ? 210 : 150} redondeo={24} />
   <h2>{receta.nombre}</h2>
   <p class="sobre">{titulo || receta.tipos.join(' · ')}</p>
   <div class="meta"><span><Icono n="clock" tam={16} /> {receta.tiempo} min</span><span><Icono n="euro" tam={16} /> {euros(costeComida(ingredientes))} por ración</span>{#if receta.batch}<span><Icono n="package" tam={16} /> Aguanta en táper</span>{/if}</div>

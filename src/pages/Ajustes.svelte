@@ -14,6 +14,7 @@
   import { hoyISO } from '../lib/planificador.js';
   import { FOTOS_RECETAS, FOTOS_SESIONES, FOTOS_ESTACIONES } from '../data/fotos.js';
   import { RECETAS } from '../data/recetas.js';
+  import { RECETAS_VARIEDAD } from '../data/recetas-variedad.js';
   import { ALERGENOS } from '../data/alimentos.js';
   import { num, fechaLarga, capital } from '../lib/formato.js';
   import { listarCopiasLocales, restaurarCopiaLocal, guardarCopiaFuera, restaurarArchivo } from '../lib/copias.js';
@@ -34,7 +35,12 @@
     if (h.entreno) items.push({ hora: h.entreno.inicio, texto: `Entreno hasta las ${h.entreno.fin}`, entreno: true });
     return { items: items.sort((a, b) => a.hora.localeCompare(b.hora)), consejos: h.consejos };
   };
-  const nombreReceta = (id) => RECETAS.find((r) => r.id === id)?.nombre || id;
+  // Las fotos de una versión adaptada a alergias llevan «--sustituto» en la clave
+  const nombreReceta = (id) => {
+    const [base, adaptada] = id.split('--');
+    const nombre = [...RECETAS, ...RECETAS_VARIEDAD].find((r) => r.id === base)?.nombre || base;
+    return adaptada ? `${nombre} (versión adaptada)` : nombre;
+  };
 
   async function descargar() {
     try { if (await guardarCopiaFuera()) avisar('Copia guardada (con tus fotos)', '💾'); } catch (e) { avisar(`No se pudo guardar: ${e.message}`, '⚠️'); }
@@ -159,7 +165,7 @@
   <details class="tarjeta creditos">
     <summary><Icono e="📜" tam={18} /> Créditos e información</summary>
     <p>Precios y productos: tienda online de Mercadona (datos públicos). Productos envasados: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL). Iconos: Lucide (ISC). Tipografía: Manrope (OFL).</p>
-    <p>Fotos de recetas de Wikimedia Commons y Canva:</p>
+    <p>Fotos de recetas de Wikimedia Commons, Unsplash y Canva:</p>
     <ul>
       {#each Object.entries(FOTOS_RECETAS) as [id, c] (id)}
         <li><a href={c.fuente} target="_blank" rel="noopener">{nombreReceta(id)}</a> — {c.autor} ({c.licencia})</li>

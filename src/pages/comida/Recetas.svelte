@@ -41,7 +41,7 @@
   {#each lista as { r, ing, m, franja } (r.id)}
     <button class="card" onclick={() => abrirHoja('receta', { recetaId: r.id, ingredientes: ing, titulo: `Ración para tu ${franja}` })}>
       <span class="imagen">
-        <FotoReceta receta={r} alto={124} redondeo={0} tamEmoji={70} />
+        <FotoReceta receta={r} alto={124} redondeo={0} />
         <span class="chips-img"><span class="chip-img"><Icono n="clock" tam={12} grosor={2.4} /> {r.tiempo} min</span>{#if r.batch}<span class="chip-img"><Icono n="package" tam={12} grosor={2.4} /> táper</span>{/if}</span>
       </span>
       <span class="cuerpo">

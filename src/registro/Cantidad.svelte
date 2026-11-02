@@ -41,7 +41,7 @@
 
 <div class="cant-cab">
   {#if item.tipo === 'receta'}
-    <FotoReceta receta={item.receta} alto={72} redondeo={18} tamEmoji={44} clase="foto-cantidad" />
+    <FotoReceta receta={item.receta} alto={72} redondeo={18} clase="foto-cantidad" />
   {:else if d.imagen}
     <img class="producto" src={d.imagen} alt="" />
   {:else}
