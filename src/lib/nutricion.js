@@ -327,7 +327,7 @@ function redondear(id, g) {
  * verdura y la salsa acompañan. Lo que no quepa lo añade un complemento (lib/complementos.js).
  * { libre: true }: sin esas reglas (la comida libre es un hueco de kcal, no un plato que cocinar).
  */
-export function escalarReceta(receta, objetivo, limites = receta.limites || LIMITES, { libre = false } = {}) {
+export function escalarReceta(receta, objetivo, limites = receta.limites || LIMITES, { libre = false, proporcion = PROPORCION } = {}) {
   const grupos = { P: [], C: [], G: [] };
   const fijos = [];
   for (const ing of receta.ingredientes) {
@@ -361,7 +361,7 @@ export function escalarReceta(receta, objetivo, limites = receta.limites || LIMI
         if (den <= 0) continue;
         let min = limites[r][0];
         let max = techo[r];
-        if (!libre) for (const o of roles) if (o !== r) { min = Math.max(min, x[o] / PROPORCION[o][r]); max = Math.min(max, x[o] * PROPORCION[r][o]); }
+        if (!libre) for (const o of roles) if (o !== r) { min = Math.max(min, x[o] / proporcion[o][r]); max = Math.min(max, x[o] * proporcion[r][o]); }
         x[r] = min > max ? max : Math.min(max, Math.max(min, num / den));
       }
     }

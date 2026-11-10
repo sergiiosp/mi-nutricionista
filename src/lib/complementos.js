@@ -24,6 +24,9 @@ const CARGA = {
   comida: ['pan_blanco', 'zumo_naranja'],
   cena: ['pan_blanco'],
 };
+// En la carga y el día de carrera, en la comida y la cena el hidrato del plato (la pasta, el arroz, la patata)
+// puede crecer mucho más que la proteína: mejor más pasta que pan y tortitas al lado
+const ESCALA_CARGA = [{ P: [0.5, 2.6], C: [0.35, 4], G: [0.4, 2.2] }, { proporcion: { P: { C: 6, G: 6 }, C: { P: 3.5, G: 4 }, G: { P: 1.5, C: 1.5 } } }];
 // En la carga, como mucho un plátano por comida
 const MAX_CARGA = { platano: 110 };
 // La carga y el día de carrera van con pan blanco (poca fibra) en vez de integral
@@ -61,9 +64,10 @@ const permitido = (perfil, tiene) => (id) => !tiene.has(id) && alimentoPermitido
  * (opciones.carrera), ningún complemento lácteo y pan blanco en vez de integral.
  */
 export function platoCompleto(receta, obj, tipo, perfil, { carga = false, carrera = false } = {}) {
-  let { ingredientes } = escalarReceta(receta, obj);
-  if (!HIDRATOS[tipo] || !perfil) return ingredientes;
   const ligero = carga || carrera;
+  const escala = ligero && ['comida', 'cena'].includes(tipo) ? ESCALA_CARGA : [];
+  let { ingredientes } = escalarReceta(receta, obj, ...escala);
+  if (!HIDRATOS[tipo] || !perfil) return ingredientes;
   const tiene = new Set(ingredientes.map((i) => i.a));
   const sinLacteo = (id) => !ligero || alimento(id)?.dieta !== 'lacteo';
   const vale = (id) => permitido(perfil, tiene)(id) && sinLacteo(id);
@@ -77,7 +81,7 @@ export function platoCompleto(receta, obj, tipo, perfil, { carga = false, carrer
     if (g) {
       añadir(id, g);
       const m = macrosDe(id, g);
-      ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }).ingredientes;
+      ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }, ...escala).ingredientes;
     }
   }
   if (carga) {
@@ -93,7 +97,7 @@ export function platoCompleto(receta, obj, tipo, perfil, { carga = false, carrer
     }
     if (extras.length > antes) {
       const m = macrosComida(extras);
-      ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }).ingredientes;
+      ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }, ...escala).ingredientes;
     }
   }
   // Las kcal que faltan, con hidratos: es lo que más pide el entreno y no sube proteína ni grasa
