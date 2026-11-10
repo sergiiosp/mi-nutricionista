@@ -154,9 +154,11 @@ function puntuar(receta, ctx) {
   return s;
 }
 
+/** La receta como se come ese día: en la carga y el día de carrera, con pan, arroz y pasta blancos (poca fibra). */
+export const recetaDelDia = (receta, objDia) => (diaEspecial(objDia) && !receta.fuera ? refinar(receta) : receta);
+
 function crearComida(receta, franja, objDia, obj = objetivoFranja(objDia, franja), perfil = null) {
-  // En la carga y el día de carrera, con pan, arroz y pasta blancos (poca fibra)
-  const r = diaEspecial(objDia) && !receta.fuera ? refinar(receta) : receta;
+  const r = recetaDelDia(receta, objDia);
   // Si el plato, sin desproporcionarse, no llega: un complemento que pegue (tortitas, pan, fruta, un batido…)
   const ingredientes = r.fuera ? escalarReceta(r, obj).ingredientes : platoCompleto(r, obj, franja.tipo, perfil, { carga: objDia?.carga, carrera: objDia?.carrera });
   return { franja: franja.id, recetaId: receta.id, ingredientes, hora: franja.horaTexto, etiqueta: franja.etiqueta };

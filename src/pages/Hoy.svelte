@@ -50,7 +50,7 @@
     avisar(quiero ? 'Hoy cuenta como día de entreno: más hidratos y kcal' : 'Hoy cuenta como descanso: comidas ajustadas', quiero ? '💪' : '😴');
   }
   const recs = $derived(recomendaciones($estado.perfil, objetivos));
-  const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil));
+  const opciones = $derived(sugerencias(d.huecoFinal, $estado.perfil, { especial: !!(d.od?.carga || d.od?.carrera) }));
   const cortos = $derived(faltas(d.huecoFinal, entrenoHoy));
   const rec = $derived(recuperacion($estado, hoy));
   // Kcal consumidas o restantes: lo que elijas se recuerda para la próxima vez

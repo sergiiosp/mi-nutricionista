@@ -25,8 +25,8 @@ const CARGA = {
   cena: ['pan_blanco'],
 };
 // En la carga y el día de carrera, en la comida y la cena el hidrato del plato (la pasta, el arroz, la patata)
-// puede crecer mucho más que la proteína: mejor más pasta que pan y tortitas al lado
-const ESCALA_CARGA = [{ P: [0.5, 2.6], C: [0.35, 4], G: [0.4, 2.2] }, { proporcion: { P: { C: 6, G: 6 }, C: { P: 3.5, G: 4 }, G: { P: 1.5, C: 1.5 } } }];
+// puede crecer mucho más que la proteína (aunque quede poca proteína por comer): mejor más pasta que pan y tortitas al lado
+const ESCALA_CARGA = [{ P: [0.5, 2.6], C: [0.35, 4], G: [0.4, 2.2] }, { proporcion: { P: { C: 6, G: 6 }, C: { P: 6, G: 6 }, G: { P: 1.5, C: 1.5 } } }];
 // En la carga, como mucho un plátano por comida
 const MAX_CARGA = { platano: 110 };
 // La carga y el día de carrera van con pan blanco (poca fibra) en vez de integral
@@ -84,10 +84,23 @@ export function platoCompleto(receta, obj, tipo, perfil, { carga = false, carrer
       ingredientes = escalarReceta(receta, { kcal: Math.max(0, obj.kcal - m.kcal), p: Math.max(0, obj.p - m.p), c: Math.max(0, obj.c - m.c), g: Math.max(0, obj.g - m.g) }, ...escala).ingredientes;
     }
   }
+  // Carga y día de carrera, comida y cena: los hidratos que falten los pone la pasta, el arroz o la patata del plato
+  // (hasta 4 veces la receta), no pan ni tortitas al lado. Se cuenta por gramos, aunque suba un poco la proteína.
+  const masDelPlato = escala.length > 0;
+  if (masDelPlato) {
+    const faltaC = obj.c - macrosComida([...ingredientes, ...extras]).c;
+    const deC = ingredientes.filter((_, i) => receta.ingredientes[i]?.rol === 'C');
+    const cDeC = macrosComida(deC).c;
+    if (faltaC >= 15 && cDeC > 0) {
+      const tope = Math.min(...ingredientes.map((ing, i) => (receta.ingredientes[i]?.rol === 'C' ? (4 * receta.ingredientes[i].g) / ing.g : Infinity)));
+      const k = Math.min(1 + faltaC / cDeC, tope);
+      ingredientes = ingredientes.map((ing, i) => (receta.ingredientes[i]?.rol === 'C' ? { ...ing, g: Math.round((ing.g * k) / 5) * 5 } : ing));
+    }
+  }
   if (carga) {
     let faltaC = obj.c - macrosComida([...ingredientes, ...extras]).c;
     const antes = extras.length;
-    for (const id of CARGA[tipo] || []) {
+    for (const id of masDelPlato ? [] : CARGA[tipo] || []) {
       if (faltaC < 20) break;
       if (!vale(id)) continue;
       const g = gramosPara(id, faltaC, 'c', MAX_CARGA[id] ?? MAX[id]);
@@ -103,8 +116,8 @@ export function platoCompleto(receta, obj, tipo, perfil, { carga = false, carrer
   // Las kcal que faltan, con hidratos: es lo que más pide el entreno y no sube proteína ni grasa
   const umbral = Math.max(60, obj.kcal * 0.08);
   let falta = obj.kcal - macrosComida([...ingredientes, ...extras]).kcal;
-  // En la carga y el día de carrera, sin fruta con mucha fibra (kiwi)
-  for (const id of ligero ? [...new Set([...(CARGA[tipo] || []), ...HIDRATOS[tipo].map(refinado)])].filter((id) => id !== 'kiwi') : HIDRATOS[tipo]) {
+  // En la carga y el día de carrera, sin fruta con mucha fibra (kiwi); en su comida y su cena, nada al lado
+  for (const id of masDelPlato ? [] : ligero ? [...new Set([...(CARGA[tipo] || []), ...HIDRATOS[tipo].map(refinado)])].filter((id) => id !== 'kiwi') : HIDRATOS[tipo]) {
     if (falta < umbral) break;
     if (!vale(id)) continue;
     const g = gramosPara(id, falta, 'kcal');

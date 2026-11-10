@@ -1,6 +1,6 @@
 // Día dinámico: lo que llevas comido, lo que te falta y el reajuste de las comidas que quedan.
 import { macrosComida, sumarMacros, objetivosDia, macrosDe, alimentoPermitido, alimento } from './nutricion.js';
-import { recetaPorId } from './planificador.js';
+import { recetaPorId, recetaDelDia } from './planificador.js';
 import { platoCompleto, tipoFranja } from './complementos.js';
 
 const CERO = { kcal: 0, p: 0, c: 0, g: 0, f: 0 };
@@ -49,7 +49,8 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
   // También se reajusta si lo comido ya no cuadra con el objetivo del día (p. ej. cambias a descanso
   // después de haber desayunado y comido como día de entreno)
   const previsto = sumarMacros([consumido, pasadas, ...porVenir.map((c) => macrosComida(c.ingredientes))]);
-  const descuadre = registros.length > 0 && Math.abs(previsto.kcal - objetivo.kcal) / objetivo.kcal > 0.06;
+  // En la carga y el día de carrera también cuentan los hidratos: si faltan, la pasta o el arroz que quedan crecen
+  const descuadre = registros.length > 0 && (Math.abs(previsto.kcal - objetivo.kcal) / objetivo.kcal > 0.06 || ((od.carga || od.carrera) && objetivo.c - previsto.c > 25));
 
   // Reajuste: lo que falta se reparte entre las pendientes según su peso en el plan original
   if ((desviado || descuadre) && porVenir.length) {
@@ -78,7 +79,8 @@ export function estadoDia(e, objetivos, fecha, ahora = null) {
       };
       meta.kcal = meta.p * 4 + meta.c * 4 + meta.g * 9;
       if (meta.kcal < 80) return; // sin margen: se deja como estaba y se avisa en la vista
-      const nuevos = platoCompleto(receta, meta, tipoFranja(c.franja), e.perfil);
+      // En la carga y el día de carrera, con sus reglas (pasta o arroz que crecen, pan blanco, sin lácteo)
+      const nuevos = platoCompleto(recetaDelDia(receta, od), meta, tipoFranja(c.franja), e.perfil, { carga: od.carga, carrera: od.carrera });
       const antes = original[i].kcal;
       const despues = macrosComida(nuevos).kcal;
       if (Math.abs(despues - antes) / antes > 0.05) {
@@ -115,6 +117,11 @@ const RAPIDOS = [
   { a: 'postre_proteinas_fresa', g: 120 }, { a: 'huevos_cocidos', g: 104 }, { a: 'almendra_tostada', g: 20 }, { a: 'pistacho', g: 20 },
   { a: 'tortitas_maiz', g: 23 }, { a: 'bebida_soja', g: 250 }, { a: 'bebida_avena', g: 250 }, { a: 'arroz_vasito', g: 125 },
 ];
+// En la carga y el día de carrera, lo que falta suele ser hidrato: de poca fibra, sin grasa y sin lácteo
+const RAPIDOS_CARGA = [
+  { a: 'zumo_naranja', g: 250 }, { a: 'platano', g: 110 }, { a: 'pan_blanco', g: 60 }, { a: 'miel', g: 20 },
+  { a: 'tortitas_arroz', g: 23 }, { a: 'tortitas_arroz', g: 46 }, { a: 'pavo_fiambre', g: 50 },
+];
 // Proteína en polvo: solo si dices que la tienes
 const WHEY = [{ a: 'proteina_whey', g: 30 }, { a: 'proteina_whey', g: 45 }];
 
@@ -131,10 +138,10 @@ export function faltas(hueco, entreno = false) {
  * Hasta 3 opciones (1 o 2 alimentos) que tapan el hueco de macros que queda, priorizando la proteína.
  * @param hueco macros que faltan { kcal, p, c, g }
  */
-export function sugerencias(hueco, perfil) {
+export function sugerencias(hueco, perfil, { especial = false } = {}) {
   if (hueco.kcal < 120 && hueco.p < 10 && hueco.c < 30 && hueco.g < 15) return [];
   const vaca = !perfil.leche || perfil.leche === 'vaca';
-  const base = [...RAPIDOS, ...(perfil.whey ? WHEY : [])]
+  const base = (especial ? RAPIDOS_CARGA : [...RAPIDOS, ...(perfil.whey ? WHEY : [])])
     .filter((x) => alimento(x.a) && alimentoPermitido(x.a, perfil) && (vaca || !x.a.startsWith('leche_')));
   const opciones = base.map((x) => ({ items: [x], m: macrosDe(x.a, x.g) }));
   const combinadas = [...opciones];
@@ -168,7 +175,7 @@ export function sugerencias(hueco, perfil) {
     .slice(0, 3);
   // Si falta bastante proteína y tienes proteína en polvo, el batido siempre sale como opción (la más rápida)
   const conBatido = lista.some((o) => o.items.some((i) => i.a === 'proteina_whey'));
-  if (perfil.whey && hueco.p >= 15 && !conBatido) {
+  if (!especial && perfil.whey && hueco.p >= 15 && !conBatido) {
     const g = hueco.p >= 30 ? 45 : 30;
     lista.splice(Math.min(lista.length, 2), 1, { items: [{ a: 'proteina_whey', g }], m: macrosDe('proteina_whey', g) });
   }
