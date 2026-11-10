@@ -142,7 +142,7 @@
   .e-error { background: color-mix(in srgb, var(--peligro) 14%, transparent); color: var(--peligro); }
   .n-texto { margin: 6px 0 2px; white-space: pre-line; }
   .n-fecha { color: var(--texto-3); font-weight: 500; font-size: 0.76rem; }
-  .n-resp { display: grid; gap: 2px; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.9rem; }
+  .n-resp { display: grid; gap: 2px; white-space: pre-line; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-m); background: var(--superficie-2); font-size: 0.9rem; }
   .n-resp b { font-size: 0.76rem; color: var(--primario-fuerte); }
   .n-error { margin: 8px 0 0; color: var(--peligro); font-size: 0.82rem; font-weight: 500; }
   .n-borrar { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 0.82rem; color: var(--texto-3); }

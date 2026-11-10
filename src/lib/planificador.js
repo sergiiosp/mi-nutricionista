@@ -7,7 +7,18 @@ import { REPARTOS, horarioDia, objetivoFranja, esDiaEntreno } from './horario.js
 import { preferenciasAlimentos } from './salud.js';
 import { comboDesdeId, esCombo, combosAleatorios, familiaDe } from './combos.js';
 import { adaptarReceta, adaptarActiva } from './sustituciones.js';
-import { platoCompleto } from './complementos.js';
+import { platoCompleto, refinado } from './complementos.js';
+
+// Versión de las reglas de los días de carga y de carrera (poca fibra, proteína justa, sin lácteo, pan blanco y
+// desayuno según la hora de salida). Un día así creado con reglas anteriores rehace sus comidas pendientes al abrir.
+export const REGLAS_CARRERA = 2;
+/** ¿Es un día de carga de hidratos o de carrera? (su menú sigue reglas propias) */
+export const diaEspecial = (objDia) => !!(objDia?.carga || objDia?.carrera);
+/** La receta con pan, arroz y pasta blancos en vez de integrales (poca fibra antes y durante la carrera). */
+function refinar(receta) {
+  if (!receta.ingredientes.some((i) => refinado(i.a) !== i.a)) return receta;
+  return { ...receta, ingredientes: receta.ingredientes.map((i) => ({ ...i, a: refinado(i.a) })) };
+}
 
 export { REPARTOS, objetivoFranja };
 
@@ -48,9 +59,10 @@ export function estiloDe(receta) {
   return receta.estilo || ESTILOS.find(([, re]) => re.test(receta.nombre))?.[0] || 'casero';
 }
 
-export function candidatas(perfil, franja, { favoritas = [], viaje = null } = {}) {
+export function candidatas(perfil, franja, { favoritas = [], viaje = null, especial = false } = {}) {
   const no = new Set(perfil.recetasNo || []); // platos que dijiste que no repetirías
-  let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && !no.has(r.id) && (viaje || !r.fuera)).map((r) => adaptarReceta(r, perfil)).filter((r) => recetaPermitida(r, perfil));
+  // Los platos de carga (tostadas con miel y zumo, arroz blanco con pollo…) solo en la carga y el día de carrera
+  let lista = RECETAS.filter((r) => r.tipos.includes(franja.tipo) && !no.has(r.id) && (viaje || !r.fuera) && (especial || !r.soloCarga)).map((r) => adaptarReceta(r, perfil)).filter((r) => recetaPermitida(r, perfil));
   // De viaje: comer fuera (restaurante) y/o cosas del súper que no hay que cocinar
   if (viaje) {
     const modos = viaje.comida || ['fuera', 'super'];
@@ -74,13 +86,17 @@ export function candidatas(perfil, franja, { favoritas = [], viaje = null } = {}
 }
 
 // Fracción de las kcal de una receta que viene de la grasa (antes de entrenar, cuanto menos mejor)
+// (y su fibra, y si lleva lácteo; con «refinada», como queda con pan, arroz y pasta blancos)
 const grasaRelativaCache = {};
-function grasaRelativa(r) {
-  if (!grasaRelativaCache[r.id]) {
-    const m = macrosComida(r.ingredientes);
-    grasaRelativaCache[r.id] = { grasa: (m.g * 9) / Math.max(m.kcal, 1), fibra: m.f };
+function grasaRelativa(r, refinada = false) {
+  const k = `${r.id}|${refinada}`;
+  if (!grasaRelativaCache[k]) {
+    const ing = refinada ? refinar(r).ingredientes : r.ingredientes;
+    const m = macrosComida(ing);
+    const lacteo = ing.some((i) => ALIMENTOS[i.a]?.dieta === 'lacteo' && i.g >= 20);
+    grasaRelativaCache[k] = { grasa: (m.g * 9) / Math.max(m.kcal, 1), fibra: m.f, lacteo };
   }
-  return grasaRelativaCache[r.id];
+  return grasaRelativaCache[k];
 }
 
 // Legumbres: en los días de carga de hidratos, mejor otro plato (mucha fibra, pesadas antes de competir)
@@ -92,7 +108,7 @@ let DESPENSA = new Set();
 export function fijarDespensa(ids) { DESPENSA = new Set(ids || []); }
 
 function puntuar(receta, ctx) {
-  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas, estilos, carga } = ctx;
+  const { franja, usos, proteinasDia, perfil, aleatorio, enUso, errorAjuste, prefs, favoritas, estilos, carga, carrera } = ctx;
   let s = aleatorio() * 3;
   const n = usos[receta.id] || 0;
   s -= n * (franja.tipo === 'desayuno' || franja.tipo === 'snack' ? 1.2 : 3.5);
@@ -114,10 +130,16 @@ function puntuar(receta, ctx) {
     const { grasa, fibra } = grasaRelativa(receta);
     s -= Math.max(0, grasa - 0.25) * 12 + Math.max(0, fibra - 8) * 0.3;
   }
-  if (carga) {
-    // Carga de hidratos (los dos días antes de la carrera): todo el día con poca grasa, poca fibra y sin legumbre
-    const { grasa, fibra } = grasaRelativa(receta);
-    s -= Math.max(0, grasa - 0.2) * 15 + Math.max(0, fibra - 6) * 0.6 + (conLegumbre(receta) ? 6 : 0);
+  if (carga || carrera) {
+    const { grasa, fibra, lacteo } = grasaRelativa(receta, true);
+    // Carga de hidratos (los dos días antes de la carrera): todo el día con poca grasa, muy poca fibra y sin legumbre
+    if (carga) s -= Math.max(0, grasa - 0.2) * 15 + Math.max(0, fibra - 4) * 1.5 + (conLegumbre(receta) ? 8 : 0);
+    // El día de la carrera, el estómago también agradece poca fibra y nada de legumbre (también después)
+    else s -= Math.max(0, fibra - 6) * 0.8 + (conLegumbre(receta) ? 5 : 0);
+    // Ni en la carga ni el día de la carrera, lácteo: puede sentar pesado
+    if (lacteo) s -= 6;
+    // Los platos pensados para la carga, antes que adaptar otros
+    if (receta.soloCarga) s += 1.5;
   }
   // Recetas que encajan mal en los macros de la franja (aun escaladas) salen menos
   s -= errorAjuste(receta) * 8;
@@ -133,8 +155,10 @@ function puntuar(receta, ctx) {
 }
 
 function crearComida(receta, franja, objDia, obj = objetivoFranja(objDia, franja), perfil = null) {
+  // En la carga y el día de carrera, con pan, arroz y pasta blancos (poca fibra)
+  const r = diaEspecial(objDia) && !receta.fuera ? refinar(receta) : receta;
   // Si el plato, sin desproporcionarse, no llega: un complemento que pegue (tortitas, pan, fruta, un batido…)
-  const ingredientes = receta.fuera ? escalarReceta(receta, obj).ingredientes : platoCompleto(receta, obj, franja.tipo, perfil, { carga: objDia?.carga });
+  const ingredientes = r.fuera ? escalarReceta(r, obj).ingredientes : platoCompleto(r, obj, franja.tipo, perfil, { carga: objDia?.carga, carrera: objDia?.carrera });
   return { franja: franja.id, recetaId: receta.id, ingredientes, hora: franja.horaTexto, etiqueta: franja.etiqueta };
 }
 // Kcal que pone el complemento, frente al objetivo de la comida (mejor un plato que llegue solo)
@@ -198,8 +222,9 @@ export function contextoDia(perfil, objetivos, fecha, proveedor = null, viajes =
     // Caminar o recuperar no es día de entreno (no hay pre ni post), pero su gasto sí cuenta
     const principal = sesiones.filter((s) => !s.carga && !['recuperacion', 'caminar'].includes(s.tipo)).sort((a, b) => b.duracion - a.duracion)[0];
     const entreno = !!principal;
-    const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion, tipo: principal.tipo } : null);
-    return { entreno, horario, objDia: metaDia(objetivos, sesiones, proveedor.fase?.(fecha) || null), sesiones, viaje };
+    const objDia = metaDia(objetivos, sesiones, proveedor.fase?.(fecha) || null);
+    const horario = horarioDia(perfil, entreno, principal ? { hora: principal.hora, duracion: principal.duracion, tipo: principal.tipo } : null, { sinRecena: diaEspecial(objDia) });
+    return { entreno, horario, objDia, sesiones, viaje };
   }
   const entreno = esDiaEntreno(perfil, fecha);
   const horario = horarioDia(perfil, entreno);
@@ -226,7 +251,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
   // Cada receta se escala una vez por franja y objetivo
   const escaladas = {};
   const comidaEscalada = (receta, franja, objDia, obj) => {
-    const k = `${obj.p}|${obj.c}|${obj.g}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}|${objDia.carga ? 'carga' : ''}`;
+    const k = `${obj.p}|${obj.c}|${obj.g}|${franja.id}|${franja.etiqueta}|${franja.horaTexto}|${receta.id}|${objDia.carga ? 'carga' : ''}|${objDia.carrera ? 'carrera' : ''}`;
     if (!escaladas[k]) {
       const comida = crearComida(receta, franja, objDia, obj, perfil);
       // Entre dos platos, el que llega por sí solo (sin complemento) sale antes: «otra cena» antes que añadidos
@@ -250,10 +275,10 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       if (perfil.sobras && !viaje && franja.tipo === 'comida' && d % 2 === 1 && anterior && !recetaPorId[anterior.recetaId]?.fuera) {
         receta = recetaPorId[anterior.recetaId]; // segundo día del táper
       } else {
-        const lista = candidatas(perfil, franja, { favoritas, viaje });
+        const lista = candidatas(perfil, franja, { favoritas, viaje, especial: diaEspecial(objDia) });
         if (lista.length) {
           const errorAjuste = (r) => comidaEscalada(r, franja, objDia, obj).error;
-          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas), estilos, carga: !!objDia.carga };
+          const ctx = { franja, usos, proteinasDia, perfil, aleatorio, costeRelativo, enUso, errorAjuste, prefs, favoritas: new Set(favoritas), estilos, carga: !!objDia.carga, carrera: !!objDia.carrera };
           receta = lista.map((r) => [r, puntuar(r, ctx)]).sort((a, b) => b[1] - a[1])[0][0];
         }
       }
@@ -267,7 +292,7 @@ export function generarPlan(perfil, objetivos, { inicio, dias = 7, semilla = Dat
       balance.anotar(idx, comida.ingredientes);
       comidas.push(comida);
     }
-    resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, objetivo: objDia, comidas, ...(viaje ? { viaje: { comida: viaje.comida || [] } } : {}) });
+    resultado.push({ fecha, entreno, sesion: horario.entreno, consejos: horario.consejos, objetivo: objDia, comidas, ...(viaje ? { viaje: { comida: viaje.comida || [] } } : {}), ...(diaEspecial(objDia) ? { reglasCarrera: REGLAS_CARRERA } : {}) });
   }
   return { version: 2, creado: new Date().toISOString(), inicio, semilla, comidasDia: perfil.comidas, dias: resultado };
 }
@@ -294,17 +319,20 @@ export function alternativas(plan, diaIdx, franjaId, perfil, objetivos, proveedo
   const usos = {};
   for (const d of plan.dias) for (const c of d.comidas) usos[c.recetaId] = (usos[c.recetaId] || 0) + 1;
   const obj = objetivoFranja(objDia, franja);
-  return candidatas(perfil, franja, { favoritas, viaje })
+  return candidatas(perfil, franja, { favoritas, viaje, especial: diaEspecial(objDia) })
     .filter((r) => r.id !== actual)
     .map((r) => {
       const comida = crearComida(r, franja, objDia, obj, perfil);
       const m = macrosComida(comida.ingredientes);
       const desvio = Math.abs(m.kcal - obj.kcal) / obj.kcal + Math.abs(m.p - obj.p) / Math.max(obj.p, 1) + 0.3 * pesoExtras(comida, obj);
-      const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa(r).grasa - 0.25) : 0;
+      const especial = diaEspecial(objDia);
+      const pre = franja.etiqueta === 'pre' ? Math.max(0, grasaRelativa(r, especial).grasa - 0.25) : 0;
       const enCasa = r.ingredientes.filter((i) => DESPENSA.has(i.a) && !ALIMENTOS[i.a]?.despensa).map((i) => i.a);
-      // En la carga de hidratos, las legumbres al final de la lista
+      // En la carga de hidratos, las legumbres al final de la lista; en la carga y la carrera, también el lácteo y la fibra
       const legumbre = objDia.carga && conLegumbre(r) ? 1 : 0;
-      return { comida, macros: m, usos: usos[r.id] || 0, enCasa, orden: desvio + (usos[r.id] || 0) * 0.15 + pre - enCasa.length * 0.08 + legumbre };
+      const { fibra, lacteo } = grasaRelativa(r, especial);
+      const ligero = especial ? (lacteo ? 0.6 : 0) + Math.max(0, fibra - 4) * 0.05 : 0;
+      return { comida, macros: m, usos: usos[r.id] || 0, enCasa, orden: desvio + (usos[r.id] || 0) * 0.15 + pre - enCasa.length * 0.08 + legumbre + ligero };
     })
     .sort((a, b) => a.orden - b.orden);
 }
@@ -337,7 +365,7 @@ export function completarPlan(plan, perfil, objetivos, proveedor = null, favorit
     const { horario, objDia, viaje } = contextoDia(perfil, objetivos, dia.fecha, proveedor, viajes);
     for (const franja of horario.franjas) {
       if (dia.comidas.some((c) => c.franja === franja.id)) continue;
-      const lista = candidatas(perfil, franja, { favoritas, viaje });
+      const lista = candidatas(perfil, franja, { favoritas, viaje, especial: diaEspecial(objDia) });
       if (!lista.length) continue;
       const receta = lista[(i * 7 + franja.id.length) % lista.length];
       dia.comidas.push(crearComida(receta, franja, objDia, undefined, perfil));

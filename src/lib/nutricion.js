@@ -200,12 +200,15 @@ export function metaDia(objetivos, sesiones, fase = null) {
   // Perdiendo grasa se priorizan los hidratos alrededor del entreno, pero sin forzar superávit
   const recorte = !sinDeficit && ['perder', 'recomposicion'].includes(b.objetivo) ? 0.75 : 1;
   const minCarbos = Math.max(0, ...sesiones.map((x) => x.carbos || 0)) * b.peso * recorte;
-  let kcal = Math.max((b.getDescanso + extra) * (1 + ritmo) + (sinDeficit ? 0 : b.ajuste), b.minimo);
-  if (minCarbos) kcal = Math.max(kcal, b.proteina * 4 + 0.6 * b.pesoRef * 9 + minCarbos * 4);
-  kcal = Math.round(kcal / 10) * 10;
-  // Día de carga de hidratos: el menú tira de hidratos de poca fibra y poca grasa (ver planificador y complementos)
+  // Día de carga de hidratos y día de carrera: el menú tira de hidratos de poca fibra y poca grasa, sin lácteo
+  // (ver planificador y complementos), y la proteína justa (1,5 g/kg): el sitio es para los hidratos
   const carga = sesiones.some((x) => x.carga);
-  return { ...repartoMacros(kcal, b.proteina, b.grasaBase, b.pesoRef, minCarbos), get: Math.round(b.getDescanso + extra), ...(carga ? { carga: true } : {}) };
+  const carrera = sesiones.some((x) => x.tipo === 'carrera');
+  const proteina = carga || carrera ? Math.min(b.proteina, Math.round(1.5 * b.peso)) : b.proteina;
+  let kcal = Math.max((b.getDescanso + extra) * (1 + ritmo) + (sinDeficit ? 0 : b.ajuste), b.minimo);
+  if (minCarbos) kcal = Math.max(kcal, proteina * 4 + 0.6 * b.pesoRef * 9 + minCarbos * 4);
+  kcal = Math.round(kcal / 10) * 10;
+  return { ...repartoMacros(kcal, proteina, b.grasaBase, b.pesoRef, minCarbos), get: Math.round(b.getDescanso + extra), ...(carga ? { carga: true } : {}), ...(carrera ? { carrera: true } : {}) };
 }
 
 /** Objetivos de un día concreto (entreno o descanso). */

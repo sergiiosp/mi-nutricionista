@@ -98,15 +98,15 @@ export function nutricionDiaCarrera(perfil, horaSalida = '10:00', duracionMin = 
   const g = (x) => Math.round((x * peso) / 5) * 5;
   const cafeina = Math.min(300, Math.round((3 * peso) / 25) * 25);
   const items = [
-    { min: -210, emoji: '🍞', titulo: 'Desayuno de carrera', texto: `${g(2)} g de hidratos, poca grasa y poca fibra: pan blanco o tostado con miel o confitura, plátano y un yogur o vaso de leche. Lo que ya hayas probado en los simulacros.` },
+    { min: -180, emoji: '🍞', titulo: 'Desayuno de carrera', texto: `${g(2)} g de hidratos, poca grasa, poca fibra y sin lácteo: pan blanco o tostado con miel o confitura, plátano y zumo. Lo que ya hayas probado en los simulacros.` },
     { min: -90, emoji: '💧', titulo: 'Bebe', texto: '400-500 ml de agua o bebida isotónica a sorbos.' },
-    { min: -60, emoji: '🍌', titulo: 'Tentempié', texto: 'Medio plátano, una barrita o 3-4 dátiles (20-30 g de hidratos).' },
+    { min: -60, emoji: '🍌', titulo: 'Tentempié', texto: 'Medio plátano, un gel o 2 tortitas de arroz con miel (20-30 g de hidratos).' },
   ];
   if (!salud.sinCafeina) items.push({ min: -50, emoji: '☕', titulo: 'Cafeína', texto: `${cafeina} mg (≈3 mg/kg): café solo o una cápsula. Solo si ya la has probado entrenando.` });
   items.push({ min: -20, emoji: '🔥', titulo: 'Calentamiento', texto: '15 min de trote suave, movilidad y 2 progresiones. Sorbos de agua.' });
   if (duracionMin > 75) items.push({ min: 45, emoji: '🧃', titulo: 'Durante la carrera', texto: 'Tras la estación 4 (burpees), un gel (25 g) con agua en el roxzone. Sorbos de agua o isotónica cuando la veas.' });
   else items.push({ min: 30, emoji: '🧃', titulo: 'Durante la carrera', texto: 'Con menos de 75 min no necesitas comer: sorbos de agua en el roxzone si te apetece.' });
-  items.push({ min: duracionMin + 30, emoji: '🥤', titulo: 'Recuperación', texto: `En la primera hora: ${g(1)} g de hidratos y ${g(0.3)} g de proteína (batido de leche con plátano y cacao, o bocadillo de pavo y fruta). Bebe 1,5 veces el peso perdido.` });
+  items.push({ min: duracionMin + 30, emoji: '🥤', titulo: 'Recuperación', texto: `En la primera hora: ${g(1)} g de hidratos y ${g(0.3)} g de proteína (bocadillo de pavo con zumo o un plátano). Bebe 1,5 veces el peso perdido.` });
   return items.map((x) => ({ ...x, hora: aHora(salida + x.min) })).sort((a, b) => a.min - b.min);
 }
 
@@ -114,8 +114,8 @@ export function semanaCarrera(perfil) {
   const peso = perfil?.peso || 75;
   return [
     { dia: 'De -6 a -3 días', emoji: '🥗', texto: 'Comes normal según tu menú. El entreno baja, así que no hace falta comer menos. Duerme todo lo que puedas.' },
-    { dia: 'Días -2 y -1', emoji: '🍝', texto: `Carga de hidratos: unos ${Math.round(peso * 6)}-${Math.round(peso * 7)} g al día (6-7 g/kg). Más arroz, pasta, pan, patata y fruta; menos grasa y verdura fibrosa para no ir pesado. Tu menú ya lo tiene en cuenta.` },
-    { dia: 'Víspera', emoji: '🌙', texto: 'Cena temprana y conocida: arroz o pasta con pollo o pescado. Nada de comidas nuevas, picante ni alcohol. Deja preparado el desayuno y la ropa.' },
+    { dia: 'Días -2 y -1', emoji: '🍝', texto: `Carga de hidratos: unos ${Math.round(peso * 6)}-${Math.round(peso * 7)} g al día (6-7 g/kg). Más arroz, pasta, pan, patata y fruta; menos grasa, verdura fibrosa y lácteo para no ir pesado, y la proteína justa. Tu menú ya lo tiene en cuenta.` },
+    { dia: 'Víspera', emoji: '🌙', texto: 'Cena temprana y conocida: arroz o pasta con pollo o pescado, y nada de lácteo antes de dormir. Nada de comidas nuevas, picante ni alcohol. Deja preparado el desayuno y la ropa.' },
     { dia: 'Toda la semana', emoji: '💧', texto: 'Bebe agua con regularidad y algo de sal en las comidas los dos últimos días. Orina clara = bien hidratado.' },
   ];
 }

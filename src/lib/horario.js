@@ -63,10 +63,11 @@ const AJUSTE_SESION = {
   normal: { pre: { c: 1.35, g: 0.6 }, post: { c: 1.3, p: 1.15 }, resto: { c: 0.88 } },
 };
 
-export function horarioDia(perfil, entreno, sesionDia = null) {
+/** @param opciones.sinRecena la carga de hidratos y el día de carrera van sin lácteo antes de dormir */
+export function horarioDia(perfil, entreno, sesionDia = null, { sinRecena = false } = {}) {
   let base = (REPARTOS[perfil.comidas] || REPARTOS[4]).map((f) => ({ ...f, pctM: { ...(f.pM || { p: f.pct, c: f.pct, g: f.pct }) } }));
   // Sin lácteo antes de dormir: su parte vuelve a la cena
-  if (!conRecena(perfil)) {
+  if (!conRecena(perfil) || sinRecena) {
     const r = base.find((f) => f.id === 'recena');
     const cena = base.find((f) => f.id === 'cena');
     for (const k of ['p', 'c', 'g']) cena.pctM[k] += r.pctM[k];
@@ -104,6 +105,12 @@ export function horarioDia(perfil, entreno, sesionDia = null) {
     const fin = ini + (sesionDia?.duracion || perfil.duracionEntreno || 60);
     sesion = { inicio: ini, fin };
     const snacks = franjas.filter((f) => f.tipo === 'snack');
+
+    // Día de carrera: el desayuno, 3 h antes de la salida (si da tiempo), para llegar con el estómago ligero
+    if (sesionDia?.tipo === 'carrera') {
+      const desayuno = franjas.find((f) => f.id === 'desayuno');
+      if (desayuno && ini - despertar >= 120) desayuno.hora = Math.max(despertar + 15, ini - 180);
+    }
 
     // Ninguna comida durante el entreno ni justo antes (menos de 45 min)
     for (const f of franjas) {

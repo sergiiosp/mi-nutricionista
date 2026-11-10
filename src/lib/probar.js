@@ -21,7 +21,7 @@ function elegir(e, lunes, { principales, desayunos }) {
   const enMenu = new Set((e.plan?.dias || []).flatMap((d) => d.comidas.map((c) => c.recetaId)));
   const probadas = new Set(Object.values(e.registros || {}).flat().map((r) => r.ref).filter(Boolean));
   const no = new Set([...(perfil.recetasNo || []), ...(e.favoritas || [])]);
-  const pool = RECETAS.filter((r) => !r.fuera && !r.viaje && !no.has(r.id) && !enMenu.has(r.id))
+  const pool = RECETAS.filter((r) => !r.fuera && !r.viaje && !r.soloCarga && !no.has(r.id) && !enMenu.has(r.id))
     .map((r) => adaptarReceta(r, perfil))
     .filter((r) => r && recetaPermitida(r, perfil))
     // Primero lo que nunca has comido

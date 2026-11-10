@@ -16,22 +16,33 @@ const PROTEINA = {
   comida: ['yogur_proteinas', 'queso_batido', 'gelatina_proteinas', 'edamame'],
   cena: ['yogur_proteinas', 'queso_batido', 'gelatina_proteinas', 'edamame'],
 };
-// Días de carga de hidratos: complementos de poca fibra y casi sin grasa
-const CARGA = ['platano', 'tortitas_arroz', 'tortitas_maiz'];
+// Días de carga de hidratos: complementos de poca fibra y casi sin grasa, como se comerían de verdad
+// (pan con la comida, zumo y un plátano en el desayuno), en vez de fruta y tortitas en cada comida
+const CARGA = {
+  desayuno: ['zumo_naranja', 'platano', 'pan_blanco'],
+  snack: ['zumo_naranja', 'platano', 'tortitas_arroz'],
+  comida: ['pan_blanco', 'zumo_naranja'],
+  cena: ['pan_blanco'],
+};
+// En la carga, como mucho un plátano por comida
+const MAX_CARGA = { platano: 110 };
+// La carga y el día de carrera van con pan blanco (poca fibra) en vez de integral
+const REFINADO = { pan_integral: 'pan_blanco', pan_molde: 'pan_blanco', arroz_integral: 'arroz', pasta_integral: 'pasta' };
+export const refinado = (id) => REFINADO[id] || id;
 // Lo máximo que tiene sentido añadir de cada uno
-const MAX = { platano: 220, kiwi: 170, mandarina: 210, pan_integral: 80, tortitas_maiz: 45, tortitas_arroz: 46, proteina_whey: 30, bebida_proteinas_fresa: 280, yogur_proteinas: 120, queso_batido: 200, gelatina_proteinas: 200, bebida_soja: 300, edamame: 150 };
+const MAX = { pan_blanco: 120, zumo_naranja: 330, platano: 220, kiwi: 170, mandarina: 210, pan_integral: 80, tortitas_maiz: 45, tortitas_arroz: 46, proteina_whey: 30, bebida_proteinas_fresa: 280, yogur_proteinas: 120, queso_batido: 200, gelatina_proteinas: 200, bebida_soja: 300, edamame: 150 };
 // Cómo se nombra en una frase («+ 4 tortitas de maíz y 1 plátano»)
-const NOMBRE = { tortitas_maiz: 'de maíz', tortitas_arroz: 'de arroz', pan_integral: 'de pan', proteina_whey: 'de proteína en batido', bebida_proteinas_fresa: 'de bebida +Proteínas', yogur_proteinas: 'de yogur +Proteínas', queso_batido: 'de queso batido', gelatina_proteinas: 'de gelatina +Proteínas', bebida_soja: 'de bebida de soja', edamame: 'de edamame' };
+const NOMBRE = { tortitas_maiz: 'de maíz', tortitas_arroz: 'de arroz', pan_integral: 'de pan', pan_blanco: 'de pan', zumo_naranja: 'de zumo de naranja', proteina_whey: 'de proteína en batido', bebida_proteinas_fresa: 'de bebida +Proteínas', yogur_proteinas: 'de yogur +Proteínas', queso_batido: 'de queso batido', gelatina_proteinas: 'de gelatina +Proteínas', bebida_soja: 'de bebida de soja', edamame: 'de edamame' };
 
 const TIPO_FRANJA = { desayuno: 'desayuno', media: 'snack', comida: 'comida', merienda: 'snack', cena: 'cena', recena: 'recena' };
 export const tipoFranja = (id) => TIPO_FRANJA[id] || id;
 
 /** Gramos de un alimento para cubrir lo que falta de un macro (o de kcal), en cantidades que se compran y se comen. */
-function gramosPara(id, falta, clave) {
+function gramosPara(id, falta, clave, max = MAX[id]) {
   const porGramo = macrosDe(id, 100)[clave] / 100;
   if (!(porGramo > 0)) return 0;
   const a = alimento(id);
-  const g = Math.min(MAX[id] || 100, falta / porGramo);
+  const g = Math.min(max || 100, falta / porGramo);
   if (a.unidad) {
     const n = Math.round(g / a.unidad.g);
     return n >= 1 ? n * a.unidad.g : 0;
@@ -46,13 +57,16 @@ const permitido = (perfil, tiene) => (id) => !tiene.has(id) && alimentoPermitido
  * (marcados con extra: true). Si falta proteína (más de 10 g), primero un complemento de proteína y el plato
  * se reescala con lo que queda, para no pasarse de kcal; luego, las kcal que falten, con hidratos.
  * En un día de carga (opciones.carga), lo que le falte de hidratos al plato se completa con hidratos de poca fibra
- * y el plato se ajusta al resto, para que no los compense con grasa.
+ * y el plato se ajusta al resto, para que no los compense con grasa. En la carga y el día de carrera
+ * (opciones.carrera), ningún complemento lácteo y pan blanco en vez de integral.
  */
-export function platoCompleto(receta, obj, tipo, perfil, { carga = false } = {}) {
+export function platoCompleto(receta, obj, tipo, perfil, { carga = false, carrera = false } = {}) {
   let { ingredientes } = escalarReceta(receta, obj);
   if (!HIDRATOS[tipo] || !perfil) return ingredientes;
+  const ligero = carga || carrera;
   const tiene = new Set(ingredientes.map((i) => i.a));
-  const vale = permitido(perfil, tiene);
+  const sinLacteo = (id) => !ligero || alimento(id)?.dieta !== 'lacteo';
+  const vale = (id) => permitido(perfil, tiene)(id) && sinLacteo(id);
   const extras = [];
   const añadir = (id, g) => { extras.push({ a: id, g, extra: true }); tiene.add(id); };
 
@@ -69,10 +83,10 @@ export function platoCompleto(receta, obj, tipo, perfil, { carga = false } = {})
   if (carga) {
     let faltaC = obj.c - macrosComida([...ingredientes, ...extras]).c;
     const antes = extras.length;
-    for (const id of CARGA) {
+    for (const id of CARGA[tipo] || []) {
       if (faltaC < 20) break;
       if (!vale(id)) continue;
-      const g = gramosPara(id, faltaC, 'c');
+      const g = gramosPara(id, faltaC, 'c', MAX_CARGA[id] ?? MAX[id]);
       if (!g) continue;
       añadir(id, g);
       faltaC -= macrosDe(id, g).c;
@@ -85,7 +99,8 @@ export function platoCompleto(receta, obj, tipo, perfil, { carga = false } = {})
   // Las kcal que faltan, con hidratos: es lo que más pide el entreno y no sube proteína ni grasa
   const umbral = Math.max(60, obj.kcal * 0.08);
   let falta = obj.kcal - macrosComida([...ingredientes, ...extras]).kcal;
-  for (const id of HIDRATOS[tipo]) {
+  // En la carga y el día de carrera, sin fruta con mucha fibra (kiwi)
+  for (const id of ligero ? [...new Set([...(CARGA[tipo] || []), ...HIDRATOS[tipo].map(refinado)])].filter((id) => id !== 'kiwi') : HIDRATOS[tipo]) {
     if (falta < umbral) break;
     if (!vale(id)) continue;
     const g = gramosPara(id, falta, 'kcal');

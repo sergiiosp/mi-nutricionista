@@ -1,10 +1,10 @@
 // Acciones de alto nivel sobre el estado (marcar comidas, saltar, cambiar platos, crear menús).
 import { get } from 'svelte/store';
-import { estado, actualizar, registroDePlan, borrarRegistro, anotarDiario } from '../stores/estado.js';
+import { estado, actualizar, registroDePlan, borrarRegistro, anotarDiario, horaActual } from '../stores/estado.js';
 import { avisar, celebrar } from '../stores/ui.js';
 import { calcularObjetivos, alimentoPermitido, alimento } from './nutricion.js';
 const alimentoBruto = (id) => { try { return alimento(id).rendimiento || 1; } catch { return 1; } };
-import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias, opcionFuera, comidaConReceta, recetaPorId } from './planificador.js';
+import { generarPlan, sustituir, reescalarPlan, completarPlan, alternativas, hoyISO, sumarDias, opcionFuera, comidaConReceta, recetaPorId, contextoDia, diaEspecial, REGLAS_CARRERA } from './planificador.js';
 import { estadoDia } from './dia.js';
 import { crearRegistro } from './registro.js';
 import { proveedorDe, planDe } from './hyrox/index.js';
@@ -490,6 +490,50 @@ export function completarMenu() {
   const n = completarPlan(copia, e.perfil, calcularObjetivos(e.perfil), proveedorDe(e), e.favoritas || [], viajesDe(e));
   if (n) actualizar((x) => { x.plan = copia; });
   return n;
+}
+
+// Ajuste puntual que pidió Sergio por el buzón (10-nov-2026): la HYROX del 11 de noviembre sale a las 11:00.
+// Una sola vez: si luego cambias la hora en Tu HYROX, se respeta.
+export function horaHyrox2026() {
+  const e = get(estado);
+  const c = e.hyrox?.config;
+  if (!c || c.fechaCarrera !== '2026-11-11' || e.migraciones?.horaHyrox2026) return;
+  actualizar((x) => {
+    x.hyrox.config.horaCarrera = '11:00';
+    x.migraciones = { ...x.migraciones, horaHyrox2026: true };
+  });
+}
+
+/**
+ * Días de carga de hidratos y de carrera creados con reglas anteriores (REGLAS_CARRERA): se rehacen sus comidas
+ * pendientes con las de ahora (poca fibra, proteína justa, sin lácteo, desayuno según la hora de salida).
+ * Se quedan como estaban las que ya apuntaste, saltaste o cambiaste por otra cosa, y las de hoy cuya hora ya pasó.
+ */
+export function rehacerDiasCarrera() {
+  const e = get(estado);
+  if (!e.plan || !e.perfil) return 0;
+  const hoy = hoyISO();
+  const ahora = horaActual();
+  const objetivos = calcularObjetivos(e.perfil);
+  const prov = proveedorDe(e);
+  const copia = structuredClone(e.plan);
+  let cambios = 0;
+  copia.dias.forEach((d) => {
+    if (d.fecha < hoy || d.reglasCarrera === REGLAS_CARRERA) return;
+    if (!diaEspecial(contextoDia(e.perfil, objetivos, d.fecha, prov, viajesDe(e)).objDia)) return;
+    // Los platos de los días de alrededor cuentan como usados, para no repetir el mismo plato seguido
+    const recientes = copia.dias.filter((x) => x.fecha !== d.fecha && x.fecha >= sumarDias(d.fecha, -2) && x.fecha <= sumarDias(d.fecha, 1)).flatMap((x) => x.comidas.map((c) => c.recetaId));
+    const nuevo = generarPlan(e.perfil, objetivos, { inicio: d.fecha, dias: 1, semilla: Math.floor(Math.random() * 1e9), proveedor: prov, favoritas: e.favoritas || [], viajes: viajesDe(e), recientes }).dias[0];
+    const registros = e.registros[d.fecha] || [];
+    const seQueda = (c) => registros.some((r) => r.franja === c.franja) || e.saltadas[`${d.fecha}|${c.franja}`] || (d.fecha === hoy && c.hora && c.hora <= ahora);
+    const fijas = d.comidas.filter(seQueda);
+    const franjasFijas = new Set(fijas.map((c) => c.franja));
+    d.comidas = [...fijas, ...nuevo.comidas.filter((c) => !franjasFijas.has(c.franja))].sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
+    Object.assign(d, { entreno: nuevo.entreno, sesion: nuevo.sesion, consejos: nuevo.consejos, objetivo: nuevo.objetivo, reglasCarrera: REGLAS_CARRERA });
+    cambios++;
+  });
+  if (cambios) actualizar((x) => { x.plan = copia; });
+  return cambios;
 }
 
 /** Tras cambiar perfil o peso: mismas recetas, nuevas cantidades y horario (desde hoy o la fecha que digas). */

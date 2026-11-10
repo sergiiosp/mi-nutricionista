@@ -1516,6 +1516,67 @@ export const RECETAS = [
     ],
     pasos: ['Unta el pan con tomate y aceite y rellénalo con el pavo.'],
   },
+  // ── Carga de hidratos y día de carrera (soloCarga: solo salen esos días) ──
+  // Muchos hidratos de poca fibra, poca grasa, proteína justa y sin lácteo
+  {
+    id: 'carga-tostadas-miel-zumo', soloCarga: true,
+    emoji: '🍞',
+    nombre: 'Tostadas con miel, plátano y zumo',
+    tipos: ['desayuno'],
+    tiempo: 5,
+    ingredientes: [
+      { a: 'pan_blanco', g: 100, rol: 'C' },
+      { a: 'miel', g: 25 },
+      { a: 'platano', g: 110 },
+      { a: 'zumo_naranja', g: 250 },
+      { a: 'pavo_fiambre', g: 40, rol: 'P' },
+    ],
+    pasos: ['Tuesta el pan y úntalo con la miel.', 'Acompáñalo con el plátano, el zumo y unas lonchas de pavo.'],
+    consejo: 'Es el desayuno de la carga y el de la mañana de la carrera: 3 h antes de salir, y nada nuevo.',
+  },
+  {
+    id: 'carga-bocadillo-pavo-zumo', soloCarga: true,
+    emoji: '🥖',
+    nombre: 'Bocadillo de pavo con zumo',
+    tipos: ['snack'],
+    tiempo: 3,
+    ingredientes: [
+      { a: 'pan_blanco', g: 80, rol: 'C' },
+      { a: 'pavo_fiambre', g: 50, rol: 'P' },
+      { a: 'zumo_naranja', g: 250 },
+    ],
+    pasos: ['Rellena el pan con el pavo y acompáñalo con el zumo.'],
+  },
+  {
+    id: 'carga-arroz-pollo', soloCarga: true,
+    emoji: '🍚',
+    nombre: 'Arroz blanco con pollo a la plancha y tomate',
+    tipos: ['comida', 'cena'],
+    tiempo: 20,
+    ingredientes: [
+      { a: 'arroz', g: 100, rol: 'C' },
+      { a: 'pollo_pechuga', g: 130, rol: 'P' },
+      { a: 'tomate_frito', g: 60 },
+      { a: 'aceite', g: 5, rol: 'G' },
+    ],
+    especias: ['sal'],
+    pasos: ['Cuece el arroz 18 minutos en agua con sal y escúrrelo.', 'Haz el pollo a la plancha con el aceite y sírvelo con el arroz y el tomate frito caliente.'],
+  },
+  {
+    id: 'carga-pasta-pavo', soloCarga: true,
+    emoji: '🍝',
+    nombre: 'Macarrones con pavo y tomate',
+    tipos: ['comida', 'cena'],
+    tiempo: 15,
+    ingredientes: [
+      { a: 'pasta', g: 100, rol: 'C' },
+      { a: 'pavo_pechuga', g: 120, rol: 'P' },
+      { a: 'tomate_frito', g: 70 },
+      { a: 'aceite', g: 5, rol: 'G' },
+    ],
+    especias: ['oregano'],
+    pasos: ['Cuece los macarrones según el paquete.', 'Dora el pavo en tiras con el aceite, añade el tomate frito y mézclalo con la pasta.'],
+  },
   // Más formas de cocinar lo de siempre (data/recetas-variedad.js)
   ...RECETAS_VARIEDAD,
 ];

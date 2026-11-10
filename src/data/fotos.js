@@ -584,6 +584,26 @@ export const FOTOS_RECETAS = {
   "autor": "Imagen generada con Canva",
   "licencia": "Canva",
   "fuente": "https://www.canva.com"
+ },
+ "carga-tostadas-miel-zumo": {
+  "autor": "Sonnie Hiles",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/taza-de-cafe-con-leche-y-panes-de-molde-y1vHhKsAFXc"
+ },
+ "carga-bocadillo-pavo-zumo": {
+  "autor": "Tamorlan",
+  "licencia": "CC BY-SA 3.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Bocadillo_Chorizo_-_Madrid.JPG"
+ },
+ "carga-arroz-pollo": {
+  "autor": "Surja Sen Das Raj",
+  "licencia": "Unsplash",
+  "fuente": "https://unsplash.com/es/fotos/un-plato-blanco-cubierto-con-pollo-y-arroz-sZKGepvBAIw"
+ },
+ "carga-pasta-pavo": {
+  "autor": "Juan Emilio Prades Bel",
+  "licencia": "CC BY 4.0",
+  "fuente": "https://commons.wikimedia.org/wiki/File:Macarrones_con_salsa_de_tomate_frito_(Espa%C3%B1a).jpg"
  }
 };
 
