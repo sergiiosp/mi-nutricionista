@@ -45,12 +45,19 @@ const ids = new Set();
 for (const a of Object.values(ALIMENTOS)) if (a.mercadona) ids.add(a.mercadona);
 for (const e of Object.values(ESPECIAS)) if (e.mercadona) ids.add(e.mercadona);
 
-const precios = NUEVOS ? { ...(await import(pathToFileURL(path.join(RAIZ, 'src', 'data', 'precios.js')).href)).PRECIOS } : {};
+// Los precios de la vez anterior: si un producto no aparece (fruta fuera de temporada, un producto retirado…),
+// se queda con su último precio marcado como no disponible, en vez de perderlo
+const ANTERIORES = (await import(pathToFileURL(path.join(RAIZ, 'src', 'data', 'precios.js')).href)).PRECIOS;
+const precios = NUEVOS ? { ...ANTERIORES } : {};
 const fallidos = [];
 for (const id of ids) {
   if (precios[id]) continue;
   const p = await producto(id);
-  if (!p || !p.price_instructions) { fallidos.push(id); continue; }
+  if (!p || !p.price_instructions) {
+    fallidos.push(id);
+    if (ANTERIORES[id]) precios[id] = { ...ANTERIORES[id], disponible: false };
+    continue;
+  }
   const pi = p.price_instructions;
   const c = contenido(pi);
   precios[id] = {
@@ -72,13 +79,18 @@ for (const id of ids) {
   await espera(150);
 }
 
+if (fallidos.length) {
+  console.log(`\nNo encontrados (se quedan con su último precio; si no vuelven, revisa el id en data/alimentos.js o data/productos.js): ${fallidos.join(', ')}`);
+  // Unos pocos que faltan no deben impedir guardar el resto (antes el paso fallaba y se perdía toda la actualización).
+  // Solo es un error si falta mucho: entonces lo raro es la tienda (caída o cambio de API), no los productos
+  if (fallidos.length > ids.size * 0.1) {
+    console.log('Faltan demasiados: no se guardan los precios.');
+    process.exit(1);
+  }
+}
 const salida = `// Generado por scripts/actualizar-precios.mjs — no editar a mano.
 export const PRECIOS_INFO = ${JSON.stringify({ almacen: ALMACEN, actualizado: new Date().toISOString() })};
 export const PRECIOS = ${JSON.stringify(precios, null, 1)};
 `;
 await writeFile(path.join(RAIZ, 'src', 'data', 'precios.js'), salida);
 console.log(`\n${Object.keys(precios).length} productos actualizados.`);
-if (fallidos.length) {
-  console.log(`No encontrados (revisa el id en data/alimentos.js): ${fallidos.join(', ')}`);
-  process.exitCode = 1;
-}

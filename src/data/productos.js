@@ -2386,7 +2386,7 @@ export const PRODUCTOS = {
   "catalogo": true
  },
  "pasta_lentejas": {
-  "nombre": "Pasta fusilli 100% lentejas rojas Felicia",
+  "nombre": "Pasta fusilli 100% lentejas rojas Hacendado",
   "kcal": 334,
   "p": 26,
   "c": 50,
@@ -2397,7 +2397,7 @@ export const PRODUCTOS = {
   "al": [
    "gluten"
   ],
-  "mercadona": "6106",
+  "mercadona": "21395",
   "catalogo": true
  },
  "noodles_arroz": {
@@ -3542,7 +3542,7 @@ export const PRODUCTOS = {
   "catalogo": true
  },
  "crema_calabacin": {
-  "nombre": "Crema de calabacín Hacendado (brik)",
+  "nombre": "Crema de calabacín Hacendado",
   "kcal": 42,
   "p": 0.8,
   "c": 6.1,
@@ -3553,7 +3553,7 @@ export const PRODUCTOS = {
   "al": [
    "lactosa"
   ],
-  "mercadona": "14930",
+  "mercadona": "35870",
   "medida": "ml",
   "alias": "pure sopa",
   "catalogo": true

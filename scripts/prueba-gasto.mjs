@@ -5,11 +5,15 @@ const { crearPlan, revisarGasto } = await import('../src/lib/acciones.js');
 const { calcularObjetivos, macrosComida } = await import('../src/lib/nutricion.js');
 const { hoyISO, sumarDias } = await import('../src/lib/planificador.js');
 const { gastoReal } = await import('../src/lib/gasto.js');
+const { fijarPerfilRecetas } = await import('../src/lib/sustituciones.js');
 
 let fallos = 0;
 const ok = (c, t) => { console.log(`${c ? '✓' : '✗'} ${t}`); if (!c) fallos++; };
 const hoy = hoyISO();
 const perfil = { sexo: 'h', edad: 30, altura: 178, peso: 80, trabajo: 'sentado', trabajoInicio: '09:00', trabajoFin: '18:00', despertar: '07:00', dormir: '23:30', pasos: 'normal', entrena: true, deportes: ['fuerza', 'carrera'], diasEntreno: [1, 2, 4, 5], horaEntreno: '18:30', duracionEntreno: 60, intensidad: 'moderada', objetivo: 'recomposicion', ritmo: 'moderado', comidas: 4, alergias: [], noMeGusta: [], dieta: 'omnivora', condiciones: [], leche: 'avena', whey: true };
+// Como en la app (main.js): las recetas salen adaptadas a tu perfil. Sin esto, los días de entreno con un plato
+// de leche (que pasa a bebida de avena) cambiaban de kcal al reajustar y la prueba fallaba «a veces»
+fijarPerfilRecetas(perfil);
 actualizar((e) => { e.perfil = perfil; e.pesos = []; e.registros = {}; });
 crearPlan();
 const o = calcularObjetivos(perfil);

@@ -52,13 +52,24 @@ const ws = new WebSocket(lista.find((t) => t.type === 'page').webSocketDebuggerU
 await new Promise((r) => ws.addEventListener('open', r));
 let n = 0;
 const pendientes = new Map();
-ws.addEventListener('message', (ev) => { const m = JSON.parse(ev.data); if (m.id && pendientes.has(m.id)) { pendientes.get(m.id)(m); pendientes.delete(m.id); } });
+// Errores de la propia app (excepciones y console.error) mientras se recorren las pantallas: se cuentan y se
+// enseñan al final, para que un fallo que no se ve en la captura no pase desapercibido
+const erroresApp = new Map();
+const anotarError = (texto) => { const t = String(texto || '').split(/\r?\n/)[0].slice(0, 200); erroresApp.set(t, (erroresApp.get(t) || 0) + 1); };
+ws.addEventListener('message', (ev) => {
+  const m = JSON.parse(ev.data);
+  if (m.id && pendientes.has(m.id)) { pendientes.get(m.id)(m); pendientes.delete(m.id); }
+  if (m.method === 'Runtime.exceptionThrown') anotarError(m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text);
+  if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') anotarError(m.params.args.map((a) => a.value ?? a.description ?? '').join(' '));
+});
 const cdp = (method, params = {}) => new Promise((r) => { const id = ++n; pendientes.set(id, r); ws.send(JSON.stringify({ id, method, params })); });
 const js = async (codigo) => {
   const r = await cdp('Runtime.evaluate', { expression: `(async () => { ${codigo} })()`, awaitPromise: true, returnByValue: true });
   if (r.result?.exceptionDetails) console.error('JS:', r.result.exceptionDetails.exception?.description || r.result.exceptionDetails.text);
   return r.result?.result?.value;
 };
+
+await cdp('Runtime.enable');
 
 // Martes 20 de octubre de 2026 a las 13:05, siempre; y Math.random con semilla
 await cdp('Page.addScriptToEvaluateOnNewDocument', { source: `
@@ -293,6 +304,10 @@ nav.kill();
 await Promise.race([cerrado, espera(5000)]);
 await servidor.close();
 try { fs.rmSync(perfil, { recursive: true, force: true, maxRetries: 8, retryDelay: 400 }); } catch { /* Edge aún suelta el perfil: lo limpia Windows */ }
+if (erroresApp.size) {
+  console.log(`Errores de la app en la consola (${[...erroresApp.values()].reduce((a, b) => a + b, 0)}):`);
+  for (const [t, veces] of erroresApp) console.log(`  ${veces} × ${t}`);
+} else console.log('Sin errores de la app en la consola.');
 if (BASE) console.log(`${hechas.length} capturas de base en pantallas/base/`);
 else {
   console.log(`${hechas.length} capturas comparadas: ${cambiadas.length ? `${cambiadas.length} han cambiado → pantallas/informe.html` : 'todo igual'}`);

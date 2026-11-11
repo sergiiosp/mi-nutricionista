@@ -146,6 +146,13 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
         // Simulacro una semana sí y otra no (y nunca en descarga); la otra, rodaje largo
         if (idx >= 0 && (deload || ((w - inicioFase('especifico')) % 2 === 1 && w !== simCompletoSemana))) tipos[idx] = dias.length >= 4 ? 'largo' : 'compromised';
       }
+      // Sin carrera HYROX (un bloque para bajar grasa o para una carrera de calle) y con 5 días o menos: la sesión
+      // de estaciones va una semana sí y otra no, y en la otra, un rodaje suave (más carrera sin añadir días)
+      if (!carrera && config.enfoque === 'hyrox' && dias.length <= 5 && w % 2 === 1) {
+        // (carrera + estaciones y simulacro ya llevan mucha carrera: se quedan)
+        const i = tipos.indexOf('estaciones');
+        if (i >= 0) tipos[i] = 'rodaje';
+      }
     }
 
     const semana = { w, fase, deload, ajuste, lunes, sesiones: [] };

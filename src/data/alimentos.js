@@ -61,8 +61,8 @@ export const ALIMENTOS = {
   avena: { nombre: 'Copos de avena', kcal: 370, p: 13.5, c: 59, g: 7, f: 10, grupo: 'hidrato', dieta: 'vegetal', al: ['gluten'], mercadona: '86341' },
   pan_integral: { nombre: 'Barra de pan integral 100%', kcal: 250, p: 10, c: 43, g: 2.5, f: 7, grupo: 'hidrato', dieta: 'vegetal', al: ['gluten'], mercadona: '17912.1', paso: 10 },
   // Para la carga de hidratos y el día de carrera: hidratos con poca fibra (el resto del tiempo, mejor integral)
-  pan_blanco: { nombre: 'Barra de pan', kcal: 265, p: 8.5, c: 53, g: 1.5, f: 2.5, grupo: 'hidrato', dieta: 'vegetal', al: ['gluten'], paso: 10 },
-  zumo_naranja: { nombre: 'Zumo de naranja', kcal: 45, p: 0.7, c: 10, g: 0.1, f: 0.2, grupo: 'otros', dieta: 'vegetal', al: [], medida: 'ml' },
+  pan_blanco: { nombre: 'Barra de pan', kcal: 265, p: 8.5, c: 53, g: 1.5, f: 2.5, grupo: 'hidrato', dieta: 'vegetal', al: ['gluten'], mercadona: '83202.1', paso: 10 },
+  zumo_naranja: { nombre: 'Zumo de naranja', kcal: 45, p: 0.7, c: 10, g: 0.1, f: 0.2, grupo: 'otros', dieta: 'vegetal', al: [], mercadona: '21777', medida: 'ml' },
   pan_molde: { nombre: 'Pan de molde integral con avena', kcal: 250, p: 11, c: 38, g: 4, f: 7, grupo: 'hidrato', dieta: 'vegetal', al: ['gluten'], mercadona: '18294', unidad: { n: 'rebanada', pl: 'rebanadas', g: 30 }, redondeo: 'unidad' },
   tortitas_arroz: { nombre: 'Tortitas de arroz', kcal: 385, p: 8, c: 80, g: 2.8, f: 3, grupo: 'hidrato', dieta: 'vegetal', al: [], mercadona: '14013', unidad: { n: 'tortita', pl: 'tortitas', g: 7.7 }, redondeo: 'unidad' },
   tortilla_trigo: { nombre: 'Tortillas de trigo integrales', kcal: 290, p: 9, c: 45, g: 7, f: 6, grupo: 'hidrato', dieta: 'vegetal', al: ['gluten'], mercadona: '80942', unidad: { n: 'tortilla', pl: 'tortillas', g: 45 }, redondeo: 'unidad' },
