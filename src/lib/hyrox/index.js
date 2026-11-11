@@ -40,8 +40,9 @@ export function proveedorDe(e) {
     if (cambio === 'si' && !(sesiones || []).some((s) => !s.carga && s.tipo !== 'recuperacion')) return [...(sesiones || []), sesionExtra(e.perfil)];
     return sesiones;
   };
-  // Fase del plan en esa fecha: la nutrición cambia con ella (específico y puesta a punto, a mantenimiento)
-  proveedor.fase = (fecha) => (plan && fecha >= plan.inicio && fecha <= limite ? semanaDe(plan, fecha)?.fase || null : null);
+  // Fase del plan en esa fecha: la nutrición cambia con ella (específico y puesta a punto, a mantenimiento).
+  // Solo hacia una carrera HYROX: en un bloque sin ella (p. ej. para bajar grasa), el déficit se mantiene
+  proveedor.fase = (fecha) => (plan?.carrera && fecha >= plan.inicio && fecha <= limite ? semanaDe(plan, fecha)?.fase || null : null);
   return proveedor;
 }
 

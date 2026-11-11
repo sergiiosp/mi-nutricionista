@@ -197,6 +197,21 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
     sesiones.push(...w.sesiones);
   }
   sesiones.push(...sueltas);
+  // Tras la carrera del plan, semana de vuelta: recuperación, movilidad y un rodaje suave; nada fuerte
+  if (carrera) {
+    const rit = ritmos(config, perfil);
+    const dia = (id, d, titulo) => ({ id, semana: -1, fase: 'base', fecha: sumarDias(carrera, d), fechaOriginal: sumarDias(carrera, d), hora: config.hora || '18:30', ...construirSesion({ tipo: 'recuperacion', fase: 'base', config, perfil, rit }), titulo });
+    const vuelta = [
+      dia('vuelta-1', 1, 'Recuperación tras la carrera'),
+      dia('vuelta-3', 3, 'Movilidad y paseo'),
+      rodajeSuave(dia('vuelta-4', 4, ''), {
+        dur: 30, titulo: 'Rodaje suave de vuelta',
+        lineas: [`Ritmo ${mmss(rit.z2 + 20)}/km o más lento: debes poder hablar`, 'Si las piernas siguen cargadas, mejor 30 min de bici suave'],
+        nota: 'Vuelta tras la carrera: nada fuerte hasta que las piernas estén frescas.',
+      }, rit),
+    ];
+    for (const s of vuelta) if (!sesiones.some((x) => x.fecha === s.fecha)) sesiones.push(s);
+  }
 
   // Lo que ya registraste no cambia ni desaparece: la sesión se queda como la hiciste aunque luego
   // cambies los días, el enfoque o la app se actualice (si ese día ya no está en el plan, se añade tal cual)
@@ -374,7 +389,21 @@ function aplicarAgenda(semanas, agenda, { config, perfil, rit, cargasExtra }) {
       cargasExtra.push(sumarDias(F, -1));
       if (km >= 30) cargasExtra.push(sumarDias(F, -2));
     } else {
-      quitar((s) => s.fecha === F);
+      // Carrera corta (5-10 km): dos días antes, un rodaje suave en vez de lo fuerte (o la fuerza más ligera),
+      // y la víspera, descanso
+      const nombreEv = (ev.nombre || KM_NOMBRE(km)).toLowerCase();
+      for (const w of semanas) {
+        w.sesiones = w.sesiones.map((s) => {
+          if (s.tipo === 'carrera' || antes(s) !== 2) return s;
+          if (s.ejercicios?.length) return ligera(s, `Antes de tu ${nombreEv}: una serie menos y un 70 % del peso. Nada de pierna pesada.`);
+          return rodajeSuave(s, {
+            dur: 30, titulo: 'Rodaje suave antes de tu carrera',
+            lineas: [`Ritmo ${mmss(rit.z2)}/km o más lento: debes poder hablar`, 'Al final, 4 progresiones de 80 m para soltar piernas'],
+            nota: `Tu ${nombreEv} es en dos días: hoy toca soltar piernas, no entrenar fuerte.`,
+          }, rit);
+        });
+      }
+      quitar((s) => antes(s) >= 0 && antes(s) <= 1);
     }
     poner({ id: `ev-${ev.id}`, fecha: F, fechaOriginal: F, hora: ev.hora || '09:00', ...sesionCarrera(ev, km, rit, perfil) });
   }

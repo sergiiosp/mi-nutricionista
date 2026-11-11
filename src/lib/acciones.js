@@ -504,6 +504,25 @@ export function horaHyrox2026() {
   });
 }
 
+// Bloque tras la HYROX del 11-nov, el que eligió Sergio ese día: desde el lunes 16, perder grasa a ritmo moderado,
+// plan «Solo HYROX» (más carrera y estaciones, fuerza para rendir) con exigencia «exigente» y su 10 km del 31-dic.
+// Una sola vez: lo que cambie después en Tu HYROX o en Tu perfil se respeta.
+export function bloqueTrasHyrox2026() {
+  const e = get(estado);
+  const c = e.hyrox?.config;
+  if (hoyISO() < '2026-11-16' || !c || c.fechaCarrera !== '2026-11-11' || e.migraciones?.bloque2026) return;
+  actualizar((x) => {
+    const { fechaCarrera, horaCarrera, duracionEstimada, ...config } = x.hyrox.config;
+    x.hyrox.config = { ...config, inicio: '2026-11-16', enfoque: 'hyrox', exigencia: 'exigente' };
+    x.perfil = { ...x.perfil, objetivo: 'perder', ritmo: 'moderado' };
+    if (!x.agenda.eventos.some((ev) => ev.fecha === '2026-12-31')) {
+      x.agenda.eventos = [...x.agenda.eventos, { id: 'diezk-2026-12-31', fecha: '2026-12-31', hora: '09:00', km: 10, nombre: '10 km' }].sort((a, b) => a.fecha.localeCompare(b.fecha));
+    }
+    x.migraciones = { ...x.migraciones, bloque2026: true };
+  });
+  anotarDiario('bloque-2026-11-16', 'Bloque nuevo: definición y agilidad', 'Perder grasa a ritmo moderado (unos 0,5 kg por semana), más carrera, fuerza de mantenimiento y tu 10 km del 31 de diciembre.');
+}
+
 /**
  * Días de carga de hidratos y de carrera creados con reglas anteriores (REGLAS_CARRERA): se rehacen sus comidas
  * pendientes con las de ahora (poca fibra, proteína justa, sin lácteo, desayuno según la hora de salida).

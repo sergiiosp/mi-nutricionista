@@ -3,7 +3,7 @@ import './app.css';
 import App from './App.svelte';
 import { iniciarNube } from './lib/nube/sincro.js';
 import { iniciarAvisos } from './lib/nube/avisos.js';
-import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto, horaHyrox2026, rehacerDiasCarrera } from './lib/acciones.js';
+import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto, horaHyrox2026, rehacerDiasCarrera, bloqueTrasHyrox2026 } from './lib/acciones.js';
 import { get } from 'svelte/store';
 import { estado } from './stores/estado.js';
 import { hoja } from './stores/ui.js';
@@ -30,6 +30,8 @@ copiarHoy().finally(() => {
   // y se recalculan las cantidades para que el reparto del día siga cuadrando
   // (y siempre se recalculan cantidades: si el plan de entreno cambió con una versión nueva, el menú lo sigue)
   horaHyrox2026();
+  // Desde el lunes 16-nov, el bloque que elegiste tras la HYROX (perder grasa, más carrera y tu 10 km)
+  bloqueTrasHyrox2026();
   completarMenu();
   // Los días de carga y de carrera hechos con reglas anteriores rehacen lo que te queda por comer
   rehacerDiasCarrera();
