@@ -15,7 +15,9 @@ export function estadoRevision(e, hoy) {
   const dias = base ? diasEntre(base, hoy) : null;
   const enCurso = e.revision?.inicio || null;
   const pospuesta = e.revisionPospuesta && sumarDias(e.revisionPospuesta, 3) > hoy;
-  const toca = !!enCurso || (dias != null && dias >= (ultima ? CADA : 14));
+  // Al empezar un bloque (p. ej. tras una carrera), una revisión de partida: fotos y báscula de referencia
+  const partida = !!e.revisionDesde && hoy >= e.revisionDesde && !(ultima >= e.revisionDesde);
+  const toca = !!enCurso || partida || (dias != null && dias >= (ultima ? CADA : 14));
   return { toca, aviso: toca && !pospuesta, enCurso, ultima, proxima: base ? sumarDias(base, ultima ? CADA : 14) : null, dias };
 }
 

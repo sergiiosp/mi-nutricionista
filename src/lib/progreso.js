@@ -32,6 +32,16 @@ export function tendencia(pesos, ventanaDias = 21) {
   };
 }
 
+/** Media de tus pesajes de los 7 días que acaban en el último (null sin pesajes): { peso, n, desde, hasta }. */
+export function mediaSemana(pesos) {
+  if (!pesos?.length) return null;
+  const ordenados = [...pesos].sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const ultimo = fechaMs(ordenados.at(-1).fecha);
+  const semana = ordenados.filter((p) => ultimo - fechaMs(p.fecha) < 7 * DIA_MS);
+  const peso = Math.round((semana.reduce((s, p) => s + p.peso, 0) / semana.length) * 10) / 10;
+  return { peso, n: semana.length, desde: semana[0].fecha, hasta: ordenados.at(-1).fecha };
+}
+
 /**
  * Compara el ritmo real con el esperado y propone un ajuste de kcal.
  * Necesita al menos 2 semanas de datos para no reaccionar a fluctuaciones de agua.

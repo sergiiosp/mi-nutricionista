@@ -23,6 +23,7 @@ const CARGADORES = {
   informe: () => import('../components/Informe.svelte'),
   revision: () => import('../components/Revision.svelte'),
   buzon: () => import('../components/Buzon.svelte'),
+  repaso: () => import('../components/RepasoDomingo.svelte'),
 };
 
 const promesas = {};

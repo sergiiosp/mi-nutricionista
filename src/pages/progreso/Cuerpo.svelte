@@ -7,16 +7,19 @@
   import { estado } from '../../stores/estado.js';
   import { ir } from '../../stores/ruta.js';
   import { num } from '../../lib/formato.js';
-  import { tendencia } from '../../lib/progreso.js';
+  import { tendencia, mediaSemana } from '../../lib/progreso.js';
 
   let { parte = 'peso' } = $props();
   let vista = $derived(parte); // se puede cambiar tocando las fichas
   const ordenar = (l) => [...(l || [])].sort((a, b) => a.fecha.localeCompare(b.fecha));
   const pesos = $derived(ordenar($estado.pesos));
   const t = $derived(tendencia(pesos));
+  const media = $derived(mediaSemana(pesos));
   const dif = (l, k) => (l.length > 1 ? l.at(-1)[k] - l[0][k] : null);
+  // La ficha de Peso enseña el ritmo por semana (la media de 7 días va en grande justo debajo, sin repetirla)
+  const signo = (x) => (x > 0 ? '+' : x < 0 ? '−' : '');
   const fichas = $derived([
-    { id: 'peso', icono: 'scale', nombre: 'Peso', valor: pesos.at(-1) ? num(pesos.at(-1).peso, 1) : '—', unidad: 'kg', cambio: dif(pesos, 'peso') },
+    { id: 'peso', icono: 'scale', nombre: 'Peso', valor: t ? `${signo(t.kgSemana)}${num(Math.abs(t.kgSemana), 2)}` : media ? num(media.peso, 1) : '—', unidad: t ? 'kg/sem' : 'kg', cambio: dif(pesos, 'peso') },
     { id: 'fotos', icono: 'camera', nombre: 'Fotos', valor: String(($estado.fotosProgreso || []).length), unidad: '', cambio: null },
   ]);
   function elegir(id) { vista = id; ir('progreso', id); }
@@ -27,7 +30,7 @@
     <button role="tab" aria-selected={vista === f.id} class:activa={vista === f.id} onclick={() => elegir(f.id)}>
       <span class="f-cab"><Icono n={f.icono} tam={14} grosor={2.2} /> {f.nombre}</span>
       <b class="cifra">{f.valor}{#if f.unidad}<em>{f.unidad}</em>{/if}</b>
-      {#if f.id === 'peso' && t}<small class:baja={t.kgSemana < 0}>{t.kgSemana > 0 ? '+' : t.kgSemana < 0 ? '−' : ''}{num(Math.abs(t.kgSemana), 2)} kg/semana</small>
+      {#if f.id === 'peso' && t}<small class:baja={t.kgSemana < 0}>ritmo de las últimas semanas</small>
       {:else if f.cambio != null}<small class:baja={f.cambio < 0}>{f.cambio > 0 ? '+' : f.cambio < 0 ? '−' : ''}{num(Math.abs(f.cambio), 1)} desde el inicio</small>{:else}<small>{f.id === 'fotos' ? 'antes y ahora' : 'sin datos aún'}</small>{/if}
     </button>
   {/each}

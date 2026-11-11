@@ -29,7 +29,10 @@ const est = gastoReal(get(estado), o, hoy);
 ok(est.listo && Math.abs(est.tdee - 2685) <= 30, `Gasto real ≈ 2.685 kcal (${est.tdee})`);
 const kcalDia = (f) => Math.round(get(estado).plan.dias.find((d) => d.fecha === f).comidas.reduce((s, x) => s + macrosComida(x.ingredientes).kcal, 0));
 const hoyAntes = kcalDia(hoy), mananaAntes = kcalDia(sumarDias(hoy, 1));
-const r = revisarGasto(true);
+// Sin aplicar (lo normal desde el 11-nov: lo decide el repaso del domingo), solo se calcula y se guarda
+const solo = revisarGasto(true);
+ok(solo.sugerido !== 0 && get(estado).perfil.ajusteGasto === undefined && kcalDia(sumarDias(hoy, 1)) === mananaAntes, `Sin aplicar, el gasto se calcula pero no cambia el plan (sugerido ${solo.sugerido} kcal)`);
+const r = revisarGasto(true, { aplicar: true });
 ok(r.ajuste !== 0 && Math.abs(r.ajuste) <= 400, `Ajuste a medio camino y con tope (${r.ajuste} kcal; fórmula ${r.formula})`);
 ok(get(estado).perfil.ajusteGasto === r.ajuste, 'El ajuste queda en el perfil');
 ok(Math.abs(kcalDia(hoy) - hoyAntes) < 15, `Hoy no cambia (${hoyAntes} → ${kcalDia(hoy)})`);

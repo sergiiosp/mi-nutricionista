@@ -4,7 +4,6 @@
   import Icono from '../../components/Icono.svelte';
   import Anillos from '../../components/Anillos.svelte';
   import Numero from '../../components/Numero.svelte';
-  import RepasoSemanal from '../../components/RepasoSemanal.svelte';
   import { abrirHoja } from '../../stores/ui.js';
   import { estado } from '../../stores/estado.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
@@ -13,6 +12,7 @@
   import { planDe } from '../../lib/hyrox/index.js';
   import { semanaDe } from '../../lib/hyrox/plan.js';
   import { estadoRevision } from '../../lib/revision.js';
+  import { tocaRepaso, repasoHecho, claveRepaso } from '../../lib/feedback.js';
   import { diaCorto, entero, fechaCorta } from '../../lib/formato.js';
 
   const hoy = hoyISO();
@@ -35,6 +35,7 @@
   ]);
 
   const rev = $derived(estadoRevision($estado, hoy));
+  const repasoToca = $derived(tocaRepaso($estado, hoy));
   const maxKcal = $derived(Math.max(...s.porDia.map((d) => Math.max(d.r?.m.kcal || 0, d.r?.od.kcal || objetivos.kcal))) * 1.05);
 </script>
 
@@ -93,10 +94,9 @@
   {#each s.consejos as c (c)}<p>{c}</p>{/each}
 </div>
 
-<RepasoSemanal />
-
 <section class="herramientas" aria-label="Herramientas">
   <button class:toca={rev.toca} onclick={() => abrirHoja('revision')}><Icono n="clipboard-list" tam={20} /><b>Revisión del mes</b><small>{rev.enCurso ? 'A medias' : rev.toca ? 'Toca ya' : `Próxima: ${fechaCorta(rev.proxima)}`}</small></button>
+  <button class:toca={repasoToca} onclick={() => abrirHoja('repaso')}><Icono n="list-checks" tam={20} /><b>Repaso del domingo</b><small>{repasoToca ? 'Toca hoy' : repasoHecho($estado.feedback?.semanas?.[claveRepaso(hoy)]) ? 'Hecho esta semana' : 'Báscula y 5 preguntas'}</small></button>
   <button onclick={() => abrirHoja('tuPlan')}><Icono n="sparkles" tam={20} /><b>Tu semana, explicada</b><small>Por qué tus números</small></button>
   <button onclick={() => abrirHoja('informe')}><Icono n="scroll-text" tam={20} /><b>Informe del mes</b><small>En PDF, con fotos</small></button>
 </section>
@@ -112,7 +112,7 @@
   .leyenda b { font-size: 1.45rem; line-height: 1.05; color: var(--c); }
   .leyenda b span { font-size: 0.8rem; font-weight: 600; color: var(--texto-3); margin-left: 2px; }
 
-  .herramientas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .herramientas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
   .herramientas button { display: grid; justify-items: start; align-content: start; gap: 2px; min-height: 96px; padding: 12px 13px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
   .herramientas button > :global(svg) { margin-bottom: 6px; color: var(--texto); }
   .herramientas b { font-size: 0.88rem; line-height: 1.2; }

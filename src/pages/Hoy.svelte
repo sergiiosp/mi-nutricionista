@@ -7,6 +7,7 @@
   import { planDe, sesionesDia } from '../lib/hyrox/index.js';
   import { estado, actualizar, añadirRegistro, horaActual } from '../stores/estado.js';
   import { avisar, abrirHoja } from '../stores/ui.js';
+  import { tocaRepaso } from '../lib/feedback.js';
   import { calcularObjetivos, DEPORTES, cantidadTexto, macrosComida } from '../lib/nutricion.js';
   import { hoyISO, recetaPorId } from '../lib/planificador.js';
   import { estadoDia, sugerencias, faltas } from '../lib/dia.js';
@@ -210,6 +211,14 @@
 
 
 
+  {#if tocaRepaso($estado, hoy)}
+    <button class="repaso-hoy" onclick={() => abrirHoja('repaso')}>
+      <span class="rh-ic"><Icono n="clipboard-list" tam={20} /></span>
+      <span class="rh-txt"><b>Repaso del domingo</b><small>Báscula, cinco preguntas y el ajuste de la semana que viene · 2 min</small></span>
+      <Icono n="chevron-right" tam={18} />
+    </button>
+  {/if}
+
   {#if entrenoHoy && sesPrincipal && !regPrincipal && !['caminar', 'recuperacion', 'popular'].includes(sesPrincipal.tipo) && (momento !== 'noche' || $estado.hyrox?.forma?.[hoy])}
     <ComoLlegas fecha={hoy} sesion={sesPrincipal} />
   {/if}
@@ -389,6 +398,12 @@
   /* El día en anillos */
   /* El día en cifras, al estilo de Cal AI */
   .dia-cifras { display: grid; gap: 10px; }
+  .repaso-hoy { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; margin-top: 12px; padding: 10px 14px 10px 10px; border: 0; border-radius: var(--r-l); background: var(--superficie); box-shadow: inset 0 0 0 1.5px var(--texto), var(--sombra); color: var(--texto); font: inherit; text-align: left; cursor: pointer; }
+  .rh-ic { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--r-s); background: var(--superficie-2); flex-shrink: 0; }
+  .rh-txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
+  .rh-txt b { font-size: 0.95rem; font-weight: 600; }
+  .rh-txt small { font-size: 0.78rem; color: var(--texto-2); line-height: 1.3; }
+  .repaso-hoy > :global(svg:last-child) { color: var(--texto-3); flex-shrink: 0; }
   .kcal { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 20px 24px 24px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
   .k-txt { display: grid; gap: 8px; min-width: 0; }
   .k-cifra { display: flex; align-items: baseline; gap: 2px; padding: 0; border: 0; background: none; color: var(--texto); font: inherit; cursor: pointer; text-align: left; }

@@ -5,6 +5,7 @@ import { estadoRevision } from './revision.js';
 import { diaPreparar, planBatch } from './batch.js';
 import { explicarPlan } from './coach.js';
 import { calcularObjetivos } from './nutricion.js';
+import { tocaRepaso } from './feedback.js';
 
 /** Lista de avisos que tocan hoy: [{ id, texto }] */
 export function avisosPendientes(e, hoy, nubeActiva = false) {
@@ -29,6 +30,9 @@ export function avisosPendientes(e, hoy, nubeActiva = false) {
   const conDatos = Object.values(e.registros || {}).reduce((s, x) => s + x.length, 0) >= 3;
   const pospuesto = e.copiaPospuesta && sumarDias(e.copiaPospuesta, 3) > hoy;
   if (!nubeActiva && conDatos && !pospuesto && (dias == null || dias >= 7)) l.push({ id: 'copia', texto: 'Guardar una copia' });
+
+  // Repaso del domingo (RepasoDomingo): el domingo y, si se te pasó, el lunes
+  if (tocaRepaso(e, hoy)) l.push({ id: 'repaso', texto: 'Repaso del domingo' });
 
   // Revisión del mes (AvisoRevision)
   if (estadoRevision(e, hoy).aviso) l.push({ id: 'revision', texto: 'Revisión del mes' });

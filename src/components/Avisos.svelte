@@ -13,6 +13,7 @@
   import { nube } from '../lib/nube/sincro.js';
   import { hoyISO } from '../lib/planificador.js';
   import { avisosPendientes } from '../lib/avisos.js';
+  import { tocaRepaso } from '../lib/feedback.js';
   import { explicarPlan } from '../lib/coach.js';
   import { calcularObjetivos } from '../lib/nutricion.js';
 
@@ -20,11 +21,19 @@
   const pendientes = $derived(avisosPendientes($estado, hoy, $nube.activa).filter((a) => a.id !== 'semana-explicada'));
   const coach = $derived(explicarPlan($estado, calcularObjetivos($estado.perfil), hoy));
   const coachNuevo = $derived($estado.coachVisto !== coach.lunes);
+  const repaso = $derived(tocaRepaso($estado, hoy));
 </script>
 
 <div class="avisos">
   {#if !pendientes.length}
     <p class="al-dia"><Icono n="check" tam={18} grosor={2.4} /> Todo al día: no tienes nada pendiente.</p>
+  {/if}
+  {#if repaso}
+    <button class="coach nuevo" onclick={() => abrirHoja('repaso')}>
+      <span class="co-ic"><Icono n="clipboard-list" tam={18} /></span>
+      <span class="co-txt"><small>Toca hoy · 2 minutos</small><b>Repaso del domingo: báscula, cinco preguntas y el ajuste de la semana que viene</b></span>
+      <Icono n="chevron-right" tam={18} />
+    </button>
   {/if}
   <PropuestaSemana />
   <PropuestaHyrox />

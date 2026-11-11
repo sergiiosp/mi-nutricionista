@@ -1,27 +1,25 @@
 <script>
   import Icono from '../../components/Icono.svelte';
-  import Emoji from '../../components/Emoji.svelte';
+  import FormPeso from '../../components/FormPeso.svelte';
   import { estado, actualizar, anotarDiario } from '../../stores/estado.js';
-  import { avisar } from '../../stores/ui.js';
+  import { avisar, abrirHoja } from '../../stores/ui.js';
   import { calcularObjetivos } from '../../lib/nutricion.js';
   import { hoyISO } from '../../lib/planificador.js';
-  import { tendencia, recomendacion } from '../../lib/progreso.js';
-  import { reajustarPlan, guardarPeso } from '../../lib/acciones.js';
+  import { tendencia, recomendacion, mediaSemana } from '../../lib/progreso.js';
+  import { reajustarPlan } from '../../lib/acciones.js';
   import { MINIMOS } from '../../lib/gasto.js';
   import { fechaCorta, num } from '../../lib/formato.js';
-  import { ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, avisoVisceral, CAMPOS } from '../../lib/cuerpo.js';
+  import { ultimaComposicion, cambioCuerpo, veredicto, avisoAgua, avisoVisceral } from '../../lib/cuerpo.js';
 
   const hoy = hoyISO();
-  let fecha = $state(hoy);
-  let peso = $state('');
-  // De la báscula (todos opcionales, en el orden de FitDays)
-  let bascula = $state({});
   let formAbierto = $state(false);
   const pesos = $derived([...$estado.pesos].sort((a, b) => a.fecha.localeCompare(b.fecha)));
   const o = $derived(calcularObjetivos($estado.perfil));
   const t = $derived(tendencia(pesos));
   const rec = $derived(recomendacion(pesos, $estado.perfil, o));
   const actual = $derived(pesos.at(-1)?.peso);
+  // El número de referencia: la media de tus pesajes de los últimos 7 días (el agua de un día no engaña)
+  const media = $derived(mediaSemana(pesos));
 
   // Cabecera al estilo de Cal AI: dónde estás, cuánto llevas del camino y cuándo llegarías a tu objetivo
   const meta = $derived.by(() => {
@@ -37,24 +35,6 @@
     const llegada = semanas && semanas <= 104 ? new Date(Date.now() + semanas * 7 * 864e5).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: semanas > 40 ? 'numeric' : undefined }) : null;
     return { inicio, obj, falta, hecho, ritmo, semanas, llegada, real: ritmo === t?.kgSemana, pesadoHoy: pesos.at(-1).fecha === hoy };
   });
-
-  const numero = (v) => (String(v).trim() === '' ? null : Number(String(v).replace(',', '.')));
-  function guardar(ev) {
-    ev.preventDefault();
-    const p = numero(peso);
-    if (!(p >= 35 && p <= 250)) return avisar('Revisa el peso', '⚠️');
-    const extra = {};
-    for (const c of CAMPOS) {
-      const v = numero(bascula[c.k] ?? '');
-      if (v == null) continue;
-      if (!(v >= c.r[0] && v <= c.r[1])) return avisar(`Revisa: ${c.n.toLowerCase()}`, '⚠️');
-      extra[c.k] = v;
-    }
-    avisar(guardarPeso(fecha, p, extra), '⚖️');
-    peso = '';
-    bascula = {};
-    formAbierto = false;
-  }
 
   const cuerpo = $derived(ultimaComposicion(pesos, $estado.perfil.altura));
   const visceral = $derived(avisoVisceral(cuerpo?.visceral));
@@ -104,7 +84,7 @@
 {#if meta}
   <section class="tarjeta peso-meta" aria-label="Tu peso y tu objetivo">
     <div class="m-cab">
-      <span><small>Peso actual</small><b class="cifra">{num(actual, 1)}<span>kg</span></b></span>
+      <span><small>Media de 7 días</small><b class="cifra">{num(media?.peso ?? actual, 1)}<span>kg</span></b><small class="m-ultimo">Último pesaje: {num(actual, 1)} kg, {fechaCorta(pesos.at(-1).fecha)}{media && media.n > 1 ? ` · ${media.n} pesajes en la semana` : ''}</small></span>
       {#if meta.obj}<span class="m-obj"><small>Objetivo</small><b class="cifra">{num(meta.obj, 1)} kg</b></span>{/if}
     </div>
     {#if meta.hecho != null}
@@ -124,20 +104,7 @@
 {#if !formAbierto && pesos.length}
   <button class="boton ancho-peso" onclick={() => (formAbierto = true)}><Icono n="plus" tam={18} grosor={2.4} /> Apuntar peso y báscula</button>
 {:else}
-<form class="tarjeta form" onsubmit={guardar}>
-  <b class="tit"><Emoji e="⚖️" tam={24} /> Registrar peso</b>
-  <label class="campo"><span>Fecha</span><input type="date" bind:value={fecha} max={hoy} required /></label>
-  <label class="campo"><span>Peso</span><input enterkeyhint="next" type="number" step="0.1" min="35" max="250" inputmode="decimal" bind:value={peso} placeholder={actual ? num(actual, 1) : ''} required /><small>kg</small></label>
-  <p class="bascula"><Icono n="activity" tam={15} grosor={2.2} /> De tu báscula <small>opcional · en el orden de FitDays</small></p>
-  <div class="campos-bascula">
-    {#each CAMPOS as c, i (c.k)}
-      <label class="campo"><span>{c.n}</span><input enterkeyhint={i === CAMPOS.length - 1 ? 'done' : 'next'} type="number" step={c.paso || 0.1} min={c.r[0]} max={c.r[1]} inputmode={c.paso ? 'numeric' : 'decimal'} bind:value={bascula[c.k]} placeholder={cuerpo?.[c.k] != null ? num(cuerpo[c.k], c.paso ? 0 : 1) : ''} /><small>{c.u}</small></label>
-    {/each}
-  </div>
-  <p class="pie-nota consejo-bascula">IMC, masa grasa, peso sin grasa, agua y proteína en kg y % de músculo se calculan solos. El número gris es tu última medición.</p>
-  <p class="pie-nota consejo-bascula">Mismo momento siempre: en ayunas, tras ir al baño y descalzo. La grasa cambia con lo que bebas, por eso uso la media de tus últimas mediciones.</p>
-  <button class="boton" type="submit">Guardar</button>
-</form>
+  <FormPeso onguardado={() => (formAbierto = false)} />
 {/if}
 
 {#if cuerpo}
@@ -183,9 +150,9 @@
   <div class="cu-cab"><b>Tu gasto real</b><small>se revisa cada semana</small></div>
   {#if gasto?.listo}
     <p class="g-cifra"><b class="cifra cifra-xl">{gasto.tdee.toLocaleString('es-ES')}</b> kcal al día</p>
-    <p class="pie-nota">Comes {gasto.ingesta.toLocaleString('es-ES')} kcal de media y tu peso va {gasto.kgSemana > 0 ? '+' : ''}{num(gasto.kgSemana, 2)} kg/semana ({gasto.dias} días y {gasto.pesajes} pesajes). La fórmula decía {gasto.formula.toLocaleString('es-ES')} kcal: {gasto.ajuste ? `tu plan lleva un ajuste de ${gasto.ajuste > 0 ? '+' : ''}${gasto.ajuste} kcal por esto` : 'clavada, sin ajuste'}.</p>
+    <p class="pie-nota">Comes {gasto.ingesta.toLocaleString('es-ES')} kcal de media y tu peso va {gasto.kgSemana > 0 ? '+' : ''}{num(gasto.kgSemana, 2)} kg/semana ({gasto.dias} días y {gasto.pesajes} pesajes). La fórmula decía {gasto.formula.toLocaleString('es-ES')} kcal: {gasto.ajuste ? `tu plan lleva un ajuste de ${gasto.ajuste > 0 ? '+' : ''}${gasto.ajuste} kcal por esto` : 'clavada, sin ajuste'}. Si hay que cambiar algo, te lo propongo en el repaso del domingo.</p>
   {:else}
-    <p class="g-texto">Calibrando con tus datos: tu plan sale de fórmulas, que fallan ±10 %. Con 2 semanas de comidas apuntadas y pesajes, lo ajusto a lo que gastas de verdad.</p>
+    <p class="g-texto">Calibrando con tus datos: tu plan sale de fórmulas, que fallan ±10 %. Con 2 semanas de comidas apuntadas y pesajes, calculo lo que gastas de verdad. El ajuste de tus kcal lo decides tú en el repaso del domingo.</p>
     <div class="g-pista" aria-hidden="true"><i style="width:{progresoGasto}%"></i></div>
     <p class="pie-nota">{#if gasto?.raro}Los datos de estas semanas no cuadran (¿días a medio apuntar?): sigo esperando.{:else if gasto}Faltan {[gasto.faltan.dias && `${gasto.faltan.dias} ${gasto.faltan.dias === 1 ? 'día bien apuntado' : 'días bien apuntados'}`, gasto.faltan.pesajes && `${gasto.faltan.pesajes} ${gasto.faltan.pesajes === 1 ? 'pesaje' : 'pesajes'}`, gasto.faltan.semanas && 'datos de al menos 2 semanas'].filter(Boolean).join(', ')}.{:else}Se calcula al abrir la app una vez por semana.{/if}</p>
   {/if}
@@ -216,8 +183,9 @@
 
 <div class="tarjeta destacada rec rec-{rec.tipo}">
   <div class="cab"><span class="ic-cab"><Icono n="lightbulb" tam={18} /></span><b>Tu nutricionista dice</b></div>
-  <p>{rec.texto}</p>
-  {#if rec.tipo === 'ajuste' && !gasto?.listo}<button class="boton" onclick={() => aplicarAjuste(rec.ajuste)}>Aplicar ajuste ({rec.ajuste > 0 ? '+' : ''}{rec.ajuste} kcal)</button>{:else if rec.tipo === 'ajuste'}<p class="pie-nota">No hace falta tocar nada: el ajuste por tu gasto real ya se aplica solo cada semana.</p>{/if}
+  <p>{rec.tipo === 'ajuste' ? rec.texto.replace(/ Te propongo[^.]*\./, '') : rec.texto}</p>
+  <!-- Un solo ajuste por semana, y lo decides tú: en el repaso del domingo -->
+  {#if rec.tipo === 'ajuste'}<button class="boton boton-sec" onclick={() => abrirHoja('repaso')}>Decídelo en tu repaso del domingo</button>{/if}
   {#if $estado.perfil.ajusteKcal}<p class="pie-nota">Ajuste acumulado: {$estado.perfil.ajusteKcal > 0 ? '+' : ''}{$estado.perfil.ajusteKcal} kcal. <button class="enlace" onclick={() => aplicarAjuste(-$estado.perfil.ajusteKcal)}>Quitar</button></p>{/if}
 </div>
 
@@ -240,6 +208,7 @@
   .m-cab small, .m-ext small { font-size: 0.74rem; font-weight: 600; color: var(--texto-2); }
   .m-cab > span:first-child b { font-size: 2.4rem; line-height: 1; letter-spacing: -0.03em; }
   .m-cab b span { font-size: 0.95rem; margin-left: 3px; color: var(--texto-2); }
+  .m-cab .m-ultimo { margin-top: 4px; font-weight: 500; color: var(--texto-3); }
   .m-obj { text-align: right; }
   .m-obj b { font-size: 1.1rem; }
   .m-barra { height: 10px; margin-top: 14px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
@@ -253,19 +222,11 @@
   /* Historial de pesos (antes en app.css) */
   .historial { list-style: none; padding: 0; margin: 10px 0 0; }
   .historial li { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; padding: 6px 0; border-top: 1px solid var(--superficie-2); font-size: 0.92rem; }
-  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; align-items: end; }
-  .tit { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; }
-  .form .campo { margin: 10px 0; }
-  .form .boton { grid-column: 1 / -1; }
   .rec .cab { display: flex; gap: 10px; align-items: center; }
   .ic-cab { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-s); background: var(--primario-claro); color: var(--primario); }
   .ancho-peso { width: 100%; margin-top: 12px; }
   .tit-graf { display: block; margin-bottom: 6px; }
   .rec p { font-weight: 500; }
-  .bascula { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; margin: 12px 0 0; font-weight: 600; font-size: 0.86rem; color: var(--primario-fuerte); }
-  .bascula small { color: var(--texto-3); font-weight: 500; }
-  .campos-bascula { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; }
-  .campos-bascula .campo { margin: 6px 0; }
   .cu-mas { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--linea); }
   .cu-mas div { display: grid; }
   .cu-mas dt { font-size: 0.7rem; font-weight: 500; color: var(--texto-3); }
@@ -275,7 +236,6 @@
   .cu-agua.visceral :global(svg) { color: var(--amarillo); }
   .cu-agua.visceral.alto { background: var(--coral-claro); }
   .cu-agua.visceral.alto :global(svg) { color: var(--coral); }
-  .consejo-bascula { grid-column: 1 / -1; margin: 0 0 10px; }
   .g-cifra { margin: 8px 0 2px; font-size: 0.9rem; color: var(--texto-2); }
   .g-cifra b { font-size: 2rem; letter-spacing: -0.03em; color: var(--primario-fuerte); }
   .g-texto { margin: 8px 0 10px; font-size: 0.86rem; color: var(--texto-2); }

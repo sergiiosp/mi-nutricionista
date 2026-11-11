@@ -1,10 +1,11 @@
-// Tu feedback: una nota rápida al cerrar el día y un repaso al final de la semana. Con ellos la app
-// propone ajustes (kcal, menú, platos) y prepara un resumen para pedir cambios más grandes.
+// Tu feedback: el repaso del domingo (báscula y cinco preguntas). Con él y la tendencia de tu peso, la app
+// propone un ajuste para la semana siguiente (como mucho ±150 kcal, siempre en hidratos) y prepara un resumen
+// para pedir cambios más grandes por el buzón.
 import { anotarDiario } from '../stores/estado.js';
 import { actualizar } from '../stores/estado.js';
 import { sumarDias } from './planificador.js';
 import { resumenSemanal } from './logros.js';
-import { tendencia } from './progreso.js';
+import { recomendacion } from './progreso.js';
 import { recetaPorId } from './planificador.js';
 import { planDe } from './hyrox/index.js';
 import { estadisticas } from './hyrox/stats.js';
@@ -19,8 +20,23 @@ export const PREGUNTAS_SEMANA = {
   hambre: { nombre: '¿Qué tal de hambre esta semana?', opciones: [['poca', 'Me sobraba comida'], ['normal', 'Bien'], ['mucha', 'Pasaba hambre']] },
   entrenos: { nombre: '¿Cómo te han ido los entrenos?', opciones: [['flojos', 'Sin fuerza'], ['normales', 'Normales'], ['bien', 'Muy bien']] },
   sueno: { nombre: '¿Cómo has dormido?', opciones: [['mal', 'Mal'], ['normal', 'Normal'], ['bien', 'Bien']] },
-  menu: { nombre: '¿Y el menú?', opciones: [['aburre', 'Me aburre'], ['regular', 'Regular'], ['gusta', 'Me gusta']] },
+  correr: { nombre: '¿Cómo te notas corriendo?', opciones: [['pesado', 'Pesado'], ['igual', 'Igual'], ['ligero', 'Más ligero']] },
+  ropa: { nombre: '¿Cómo te queda la ropa de siempre?', opciones: [['justa', 'Más justa'], ['igual', 'Igual'], ['holgada', 'Más holgada']] },
 };
+
+/** La semana a la que pertenece el repaso: la que acaba el domingo (el lunes, aún se puede hacer el de ayer). */
+export function claveRepaso(hoy) {
+  const d = new Date(`${hoy}T12:00:00`).getDay();
+  return lunesDe(d === 1 ? sumarDias(hoy, -1) : hoy);
+}
+/** ¿Toca el repaso? El domingo y, si se te pasó, el lunes; hecho = las cinco preguntas contestadas. */
+export function tocaRepaso(e, hoy) {
+  if (!e?.perfil) return false;
+  const d = new Date(`${hoy}T12:00:00`).getDay();
+  if (d !== 0 && d !== 1) return false;
+  return !repasoHecho(e.feedback?.semanas?.[claveRepaso(hoy)]);
+}
+export const repasoHecho = (r) => !!r && Object.keys(PREGUNTAS_SEMANA).every((k) => r[k]);
 
 /** Lunes de la semana de una fecha (clave del repaso semanal). */
 export function lunesDe(fecha) {
@@ -49,7 +65,8 @@ function notasSemana(e, hoy) {
 }
 
 /**
- * Ajustes que propongo con lo que me cuentas y tus datos de la semana.
+ * Ajustes que propongo con lo que me cuentas y la tendencia de tu peso. Como mucho un cambio de kcal por semana
+ * (±150, siempre en hidratos: la proteína y la grasa no se tocan) y lo que pidas del menú.
  * Cada uno: { id, texto, porque, aplicar: { ajusteKcal? , recetasNo?, nuevoMenu?, condicion? } }
  */
 export function propuestas(e, objetivos, hoy, repaso = {}) {
@@ -59,22 +76,20 @@ export function propuestas(e, objetivos, hoy, repaso = {}) {
   const hambre = repaso.hambre === 'mucha' || cuenta('hambre', 'mucha') >= 3;
   const sobra = repaso.hambre === 'poca' || cuenta('hambre', 'poca') >= 3;
   const sinEnergia = repaso.entrenos === 'flojos' || cuenta('energia', 'baja') >= 3;
-  const t = tendencia(e.pesos || []);
+  const malDormido = repaso.sueno === 'mal';
   const objetivo = e.perfil?.objetivo;
+  // Lo que dice tu peso (media de las últimas semanas; con menos de 2 semanas de pesajes, nada)
+  const rec = recomendacion(e.pesos || [], e.perfil || {}, objetivos);
+  const kcal = (n, porque) => lista.push({ id: 'kcal', texto: `${n > 0 ? 'Subo' : 'Bajo'} ${Math.abs(n)} kcal al día, en hidratos`, porque, aplicar: { ajusteKcal: n } });
 
-  if (hambre && sinEnergia) {
-    lista.push({ id: 'kcal', texto: 'Subo 150 kcal al día', porque: 'Pasas hambre y los entrenos te cuestan: con tanto volumen necesitas algo más de comida, sobre todo hidratos.', aplicar: { ajusteKcal: 150 } });
-  } else if (hambre) {
-    lista.push({ id: 'kcal', texto: 'Subo 100 kcal al día', porque: 'Pasar hambre muchos días no se sostiene. Con 100 kcal más (y la verdura que quieras) se lleva mejor.', aplicar: { ajusteKcal: 100 } });
-  } else if (sinEnergia) {
-    lista.push({ id: 'kcal', texto: 'Subo 100 kcal al día', porque: 'Te notas sin energía al entrenar: más hidratos alrededor del entreno suelen arreglarlo.', aplicar: { ajusteKcal: 100 } });
-  } else if (sobra && objetivo !== 'ganar') {
-    lista.push({ id: 'kcal', texto: 'Bajo 100 kcal al día', porque: 'Te sobra comida: puedes ajustar un poco sin pasar hambre.', aplicar: { ajusteKcal: -100 } });
-  }
-  if (t && !lista.some((x) => x.id === 'kcal')) {
-    if (objetivo === 'recomposicion' && t.kgSemana < -0.4) lista.push({ id: 'kcal', texto: 'Subo 100 kcal al día', porque: `Bajas ${String(Math.abs(t.kgSemana).toFixed(2)).replace('.', ',')} kg/semana: en recomposición es demasiado rápido y cuesta ganar músculo.`, aplicar: { ajusteKcal: 100 } });
-    if (objetivo === 'recomposicion' && t.kgSemana > 0.3) lista.push({ id: 'kcal', texto: 'Bajo 100 kcal al día', porque: 'Tu peso sube más de lo que interesa en recomposición. Mira también tus fotos: si te ves igual o mejor, no pasa nada.', aplicar: { ajusteKcal: -100 } });
-  }
+  // Primero, cómo te encuentras: con hambre o sin fuerzas, bajar más no se sostiene
+  if (hambre && (sinEnergia || malDormido)) kcal(150, 'Pasas hambre y te cuesta rendir: con tanto entreno necesitas algo más de comida, sobre todo hidratos alrededor de las sesiones.');
+  else if (hambre) kcal(100, 'Pasar hambre muchos días no se sostiene. Con 100 kcal más (y la verdura que quieras) se lleva mejor.');
+  else if (sinEnergia) kcal(100, 'Te notas sin energía al entrenar: más hidratos alrededor del entreno suelen arreglarlo.');
+  else if (rec.tipo === 'ajuste' && rec.ajuste < 0 && repaso.ropa === 'holgada') {
+    // La báscula se para, pero la ropa dice que bajas grasa: no se toca
+  } else if (rec.tipo === 'ajuste') kcal(Math.max(-150, Math.min(150, rec.ajuste)), rec.texto.replace(/ Te propongo[^.]*\./, '').trim() + (rec.ajuste < 0 ? ' Bajo un poco los hidratos.' : ' Así proteges el músculo.'));
+  else if (sobra && objetivo === 'perder') kcal(-100, 'Te sobra comida: puedes bajar un poco sin pasar hambre.');
   if (repaso.recetasNo?.length) {
     const nombres = repaso.recetasNo.map((id) => recetaPorId[id]?.nombre).filter(Boolean);
     lista.push({ id: 'recetas', texto: `Quito del menú: ${nombres.join(', ')}`, porque: 'Me dijiste que no las repetirías.', aplicar: { recetasNo: repaso.recetasNo } });
@@ -126,6 +141,7 @@ export function textoResumen(e, objetivos, hoy, repaso = {}) {
   if (Object.keys(r).length) {
     l.push('', 'Repaso:');
     for (const [k, p] of Object.entries(PREGUNTAS_SEMANA)) if (r[k]) l.push(`- ${p.nombre} ${p.opciones.find(([v]) => v === r[k])?.[1]}`);
+    if (r.aplicadas?.length) l.push(`- Aplicado: ${r.aplicadas.join('; ')}`);
     if (r.recetasNo?.length) l.push(`- No repetiría: ${r.recetasNo.map((id) => recetaPorId[id]?.nombre || id).join(', ')}`);
     if (r.entreno) l.push(`- Sobre el entreno: ${r.entreno}`);
     if (r.app) l.push(`- Sobre la app: ${r.app}`);

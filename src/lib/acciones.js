@@ -326,7 +326,11 @@ export function marcarEntrenoDia(fecha, valor) {
  * Una vez por semana: calcula tu gasto real con lo que comes y la tendencia del peso, y ajusta las kcal.
  * Hoy se queda como estaba (las cantidades nuevas, desde mañana). Devuelve la estimación.
  */
-export function revisarGasto(forzar = false) {
+/**
+ * Gasto real con tus datos (una vez por semana). Solo lo calcula y lo guarda: desde el 11-nov-2026 el ajuste de
+ * kcal lo decides en el repaso del domingo (aplicar: true lo aplica directamente, como antes).
+ */
+export function revisarGasto(forzar = false, { aplicar = false } = {}) {
   const e = get(estado);
   if (!e.perfil) return null;
   const hoy = hoyISO();
@@ -334,8 +338,9 @@ export function revisarGasto(forzar = false) {
   const objetivos = calcularObjetivos({ ...e.perfil, ajusteGasto: 0 });
   const est = gastoReal(e, objetivos, hoy);
   const antes = e.perfil.ajusteGasto || 0;
-  const nuevo = ajusteGasto(est, objetivos, antes);
-  const registro = { fecha: hoy, ...est, formula: objetivos.get, ajuste: nuevo };
+  const sugerido = ajusteGasto(est, objetivos, antes);
+  const nuevo = aplicar ? sugerido : antes;
+  const registro = { fecha: hoy, ...est, formula: objetivos.get, ajuste: nuevo, sugerido };
   actualizar((x) => {
     x.gasto = registro;
     x.gastoHistorial = [...(x.gastoHistorial || []).filter((g) => g.fecha !== hoy), registro].slice(-26);
@@ -518,6 +523,8 @@ export function bloqueTrasHyrox2026() {
     if (!x.agenda.eventos.some((ev) => ev.fecha === '2026-12-31')) {
       x.agenda.eventos = [...x.agenda.eventos, { id: 'diezk-2026-12-31', fecha: '2026-12-31', hora: '09:00', km: 10, nombre: '10 km' }].sort((a, b) => a.fecha.localeCompare(b.fecha));
     }
+    // Fotos y báscula de partida ese mismo lunes: la referencia para comparar a mediados de diciembre
+    x.revisionDesde = '2026-11-16';
     x.migraciones = { ...x.migraciones, bloque2026: true };
   });
   anotarDiario('bloque-2026-11-16', 'Bloque nuevo: definición y agilidad', 'Perder grasa a ritmo moderado (unos 0,5 kg por semana), más carrera, fuerza de mantenimiento y tu 10 km del 31 de diciembre.');

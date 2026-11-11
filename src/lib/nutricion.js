@@ -133,8 +133,11 @@ export function calcularObjetivos(perfil) {
   }
   gKg = Math.max(gKg, 1.2);
   // Con masa magra conocida, la proteína va sobre ella (×1,2 ≈ los mismos g/kg de peso con un ~17 % de grasa)
-  const proteina = Math.round(Math.min(magra ? magra * gKg * 1.2 : pesoRef * gKg, (kcalMedia * 0.35) / 4));
-  const grasaBase = Math.max(0.8 * pesoRef, (kcalMedia * 0.27) / 9);
+  // Los ajustes de kcal (el del repaso y el del gasto real) van enteros a hidratos: la proteína y la grasa salen
+  // de las kcal sin ajustar, así que no suben ni bajan con ellos
+  const kcalSinAjuste = kcalMedia - ajuste;
+  const proteina = Math.round(Math.min(magra ? magra * gKg * 1.2 : pesoRef * gKg, (kcalSinAjuste * 0.35) / 4));
+  const grasaBase = Math.max(0.8 * pesoRef, (kcalSinAjuste * 0.27) / 9);
 
   // Deportes de resistencia con sesiones largas: mínimo de hidratos para rendir
   const largas = clase === 'resistencia' && (perfil.duracionEntreno || 0) >= 60;

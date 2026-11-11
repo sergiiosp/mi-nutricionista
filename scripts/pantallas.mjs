@@ -209,6 +209,10 @@ await js(`[...document.querySelectorAll('.hoja-cuerpo button')].find((b) => b.te
 await js(`[...document.querySelectorAll('.hoja-cuerpo [role=tab]')].find((b) => b.textContent.includes('En gramos'))?.click(); await new Promise((r) => setTimeout(r, 300));`); await foto('hoja-cantidad-gramos', 1); await cerrar();
 await hoja('recuperacion', '{}'); await foto('hoja-recuperacion', 2); await cerrar();
 await hoja('avisos', '{}'); await foto('hoja-avisos', 3); await cerrar();
+// Repaso del domingo: vacío y con las cinco preguntas contestadas (la segunda opción de cada una)
+await hoja('repaso', '{}'); await foto('hoja-repaso', 3);
+await js(`document.querySelectorAll('.hoja-cuerpo .preg .ops').forEach((o) => o.children[1].click()); await new Promise((r) => setTimeout(r, 300));`);
+await foto('hoja-repaso-contestado', 3); await cerrar();
 await js(`const a = await import('/src/lib/acciones.js'); const st = await import('/src/stores/estado.js');
   st.actualizar((x) => { for (const [f, d] of [['2026-10-13', [2, 1, 2]], ['2026-10-15', [2, 2, 1]], ['2026-10-17', [1, 1, 2]], ['2026-10-18', [2, 2, 2]]]) x.hyrox.forma = { ...(x.hyrox.forma || {}), [f]: { sueno: d[0], agujetas: d[1], energia: d[2], nivel: 'bien' } }; });
   a.guardarForma('2026-10-20', { sueno: 1, agujetas: 1, energia: 2 }); await new Promise((r) => setTimeout(r, 300));`);
