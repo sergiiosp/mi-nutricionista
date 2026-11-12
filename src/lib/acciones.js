@@ -512,16 +512,28 @@ export function horaHyrox2026() {
 // Bloque tras la HYROX del 11-nov, el que eligió Sergio ese día: desde el lunes 16, perder grasa a ritmo moderado,
 // plan «Solo HYROX» (más carrera y estaciones, fuerza para rendir) con exigencia «exigente» y su 10 km del 31-dic.
 // Una sola vez: lo que cambie después en Tu HYROX o en Tu perfil se respeta.
+const DIEZ_K = { id: 'diezk-2026-12-31', fecha: '2026-12-31', hora: '09:00', km: 10, nombre: '10 km' };
+const configBloque2026 = (c) => {
+  const { fechaCarrera, horaCarrera, duracionEstimada, ...config } = c;
+  return { ...config, inicio: '2026-11-16', enfoque: 'hyrox', exigencia: 'exigente' };
+};
+/** Antes del lunes 16: el bloque que viene (para enseñarlo en Entreno), o null si no toca. */
+export function bloque2026Pendiente(e, hoy = hoyISO()) {
+  const c = e?.hyrox?.config;
+  if (hoy >= '2026-11-16' || !c || c.fechaCarrera !== '2026-11-11' || e.migraciones?.bloque2026) return null;
+  const eventos = e.agenda?.eventos || [];
+  return { hyrox: { config: configBloque2026(c), registros: {}, movidas: {} }, agenda: { ...e.agenda, eventos: eventos.some((ev) => ev.fecha === DIEZ_K.fecha) ? eventos : [...eventos, DIEZ_K] } };
+}
+
 export function bloqueTrasHyrox2026() {
   const e = get(estado);
   const c = e.hyrox?.config;
   if (hoyISO() < '2026-11-16' || !c || c.fechaCarrera !== '2026-11-11' || e.migraciones?.bloque2026) return;
   actualizar((x) => {
-    const { fechaCarrera, horaCarrera, duracionEstimada, ...config } = x.hyrox.config;
-    x.hyrox.config = { ...config, inicio: '2026-11-16', enfoque: 'hyrox', exigencia: 'exigente' };
+    x.hyrox.config = configBloque2026(x.hyrox.config);
     x.perfil = { ...x.perfil, objetivo: 'perder', ritmo: 'moderado' };
-    if (!x.agenda.eventos.some((ev) => ev.fecha === '2026-12-31')) {
-      x.agenda.eventos = [...x.agenda.eventos, { id: 'diezk-2026-12-31', fecha: '2026-12-31', hora: '09:00', km: 10, nombre: '10 km' }].sort((a, b) => a.fecha.localeCompare(b.fecha));
+    if (!x.agenda.eventos.some((ev) => ev.fecha === DIEZ_K.fecha)) {
+      x.agenda.eventos = [...x.agenda.eventos, DIEZ_K].sort((a, b) => a.fecha.localeCompare(b.fecha));
     }
     // Fotos y báscula de partida ese mismo lunes: la referencia para comparar a mediados de diciembre
     x.revisionDesde = '2026-11-16';

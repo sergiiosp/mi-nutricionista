@@ -5,7 +5,8 @@
   import { estado } from '../../stores/estado.js';
   import { abrirHoja } from '../../stores/ui.js';
   import { planDe } from '../../lib/hyrox/index.js';
-  import { semanaDe, FASES } from '../../lib/hyrox/plan.js';
+  import { semanaDe, FASES, generarPlanHyrox } from '../../lib/hyrox/plan.js';
+  import { bloque2026Pendiente } from '../../lib/acciones.js';
   import { TIPOS } from '../../lib/hyrox/sesiones.js';
   import { porqueDe } from '../../lib/hyrox/porque.js';
   import { hoyISO, sumarDias } from '../../lib/planificador.js';
@@ -16,6 +17,13 @@
 
   const hoy = hoyISO();
   const plan = $derived(planDe($estado));
+  // Hasta el lunes 16: un adelanto de la primera semana del bloque nuevo (empieza solo ese día)
+  const bloque = $derived.by(() => {
+    const b = bloque2026Pendiente($estado, hoy);
+    if (!b) return null;
+    const p = generarPlanHyrox(b.hyrox, { ...$estado.perfil, objetivo: 'perder' }, '2026-11-16', b.agenda);
+    return p.semanas[0];
+  });
   const actual = $derived(plan ? (semanaDe(plan, hoy)?.w ?? (hoy < plan.inicio ? 0 : plan.N - 1)) : 0);
   let sel = $state(null);
   const w = $derived(sel ?? actual);
@@ -104,6 +112,18 @@
             <Icono n="chevron-right" tam={18} />
           </button>
         {/if}
+      </section>
+    {/if}
+
+    {#if bloque}
+      <section class="bloque" aria-label="Tu bloque nuevo">
+        <h2 class="seccion">Desde el lunes 16: tu bloque nuevo</h2>
+        <p class="bloque-txt">Definición y agilidad hasta tu 10 km del 31 de diciembre: perder grasa a ritmo moderado, más carrera y fuerza de mantenimiento. Empieza solo el lunes; esta es tu primera semana.</p>
+        <ul class="bloque-lista">
+          {#each bloque.sesiones as s (s.id)}
+            <li style="--c:{color(s)}"><span class="bl-dia">{corto(s.fecha)}</span><Icono e={s.emoji} tam={18} /><span class="bl-txt"><b>{s.titulo}</b><small>{tipoNombre(s)} · {s.duracion} min</small></span></li>
+          {/each}
+        </ul>
       </section>
     {/if}
 
@@ -209,6 +229,16 @@
   .sig-txt { flex: 1; display: grid; min-width: 0; }
   .sig-txt small { color: rgb(255 255 255 / 0.65); font-weight: 500; font-size: 0.76rem; }
   .nota { margin: 8px 4px 0; font-size: 0.8rem; color: var(--texto-3); }
+  .bloque { margin-top: 16px; padding: 14px; border-radius: var(--r-l); background: var(--superficie); box-shadow: var(--sombra); }
+  .bloque .seccion { margin: 0 0 6px; }
+  .bloque-txt { margin: 0 0 10px; font-size: 0.86rem; color: var(--texto-2); line-height: 1.4; }
+  .bloque-lista { list-style: none; margin: 0; padding: 0; display: grid; }
+  .bloque-lista li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--linea); }
+  .bloque-lista li > :global(:nth-child(2)) { color: var(--c); flex-shrink: 0; }
+  .bl-dia { width: 34px; font-size: 0.78rem; font-weight: 600; color: var(--texto-2); text-transform: capitalize; }
+  .bl-txt { display: grid; min-width: 0; }
+  .bl-txt b { font-size: 0.9rem; font-weight: 600; }
+  .bl-txt small { font-size: 0.76rem; color: var(--texto-3); }
   .ajuste { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; padding: 12px 14px; border-radius: var(--r-m); background: var(--lila-claro); font-size: 0.86rem; }
 
   .cab { margin: 26px 2px 10px; font-size: 1.05rem; font-weight: 600; }

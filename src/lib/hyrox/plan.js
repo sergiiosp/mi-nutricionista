@@ -217,7 +217,13 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
         nota: 'Vuelta tras la carrera: nada fuerte hasta que las piernas estén frescas.',
       }, rit),
     ];
-    for (const s of vuelta) if (!sesiones.some((x) => x.fecha === s.fecha)) sesiones.push(s);
+    for (const s of vuelta) {
+      if (sesiones.some((x) => x.fecha === s.fecha)) continue;
+      sesiones.push(s);
+      // En la semana de la carrera, también en su lista (si no, Entreno no los enseña)
+      const w = semanas.find((x) => s.fecha >= x.lunes && s.fecha <= sumarDias(x.lunes, 6));
+      if (w) { s.semana = w.w; s.fase = w.fase; w.sesiones.push(s); w.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha)); }
+    }
   }
 
   // Lo que ya registraste no cambia ni desaparece: la sesión se queda como la hiciste aunque luego
