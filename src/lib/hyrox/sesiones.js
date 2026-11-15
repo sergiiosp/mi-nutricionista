@@ -124,14 +124,20 @@ export function construirSesion(ctx) {
 
   switch (tipo) {
     case 'rodaje': {
-      duracion = vol(30, 45);
+      // El rodaje de tarde (Configurar → más carrera) es algo más corto: el día ya tiene otra sesión
+      duracion = ctx.tarde ? vol(28, 40) : vol(30, 45);
       distancia = (duracion * 60) / rit.z2;
       bloques.push({ titulo: `${duracion} min en zona 2`, lineas: [`Ritmo ${km(rit.z2)} o más lento`, ...lineaPulso(rit), 'Debes poder hablar en frases completas'] });
       break;
     }
     case 'largo': {
-      const [a, b] = fase === 'base' ? [40, 60] : fase === 'construccion' ? [50, 70] : [60, 80];
+      // Con «más carrera», los largos crecen más: es la base aeróbica que más falta hace (todo en zona 2)
+      const [a, b] = config.masCarrera
+        ? (fase === 'base' ? [50, 75] : fase === 'construccion' ? [60, 85] : [70, 90])
+        : (fase === 'base' ? [40, 60] : fase === 'construccion' ? [50, 70] : [60, 80]);
       duracion = Math.max(30, vol(a, b) - (principiante ? 10 : 0));
+      // Con «más carrera», nunca por encima del tope de la fase (la exigencia no estira el largo más allá)
+      if (config.masCarrera) duracion = Math.min(duracion, b);
       distancia = (duracion * 60) / rit.z2;
       bloques.push({ titulo: `${duracion} min continuos`, lineas: [`Ritmo cómodo: ${km(rit.z2)}`, ...lineaPulso(rit), fase === 'especifico' ? 'Los últimos 10 min a ritmo HYROX' : 'Pulso bajo y constante: si sube, afloja'] });
       if (duracion >= 70) notas.push('Lleva agua y, si pasas de 75 min, algo de hidratos (plátano, gel o bebida isotónica).');

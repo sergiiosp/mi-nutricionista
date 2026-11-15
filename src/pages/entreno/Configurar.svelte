@@ -31,6 +31,9 @@
   let natacion = $state([...(previa.natacion?.dias || [])]);
   let horaNatacion = $state(previa.natacion?.hora || '18:00');
   let espalda = $state(!!previa.espalda);
+  let masCarrera = $state([...(previa.masCarrera?.dias || [])]);
+  let horaCarreraTarde = $state(previa.masCarrera?.hora || '18:00');
+  const alternarCarrera = (n) => (masCarrera = masCarrera.includes(n) ? masCarrera.filter((x) => x !== n) : [...masCarrera, n]);
   const alternarNatacion = (n) => (natacion = natacion.includes(n) ? natacion.filter((x) => x !== n) : [...natacion, n]);
   let enfoque = $state(previa.enfoque || 'equilibrado');
   let exigencia = $state(previa.exigencia || 'muy');
@@ -59,6 +62,7 @@
       categoria, nivel, dias, hora, material, lesiones, enfoque, exigencia,
       natacion: natacion.length ? { dias: natacion, hora: horaNatacion } : null,
       espalda,
+      masCarrera: masCarrera.length ? { dias: masCarrera, hora: horaCarreraTarde } : null,
       marcas: { ...(previa.marcas || {}), t5k: marca(t5k, 900, 3600), ski1000: marca(ski, 150, 480), row1000: marca(row, 150, 480) },
     };
     guardarHyrox(config);
@@ -119,6 +123,12 @@
     <label class="opcion"><input type="radio" name="exigencia" value="muy" bind:group={exigencia} /><span><b>Muy exigente</b><small>Cerca del fallo, superseries y dropsets</small></span></label>
   </fieldset>
   <label class="opcion extra"><input type="checkbox" bind:checked={espalda} /><span><b>Más espalda</b><small>Jalón ancho y remo en tus días de fuerza, para ensanchar los dorsales</small></span></label>
+  <fieldset class="dias-sel"><legend>Más carrera: rodaje suave por la tarde (opcional; los largos también crecen)</legend>
+    {#each DIAS as [n, l] (n)}
+      <label class="dia-check"><input type="checkbox" checked={masCarrera.includes(n)} onchange={() => alternarCarrera(n)} /><span>{l}</span></label>
+    {/each}
+  </fieldset>
+  {#if masCarrera.length}<label class="campo"><span>Hora del rodaje de tarde</span><input type="time" bind:value={horaCarreraTarde} step="900" /></label>{/if}
   <fieldset class="dias-sel"><legend>Natación suave por la tarde (opcional)</legend>
     {#each DIAS as [n, l] (n)}
       <label class="dia-check"><input type="checkbox" checked={natacion.includes(n)} onchange={() => alternarNatacion(n)} /><span>{l}</span></label>

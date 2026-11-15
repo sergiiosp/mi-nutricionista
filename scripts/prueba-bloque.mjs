@@ -79,6 +79,17 @@ const lineasFuerza = s1n.filter((s) => s.tipo === 'fuerza').flatMap((s) => s.blo
 ok(/Jalón al pecho: \d × 10-12/.test(lineasFuerza) && /Remo con mancuerna/.test(lineasFuerza), 'Más espalda: jalón ancho y remo en los días de fuerza');
 ok(!pn.sesiones.some((s) => s.tipo === 'natacion' && ['2026-12-30', '2026-12-31'].includes(s.fecha)), 'Nada de natación la víspera ni el día del 10 km');
 
+// Más carrera (lo aceptó Sergio el 15-nov): rodaje suave el martes por la tarde y largos más largos, con tope
+const cfgCar = { ...cfgNat, masCarrera: { dias: [2], hora: '18:00' } };
+const pc = generarPlanHyrox({ config: cfgCar, registros: {}, movidas: {} }, get(estado).perfil, '2026-11-16', get(estado).agenda);
+const RUN = ['rodaje', 'series', 'umbral', 'largo', 'compromised', 'popular'];
+const kmSemana = (plan, i) => plan.semanas[i].sesiones.filter((s) => RUN.includes(s.tipo)).reduce((a, s) => a + (s.distancia || 0), 0);
+const tarde = pc.semanas[0].sesiones.find((s) => s.titulo === 'Rodaje suave de tarde');
+ok(tarde?.fecha === '2026-11-17' && tarde.hora === '18:00' && tarde.duracion <= 45, `Rodaje suave el martes 17 a las 18:00 (${tarde?.duracion} min)`);
+ok(pc.semanas.slice(0, 8).every((w, i) => kmSemana(pc, i) > kmSemana(pn, i)), 'Cada semana del bloque corre más que sin «más carrera»');
+ok(pc.semanas.slice(0, 8).every((w, i) => kmSemana(pc, i) >= 18 && kmSemana(pc, i) <= 35), `Entre 18 y 35 km por semana hasta enero (${pc.semanas.slice(0, 8).map((w, i) => kmSemana(pc, i).toFixed(0)).join(', ')})`);
+ok(pc.sesiones.filter((s) => s.tipo === 'largo').every((s) => s.duracion <= 90), 'El largo nunca pasa de 90 min');
+
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');
 globalThis.Date = REAL;
 process.exit(fallos ? 1 : 0);

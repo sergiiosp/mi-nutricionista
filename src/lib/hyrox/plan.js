@@ -193,6 +193,13 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
       if (carrera && fecha >= sumarDias(carrera, -3)) continue;
       semana.sesiones.push({ id: `s${w}-nat${d}`, semana: w, fase, fecha, fechaOriginal: fecha, hora: config.natacion.hora || '18:00', ...construirSesion({ tipo: 'natacion', fase, p, factor, semana: w, config, perfil, rit }) });
     }
+    // Más carrera (Configurar): un rodaje suave por la tarde esos días (mejor el de las series: duro por la mañana,
+    // suave por la tarde). Nada en la puesta a punto ni desde 3 días antes de una carrera HYROX
+    for (const d of config.masCarrera?.dias || []) {
+      const fecha = sumarDias(lunes, ordenSemana(d));
+      if (fase === 'taper' || (carrera && fecha >= sumarDias(carrera, -3))) continue;
+      semana.sesiones.push({ id: `s${w}-rod${d}`, semana: w, fase, fecha, fechaOriginal: fecha, hora: config.masCarrera.hora || '18:00', ...construirSesion({ tipo: 'rodaje', fase, p, factor, semana: w, config, perfil, rit, tarde: true }), titulo: 'Rodaje suave de tarde' });
+    }
     semana.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
     semana.volumen = semana.sesiones.reduce((s, x) => s + x.duracion, 0);
     semanas.push(semana);

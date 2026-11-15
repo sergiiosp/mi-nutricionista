@@ -522,6 +522,17 @@ export function mananas2026() {
   });
 }
 
+// Más carrera: rodaje suave el martes por la tarde (18:00) y largos más largos. Lo aceptó Sergio el 15-nov al ver que
+// el plan corría poco (14-25 km/semana). Una sola vez; después se cambia en Tu HYROX → Configurar
+export function carrera2026() {
+  const e = get(estado);
+  if (!e.hyrox?.config || e.migraciones?.carrera2026) return;
+  actualizar((x) => {
+    x.hyrox.config = { ...x.hyrox.config, masCarrera: { dias: [2], hora: '18:00' } };
+    x.migraciones = { ...x.migraciones, carrera2026: true };
+  });
+}
+
 // Natación suave lunes y viernes por la tarde (18:00) y más espalda en los días de fuerza: lo que eligió Sergio el
 // 15-nov para «fibrar y ensanchar la espalda». Una sola vez; después se cambia en Tu HYROX → Configurar
 export function natacion2026() {
