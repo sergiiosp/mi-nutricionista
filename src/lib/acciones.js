@@ -522,6 +522,23 @@ export function mananas2026() {
   });
 }
 
+// Tu HYROX con la carrera real (buzón, 15-nov-2026): la pestaña estimaba con fórmulas genéricas en vez de con la
+// HYROX Doubles del 11-nov (1:12:49). Objetivo «ambicioso ambicioso» elegido: 1:02 en Doubles, con los km a 4:30,
+// estaciones en 22:15 (sled pull, sandbag y wall balls mejor repartidos) y roxzone en 3:45. Una sola vez; el
+// objetivo se cambia en Tu HYROX → Configurar
+export function hyroxReal2026() {
+  const e = get(estado);
+  if (!e.hyrox?.config || e.migraciones?.hyroxReal2026) return;
+  actualizar((x) => {
+    x.hyrox.config = {
+      ...x.hyrox.config,
+      ultimaCarrera: { fecha: '2026-11-11', categoria: 'doubles', t5k: x.hyrox.config.marcas?.t5k || null, km: [274, 277, 319, 306, 306, 313, 306, 314], estaciones: { ski: 254, push: 134, pull: 233, bbj: 151, row: 269, farmers: 107, lunges: 236, wallballs: 241 }, roxzone: 329 },
+      objetivo: { categoria: 'doubles', km: [270, 270, 270, 270, 270, 270, 270, 270], estaciones: { ski: 225, push: 115, pull: 170, bbj: 130, row: 230, farmers: 85, lunges: 185, wallballs: 195 }, roxzone: 225 },
+    };
+    x.migraciones = { ...x.migraciones, hyroxReal2026: true };
+  });
+}
+
 // Más carrera: rodaje suave el martes por la tarde (18:00) y largos más largos. Lo aceptó Sergio el 15-nov al ver que
 // el plan corría poco (14-25 km/semana). Una sola vez; después se cambia en Tu HYROX → Configurar
 export function carrera2026() {

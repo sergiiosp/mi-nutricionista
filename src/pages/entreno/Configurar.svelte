@@ -8,7 +8,9 @@
   import { CATEGORIAS, NIVELES, MATERIAL, LESIONES } from '../../data/hyrox.js';
   import { guardarHyrox } from '../../lib/acciones.js';
   import { hoyISO } from '../../lib/planificador.js';
-  import { aSegundos, mmss } from '../../lib/hyrox/ritmos.js';
+  import { aSegundos, mmss, hms } from '../../lib/hyrox/ritmos.js';
+  import { estimarCarrera, objetivoCarrera, nuevoObjetivo } from '../../lib/hyrox/carrera.js';
+  import { fechaCorta } from '../../lib/formato.js';
   import CampoTiempo from '../../components/CampoTiempo.svelte';
 
   let { onguardado, oncancelar = null } = $props();
@@ -24,6 +26,12 @@
   let t5k = $state(previa.marcas?.t5k ? mmss(previa.marcas.t5k) : '');
   let ski = $state(previa.marcas?.ski1000 ? mmss(previa.marcas.ski1000) : '');
   let row = $state(previa.marcas?.row1000 ? mmss(previa.marcas.row1000) : '');
+  // Tu última HYROX (solo lectura) y tu objetivo de tiempo, en la categoría que tenías guardada
+  const ultima = previa.ultimaCarrera?.km?.length === 8 ? previa.ultimaCarrera : null;
+  const suma = (t) => ({ km: t.km.reduce((a, b) => a + b, 0), est: Object.values(t.estaciones).reduce((a, b) => a + b, 0), rox: t.roxzone });
+  const ultimaSuma = ultima ? suma(ultima) : null;
+  const objetivoIni = previa.inicio && objetivoCarrera(previa) ? hms(objetivoCarrera(previa).total) : '';
+  let objetivoTxt = $state(objetivoIni);
   let dias = $state(previa.dias || (e.perfil.diasEntreno?.length ? [...e.perfil.diasEntreno] : [1, 2, 4, 6]));
   let hora = $state(previa.hora || e.perfil.horaEntreno || '19:00');
   let material = $state({ ski: true, row: true, sled: true, wallball: true, kettlebell: true, sandbag: true, ...(previa.material || {}) });
@@ -56,6 +64,7 @@
       return s && s >= min && s <= max ? s : null;
     };
     const config = {
+      ...previa,
       inicio: previa.inicio || hoyISO(),
       fechaCarrera: sinFecha ? null : fechaCarrera,
       horaCarrera,
@@ -65,6 +74,11 @@
       masCarrera: masCarrera.length ? { dias: masCarrera, hora: horaCarreraTarde } : null,
       marcas: { ...(previa.marcas || {}), t5k: marca(t5k, 900, 3600), ski1000: marca(ski, 150, 480), row1000: marca(row, 150, 480) },
     };
+    // Objetivo nuevo (en la categoría elegida): se reparte por tramos como el que tenías o como tu estimación
+    if (objetivoTxt !== objetivoIni) {
+      const s = marca(objetivoTxt, 2400, 10800);
+      config.objetivo = s ? nuevoObjetivo(config, estimarCarrera(config, e.perfil, e.hyrox?.registros || {}, e.tests || []), s) : null;
+    }
     guardarHyrox(config);
     avisar(previa.inicio ? 'Plan HYROX actualizado' : '¡Tu plan HYROX está listo!', '🏆');
     onguardado?.();
@@ -103,6 +117,17 @@
     <CampoTiempo etiqueta="SkiErg 1.000 m" bind:value={ski} ejemplo="4:30" />
     <CampoTiempo etiqueta="Remo 1.000 m" bind:value={row} ejemplo="4:10" />
   </div>
+  {#if ultima}
+    <div class="tarjeta ultima-c">
+      <span>Tu última HYROX · {CATEGORIAS[ultima.categoria]?.nombre} · {fechaCorta(ultima.fecha)}</span>
+      <b class="cifra">{hms(ultimaSuma.km + ultimaSuma.est + ultimaSuma.rox)}</b>
+      <small>{hms(ultimaSuma.km)} corriendo · {hms(ultimaSuma.est)} de estaciones · {mmss(ultimaSuma.rox)} de roxzone</small>
+    </div>
+  {/if}
+  <div class="lista-tiempos">
+    <CampoTiempo etiqueta="Tu objetivo de tiempo" bind:value={objetivoTxt} ejemplo="1:05:00" horas />
+  </div>
+  <p class="pie-nota">Para tu próxima HYROX, en la categoría de arriba. Lo reparto por tramos en Tu HYROX. Déjalo vacío si no quieres objetivo.</p>
 
   <h2 class="seccion"><Emoji e="🗓️" tam={24} /> Disponibilidad</h2>
   <fieldset class="dias-sel"><legend>Días que puedes entrenar</legend>
@@ -162,4 +187,7 @@
   .botones { display: flex; gap: 10px; margin: 20px 0 10px; }
   .botones .boton { flex: 1; }
   .fila-campos .campo input { padding-right: 12px; }
+  .ultima-c { display: grid; gap: 2px; margin: 10px 0; }
+  .ultima-c span, .ultima-c small { font-size: 0.8rem; color: var(--texto-2); }
+  .ultima-c b { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.03em; }
 </style>

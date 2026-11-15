@@ -5,18 +5,22 @@
   import { estado } from '../../stores/estado.js';
   import { abrirHoja } from '../../stores/ui.js';
   import { planDe } from '../../lib/hyrox/index.js';
-  import { estimarCarrera, estrategia, nutricionDiaCarrera, semanaCarrera, oportunidades } from '../../lib/hyrox/carrera.js';
+  import { estimarCarrera, estrategia, nutricionDiaCarrera, semanaCarrera, oportunidades, objetivoCarrera } from '../../lib/hyrox/carrera.js';
   import { ESTACIONES, pesoEstacion, CATEGORIAS } from '../../data/hyrox.js';
   import { hms, mmss } from '../../lib/hyrox/ritmos.js';
   import { hoyISO } from '../../lib/planificador.js';
-  import { fechaLarga, capital } from '../../lib/formato.js';
+  import { fechaLarga, fechaCorta, capital } from '../../lib/formato.js';
 
   const plan = $derived(planDe($estado));
   const config = $derived($estado.hyrox.config);
   const perfil = $derived($estado.perfil);
   const est = $derived(estimarCarrera(config, perfil, $estado.hyrox.registros, $estado.tests || []));
-  const estr = $derived(estrategia(config, est));
-  const opo = $derived(oportunidades(config, perfil, est));
+  // La portada y el recorrido enseñan tu objetivo (Configurar) o, si no tienes, la estimación
+  const obj = $derived(objetivoCarrera(config));
+  const vista = $derived(obj || est);
+  const falta = $derived(obj ? Math.round((est.total - obj.total) / 60) : 0);
+  const estr = $derived(estrategia(config, vista));
+  const opo = $derived(oportunidades(config, perfil, est, obj));
   const maxGana = $derived(Math.max(1, ...opo.lista.map((x) => x.gana)));
   const corto = (s) => (s >= 60 ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}` : `${Math.round(s)} s`);
   const sinCafeina = $derived((perfil.condiciones || []).includes('hipertension') || perfil.estres === 'alto');
@@ -31,19 +35,31 @@
     {#if dias !== null && dias >= 0}<span class="chip fuerte cifra">{dias > 0 ? `${dias} días` : '¡Hoy!'}</span>{/if}
   </div>
   <div class="abajo">
-    <span class="et">Tiempo estimado · HYROX {CATEGORIAS[config.categoria].nombre}</span>
-    <b class="tiempo cifra cifra-xl">{hms(est.total)}</b>
+    <span class="et">{obj ? 'Tu objetivo' : 'Tiempo estimado'} · HYROX {CATEGORIAS[config.categoria].nombre}</span>
+    <b class="tiempo cifra cifra-xl">{hms(vista.total)}</b>
     <div class="partes">
-      <div><b class="cifra">{hms(est.carreras)}</b><small>8 km corriendo</small></div>
-      <div><b class="cifra">{hms(est.estaciones)}</b><small>estaciones</small></div>
-      <div><b class="cifra">{mmss(est.roxzone)}</b><small>roxzone</small></div>
+      <div><b class="cifra">{hms(vista.carreras)}</b><small>8 km corriendo</small></div>
+      <div><b class="cifra">{hms(vista.estaciones)}</b><small>estaciones</small></div>
+      <div><b class="cifra">{mmss(vista.roxzone)}</b><small>roxzone</small></div>
     </div>
   </div>
 </Portada>
-<p class="pie-nota">{est.basadoEnMarcas ? 'Calculado con tus marcas y tus mejores tiempos registrados.' : 'Estimación según tu nivel: registra tus simulacros con tiempos por estación para afinarla.'}{config.categoria === 'relay' ? ' (Como si hicieras tú todo el recorrido.)' : ''}</p>
+{#if obj}
+  <div class="tarjeta ahora">
+    <div class="a-txt">
+      <span>Ahora · {est.ultima ? `tu HYROX del ${fechaCorta(est.ultima.fecha)}` : 'estimado'}</span>
+      <b class="cifra">{hms(est.total)}</b>
+      <small><span>{hms(est.carreras)} corriendo</span> · <span>{hms(est.estaciones)} estaciones</span> · <span>{mmss(est.roxzone)} roxzone</span></small>
+    </div>
+    {#if falta > 0}<span class="a-falta cifra">−{falta} min</span>{/if}
+  </div>
+{/if}
+{#if est.ultima}
+  <p class="pie-nota">Ahora parte de tu HYROX real{est.ultima.categoria !== config.categoria ? ` (en ${CATEGORIAS[est.ultima.categoria].nombre}, pasada a ${CATEGORIAS[config.categoria].nombre})` : ''}. Si mejoras tu 5 km en Configurar o en un test, baja sola.</p>
+{:else}<p class="pie-nota">{est.basadoEnMarcas ? 'Calculado con tus marcas y tus mejores tiempos registrados.' : 'Estimación según tu nivel: registra tus simulacros con tiempos por estación para afinarla.'}{config.categoria === 'relay' ? ' (Como si hicieras tú todo el recorrido.)' : ''}</p>{/if}
 
 {#if opo.lista.length}
-  <h3 class="cab">Dónde ganas más minutos<small>Frente al nivel {opo.nivelRef.toLowerCase()}: entrena primero lo de arriba</small></h3>
+  <h3 class="cab">Dónde ganas más minutos<small>{obj ? `Frente a tu objetivo de ${hms(obj.total)}` : `Frente al nivel ${opo.nivelRef.toLowerCase()}`}: entrena primero lo de arriba</small></h3>
   <ol class="ganas">
     {#each opo.lista.slice(0, 5) as x (x.id)}
       <li>
@@ -54,7 +70,7 @@
       </li>
     {/each}
   </ol>
-  <p class="pie-nota">En total podrías bajar unos {Math.round(opo.lista.reduce((s, x) => s + x.gana, 0) / 60)} min. Registra tus simulacros con tiempos por estación para afinarlo.</p>
+  <p class="pie-nota">En total, unos {Math.round(opo.lista.reduce((s, x) => s + x.gana, 0) / 60)} min. Registra tus simulacros con tiempos por estación para afinarlo.</p>
 {/if}
 
 {#if plan?.carrera}<button class="boton boton-sec ancho-mc" onclick={() => abrirHoja('diaCarrera', { fecha: plan.carrera })}><Icono n="flag" tam={18} /> Modo día de carrera: tu día hora a hora</button>{/if}
@@ -63,9 +79,9 @@
 <ul class="estrategia">{#each estr.general as g (g)}<li>{g}</li>{/each}</ul>
 
 <!-- El recorrido: 1 km corriendo y una estación, ocho veces, con tiempo objetivo y acumulado -->
-<h3 class="cab">El recorrido<small>Toca una estación para ver técnica y errores</small></h3>
+<h3 class="cab">El recorrido<small>{obj ? 'A ritmo de tu objetivo. ' : ''}Toca una estación para ver técnica y errores</small></h3>
 <ol class="ruta">
-  {#each est.tramos as t, i (i)}
+  {#each vista.tramos as t, i (i)}
     {#if t.tipo === 'run'}
       <li class="km"><span class="linea" aria-hidden="true"></span><span class="km-txt cifra"><Icono n="footprints" tam={14} /> 1 km · {mmss(t.seg)}</span></li>
     {:else}
@@ -78,7 +94,7 @@
       </li>
     {/if}
   {/each}
-  <li class="meta"><span class="num"><Icono n="flag" tam={14} grosor={2.4} /></span><b>Meta</b><span class="cifra">{hms(est.total)}</span></li>
+  <li class="meta"><span class="num"><Icono n="flag" tam={14} grosor={2.4} /></span><b>Meta</b><span class="cifra">{hms(vista.total)}</span></li>
 </ol>
 
 <h3 class="cab">Qué comer el día de la carrera</h3>
@@ -155,10 +171,19 @@
   .g-barra { grid-column: 2; height: 5px; margin-top: 6px; border-radius: 999px; background: var(--superficie-3); overflow: hidden; }
   .g-barra i { display: block; height: 100%; border-radius: 999px; background: var(--hero); }
   .ancho-mc { width: 100%; margin-top: 14px; }
+  .ahora { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .a-txt { flex: 1; min-width: 0; display: grid; }
+  .a-txt span, .a-txt small { font-size: 0.78rem; color: var(--texto-2); font-weight: 500; }
+  .a-txt small span { white-space: nowrap; }
+  .a-txt b { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1.2; }
+  .a-falta { flex-shrink: 0; padding: 6px 12px; border-radius: 999px; background: var(--primario-claro); color: var(--primario-fuerte); font-weight: 600; font-size: 0.92rem; }
 
   /* Tema claro: textos oscuros y cada parte del tiempo en su caja */
   :global(:root[data-theme="light"]) .chip { background: var(--superficie-2); color: var(--texto); backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 500; }
   :global(:root[data-theme="light"]) .chip.fuerte { background: var(--texto); color: var(--superficie); }
+  /* El primario del tema claro es casi negro: el número de cada estación, en blanco para que se lea */
+  :global(:root[data-theme="light"]) .num { color: #fff; }
+  :global(:root[data-theme="light"]) .meta .num { background: var(--superficie-2); color: var(--texto); }
   :global(:root[data-theme="light"]) .et { color: var(--texto-2); font-weight: 400; }
   :global(:root[data-theme="light"]) .tiempo { font-weight: 500; }
   :global(:root[data-theme="light"]) .partes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
