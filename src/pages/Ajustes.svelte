@@ -12,6 +12,7 @@
   import { recomendaciones, CONDICIONES } from '../lib/salud.js';
   import { resumenObjetivos } from '../lib/cuestionario.js';
   import { hoyISO } from '../lib/planificador.js';
+  import { reajustarPlan } from '../lib/acciones.js';
   import { FOTOS_RECETAS, FOTOS_SESIONES, FOTOS_ESTACIONES } from '../data/fotos.js';
   import { RECETAS } from '../data/recetas.js';
   import { RECETAS_VARIEDAD } from '../data/recetas-variedad.js';
@@ -24,6 +25,14 @@
   let pestaña = $state(PESTAÑAS.some((x) => x.id === sub) ? sub : 'plan');
   $effect(() => { if (PESTAÑAS.some((x) => x.id === sub)) pestaña = sub; });
   const p = $derived($estado.perfil);
+  // Proteína al día: la automática (según tu objetivo y tu masa magra) o los gramos por kilo que elijas
+  const PROTEINAS = [null, 1.6, 1.8, 1.9, 2.0];
+  const gramosProteina = (g) => calcularObjetivos({ ...p, proteinaKg: g }).proteina;
+  function elegirProteina(g) {
+    actualizar((x) => { x.perfil = { ...x.perfil, proteinaKg: g }; });
+    reajustarPlan();
+    avisar(`Proteína: ${gramosProteina(g)} g al día. Tu menú ya está recalculado`, '✅');
+  }
   const o = $derived(calcularObjetivos(p));
   const recs = $derived(recomendaciones(p, o));
   const entrena = $derived(p.entrena && o.diasEntreno);
@@ -72,6 +81,17 @@
     <div class="tarjeta destacada"><b><Icono e="✨" tam={18} /> Completa tu perfil</b><p>Añade tu horario, tus entrenos y tu salud para afinar calorías, horas de comida y suplementos.</p><button class="boton" onclick={oneditar}>Completar mis datos</button></div>
   {/if}
   {@html resumenObjetivos(p)}
+  <div class="tarjeta proteina">
+    <b>Proteína al día</b>
+    <p class="pie-nota">Lo que quites o añadas va a hidratos: las calorías y la grasa no cambian. En gramos por kilo de tu peso, así se ajusta sola si bajas.</p>
+    <div class="prot-ops" role="radiogroup" aria-label="Proteína al día">
+      {#each PROTEINAS as g (g ?? 'auto')}
+        <button role="radio" aria-checked={(p.proteinaKg ?? null) === g} class:activo={(p.proteinaKg ?? null) === g} onclick={() => elegirProteina(g)}>
+          <b class="cifra">{gramosProteina(g)} g</b><small>{g == null ? 'automática' : `${num(g, 1)} g/kg`}</small>
+        </button>
+      {/each}
+    </div>
+  </div>
   <h2 class="seccion"><Icono e="🗓️" tam={18} /> Tu horario</h2>
   <div class="tarjeta">
     {#each entrena ? [true, false] : [false] as e (e)}
@@ -189,6 +209,13 @@
   .evid-baja { background: var(--superficie-2); color: var(--texto-2); }
   .aviso-legal { margin-top: 22px; }
   .ancho { width: 100%; margin-top: 10px; }
+  .proteina { display: grid; gap: 8px; }
+  .prot-ops { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .prot-ops button { display: grid; gap: 1px; justify-items: center; min-height: 54px; padding: 6px 2px; border: 1px solid transparent; border-radius: var(--r-s); background: var(--superficie-2); color: var(--texto); font: inherit; cursor: pointer; }
+  .prot-ops button b { font-size: 0.95rem; font-weight: 600; }
+  .prot-ops button small { font-size: 0.66rem; color: var(--texto-2); }
+  .prot-ops button.activo { background: var(--texto); color: var(--superficie); }
+  .prot-ops button.activo small { color: inherit; opacity: 0.8; }
   .sub-apariencia { margin: 14px 0 6px; font-size: 0.82rem; font-weight: 500; color: var(--texto-2); }
   .h-cab { margin: 6px 0 4px; }
   .horario-mini .etq { margin-left: auto; }

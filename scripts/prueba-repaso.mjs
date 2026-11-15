@@ -49,5 +49,12 @@ ok(!estadoRevision(base, '2026-11-15').toca, 'Antes del lunes 16, la revisión n
 ok(estadoRevision(base, '2026-11-16').toca, 'El lunes 16 toca la revisión de partida');
 ok(!estadoRevision({ ...base, revisiones: [...base.revisiones, { fecha: '2026-11-16' }] }, '2026-11-17').toca, 'Hecha la de partida, la siguiente a las 4 semanas');
 
+// Proteína elegida en gramos por kilo (1,9 g/kg, lo que eligió Sergio): lo que se quita va a hidratos
+const auto = calcularObjetivos(perfil).porTipo.descanso;
+const p19 = calcularObjetivos({ ...perfil, proteinaKg: 1.9 }).porTipo.descanso;
+ok(p19.proteina === Math.round(perfil.peso * 1.9), `Proteína a 1,9 g/kg: ${p19.proteina} g (antes ${auto.proteina} g)`);
+ok(p19.kcal === auto.kcal && p19.grasa === auto.grasa && p19.hidratos > auto.hidratos, 'Mismas kcal y grasa; lo quitado de proteína va a hidratos');
+ok(calcularObjetivos({ ...perfil, peso: 85, proteinaKg: 1.9 }).porTipo.descanso.proteina === Math.round(85 * 1.9), 'Si bajas de peso, la proteína baja sola');
+
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');
 process.exit(fallos ? 1 : 0);

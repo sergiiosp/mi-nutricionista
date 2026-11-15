@@ -136,7 +136,10 @@ export function calcularObjetivos(perfil) {
   // Los ajustes de kcal (el del repaso y el del gasto real) van enteros a hidratos: la proteína y la grasa salen
   // de las kcal sin ajustar, así que no suben ni bajan con ellos
   const kcalSinAjuste = kcalMedia - ajuste;
-  const proteina = Math.round(Math.min(magra ? magra * gKg * 1.2 : pesoRef * gKg, (kcalSinAjuste * 0.35) / 4));
+  // Si eliges tus gramos por kilo (Tu perfil → Proteína), mandan ellos, sobre tu peso: bajan solos si bajas de peso
+  const elegida = Number(perfil.proteinaKg);
+  const base = elegida >= 1.2 && elegida <= 2.5 ? pesoRef * elegida : magra ? magra * gKg * 1.2 : pesoRef * gKg;
+  const proteina = Math.round(Math.min(base, (kcalSinAjuste * 0.35) / 4));
   const grasaBase = Math.max(0.8 * pesoRef, (kcalSinAjuste * 0.27) / 9);
 
   // Deportes de resistencia con sesiones largas: mínimo de hidratos para rendir

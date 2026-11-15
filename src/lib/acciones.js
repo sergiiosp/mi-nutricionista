@@ -509,6 +509,17 @@ export function horaHyrox2026() {
   });
 }
 
+// Proteína a 1,9 g por kilo, lo que eligió Sergio el 14-nov (entre 184 y 160 g, sin forzar el riñón). Una sola vez:
+// si luego la cambia en Tu perfil, se respeta
+export function proteina2026() {
+  const e = get(estado);
+  if (!e.perfil || e.migraciones?.proteina2026) return;
+  actualizar((x) => {
+    if (x.perfil.proteinaKg == null) x.perfil = { ...x.perfil, proteinaKg: 1.9 };
+    x.migraciones = { ...x.migraciones, proteina2026: true };
+  });
+}
+
 // Bloque tras la HYROX del 11-nov, el que eligió Sergio ese día: desde el lunes 16, perder grasa a ritmo moderado,
 // plan «Solo HYROX» (más carrera y estaciones, fuerza para rendir) con exigencia «exigente» y su 10 km del 31-dic.
 // Una sola vez: lo que cambie después en Tu HYROX o en Tu perfil se respeta.
