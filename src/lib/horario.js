@@ -74,6 +74,13 @@ export function horarioDia(perfil, entreno, sesionDia = null, { sinRecena = fals
     cena.pct += r.pct;
     base = base.filter((f) => f !== r);
   }
+  // Con hambre a media tarde (Tu perfil), merienda más contundente: un 4 % del día pasa de la cena a la merienda
+  const merienda = base.find((f) => f.id === 'merienda');
+  const cenaBase = base.find((f) => f.id === 'cena');
+  if (perfil.hambreTarde && merienda && cenaBase) {
+    merienda.pct += 0.04; cenaBase.pct -= 0.04;
+    for (const k of ['p', 'c', 'g']) { merienda.pctM[k] += 0.04; cenaBase.pctM[k] -= 0.04; }
+  }
   const consejos = [];
 
   // Perfiles antiguos sin horario: horas españolas típicas
@@ -127,13 +134,15 @@ export function horarioDia(perfil, entreno, sesionDia = null, { sinRecena = fals
     else if (ini - despertar < 90) consejos.push('Entrenas nada más levantarte: si te encuentras bien, puedes hacerlo en ayunas; si no, toma medio plátano o un café antes.');
     else consejos.push('Llegas al entreno con más de 3 h sin comer: toma una pieza de fruta 30-45 min antes.');
 
-    // Post-entreno: la primera comida en las 3 h siguientes
+    // Post-entreno: la primera comida en las 3 h siguientes. Con hambre a media tarde, la merienda no se adelanta
+    // (se queda por la tarde) y la comida vale como post-entreno hasta 3 h y media después
+    const limitePost = perfil.hambreTarde ? 210 : 180;
     let post = franjas.filter((f) => f !== pre && f.hora >= fin).sort((a, b) => a.hora - b.hora)[0];
-    if (!post || post.hora - fin > 180) {
-      const snack = snacks.find((s) => s !== pre && s.hora > ini);
+    if (!post || post.hora - fin > limitePost) {
+      const snack = snacks.find((s) => s !== pre && s.hora > ini && !(perfil.hambreTarde && s.id === 'merienda'));
       if (snack) { snack.hora = fin + 30; post = snack; }
     }
-    if (post && post.hora - fin <= 180) post.etiqueta = 'post';
+    if (post && post.hora - fin <= limitePost) post.etiqueta = 'post';
     else consejos.push('Al acabar, toma algo con proteína (un yogur +Proteínas o un vaso de leche) si tu siguiente comida tarda más de 3 h.');
 
     // Más hidratos alrededor del entreno y menos grasa justo antes (se digiere mejor), según lo que toque:

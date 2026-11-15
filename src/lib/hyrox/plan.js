@@ -1,5 +1,5 @@
 // Plan HYROX periodizado hasta la fecha de carrera, con ajuste automático según tus registros.
-import { construirSesion, TIPOS, kcalSesionHyrox } from './sesiones.js';
+import { construirSesion, TIPOS, kcalSesionHyrox, lineaPulso } from './sesiones.js';
 import { ritmos, hms, mmss } from './ritmos.js';
 import { sumarDias } from '../planificador.js';
 import { EJERCICIOS } from '../../data/hyrox.js';
@@ -336,7 +336,7 @@ function rodajeSuave(s, { dur, titulo, lineas, nota }, rit) {
     ...s, tipo: 'rodaje', titulo, emoji: TIPOS.rodaje.emoji, color: TIPOS.rodaje.color, rpe: 3,
     duracion: dur, distancia: Math.round((dur * 60 / rit.z2) * 10) / 10, ejercicios: [],
     calentamiento: ['5 min caminando o trotando muy suave'],
-    bloques: [{ titulo: `${dur} min suaves`, lineas }],
+    bloques: [{ titulo: `${dur} min suaves`, lineas: [...lineas, ...lineaPulso(rit)] }],
     vueltaCalma: ['Estira suave 5 min'],
     notas: [nota],
   };

@@ -90,6 +90,9 @@ const VUELTA_CALMA = {
 /**
  * @param ctx { tipo, fase, p (0-1 progreso en la fase), factor (volumen), semana, config, perfil, rit, mitad ('1-4'|'5-8'), completo }
  */
+/** En los rodajes suaves, el pulso de zona 2 (del reloj) además del ritmo. */
+export const lineaPulso = (rit) => (rit?.pulsoZ2 ? [`Pulso ${rit.pulsoZ2}${rit.pulsoEstimado ? ' (estimado por tu edad; pon tu máximo en Tu perfil)' : ''}`] : []);
+
 export function construirSesion(ctx) {
   const { tipo, fase, p = 0, factor = 1, semana = 0, config, perfil, rit, sinGym = false, variante = 'A' } = ctx;
   const ex = EXIGENCIA[config.exigencia] || EXIGENCIA.normal;
@@ -122,14 +125,14 @@ export function construirSesion(ctx) {
     case 'rodaje': {
       duracion = vol(30, 45);
       distancia = (duracion * 60) / rit.z2;
-      bloques.push({ titulo: `${duracion} min en zona 2`, lineas: [`Ritmo ${km(rit.z2)} o más lento`, 'Debes poder hablar en frases completas'] });
+      bloques.push({ titulo: `${duracion} min en zona 2`, lineas: [`Ritmo ${km(rit.z2)} o más lento`, ...lineaPulso(rit), 'Debes poder hablar en frases completas'] });
       break;
     }
     case 'largo': {
       const [a, b] = fase === 'base' ? [40, 60] : fase === 'construccion' ? [50, 70] : [60, 80];
       duracion = Math.max(30, vol(a, b) - (principiante ? 10 : 0));
       distancia = (duracion * 60) / rit.z2;
-      bloques.push({ titulo: `${duracion} min continuos`, lineas: [`Ritmo cómodo: ${km(rit.z2)}`, fase === 'especifico' ? 'Los últimos 10 min a ritmo HYROX' : 'Sin mirar el reloj: pulso bajo y constante'] });
+      bloques.push({ titulo: `${duracion} min continuos`, lineas: [`Ritmo cómodo: ${km(rit.z2)}`, ...lineaPulso(rit), fase === 'especifico' ? 'Los últimos 10 min a ritmo HYROX' : 'Pulso bajo y constante: si sube, afloja'] });
       if (duracion >= 70) notas.push('Lleva agua y, si pasas de 75 min, algo de hidratos (plátano, gel o bebida isotónica).');
       break;
     }

@@ -509,6 +509,19 @@ export function horaHyrox2026() {
   });
 }
 
+// Lo que pidió Sergio el 15-nov, mientras está de baja: entrenar a las 10:00, sin horario de trabajo (se guarda el
+// de antes para recuperarlo) y merienda más contundente (le entra hambre a media tarde). Una sola vez
+export function mananas2026() {
+  const e = get(estado);
+  if (!e.perfil || e.migraciones?.mananas2026) return;
+  actualizar((x) => {
+    const p = x.perfil;
+    x.perfil = { ...p, horaEntreno: '10:00', trabajo: 'no', trabajoAntes: { trabajo: p.trabajo, inicio: p.trabajoInicio, fin: p.trabajoFin }, hambreTarde: true };
+    if (x.hyrox?.config) x.hyrox.config = { ...x.hyrox.config, hora: '10:00' };
+    x.migraciones = { ...x.migraciones, mananas2026: true };
+  });
+}
+
 // Proteína a 1,9 g por kilo, lo que eligió Sergio el 14-nov (entre 184 y 160 g, sin forzar el riñón). Una sola vez:
 // si luego la cambia en Tu perfil, se respeta
 export function proteina2026() {

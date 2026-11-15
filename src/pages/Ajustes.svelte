@@ -13,6 +13,7 @@
   import { resumenObjetivos } from '../lib/cuestionario.js';
   import { hoyISO } from '../lib/planificador.js';
   import { reajustarPlan } from '../lib/acciones.js';
+  import { pulsoMaximo } from '../lib/hyrox/ritmos.js';
   import { FOTOS_RECETAS, FOTOS_SESIONES, FOTOS_ESTACIONES } from '../data/fotos.js';
   import { RECETAS } from '../data/recetas.js';
   import { RECETAS_VARIEDAD } from '../data/recetas-variedad.js';
@@ -28,6 +29,21 @@
   // Proteína al día: la automática (según tu objetivo y tu masa magra) o los gramos por kilo que elijas
   const PROTEINAS = [null, 1.6, 1.8, 1.9, 2.0];
   const gramosProteina = (g) => calcularObjetivos({ ...p, proteinaKg: g }).proteina;
+  const fc = $derived(pulsoMaximo(p));
+  let fcTexto = $state('');
+  function guardarFc(ev) {
+    ev.preventDefault();
+    const v = Math.round(Number(String(fcTexto).replace(',', '.')));
+    if (String(fcTexto).trim() !== '' && !(v >= 140 && v <= 220)) return avisar('Pon un pulso máximo entre 140 y 220', '⚠️');
+    const vacio = String(fcTexto).trim() === '';
+    actualizar((x) => { x.perfil = { ...x.perfil, fcMax: vacio ? null : v }; });
+    fcTexto = '';
+    avisar(vacio ? 'Vuelvo a estimarlo por tu edad' : `Pulso máximo: ${v} ppm. Tus rodajes ya lo usan`, '✅');
+  }
+  function alternarMerienda() {
+    actualizar((x) => { x.perfil = { ...x.perfil, hambreTarde: !x.perfil.hambreTarde }; });
+    reajustarPlan();
+  }
   function elegirProteina(g) {
     actualizar((x) => { x.perfil = { ...x.perfil, proteinaKg: g }; });
     reajustarPlan();
@@ -92,6 +108,18 @@
       {/each}
     </div>
   </div>
+  <div class="tarjeta pulso">
+    <b>Pulso máximo</b>
+    <p class="pie-nota">{fc ? `${fc.fc} ppm${fc.estimado ? ', estimado por tu edad' : ', el tuyo'}: tus rodajes suaves van a ${Math.round(fc.fc * 0.65)}–${Math.round(fc.fc * 0.75)} ppm.` : 'Pon tu edad o tu pulso máximo para ver tu zona 2.'} El más alto que veas en el reloj (series o una carrera) es mejor que el estimado.</p>
+    <form class="pulso-form" onsubmit={guardarFc}>
+      <label class="campo"><span>Tu máximo</span><input id="fc-max" type="number" inputmode="numeric" min="140" max="220" bind:value={fcTexto} placeholder={fc ? String(fc.fc) : '190'} /><small>ppm</small></label>
+      <button class="boton boton-sec" type="submit">Guardar</button>
+    </form>
+  </div>
+  <label class="tarjeta merienda">
+    <input type="checkbox" checked={!!p.hambreTarde} onchange={alternarMerienda} />
+    <span><b>Merienda más contundente</b><small>Si te entra hambre a media tarde: un 4 % del día pasa de la cena a la merienda.</small></span>
+  </label>
   <h2 class="seccion"><Icono e="🗓️" tam={18} /> Tu horario</h2>
   <div class="tarjeta">
     {#each entrena ? [true, false] : [false] as e (e)}
@@ -210,6 +238,13 @@
   .aviso-legal { margin-top: 22px; }
   .ancho { width: 100%; margin-top: 10px; }
   .proteina { display: grid; gap: 8px; }
+  .pulso { display: grid; gap: 8px; }
+  .pulso-form { display: flex; align-items: flex-end; gap: 10px; }
+  .pulso-form .campo { flex: 1; margin: 0; }
+  .merienda { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+  .merienda input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--texto); flex-shrink: 0; }
+  .merienda span { display: grid; gap: 2px; }
+  .merienda small { font-size: 0.8rem; color: var(--texto-2); }
   .prot-ops { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
   .prot-ops button { display: grid; gap: 1px; justify-items: center; min-height: 54px; padding: 6px 2px; border: 1px solid transparent; border-radius: var(--r-s); background: var(--superficie-2); color: var(--texto); font: inherit; cursor: pointer; }
   .prot-ops button b { font-size: 0.95rem; font-weight: 600; }

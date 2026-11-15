@@ -25,6 +25,20 @@ const ROW = { principiante: 285, intermedio: 255, avanzado: 228 };
 /**
  * @param ajusteSeg segundos a restar (si vas sobrado) o sumar (si vas cargado) por km
  */
+/** Pulso máximo: el tuyo (Tu perfil) o, si no lo has puesto, estimado por tu edad (Tanaka: 208 − 0,7 × edad). */
+export function pulsoMaximo(perfil) {
+  const tuyo = Number(perfil?.fcMax);
+  if (tuyo >= 140 && tuyo <= 220) return { fc: Math.round(tuyo), estimado: false };
+  const edad = Number(perfil?.edad);
+  return edad >= 14 && edad <= 90 ? { fc: Math.round(208 - 0.7 * edad), estimado: true } : null;
+}
+
+function zona2(perfil) {
+  const max = pulsoMaximo(perfil);
+  if (!max) return { pulsoZ2: null };
+  return { pulsoZ2: `${Math.round(max.fc * 0.65)}–${Math.round(max.fc * 0.75)} ppm`, pulsoEstimado: max.estimado };
+}
+
 export function ritmos(config, perfil, ajusteSeg = 0) {
   const nivel = NIVELES[config.nivel] || NIVELES.intermedio;
   const mujer = perfil?.sexo === 'm';
@@ -44,5 +58,7 @@ export function ritmos(config, perfil, ajusteSeg = 0) {
     ski500: ski,
     row500: row,
     estimado: !m.t5k,
+    // Zona 2 (rodajes suaves): del 65 al 75 % del pulso máximo
+    ...zona2(perfil),
   };
 }
