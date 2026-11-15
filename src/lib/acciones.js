@@ -522,6 +522,17 @@ export function mananas2026() {
   });
 }
 
+// Natación suave lunes y viernes por la tarde (18:00) y más espalda en los días de fuerza: lo que eligió Sergio el
+// 15-nov para «fibrar y ensanchar la espalda». Una sola vez; después se cambia en Tu HYROX → Configurar
+export function natacion2026() {
+  const e = get(estado);
+  if (!e.hyrox?.config || e.migraciones?.natacion2026) return;
+  actualizar((x) => {
+    x.hyrox.config = { ...x.hyrox.config, natacion: { dias: [1, 5], hora: '18:00' }, espalda: true };
+    x.migraciones = { ...x.migraciones, natacion2026: true };
+  });
+}
+
 // Proteína a 1,9 g por kilo, lo que eligió Sergio el 14-nov (entre 184 y 160 g, sin forzar el riñón). Una sola vez:
 // si luego la cambia en Tu perfil, se respeta
 export function proteina2026() {

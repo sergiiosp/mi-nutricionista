@@ -3,7 +3,7 @@ import './app.css';
 import App from './App.svelte';
 import { iniciarNube } from './lib/nube/sincro.js';
 import { iniciarAvisos } from './lib/nube/avisos.js';
-import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto, horaHyrox2026, rehacerDiasCarrera, bloqueTrasHyrox2026, proteina2026, mananas2026 } from './lib/acciones.js';
+import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto, horaHyrox2026, rehacerDiasCarrera, bloqueTrasHyrox2026, proteina2026, mananas2026, natacion2026 } from './lib/acciones.js';
 import { get } from 'svelte/store';
 import { estado } from './stores/estado.js';
 import { hoja } from './stores/ui.js';
@@ -36,6 +36,8 @@ copiarHoy().finally(() => {
   proteina2026();
   // De baja: entreno a las 10:00, sin horario de trabajo y merienda más fuerte
   mananas2026();
+  // Natación lunes y viernes por la tarde y más espalda en la fuerza
+  natacion2026();
   completarMenu();
   // Los días de carga y de carrera hechos con reglas anteriores rehacen lo que te queda por comer
   rehacerDiasCarrera();

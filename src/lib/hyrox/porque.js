@@ -63,6 +63,12 @@ const PORQUE = {
     estimulo: 'Movimiento muy suave y movilidad: más riego en el músculo y menos rigidez.',
     acabar: 'Más suelto que al empezar. Si acabas cansado, te has pasado.',
   },
+  natacion: {
+    corto: 'Aeróbico sin impacto y espalda suelta',
+    objetivo: 'Sumar trabajo aeróbico sin cargar las piernas y gastar algo más mientras bajas grasa.',
+    estimulo: 'Nado suave y de técnica: corazón y pulmones trabajan, las articulaciones descansan y la espalda y los hombros se mueven.',
+    acabar: 'Con la sensación de haber hecho poco. Si acabas cansado o con los hombros cargados, ve más suave la próxima.',
+  },
   activacion: {
     corto: 'Despertar las piernas antes de la carrera',
     objetivo: 'Llegar a la carrera con chispa y sin cansancio.',

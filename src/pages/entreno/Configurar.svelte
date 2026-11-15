@@ -28,6 +28,10 @@
   let hora = $state(previa.hora || e.perfil.horaEntreno || '19:00');
   let material = $state({ ski: true, row: true, sled: true, wallball: true, kettlebell: true, sandbag: true, ...(previa.material || {}) });
   let lesiones = $state(previa.lesiones || []);
+  let natacion = $state([...(previa.natacion?.dias || [])]);
+  let horaNatacion = $state(previa.natacion?.hora || '18:00');
+  let espalda = $state(!!previa.espalda);
+  const alternarNatacion = (n) => (natacion = natacion.includes(n) ? natacion.filter((x) => x !== n) : [...natacion, n]);
   let enfoque = $state(previa.enfoque || 'equilibrado');
   let exigencia = $state(previa.exigencia || 'muy');
   let error = $state('');
@@ -53,6 +57,8 @@
       fechaCarrera: sinFecha ? null : fechaCarrera,
       horaCarrera,
       categoria, nivel, dias, hora, material, lesiones, enfoque, exigencia,
+      natacion: natacion.length ? { dias: natacion, hora: horaNatacion } : null,
+      espalda,
       marcas: { ...(previa.marcas || {}), t5k: marca(t5k, 900, 3600), ski1000: marca(ski, 150, 480), row1000: marca(row, 150, 480) },
     };
     guardarHyrox(config);
@@ -112,6 +118,13 @@
     <label class="opcion"><input type="radio" name="exigencia" value="exigente" bind:group={exigencia} /><span><b>Exigente</b><small>Más series y volumen</small></span></label>
     <label class="opcion"><input type="radio" name="exigencia" value="muy" bind:group={exigencia} /><span><b>Muy exigente</b><small>Cerca del fallo, superseries y dropsets</small></span></label>
   </fieldset>
+  <label class="opcion extra"><input type="checkbox" bind:checked={espalda} /><span><b>Más espalda</b><small>Jalón ancho y remo en tus días de fuerza, para ensanchar los dorsales</small></span></label>
+  <fieldset class="dias-sel"><legend>Natación suave por la tarde (opcional)</legend>
+    {#each DIAS as [n, l] (n)}
+      <label class="dia-check"><input type="checkbox" checked={natacion.includes(n)} onchange={() => alternarNatacion(n)} /><span>{l}</span></label>
+    {/each}
+  </fieldset>
+  {#if natacion.length}<label class="campo"><span>Hora de la natación</span><input type="time" bind:value={horaNatacion} step="900" /></label>{/if}
   {#if enfoque === 'equilibrado' && dias.length < 6}<p class="pie-nota">Con 6 días tienes 2 sesiones de torso y brazos; con {dias.length}, {dias.length >= 3 ? 'una de torso completo' : 'ninguna'}.</p>{/if}
 
   <h2 class="seccion"><Emoji e="🏋️" tam={24} /> Material de tu gimnasio</h2>

@@ -67,6 +67,18 @@ const meta = metaDia(objetivos, prov(diaFuerte), prov.fase(diaFuerte));
 ok(meta.kcal < base.getDescanso + prov(diaFuerte).reduce((s, x) => s + x.kcal, 0), `Día de entreno de la última semana, también con déficit (${meta.kcal} kcal)`);
 ok(meta.proteina <= objetivos.base.proteina, `La proteína no sube (${meta.proteina} g)`);
 
+// Natación lunes y viernes por la tarde y más espalda (lo que eligió Sergio el 15-nov)
+const { generarPlanHyrox } = await import('../src/lib/hyrox/plan.js');
+const cfgNat = { ...get(estado).hyrox.config, natacion: { dias: [1, 5], hora: '18:00' }, espalda: true };
+const pn = generarPlanHyrox({ config: cfgNat, registros: {}, movidas: {} }, get(estado).perfil, '2026-11-16', get(estado).agenda);
+const s1n = pn.semanas[0].sesiones;
+const nat = s1n.filter((s) => s.tipo === 'natacion');
+ok(nat.length === 2 && nat.every((s) => s.hora === '18:00') && nat.map((s) => s.fecha).join() === '2026-11-16,2026-11-20', 'Natación suave lunes y viernes a las 18:00');
+ok(s1n.filter((s) => s.tipo !== 'natacion').length === 5, 'Las 5 sesiones de siempre siguen ahí');
+const lineasFuerza = s1n.filter((s) => s.tipo === 'fuerza').flatMap((s) => s.bloques.at(-1).lineas).join(' ');
+ok(/Jalón al pecho: \d × 10-12/.test(lineasFuerza) && /Remo con mancuerna/.test(lineasFuerza), 'Más espalda: jalón ancho y remo en los días de fuerza');
+ok(!pn.sesiones.some((s) => s.tipo === 'natacion' && ['2026-12-30', '2026-12-31'].includes(s.fecha)), 'Nada de natación la víspera ni el día del 10 km');
+
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');
 globalThis.Date = REAL;
 process.exit(fallos ? 1 : 0);

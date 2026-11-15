@@ -13,6 +13,7 @@ export const TIPOS = {
   compromised: { nombre: 'Compromised running', emoji: '🔁', color: 'amarillo', rpe: 8, met: 9.5, carbos: 5, clase: 'hyrox' },
   simulacro: { nombre: 'Simulacro', emoji: '🏁', color: 'primario', rpe: 9, met: 9.5, carbos: 6, clase: 'hyrox' },
   recuperacion: { nombre: 'Recuperación activa', emoji: '🧘', color: 'gris', rpe: 2, met: 2.5, carbos: 0, clase: 'suave' },
+  natacion: { nombre: 'Natación suave', emoji: '🏊', color: 'azul', rpe: 3, met: 6, carbos: 0, clase: 'suave' },
   activacion: { nombre: 'Activación pre-carrera', emoji: '🔋', color: 'primario', rpe: 4, met: 6, carbos: 7, clase: 'hyrox' },
   carrera: { nombre: 'HYROX', emoji: '🏆', color: 'primario', rpe: 10, met: 10, carbos: 6, clase: 'hyrox' },
   popular: { nombre: 'Carrera', emoji: '🏁', color: 'primario', rpe: 8, met: 10.5, carbos: 7, clase: 'carrera' },
@@ -200,6 +201,8 @@ export function construirSesion(ctx) {
       // En una semana de descarga, una serie menos en cada ejercicio (como dice el título del bloque)
       const menos = factor < 0.9 ? 1 : 0;
       if (fase !== 'taper') lista = lista.map(([id, s]) => [id, masSeries(s, ex.series - menos)]);
+      // Más espalda (Configurar → «Más espalda»): jalón ancho y remo para ensanchar los dorsales, sin quitar nada
+      if (config.espalda && !P && !sinGym && fase !== 'taper') lista = [...lista, B ? ['jalon', `${3 - menos} × 10-12 (agarre ancho)`] : ['remo_mancuerna', `${3 - menos} × 10 por brazo`]];
       lista = sinRepetir(lista, lesiones);
       titulo = P
         ? (sinGym ? 'Pierna sin gimnasio' : fase === 'taper' ? 'Pierna ligera' : 'Pierna completa')
@@ -301,6 +304,14 @@ export function construirSesion(ctx) {
       if (completo) notas.push('Ensaya también la nutrición del día de carrera (desayuno, cafeína, gel).');
       duracion = completo ? 95 : 55;
       distancia = estaciones.length + 3;
+      break;
+    }
+    case 'natacion': {
+      // Suave y de técnica: trabajo aeróbico sin impacto y hombros sueltos (el día ya tiene fuerza)
+      duracion = fase === 'taper' || factor < 0.9 ? 25 : 35;
+      const largo = duracion >= 35;
+      bloques.push({ titulo: `${duracion} min suaves`, lineas: ['200 m muy suave para calentar', `${largo ? 8 : 6} × 50 m de técnica (brazada larga y respirando a los dos lados), 20 s de pausa`, `${largo ? 400 : 200} m continuos a ritmo cómodo`, 'Sin forzar los hombros: hoy ya has hecho fuerza'] });
+      notas.push('Suma trabajo aeróbico sin impacto en las piernas. Si notas los hombros cargados, cámbiala por 30 min de bici suave.');
       break;
     }
     case 'recuperacion': {

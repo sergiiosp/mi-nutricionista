@@ -186,6 +186,13 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
       }
       semana.sesiones.push({ id: 'carrera', semana: w, fase, fecha: carrera, fechaOriginal: carrera, hora: config.horaCarrera || '10:00', ...construirSesion({ tipo: 'carrera', fase, config, perfil, rit, duracionCarrera: config.duracionEstimada }) });
     }
+    // Natación (Configurar → natación): una sesión suave por la tarde esos días, además de lo que toque.
+    // La semana de una carrera, nada desde 3 días antes
+    for (const d of config.natacion?.dias || []) {
+      const fecha = sumarDias(lunes, ordenSemana(d));
+      if (carrera && fecha >= sumarDias(carrera, -3)) continue;
+      semana.sesiones.push({ id: `s${w}-nat${d}`, semana: w, fase, fecha, fechaOriginal: fecha, hora: config.natacion.hora || '18:00', ...construirSesion({ tipo: 'natacion', fase, p, factor, semana: w, config, perfil, rit }) });
+    }
     semana.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
     semana.volumen = semana.sesiones.reduce((s, x) => s + x.duracion, 0);
     semanas.push(semana);
