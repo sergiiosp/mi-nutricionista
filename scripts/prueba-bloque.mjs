@@ -27,10 +27,10 @@ const vuelta = ['2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15'].flatMap(
 console.log('  ' + vuelta.join('\n  '));
 ok(vuelta.length === 3 && plan.porFecha['2026-11-12'][0].tipo === 'recuperacion' && plan.porFecha['2026-11-15'][0].tipo === 'rodaje', 'Semana de vuelta: recuperación, movilidad y un rodaje suave');
 bloqueTrasHyrox2026();
-ok(get(estado).hyrox.config.fechaCarrera === '2026-11-11' && get(estado).perfil.objetivo === 'recomposicion', 'Antes del lunes 16, nada cambia');
+ok(get(estado).hyrox.config.fechaCarrera === '2026-11-11' && get(estado).perfil.objetivo === 'recomposicion', 'Antes del domingo 15, nada cambia');
 
-// Lunes 16: el bloque nuevo
-ahora = '2026-11-16T09:00:00';
+// Domingo 15: el bloque nuevo (empieza el lunes 16)
+ahora = '2026-11-15T09:00:00';
 bloqueTrasHyrox2026();
 const e = get(estado);
 ok(e.perfil.objetivo === 'perder' && e.perfil.ritmo === 'moderado', 'Objetivo: perder grasa a ritmo moderado');
