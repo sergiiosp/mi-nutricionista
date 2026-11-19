@@ -128,8 +128,18 @@ export function crearPlan(inicio = hoyISO()) {
 export function quitarDeCompra(id) {
   const e = get(estado);
   if (!e.plan) return 0;
+  const { plan, n } = sinAlimentos(e, [id]);
+  actualizar((x) => {
+    x.plan = plan;
+    x.compra.quitados = { ...(x.compra.quitados || {}), [id]: true };
+  });
+  return n;
+}
+
+/** El menú desde hoy sin esos alimentos: lo que quede por comer y los lleve se cambia por algo con los mismos macros. */
+function sinAlimentos(e, ids) {
   const hoy = hoyISO();
-  const fuera = [...(e.perfil.noMeGusta || []), ...Object.keys(e.compra.quitados || {}), id];
+  const fuera = [...(e.perfil.noMeGusta || []), ...Object.keys(e.compra?.quitados || {}), ...ids];
   const perfil = { ...e.perfil, noMeGusta: fuera };
   const objetivos = calcularObjetivos(e.perfil);
   const prov = proveedorDe(e);
@@ -138,18 +148,28 @@ export function quitarDeCompra(id) {
   copia.dias.forEach((d, i) => {
     if (d.fecha < hoy) return;
     for (const c of [...d.comidas]) {
-      if (!c.ingredientes.some((x) => x.a === id)) continue;
+      if (!c.ingredientes.some((x) => ids.includes(x.a))) continue;
       if ((e.registros[d.fecha] || []).some((r) => r.tipo === 'plan' && r.franja === c.franja)) continue; // ya la comiste
       const alt = alternativas(copia, i, c.franja, perfil, objetivos, prov, e.favoritas || [], viajesDe(e))
         .find((x) => !x.comida.ingredientes.some((y) => fuera.includes(y.a)));
       if (alt) { sustituir(copia, i, c.franja, alt.comida); n++; }
     }
   });
+  return { plan: copia, n };
+}
+
+// Lentejas y garbanzos le dan gases a Sergio: fuera de sus menús desde el 19-nov (nota del buzón). El hummus sí le
+// sienta bien y se queda. Van a «No me gusta» de Tu perfil, donde se pueden volver a poner. Una sola vez
+const LEGUMBRES_FUERA = ['lentejas', 'garbanzos'];
+export function legumbres2026() {
+  const e = get(estado);
+  if (!e.perfil || e.migraciones?.legumbres2026) return;
+  const cambio = e.plan ? sinAlimentos(e, LEGUMBRES_FUERA) : null;
   actualizar((x) => {
-    x.plan = copia;
-    x.compra.quitados = { ...(x.compra.quitados || {}), [id]: true };
+    x.perfil = { ...x.perfil, noMeGusta: [...new Set([...(x.perfil.noMeGusta || []), ...LEGUMBRES_FUERA])] };
+    if (cambio) x.plan = cambio.plan;
+    x.migraciones = { ...x.migraciones, legumbres2026: true };
   });
-  return n;
 }
 
 /** Vuelve a poner en la lista algo que habías quitado (el menú no se toca). */
@@ -550,6 +570,18 @@ export function carrera2026() {
   });
 }
 
+// El rodaje extra pasa al jueves por la mañana, en su día libre: Sergio no le vio sentido a correr por la tarde tras
+// las series de la mañana (nota del buzón del 15-nov; lo eligió el 19-nov). Una sola vez y solo si seguía en el martes
+export function jueves2026() {
+  const e = get(estado);
+  if (!e.hyrox?.config || e.migraciones?.jueves2026) return;
+  actualizar((x) => {
+    const m = x.hyrox.config.masCarrera;
+    if (m && m.dias?.length === 1 && m.dias[0] === 2) x.hyrox.config = { ...x.hyrox.config, masCarrera: { dias: [4], hora: x.hyrox.config.hora || '10:00' } };
+    x.migraciones = { ...x.migraciones, jueves2026: true };
+  });
+}
+
 // Natación suave lunes y viernes por la tarde (18:00) y más espalda en los días de fuerza: lo que eligió Sergio el
 // 15-nov para «fibrar y ensanchar la espalda». Una sola vez; después se cambia en Tu HYROX → Configurar
 export function natacion2026() {
@@ -710,6 +742,33 @@ export function guardarHyrox(config) {
     x.perfil = { ...x.perfil, entrena: true, deportes: [...deportes], diasEntreno: config.dias, horaEntreno: config.hora, duracionEntreno: 60, intensidad: 'moderada', compite: true, fechaCompeticion: config.fechaCarrera || '' };
   });
   reajustarPlan();
+}
+
+/**
+ * Un plan nuevo (el bloque del 16-nov, p. ej.) numera sus sesiones igual que el anterior (s0-1, s0-2… y «carrera»):
+ * lo registrado o movido en el plan viejo se colaba en el nuevo (la Fuerza B y el largo de su primera semana salían
+ * el 17 y 18 de octubre, y el largo como hecho). Lo de antes del inicio del plan pasa a tu historial con su fecha y
+ * un id propio, y los cambios de día de entonces se olvidan. Se mira en cada arranque (si no hay nada, no toca nada).
+ */
+export function separarPlanAnterior() {
+  const e = get(estado);
+  const c = e.hyrox?.config;
+  if (!c?.inicio) return 0;
+  const inicio = lunesDe(c.inicio);
+  // (lo ya separado lleva «@fecha» y no se vuelve a tocar)
+  const delPlan = (id) => !id.includes('@') && /^s\d+-|^carrera$|^vuelta-\d+$/.test(id);
+  const viejos = Object.entries(e.hyrox.registros || {}).filter(([id, r]) => r && delPlan(id) && ((r.fecha && r.fecha < inicio) || (r.fechaRegistro && r.fechaRegistro < inicio)));
+  const movidas = Object.entries(e.hyrox.movidas || {}).filter(([, f]) => f < inicio);
+  if (!viejos.length && !movidas.length) return 0;
+  actualizar((x) => {
+    for (const [id, r] of viejos) {
+      const fecha = r.fecha && r.fecha < inicio ? r.fecha : r.fechaRegistro;
+      delete x.hyrox.registros[id];
+      x.hyrox.registros[`${id}@${fecha}`] = { ...r, fecha };
+    }
+    for (const [id] of movidas) delete x.hyrox.movidas[id];
+  });
+  return viejos.length + movidas.length;
 }
 
 /** Guarda una copia de cada sesión ya registrada que aún no la tenga (datos de versiones anteriores). */

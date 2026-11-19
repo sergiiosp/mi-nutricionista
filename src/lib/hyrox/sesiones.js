@@ -124,8 +124,8 @@ export function construirSesion(ctx) {
 
   switch (tipo) {
     case 'rodaje': {
-      // El rodaje de tarde (Configurar → más carrera) es algo más corto: el día ya tiene otra sesión
-      duracion = ctx.tarde ? vol(28, 40) : vol(30, 45);
+      // El rodaje extra (Configurar → más carrera) es algo más corto: 30-40 min, suma kilómetros sin cansar
+      duracion = ctx.extra ? vol(30, 40) : vol(30, 45);
       distancia = (duracion * 60) / rit.z2;
       bloques.push({ titulo: `${duracion} min en zona 2`, lineas: [`Ritmo ${km(rit.z2)} o más lento`, ...lineaPulso(rit), 'Debes poder hablar en frases completas'] });
       break;

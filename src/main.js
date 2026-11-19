@@ -3,7 +3,7 @@ import './app.css';
 import App from './App.svelte';
 import { iniciarNube } from './lib/nube/sincro.js';
 import { iniciarAvisos } from './lib/nube/avisos.js';
-import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto, horaHyrox2026, rehacerDiasCarrera, bloqueTrasHyrox2026, proteina2026, mananas2026, natacion2026, carrera2026, hyroxReal2026 } from './lib/acciones.js';
+import { completarMenu, congelarSesiones, reajustarPlan, revisarGasto, horaHyrox2026, rehacerDiasCarrera, bloqueTrasHyrox2026, proteina2026, mananas2026, natacion2026, carrera2026, hyroxReal2026, jueves2026, legumbres2026, separarPlanAnterior } from './lib/acciones.js';
 import { get } from 'svelte/store';
 import { estado } from './stores/estado.js';
 import { hoja } from './stores/ui.js';
@@ -24,6 +24,8 @@ estado.subscribe((e) => { fijarPerfilRecetas(e.perfil); fijarDespensa(Object.key
 // Copia del día antes de tocar nada (Ajustes → Copias en este móvil) y que el móvil no borre los datos
 pedirAlmacenamientoPersistente();
 copiarHoy().finally(() => {
+  // Lo registrado o movido en un plan anterior no se cuela en el de ahora (antes de congelar nada)
+  separarPlanAnterior();
   // Las sesiones registradas guardan su copia (para que no cambien si cambia el plan)
   congelarSesiones();
   // Si al menú le falta alguna comida (p. ej. el desayuno o la de antes de dormir), se completa al abrir
@@ -42,6 +44,10 @@ copiarHoy().finally(() => {
   carrera2026();
   // Tu HYROX: la carrera real del 11-nov y el objetivo de 1:02 en Doubles
   hyroxReal2026();
+  // El rodaje extra, al jueves por la mañana (no por la tarde de las series)
+  jueves2026();
+  // Sin lentejas ni garbanzos: le dan gases
+  legumbres2026();
   completarMenu();
   // Los días de carga y de carrera hechos con reglas anteriores rehacen lo que te queda por comer
   rehacerDiasCarrera();

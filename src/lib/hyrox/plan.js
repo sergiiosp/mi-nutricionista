@@ -161,6 +161,10 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
     const pierna = config.enfoque === 'equilibrado' && dias.length >= 3;
     // Con un solo día de torso a la semana, ese día es de torso completo (pecho, espalda y brazos)
     const unTorso = tipos.filter((t) => t === 'torso').length === 1;
+    // Una sesión solo se mueve dentro de su semana (es lo que deja elegir «Mover de día»): un cambio de día que
+    // apunte fuera es de otro plan con los mismos números de sesión (el de octubre, p. ej.) y no cuenta
+    const domingo = sumarDias(lunes, 6);
+    const movida = (id) => (movidas[id] && movidas[id] >= lunes && movidas[id] <= domingo ? movidas[id] : null);
     tipos.forEach((tipo, i) => {
       if (!tipo) return; // semana de carrera: ese día no toca
       const d = dias[i];
@@ -172,33 +176,36 @@ export function generarPlanHyrox(hyrox, perfil, hoy, agenda = null) {
         completo: w === simCompletoSemana, mitad: (w % 2 === 0 ? '1-4' : '5-8'),
         variante: tipo === 'fuerza' ? (pierna ? 'P' : nFuerza++ % 2 === 0 ? 'A' : 'B') : tipo === 'torso' ? (unTorso ? 'C' : nTorso++ % 2 === 0 ? 'A' : 'B') : 'A',
         // Lo que marques en la sesión manda; si no, la fuerza y las estaciones de un viaje sin máquinas van sin gimnasio
-        sinGym: id in sinGym ? !!sinGym[id] : diasSinGym.has(movidas[id] || fecha) && ['fuerza', 'hyrox'].includes(TIPOS[tipo].clase),
+        sinGym: id in sinGym ? !!sinGym[id] : diasSinGym.has(movida(id) || fecha) && ['fuerza', 'hyrox'].includes(TIPOS[tipo].clase),
       });
       const original = fecha;
-      if (movidas[id]) fecha = movidas[id];
+      if (movida(id)) fecha = movida(id);
       semana.sesiones.push({ id, semana: w, fase, fecha, fechaOriginal: original, hora: config.hora || perfil?.horaEntreno || '19:00', ...contenido, rpe: deload ? Math.max(2, contenido.rpe - 1) : contenido.rpe });
     });
 
     if (carrera && w === N - 1) {
       const vispera = sumarDias(carrera, -1);
       if (vispera >= lunes) {
-        semana.sesiones.push({ id: `s${w}-act`, semana: w, fase, fecha: movidas[`s${w}-act`] || vispera, fechaOriginal: vispera, hora: config.hora || '18:00', ...construirSesion({ tipo: 'activacion', fase, config, perfil, rit }) });
+        semana.sesiones.push({ id: `s${w}-act`, semana: w, fase, fecha: movida(`s${w}-act`) || vispera, fechaOriginal: vispera, hora: config.hora || '18:00', ...construirSesion({ tipo: 'activacion', fase, config, perfil, rit }) });
       }
       semana.sesiones.push({ id: 'carrera', semana: w, fase, fecha: carrera, fechaOriginal: carrera, hora: config.horaCarrera || '10:00', ...construirSesion({ tipo: 'carrera', fase, config, perfil, rit, duracionCarrera: config.duracionEstimada }) });
     }
     // Natación (Configurar → natación): una sesión suave por la tarde esos días, además de lo que toque.
-    // La semana de una carrera, nada desde 3 días antes
+    // La semana de una carrera, nada desde 3 días antes. Se puede mover de día como las demás
     for (const d of config.natacion?.dias || []) {
       const fecha = sumarDias(lunes, ordenSemana(d));
       if (carrera && fecha >= sumarDias(carrera, -3)) continue;
-      semana.sesiones.push({ id: `s${w}-nat${d}`, semana: w, fase, fecha, fechaOriginal: fecha, hora: config.natacion.hora || '18:00', ...construirSesion({ tipo: 'natacion', fase, p, factor, semana: w, config, perfil, rit }) });
+      const id = `s${w}-nat${d}`;
+      semana.sesiones.push({ id, semana: w, fase, fecha: movida(id) || fecha, fechaOriginal: fecha, hora: config.natacion.hora || '18:00', ...construirSesion({ tipo: 'natacion', fase, p, factor, semana: w, config, perfil, rit }) });
     }
-    // Más carrera (Configurar): un rodaje suave por la tarde esos días (mejor el de las series: duro por la mañana,
-    // suave por la tarde). Nada en la puesta a punto ni desde 3 días antes de una carrera HYROX
+    // Más carrera (Configurar): un rodaje suave más esos días. Sergio lo quiso en su día libre por la mañana (el
+    // jueves) y no por la tarde de las series. Nada en la puesta a punto ni desde 3 días antes de una carrera HYROX
     for (const d of config.masCarrera?.dias || []) {
       const fecha = sumarDias(lunes, ordenSemana(d));
       if (fase === 'taper' || (carrera && fecha >= sumarDias(carrera, -3))) continue;
-      semana.sesiones.push({ id: `s${w}-rod${d}`, semana: w, fase, fecha, fechaOriginal: fecha, hora: config.masCarrera.hora || '18:00', ...construirSesion({ tipo: 'rodaje', fase, p, factor, semana: w, config, perfil, rit, tarde: true }), titulo: 'Rodaje suave de tarde' });
+      const id = `s${w}-rod${d}`;
+      const hora = config.masCarrera.hora || config.hora || '18:00';
+      semana.sesiones.push({ id, semana: w, fase, fecha: movida(id) || fecha, fechaOriginal: fecha, hora, ...construirSesion({ tipo: 'rodaje', fase, p, factor, semana: w, config, perfil, rit, extra: true }), titulo: hora >= '14:00' ? 'Rodaje suave de tarde' : 'Rodaje suave' });
     }
     semana.sesiones.sort((a, b) => a.fecha.localeCompare(b.fecha));
     semana.volumen = semana.sesiones.reduce((s, x) => s + x.duracion, 0);

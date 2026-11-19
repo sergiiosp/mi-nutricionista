@@ -94,7 +94,7 @@
 
   <!-- La sesión, paso a paso (al estilo de Bevel): calentamiento, cada bloque y la vuelta a la calma -->
   <h3><Icono n="route" tam={18} /> La sesión, paso a paso</h3>
-  <ol class="pasos">
+  <ol class="ruta">
     {#if s.calentamiento.length}
       <li class="paso"><span class="p-ic"><Icono n="flame" tam={16} grosor={2.2} /></span>
         <div class="p-cuerpo"><b>Calentamiento</b>{#each s.calentamiento as l (l)}<p>{l}</p>{/each}</div></li>
@@ -173,7 +173,8 @@
   h2 { margin: 0 0 2px; font-size: 1.3rem; line-height: 1.2; }
   .datos { display: flex; flex-wrap: wrap; gap: 6px; }
   .datos span { padding: 3px 9px; border-radius: 999px; background: var(--superficie); font-weight: 600; font-size: 0.78rem; }
-  .pasos { list-style: none; margin: 0; padding: 0; display: grid; }
+  /* «ruta» y no «pasos»: .pasos es la lista numerada de las recetas (app.css) y aquí metía números y descuadraba el último paso */
+  .ruta { list-style: none; margin: 0; padding: 0; display: grid; }
   .paso { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding-bottom: 14px; }
   .paso:not(:last-child)::before { content: ""; position: absolute; left: 16px; top: 34px; bottom: 0; width: 2px; border-radius: 2px; background: color-mix(in srgb, var(--primario) 25%, transparent); }
   .p-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--primario-claro); color: var(--primario-fuerte); }
